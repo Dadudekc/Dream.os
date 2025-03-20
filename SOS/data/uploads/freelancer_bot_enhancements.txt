@@ -1,0 +1,53 @@
+Optimized FREELANCE_KEYWORDS List
+🔹 More comprehensive with better keyword coverage
+🔹 Refined phrasing to catch more job posts
+🔹 Avoids redundancy while expanding keyword reach
+🔹 Ensures discoverability for freelance & contract work
+python
+Copy
+Edit
+FREELANCE_KEYWORDS = [
+    # 🔹 General Developer Jobs
+    "hiring a developer", "looking for a programmer", "freelance software engineer",
+    "remote developer job", "full stack developer needed", "software engineer wanted",
+    "need a software developer", "hiring a coder", "contract software developer",
+
+    # 🔹 AI & Automation
+    "AI developer wanted", "machine learning engineer needed", "chatbot developer",
+    "automation specialist for hire", "data automation expert needed", "script automation job",
+    "web scraping freelancer", "selenium expert needed", "hiring a python automation engineer",
+    "AI engineer contract", "computer vision developer", "natural language processing expert",
+
+    # 🔹 Trading & FinTech
+    "crypto trading bot developer", "quantitative trading freelancer", "quant developer wanted",
+    "hiring a finance automation expert", "building a stock trading bot", "market data analysis expert",
+    "hiring an algo trader", "quantitative analyst contract", "forex automation engineer needed",
+
+    # 🔹 Web Development & APIs
+    "backend developer needed", "looking for a WordPress expert", "Django freelancer needed",
+    "Flask developer for hire", "API integration specialist", "hiring for a REST API developer",
+    "building a custom web app", "need a JavaScript developer", "Vue.js or React freelancer job",
+    "web application developer needed",
+
+    # 🔹 Data Science & Analytics
+    "data scientist wanted", "big data consultant needed", "hiring a data engineer",
+    "SQL and Python freelancer", "data pipeline specialist", "need help with data visualization",
+    "hiring a data analyst", "predictive modeling expert needed", "data wrangling freelancer job",
+    "business intelligence freelancer needed",
+
+    # 🔹 Automation & Scripting
+    "script automation expert needed", "hiring a Python scripter", "custom Python script developer",
+    "task automation expert", "RPA specialist for hire", "ETL automation developer",
+    "cloud automation engineer", "selenium script developer", "workflow automation consultant",
+
+    # 🔹 Security & Infrastructure
+    "cybersecurity freelancer needed", "penetration tester contract", "ethical hacker wanted",
+    "API security expert", "network security consultant", "hiring a cloud security specialist",
+    "web application security tester", "blockchain security specialist", "DevOps freelancer needed"
+]
+Why This Update?
+✅ More specific variations → Improves search reach across different phrasing styles
+✅ Broader coverage of freelance jobs → Adds contract/freelance keywords for discoverability
+✅ Redundant phrases removed → Ensures concise, optimized list without duplicates
+✅ More tailored to high-value jobs → Focuses on in-demand tech skills
+This version increases scraping accuracy while reducing spammy matches. 🚀
