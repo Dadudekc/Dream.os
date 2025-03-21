@@ -6,9 +6,21 @@ import re
 from datetime import datetime
 from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
-# Import centralized paths
-from core.PathManager import PathManager
+# Import our PathManager
+try:
+    from core.PathManager import PathManager
+except ImportError:
+    # Fallback to a simple path if core is not available
+    class PathManager:
+        logs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+        
+        @classmethod
+        def ensure_directories(cls):
+            os.makedirs(cls.logs_dir, exist_ok=True)
 
 class Config:
     """
@@ -216,7 +228,7 @@ class Config:
 
 def get_logger(name: str = "chat_mate", log_dir: str = None):
     """
-    Returns a logger instance with a file and console handler.
+    Configure and return a logger instance.
 
     Args:
         name (str): The logger name.
@@ -226,7 +238,17 @@ def get_logger(name: str = "chat_mate", log_dir: str = None):
         logging.Logger: Configured logger instance.
     """
     if log_dir is None:
-        log_dir =  PathManager.logs_dir
+        try:
+            log_dir = PathManager.get_path('logs')
+        except (AttributeError, ValueError):
+            # Fallback to the legacy property or a default path
+            try:
+                log_dir = PathManager.logs_dir
+            except AttributeError:
+                log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+    
+    # Ensure log directory exists
+    os.makedirs(log_dir, exist_ok=True)
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)

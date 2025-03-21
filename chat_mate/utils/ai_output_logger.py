@@ -1,10 +1,16 @@
 import os
 import json
 import threading
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
-from utils.reinforcement_trainer import process_feedback  # Step 2 will cover this
+from utils.reinforcement_trainer import process_feedback
+from core.FileManager import FileManager
+from core.PathManager import PathManager
+from core.UnifiedLoggingAgent import UnifiedLoggingAgent
+from typing import Optional, List
 
+# Initialize the unified logger
+_unified_logger = UnifiedLoggingAgent()
 logger = logging.getLogger("ai_output_logger")
 logging.basicConfig(
     level=logging.INFO,
@@ -13,41 +19,36 @@ logging.basicConfig(
 
 # Module-level lock for thread-safe file access
 write_lock = threading.Lock()
+file_manager = FileManager()
 
-def log_ai_output(context, input_prompt, ai_output, tags=None, result=None, log_dir="ai_logs", enable_reinforcement=True):
+def log_ai_output(
+    context: str,
+    input_prompt: str,
+    ai_output: str,
+    tags: Optional[List[str]] = None,
+    result: Optional[str] = None,
+    enable_reinforcement: bool = True
+) -> Optional[str]:
     """
-    Log AI output to a structured JSONL file and trigger reinforcement training if enabled.
+    Log AI output using the UnifiedLoggingAgent.
+    Maintains backward compatibility with existing code.
     
-    :param context: String indicating which system or module generated the output.
-    :param input_prompt: The prompt used to generate the output.
-    :param ai_output: The AI's generated output.
-    :param tags: Optional list of tags for categorizing this log entry.
-    :param result: Optional result (e.g., "executed", "failed") for additional context.
-    :param log_dir: Directory to store the log files.
-    :param enable_reinforcement: If True, triggers post-processing reinforcement logic.
+    Args:
+        context: String indicating which system or module generated the output
+        input_prompt: The prompt used to generate the output
+        ai_output: The AI's generated output
+        tags: Optional list of tags for categorizing this log entry
+        result: Optional result (e.g., "executed", "failed") for additional context
+        enable_reinforcement: If True, triggers post-processing reinforcement logic
+        
+    Returns:
+        Optional[str]: Path to the saved log file if successful
     """
-    os.makedirs(log_dir, exist_ok=True)
-    
-    log_entry = {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "context": context,
-        "input_prompt": input_prompt,
-        "ai_output": ai_output,
-        "tags": tags or [],
-        "result": result
-    }
-
-    file_name = os.path.join(log_dir, f"ai_output_log_{datetime.utcnow().strftime('%Y%m%d')}.jsonl")
-    
-    with write_lock:
-        try:
-            with open(file_name, "a", encoding="utf-8") as f:
-                f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
-            logger.info(f"Logged AI output from '{context}' to {file_name}")
-
-            # Trigger reinforcement processing
-            if enable_reinforcement:
-                process_feedback(log_entry)
-
-        except Exception as e:
-            logger.error(f"Failed to log AI output: {e}")
+    return _unified_logger.log_ai_output(
+        context=context,
+        input_prompt=input_prompt,
+        ai_output=ai_output,
+        tags=tags,
+        result=result,
+        enable_reinforcement=enable_reinforcement
+    )

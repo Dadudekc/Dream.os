@@ -1,7 +1,6 @@
 # AUTO-GENERATED __init__.py
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
-from . import DriverManager
 from . import SentimentAnalyzer
 from . import ai_output_logger
 from . import cookie_manager
@@ -14,7 +13,6 @@ from . import run_summary
 from . import ua_utils
 
 __all__ = [
-    'DriverManager',
     'SentimentAnalyzer',
     'ai_output_logger',
     'cookie_manager',

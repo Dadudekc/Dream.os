@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Dict, List, Any, Optional
 
 class MemoryManager:
@@ -52,7 +52,7 @@ class MemoryManager:
         interaction_id: Optional[str] = None,
         chatgpt_url: Optional[str] = None
     ):
-        timestamp = datetime.utcnow().isoformat() + "Z"
+        timestamp = datetime.now(UTC).isoformat() + "Z"
 
         # Platform-user level recording
         platform_data = self.data["platforms"].setdefault(platform, {})
@@ -82,7 +82,7 @@ class MemoryManager:
         if interaction_id not in self.data["conversations"]:
             self.data["conversations"][interaction_id] = []
             self.data["conversations"][interaction_id+"_metadata"] = {
-                "initialized_at": datetime.utcnow().isoformat() + "Z",
+                "initialized_at": datetime.now(UTC).isoformat() + "Z",
                 "metadata": metadata
             }
             self._save_memory()

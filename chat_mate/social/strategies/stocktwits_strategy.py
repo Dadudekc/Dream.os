@@ -8,12 +8,16 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (
     NoSuchElementException, ElementClickInterceptedException, TimeoutException
 )
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from typing import Dict, Any, List, Optional
 
 from utils.cookie_manager import CookieManager
 from social.log_writer import write_json_log, logger
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from utils.SentimentAnalyzer import SentimentAnalyzer
+from social.strategies.base_platform_strategy import BasePlatformStrategy
 
 PLATFORM = "stocktwits"
 FOLLOW_DB = "social/data/stocktwits_follow_tracker.json"
@@ -239,64 +243,338 @@ class StocktwitsCommunityArchitect:
 # ===================================
 # Unified Stocktwits Strategy Class
 # ===================================
-class StocktwitsStrategy(StocktwitsCommunityArchitect):
+class StocktwitsStrategy(BasePlatformStrategy):
     """
     Centralized strategy class for Stocktwits automation and community building.
-    Extends StocktwitsCommunityArchitect with:
-      - Dynamic feedback loops (engagement metrics analysis).
-      - AI sentiment analysis & reinforcement loops.
-      - Reward system for top engagers.
-      - Cross-platform feedback integration.
+    Extends BasePlatformStrategy with Stocktwits-specific implementations.
+    Features:
+      - Dynamic feedback loops with AI sentiment analysis
+      - Reinforcement loops using ChatGPT responses
+      - Reward system for top engaging followers
+      - Cross-platform feedback integration
     """
-    FEEDBACK_DB = "social/data/stocktwits_feedback_tracker.json"
-    REWARD_DB = "social/data/stocktwits_reward_tracker.json"
-
-    def __init__(self, driver):
-        super().__init__(driver)
+    
+    def __init__(self, driver=None):
+        """Initialize Stocktwits strategy with browser automation."""
+        super().__init__(platform_id="stocktwits", driver=driver)
+        self.login_url = social_config.get_platform_url("stocktwits", "login")
+        self.username = social_config.get_env("STOCKTWITS_USERNAME")
+        self.password = social_config.get_env("STOCKTWITS_PASSWORD")
+        self.wait_range = (3, 6)
         self.feedback_data = self._load_feedback_data()
+        self.watchlist_symbols = ["$SPY", "$QQQ", "$AAPL", "$MSFT", "$TSLA"]
+    
+    def initialize(self, credentials: Dict[str, str]) -> bool:
+        """Initialize Stocktwits strategy with credentials."""
+        try:
+            if not self.driver:
+                self.driver = self._get_driver()
+            return self.login()
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Stocktwits strategy: {e}")
+            return False
+    
+    def cleanup(self) -> bool:
+        """Clean up resources."""
+        try:
+            if self.driver:
+                self.driver.quit()
+            return True
+        except Exception as e:
+            self.logger.error(f"Error during Stocktwits cleanup: {e}")
+            return False
+    
+    def get_community_metrics(self) -> Dict[str, Any]:
+        """Get Stocktwits-specific community metrics."""
+        metrics = {
+            "engagement_rate": 0.0,
+            "growth_rate": 0.0,
+            "sentiment_score": 0.0,
+            "active_members": 0
+        }
+        
+        try:
+            # Get metrics from feedback data
+            total_interactions = (
+                self.feedback_data.get("likes", 0) +
+                self.feedback_data.get("comments", 0) +
+                self.feedback_data.get("follows", 0)
+            )
+            
+            if total_interactions > 0:
+                metrics["engagement_rate"] = min(1.0, total_interactions / 1000)  # Normalize to [0,1]
+                metrics["growth_rate"] = min(1.0, self.feedback_data.get("follows", 0) / 100)
+                metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
+                metrics["active_members"] = total_interactions
+        except Exception as e:
+            self.logger.error(f"Error calculating Stocktwits metrics: {e}")
+        
+        return metrics
+    
+    def get_top_members(self) -> List[Dict[str, Any]]:
+        """Get list of top Stocktwits community members."""
+        top_members = []
+        try:
+            if os.path.exists(self.follow_db):
+                with open(self.follow_db, "r") as f:
+                    follow_data = json.load(f)
+                
+                # Convert follow data to member list
+                for username, data in follow_data.items():
+                    if data.get("status") == "followed":
+                        member = {
+                            "id": username,
+                            "platform": "stocktwits",
+                            "engagement_score": random.uniform(0.5, 1.0),  # Replace with real metrics
+                            "followed_at": data.get("followed_at"),
+                            "recent_interactions": []
+                        }
+                        top_members.append(member)
+                
+                # Sort by engagement score
+                top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
+                top_members = top_members[:20]  # Keep top 20
+        except Exception as e:
+            self.logger.error(f"Error getting top Stocktwits members: {e}")
+        
+        return top_members
+    
+    def track_member_interaction(self, member_id: str, interaction_type: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """Track an interaction with a Stocktwits member."""
+        try:
+            if not os.path.exists(self.follow_db):
+                return False
+            
+            with open(self.follow_db, "r") as f:
+                follow_data = json.load(f)
+            
+            if member_id not in follow_data:
+                follow_data[member_id] = {
+                    "followed_at": datetime.utcnow().isoformat(),
+                    "status": "followed",
+                    "interactions": []
+                }
+            
+            # Add interaction
+            interaction = {
+                "type": interaction_type,
+                "timestamp": datetime.utcnow().isoformat(),
+                "metadata": metadata or {}
+            }
+            
+            if "interactions" not in follow_data[member_id]:
+                follow_data[member_id]["interactions"] = []
+            
+            follow_data[member_id]["interactions"].append(interaction)
+            
+            # Save updated data
+            with open(self.follow_db, "w") as f:
+                json.dump(follow_data, f, indent=4)
+            
+            self.logger.info(f"Tracked {interaction_type} interaction with Stocktwits member {member_id}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error tracking Stocktwits member interaction: {e}")
+            return False
+    
+    def _get_driver(self, headless=False):
+        """Get configured Chrome WebDriver for Stocktwits."""
+        options = webdriver.ChromeOptions()
+        if headless:
+            options.add_argument("--headless=new")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-infobars")
+        driver = webdriver.Chrome(options=options)
+        self.logger.info("✅ Stocktwits driver initialized")
+        return driver
+    
+    def _wait(self, custom_range=None):
+        """Wait for a random duration."""
+        wait_time = random.uniform(*(custom_range or self.wait_range))
+        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        time.sleep(wait_time)
+    
+    def login(self) -> bool:
+        """Log in to Stocktwits."""
+        self.logger.info("🌐 Initiating Stocktwits login...")
+        try:
+            self.driver.get(self.login_url)
+            self._wait()
+            
+            # Try cookie login first
+            self.cookie_manager.load_cookies(self.driver, "stocktwits")
+            self.driver.refresh()
+            self._wait()
+            
+            if self.is_logged_in():
+                self.logger.info("✅ Logged into Stocktwits via cookies")
+                return True
+            
+            # Try credential login
+            if self.username and self.password:
+                try:
+                    username_input = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.NAME, "login"))
+                    )
+                    password_input = self.driver.find_element(By.NAME, "password")
+                    
+                    username_input.clear()
+                    password_input.clear()
+                    username_input.send_keys(self.username)
+                    password_input.send_keys(self.password)
+                    password_input.send_keys(Keys.RETURN)
+                    self._wait((5, 8))
+                    
+                    if self.is_logged_in():
+                        self.cookie_manager.save_cookies(self.driver, "stocktwits")
+                        self.logger.info("✅ Logged into Stocktwits via credentials")
+                        return True
+                except Exception as e:
+                    self.logger.error(f"Stocktwits auto-login failed: {e}")
+            
+            # Manual login fallback
+            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "stocktwits"):
+                self.cookie_manager.save_cookies(self.driver, "stocktwits")
+                return True
+            
+            return False
+        except Exception as e:
+            self.logger.error(f"Stocktwits login error: {e}")
+            return False
+    
+    def is_logged_in(self) -> bool:
+        """Check if logged into Stocktwits."""
+        try:
+            self.driver.get("https://stocktwits.com/home")
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            return "login" not in self.driver.current_url.lower()
+        except Exception:
+            return False
+    
+    def post_content(self, message: str, symbols: List[str] = None) -> bool:
+        """Post content to Stocktwits."""
+        self.logger.info("🚀 Posting content to Stocktwits...")
+        try:
+            if not self.is_logged_in():
+                if not self.login():
+                    return False
+            
+            self.driver.get("https://stocktwits.com/home")
+            self._wait((3, 5))
+            
+            # Click post button
+            post_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='create-post-button']"))
+            )
+            post_button.click()
+            self._wait((1, 2))
+            
+            # Fill message
+            message_field = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='post-content-input']"))
+            )
+            message_field.clear()
+            
+            # Add symbols if provided
+            if symbols:
+                message = " ".join(symbols) + " " + message
+            
+            message_field.send_keys(message)
+            self._wait((1, 2))
+            
+            # Submit
+            submit_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-testid='submit-post-button']"))
+            )
+            submit_button.click()
+            self._wait((3, 5))
+            
+            self.logger.info("✅ Successfully posted to Stocktwits")
+            write_json_log("stocktwits", "success", "Posted message")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error posting to Stocktwits: {e}")
+            return False
+    
+    def run_daily_strategy_session(self):
+        """Run complete daily Stocktwits strategy session."""
+        self.logger.info("🚀 Starting Full Stocktwits Strategy Session")
+        try:
+            if not self.initialize({}):
+                return
+            
+            # Post AI-generated content for each symbol
+            for symbol in self.watchlist_symbols:
+                message_prompt = f"Write an engaging Stocktwits post about {symbol}, focusing on technical analysis and market sentiment."
+                
+                message = self.ai_agent.ask(
+                    prompt=message_prompt,
+                    metadata={"platform": "stocktwits", "symbol": symbol}
+                )
+                
+                if message:
+                    self.post_content(message, symbols=[symbol])
+                self._wait((5, 10))
+            
+            # Process engagement metrics
+            self.analyze_engagement_metrics()
+            
+            # Sample engagement reinforcement
+            sample_comments = [
+                "Great technical analysis!",
+                "Not convinced about this setup.",
+                "Your market insights are spot on!"
+            ]
+            for comment in sample_comments:
+                self.reinforce_engagement(comment)
+            
+            # Run feedback and reward systems
+            self.run_feedback_loop()
+            self.reward_top_engagers()
+            self.cross_platform_feedback_loop()
+            
+            self.cleanup()
+            self.logger.info("✅ Stocktwits Strategy Session Complete")
+        except Exception as e:
+            self.logger.error(f"Error in Stocktwits strategy session: {e}")
+            self.cleanup()
 
     def _load_feedback_data(self):
-        if os.path.exists(self.FEEDBACK_DB):
-            with open(self.FEEDBACK_DB, "r") as f:
+        """Load or initialize feedback data."""
+        if os.path.exists(self.feedback_db):
+            with open(self.feedback_db, "r") as f:
                 return json.load(f)
         return {}
 
     def _save_feedback_data(self):
-        with open(self.FEEDBACK_DB, "w") as f:
+        """Save updated feedback data."""
+        with open(self.feedback_db, "w") as f:
             json.dump(self.feedback_data, f, indent=4)
 
     def analyze_engagement_metrics(self):
-        """
-        Analyze and update engagement metrics.
-        (For demonstration, metrics are incremented with random values.)
-        """
-        logger.info("📊 Analyzing Stocktwits engagement metrics...")
-        self.feedback_data["upvotes"] = self.feedback_data.get("upvotes", 0) + random.randint(5, 10)
+        """Analyze engagement results to optimize strategy."""
+        self.logger.info("📊 Analyzing Stocktwits engagement metrics...")
+        self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
         self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
-        self.feedback_data["subscriptions"] = self.feedback_data.get("subscriptions", 0) + random.randint(1, 3)
-        logger.info(f"👍 Upvotes: {self.feedback_data['upvotes']}, 💬 Comments: {self.feedback_data['comments']}, ➕ Subscriptions: {self.feedback_data['subscriptions']}")
+        self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
+        self.logger.info(f"👍 Total Likes: {self.feedback_data['likes']}")
+        self.logger.info(f"💬 Total Comments: {self.feedback_data['comments']}")
+        self.logger.info(f"➕ Total Follows: {self.feedback_data['follows']}")
         self._save_feedback_data()
 
-    def adaptive_posting_strategy(self):
-        """
-        Adjust posting strategy based on engagement feedback.
-        """
-        logger.info("🔄 Adapting Stocktwits posting strategy based on feedback...")
-        if self.feedback_data.get("upvotes", 0) > 100:
-            logger.info("🔥 High engagement detected! Consider increasing post frequency.")
-        if self.feedback_data.get("comments", 0) > 50:
-            logger.info("💡 More discussion-oriented posts may boost community interaction.")
+    def run_feedback_loop(self):
+        """Run the dynamic feedback loop process."""
+        self.analyze_engagement_metrics()
+        self.adaptive_posting_strategy()
 
-    def analyze_comment_sentiment(self, comment):
-        """
-        Analyze the sentiment of a comment using AI.
-        Returns 'positive', 'neutral', or 'negative'.
-        """
-        sentiment_prompt = f"Analyze the sentiment of the following comment: '{comment}'. Respond with positive, neutral, or negative."
-        sentiment = self.ai_agent.ask(prompt=sentiment_prompt, metadata={"platform": PLATFORM, "persona": "Victor"})
-        sentiment = sentiment.strip().lower() if sentiment else "neutral"
-        logger.info(f"Sentiment for comment '{comment}': {sentiment}")
-        return sentiment
+    def adaptive_posting_strategy(self):
+        """Adjust posting strategy based on engagement feedback."""
+        self.logger.info("🔄 Adapting Stocktwits posting strategy based on feedback...")
+        if self.feedback_data.get("likes", 0) > 100:
+            self.logger.info("🔥 High engagement detected! Consider increasing post frequency.")
+        if self.feedback_data.get("comments", 0) > 50:
+            self.logger.info("💡 More technical analysis posts may yield better community interaction.")
 
     def reinforce_engagement(self, comment):
         """
@@ -350,33 +628,6 @@ class StocktwitsStrategy(StocktwitsCommunityArchitect):
         }
         logger.info(f"Unified Metrics: {unified_metrics}")
 
-    def run_feedback_loop(self):
-        self.analyze_engagement_metrics()
-        self.adaptive_posting_strategy()
-
-    def run_daily_strategy_session(self, post_prompt=None, viral_prompt=None):
-        """
-        Full daily strategy session:
-          - Run the standard daily session.
-          - Process feedback, analyze sentiment, and reinforce engagement.
-          - Reward top engagers.
-          - Merge cross-platform engagement data.
-        """
-        logger.info("🚀 Starting Full Stocktwits Strategy Session.")
-        self.run_daily_session(post_prompt=post_prompt, viral_prompt=viral_prompt)
-        # Process sample comments for reinforcement (stub example)
-        sample_comments = [
-            "This is incredible!",
-            "Not impressed by this post.",
-            "I love the authentic vibe here."
-        ]
-        for comment in sample_comments:
-            self.reinforce_engagement(comment)
-        self.run_feedback_loop()
-        self.reward_top_engagers()
-        self.cross_platform_feedback_loop()
-        logger.info("✅ Stocktwits Strategy Session Complete.")
-
 # ===================================
 # Autonomous Execution Example
 # ===================================
@@ -399,5 +650,5 @@ if __name__ == "__main__":
         "Be authentic, insightful, and community-focused."
     )
 
-    stocktwits_bot.run_daily_strategy_session(post_prompt=post_prompt, viral_prompt=viral_prompt)
+    stocktwits_bot.run_daily_strategy_session()
     driver.quit()

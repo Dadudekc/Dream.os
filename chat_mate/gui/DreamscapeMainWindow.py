@@ -3,7 +3,7 @@ import logging
 from PyQt5.QtWidgets import (
     QMainWindow, QTabWidget, QAction, QMessageBox, QApplication, QWidget, QVBoxLayout
 )
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 
 from gui.tabs.MainTabs import MainTabs
 from gui.components.dialogs.exclusions_dialog import ExclusionsDialog
@@ -30,7 +30,7 @@ class DreamscapeGUI(QWidget):
 
         # Instantiate Tabs
         self.prompt_execution_tab = PromptExecutionTab(self)
-        self.dreamscape_generation_tab = DreamscapeGenerationTab(self,"chat_manager=", "response_handler")
+        self.dreamscape_generation_tab = DreamscapeGenerationTab(self, "chat_manager=", "response_handler")
         self.configuration_tab = ConfigurationTab(self)
         self.logs_tab = LogsTab(self)
 
@@ -53,6 +53,12 @@ class DreamscapeMainWindow(QMainWindow):
     """
     Main application window, integrates UI components, tabs, and menus.
     """
+
+    # --- Define signals for UI updates ---
+    append_output_signal = pyqtSignal(str)
+    append_discord_log_signal = pyqtSignal(str)
+    status_update_signal = pyqtSignal(str)
+
     def __init__(self, ui_logic: DreamscapeUILogic):
         super().__init__()
         self.ui_logic = ui_logic
@@ -60,8 +66,19 @@ class DreamscapeMainWindow(QMainWindow):
         self.setWindowTitle("Digital Dreamscape Automation")
         self.setGeometry(100, 100, 1000, 800)
 
+        # --- Setup UI ---
         self._setup_menu()
         self._setup_tabs()
+
+        # --- Wire signals to slots ---
+        self.append_output_signal.connect(self.append_output)
+        self.append_discord_log_signal.connect(self.append_discord_log)
+        self.status_update_signal.connect(self.update_status)
+
+        # --- Pass signal emitters to UI Logic ---
+        self.ui_logic.set_output_signal(self.append_output_signal.emit)
+        self.ui_logic.set_discord_log_signal(self.append_discord_log_signal.emit)
+        self.ui_logic.set_status_update_signal(self.status_update_signal.emit)
 
     def _setup_menu(self):
         menu_bar = self.menuBar()
@@ -105,9 +122,20 @@ class DreamscapeMainWindow(QMainWindow):
         dialog = ReinforcementToolsDialog(self.ui_logic, parent=self)
         dialog.exec_()
 
-    # --- Output callback ---
+    # --- Slots (UI Actions) ---
+    @pyqtSlot(str)
     def append_output(self, message: str):
-        self.tabs.append_output(message)
+        if self.tabs:
+            self.tabs.append_output(message)
+
+    @pyqtSlot(str)
+    def append_discord_log(self, message: str):
+        if self.tabs and hasattr(self.tabs, 'append_discord_log'):
+            self.tabs.append_discord_log(message)
+
+    @pyqtSlot(str)
+    def update_status(self, status: str):
+        self.statusBar().showMessage(status)
 
 
 # -------------------------------------------------------------------------
@@ -123,6 +151,7 @@ if __name__ == "__main__":
 
     service = DreamscapeService()
     ui_logic = DreamscapeUILogic(output_callback=ui_output)
+
     window = DreamscapeMainWindow(ui_logic)
     window.show()
 

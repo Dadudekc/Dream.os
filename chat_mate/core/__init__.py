@@ -2,11 +2,13 @@
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
 from . import AIOutputLogAnalyzer
+from . import AgentDispatcher
 from . import AletheiaFeedbackLoopManager
 from . import AletheiaPromptManager
 from . import ChatManager
 from . import DiscordManager
 from . import DiscordTemplateManager
+from . import DriverManager
 from . import EngagementAgent
 from . import EventMessageBuilder
 from . import FileManager
@@ -20,16 +22,24 @@ from . import ReportExporter
 from . import ResponseHandler
 from . import TaskManager
 from . import TemplateManager
+from . import UnifiedConfigManager
 from . import UnifiedDreamscapeGenerator
+from . import UnifiedFeedbackMemory
+from . import UnifiedLoggingAgent
+from . import UnifiedPromptEngine
+from . import config
+from . import feedback
 from . import reinforcement_tools
 
 __all__ = [
     'AIOutputLogAnalyzer',
+    'AgentDispatcher',
     'AletheiaFeedbackLoopManager',
     'AletheiaPromptManager',
     'ChatManager',
     'DiscordManager',
     'DiscordTemplateManager',
+    'DriverManager',
     'EngagementAgent',
     'EventMessageBuilder',
     'FileManager',
@@ -43,6 +53,12 @@ __all__ = [
     'ResponseHandler',
     'TaskManager',
     'TemplateManager',
+    'UnifiedConfigManager',
     'UnifiedDreamscapeGenerator',
+    'UnifiedFeedbackMemory',
+    'UnifiedLoggingAgent',
+    'UnifiedPromptEngine',
+    'config',
+    'feedback',
     'reinforcement_tools',
 ]

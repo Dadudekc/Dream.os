@@ -21,7 +21,7 @@ class TemplateManager:
 
     def __init__(self, default_data: Optional[Dict] = None):
         # Ensure directory structure exists via PathManager
-        PathManager.ensure_directories(verbose=False)
+        PathManager.ensure_directories()
 
         # Default data to inject into all templates (optional)
         self.default_data = default_data or {}

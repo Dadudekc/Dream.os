@@ -4,7 +4,7 @@ import time
 import logging
 from dotenv import load_dotenv
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 logger = logging.getLogger("SocialConfigWithRateLimits")
 
@@ -25,7 +25,7 @@ class SocialConfig:
         self.rate_limits = self._default_rate_limits()
         self.last_action_times = defaultdict(lambda: 0)
         self.action_counters = defaultdict(lambda: 0)
-        self.last_reset_time = datetime.utcnow()
+        self.last_reset_time = datetime.now(UTC)
 
         self._validate_required_keys()
         self._load_rate_limit_state()
@@ -117,7 +117,7 @@ class SocialConfig:
 
     def _check_daily_reset(self):
         """Resets daily counters after 24 hours."""
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         if now - self.last_reset_time >= timedelta(hours=24):
             logger.info("🔄 Resetting daily action counters...")
             self.action_counters.clear()

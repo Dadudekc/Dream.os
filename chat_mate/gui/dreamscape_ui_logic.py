@@ -4,49 +4,93 @@ from gui.dreamscape_services import DreamscapeService
 class DreamscapeUILogic:
     """
     Bridges UI interactions with backend services.
+    Provides async support and emits signals for UI updates.
     """
 
-    def __init__(self, output_callback):
+    def __init__(self, output_callback=None):
         """
-        Initializes the UILogic with service connections and UI callbacks.
+        Initializes the UILogic with backend services and UI callback functions.
+        
+        :param output_callback: Callable to append logs to the UI.
+        """
+        self.output_callback = output_callback or print
+        self.discord_log_callback = None
+        self.status_update_callback = None
 
-        :param output_callback: Callable for sending text messages to UI (e.g., appending logs)
-        """
-        self.output = output_callback
+        # Initialize backend services
         self.service = DreamscapeService()
+
+    # --- Signal Handlers ---
+
+    def set_output_signal(self, output_signal_func):
+        """
+        Set the callback for appending standard output/log messages.
+        """
+        self.output_callback = output_signal_func
+
+    def set_discord_log_signal(self, discord_log_signal_func):
+        """
+        Set the callback for appending Discord log messages.
+        """
+        self.discord_log_callback = discord_log_signal_func
+
+    def set_status_update_signal(self, status_update_signal_func):
+        """
+        Set the callback for updating UI status messages.
+        """
+        self.status_update_callback = status_update_signal_func
+
+    # --- Logging Helpers ---
+
+    def _output(self, message: str):
+        if callable(self.output_callback):
+            self.output_callback(message)
+
+    def _discord_log(self, message: str):
+        if callable(self.discord_log_callback):
+            self.discord_log_callback(message)
+
+    def _update_status(self, message: str):
+        if callable(self.status_update_callback):
+            self.status_update_callback(message)
 
     # --- Prompt Operations ---
 
     def execute_single_prompt(self, prompt_text: str):
         """
-        Execute a single prompt synchronously and output results.
+        Execute a single prompt synchronously and emit results.
         """
         if not prompt_text.strip():
-            self.output("No prompt provided.")
+            self._output("No prompt provided.")
             return
-        self.output("Executing prompt...")
+        self._output("Executing prompt...")
+
         try:
             responses = self.service.execute_prompt(prompt_text)
             for idx, response in enumerate(responses, start=1):
-                self.output(f"Prompt #{idx} => {response}")
-            self.output("Prompt execution complete.")
+                self._output(f"Prompt #{idx} => {response}")
+            self._output("Prompt execution complete.")
         except Exception as e:
-            self.output(f"Error: {e}")
+            self._output(f"Error: {e}")
 
     def run_single_chat_mode(self, prompt_text: str):
         """
         Execute single prompt asynchronously in chat mode.
         """
         if not prompt_text.strip():
-            self.output("No prompt text provided. Aborting execution.")
+            self._output("No prompt text provided. Aborting execution.")
             return
-        self.output("Launching single-chat mode...")
+
+        self._output("Launching single-chat mode...")
 
         def worker():
-            responses = self.service.chat_manager.execute_prompts_single_chat([prompt_text], cycle_speed=2)
-            for i, resp in enumerate(responses, start=1):
-                self.output(f"Prompt #{i}: {resp}")
-            self.output("Single-chat execution completed.")
+            try:
+                responses = self.service.chat_manager.execute_prompts_single_chat([prompt_text], cycle_speed=2)
+                for i, resp in enumerate(responses, start=1):
+                    self._output(f"Prompt #{i}: {resp}")
+                self._output("Single-chat execution completed.")
+            except Exception as e:
+                self._output(f"Error in single chat mode: {e}")
 
         threading.Thread(target=worker, daemon=True).start()
 
@@ -56,30 +100,37 @@ class DreamscapeUILogic:
         """
         prompts = [line.strip() for line in prompt_text.splitlines() if line.strip()]
         if not prompts:
-            self.output("No valid prompts provided.")
+            self._output("No valid prompts provided.")
             return
-        self.output("Launching multi-chat mode...")
+
+        self._output("Launching multi-chat mode...")
 
         def worker():
-            chats = self.service.chat_manager.get_all_chat_titles()
-            if reverse_order:
-                chats.reverse()
+            try:
+                chats = self.service.chat_manager.get_all_chat_titles()
+                if reverse_order:
+                    chats.reverse()
 
-            if not chats:
-                self.output("No chats found. Aborting.")
-                return
+                if not chats:
+                    self._output("No chats found. Aborting.")
+                    return
 
-            for chat in chats:
-                chat_title = chat.get("title", "Untitled")
-                self.output(f"\nProcessing Chat: {chat_title}")
-                for idx, prompt in enumerate(prompts, start=1):
-                    self.output(f"Sending Prompt #{idx}: {prompt}")
-                    response = self.service.chat_manager.execute_prompt_cycle(prompt)
-                    self.output(f"Response #{idx}: {response}")
-                self.output(f"Archiving chat: {chat_title}")
-                self.service.chat_manager.archive_chat(chat)
+                for chat in chats:
+                    chat_title = chat.get("title", "Untitled")
+                    self._output(f"\nProcessing Chat: {chat_title}")
 
-            self.output("Multi-chat execution complete.")
+                    for idx, prompt in enumerate(prompts, start=1):
+                        self._output(f"Sending Prompt #{idx}: {prompt}")
+                        response = self.service.chat_manager.execute_prompt_cycle(prompt)
+                        self._output(f"Response #{idx}: {response}")
+
+                    self._output(f"Archiving chat: {chat_title}")
+                    self.service.chat_manager.archive_chat(chat)
+
+                self._output("Multi-chat execution complete.")
+
+            except Exception as e:
+                self._output(f"Error in multi-chat mode: {e}")
 
         threading.Thread(target=worker, daemon=True).start()
 
@@ -87,9 +138,13 @@ class DreamscapeUILogic:
         """
         Run a full prompt cycle through the service.
         """
-        self.output("Starting prompt cycle...")
-        self.service.start_prompt_cycle(selected_prompts, exclusions)
-        self.output("Prompt cycle completed.")
+        self._output("Starting prompt cycle...")
+
+        try:
+            self.service.start_prompt_cycle(selected_prompts, exclusions)
+            self._output("Prompt cycle completed.")
+        except Exception as e:
+            self._output(f"Error during prompt cycle: {e}")
 
     # --- Prompt Management ---
 
@@ -99,25 +154,31 @@ class DreamscapeUILogic:
         """
         try:
             prompt_text, model = self.service.load_prompt(prompt_type)
-            self.output(f"Loaded prompt '{prompt_type}' with model '{model}'.")
+            self._output(f"Loaded prompt '{prompt_type}' with model '{model}'.")
             return prompt_text, model
         except Exception as e:
-            self.output(f"Error loading prompt: {e}")
+            self._output(f"Error loading prompt: {e}")
             return "", ""
 
     def save_prompt(self, prompt_type: str, prompt_text: str):
         """
         Save updated prompt configuration.
         """
-        self.service.save_prompt(prompt_type, prompt_text)
-        self.output(f"Prompt '{prompt_type}' saved successfully.")
+        try:
+            self.service.save_prompt(prompt_type, prompt_text)
+            self._output(f"Prompt '{prompt_type}' saved successfully.")
+        except Exception as e:
+            self._output(f"Error saving prompt '{prompt_type}': {e}")
 
     def reset_prompts(self):
         """
         Reset all prompts to defaults.
         """
-        self.service.reset_prompts()
-        self.output("Prompts reset to defaults.")
+        try:
+            self.service.reset_prompts()
+            self._output("Prompts reset to defaults.")
+        except Exception as e:
+            self._output(f"Error resetting prompts: {e}")
 
     # --- Discord Bot Operations ---
 
@@ -125,15 +186,23 @@ class DreamscapeUILogic:
         """
         Launch Discord bot with provided credentials.
         """
-        self.service.launch_discord_bot(bot_token, channel_id, log_callback=self.output)
-        self.output("Discord bot launched.")
+        try:
+            self.service.launch_discord_bot(bot_token, channel_id, log_callback=self._discord_log)
+            self._output("Discord bot launched.")
+            self._update_status("Discord bot is running.")
+        except Exception as e:
+            self._output(f"Error launching Discord bot: {e}")
 
     def stop_discord_bot(self):
         """
         Stop running Discord bot.
         """
-        self.service.stop_discord_bot()
-        self.output("Discord bot stopped.")
+        try:
+            self.service.stop_discord_bot()
+            self._output("Discord bot stopped.")
+            self._update_status("Discord bot is stopped.")
+        except Exception as e:
+            self._output(f"Error stopping Discord bot: {e}")
 
     # --- Reinforcement and Tuning ---
 
@@ -141,10 +210,14 @@ class DreamscapeUILogic:
         """
         Perform automatic prompt tuning using reinforcement data.
         """
-        self.output("Starting prompt tuning...")
-        self.service.run_prompt_tuning()
-        last_updated = self.service.reinforcement_engine.memory_data.get('last_updated', 'unknown')
-        self.output(f"Prompt tuning completed. Memory last updated: {last_updated}")
+        self._output("Starting prompt tuning...")
+
+        try:
+            self.service.run_prompt_tuning()
+            last_updated = self.service.reinforcement_engine.memory_data.get('last_updated', 'unknown')
+            self._output(f"Prompt tuning completed. Memory last updated: {last_updated}")
+        except Exception as e:
+            self._output(f"Error during prompt tuning: {e}")
 
     # --- Analysis Tools (Optional UI exposure) ---
 
@@ -152,8 +225,11 @@ class DreamscapeUILogic:
         """
         Perform detailed response analysis (optional).
         """
-        analysis = self.service.analyze_execution_response(response, prompt_text)
-        self.output(f"Analysis: {analysis}")
+        try:
+            analysis = self.service.analyze_execution_response(response, prompt_text)
+            self._output(f"Analysis: {analysis}")
+        except Exception as e:
+            self._output(f"Error analyzing response: {e}")
 
     # --- Lifecycle Management ---
 
@@ -161,5 +237,9 @@ class DreamscapeUILogic:
         """
         Gracefully shut down services and clean resources.
         """
-        self.service.shutdown_all()
-        self.output("All services shut down cleanly.")
+        try:
+            self.service.shutdown_all()
+            self._output("All services shut down cleanly.")
+            self._update_status("Dreamscape system shutdown complete.")
+        except Exception as e:
+            self._output(f"Error during shutdown: {e}")

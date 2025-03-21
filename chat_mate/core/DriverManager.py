@@ -82,16 +82,17 @@ class DriverManager:
     def _download_driver_if_needed(self):
         cached_driver = self._get_cached_driver_path()
 
-        if os.path.exists(cached_driver):
-            logger.info(f"Using cached ChromeDriver: {cached_driver}")
+        if not os.path.exists(cached_driver):
+            logger.warning("No cached ChromeDriver found. Downloading new version...")
+            driver_manager = ChromeDriverManager()
+            driver_path = driver_manager.install()
+
+            os.makedirs(os.path.dirname(cached_driver), exist_ok=True)
+            shutil.copyfile(driver_path, cached_driver)
+            logger.info(f"Cached ChromeDriver at: {cached_driver}")
             return cached_driver
 
-        logger.warning("No cached ChromeDriver found. Downloading new version...")
-        driver_path = ChromeDriverManager().install()
-
-        shutil.copyfile(driver_path, cached_driver)
-        logger.info(f"Cached ChromeDriver at: {cached_driver}")
-
+        logger.info(f"Using cached ChromeDriver: {cached_driver}")
         return cached_driver
 
     def get_driver(self, force_new=False):

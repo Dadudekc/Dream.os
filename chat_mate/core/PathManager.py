@@ -1,103 +1,135 @@
 import os
 import logging
+from typing import Dict, Optional
+from core.bootstrap import get_bootstrap_paths
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
-logger = logging.getLogger("PathManager")
-
-BASE_DIR = os.getenv('CHAT_MATE_BASE_DIR', PROJECT_ROOT)
+logger = logging.getLogger(__name__)
 
 class PathManager:
     """
-    Centralized Path Manager for ChatMate.
-    Defines and ensures consistent folder structures across the system.
+    Centralized path management system.
+    Initialized with bootstrap paths to avoid circular imports.
     """
-
-    # === Base Directories ===
-    base_dir = BASE_DIR
-    outputs_dir = os.path.join(base_dir, "outputs")
-    memory_dir = os.path.join(base_dir, "memory")
-    templates_dir = os.path.join(base_dir, "templates")
-    drivers_dir = os.path.join(base_dir, "drivers")
-    configs_dir = os.path.join(base_dir, "configs")
-
-    # === Output Subdirectories ===
-    logs_dir = os.path.join(outputs_dir, "logs")
-    cycles_dir = os.path.join(outputs_dir, "cycles")
-    dreamscape_dir = os.path.join(cycles_dir, "dreamscape")
-    workflow_audit_dir = os.path.join(cycles_dir, "workflow_audits")
-    discord_exports_dir = os.path.join(outputs_dir, "discord_exports")
-    reinforcement_logs_dir = os.path.join(outputs_dir, "reinforcement_logs")
-
-    # === Template Subdirectories ===
-    discord_templates_dir = os.path.join(templates_dir, "discord_templates")
-    message_templates_dir = os.path.join(templates_dir, "message_templates")
-    engagement_templates_dir = os.path.join(templates_dir, "engagement_templates")
-    report_templates_dir = os.path.join(templates_dir, "report_templates")
-
-    # === Strategies and Context DB ===
-    strategies_dir = os.path.join(base_dir, "chat_mate", "social", "strategies")
-    context_db_path = os.path.join(strategies_dir, "context_db.json")
-
-    # === Dynamic path registry ===
-    _paths_registry = {
-        "base": base_dir,
-        "outputs": outputs_dir,
-        "memory": memory_dir,
-        "templates": templates_dir,
-        "drivers": drivers_dir,
-        "configs": configs_dir,
-        "logs": logs_dir,
-        "cycles": cycles_dir,
-        "dreamscape": dreamscape_dir,
-        "workflow_audits": workflow_audit_dir,
-        "discord_exports": discord_exports_dir,
-        "reinforcement_logs": reinforcement_logs_dir,
-        "discord_templates": discord_templates_dir,
-        "message_templates": message_templates_dir,
-        "engagement_templates": engagement_templates_dir,
-        "report_templates": report_templates_dir,
-        "strategies": strategies_dir,
-        "context_db": context_db_path  # <-- 🔥 now registered
-    }
-
+    _paths: Dict[str, str] = {}
+    _initialized: bool = False
+    
+    # === Backward compatibility properties ===
     @classmethod
-    def ensure_directories(cls, verbose: bool = False):
+    def __getattr__(cls, name):
+        """Legacy property access for backward compatibility."""
+        # Try to map old property names to new path keys
+        if name == 'base_dir':
+            return cls.get_path('base')
+        elif name == 'outputs_dir':
+            return cls.get_path('outputs')
+        elif name == 'memory_dir':
+            return cls.get_path('memory')
+        elif name == 'templates_dir':
+            return cls.get_path('templates')
+        elif name == 'drivers_dir':
+            return cls.get_path('drivers')
+        elif name == 'configs_dir':
+            return cls.get_path('configs')
+        elif name == 'logs_dir':
+            return cls.get_path('logs')
+        elif name == 'cycles_dir':
+            return cls.get_path('cycles')
+        elif name == 'dreamscape_dir':
+            return cls.get_path('dreamscape')
+        elif name == 'workflow_audit_dir':
+            return cls.get_path('workflow_audits')
+        elif name == 'discord_exports_dir':
+            return cls.get_path('discord_exports')
+        elif name == 'reinforcement_logs_dir':
+            return cls.get_path('reinforcement_logs')
+        elif name == 'discord_templates_dir':
+            return cls.get_path('discord_templates')
+        elif name == 'message_templates_dir':
+            return cls.get_path('message_templates')
+        elif name == 'engagement_templates_dir':
+            return cls.get_path('engagement_templates')
+        elif name == 'report_templates_dir':
+            return cls.get_path('report_templates')
+        elif name == 'strategies_dir':
+            return cls.get_path('strategies')
+        elif name == 'context_db_path':
+            return cls.get_path('context_db')
+        
+        raise AttributeError(f"'{cls.__name__}' has no attribute '{name}'")
+    
+    @classmethod
+    def _ensure_initialized(cls) -> None:
+        """Ensure paths are initialized from bootstrap."""
+        if not cls._initialized:
+            cls._paths = get_bootstrap_paths()
+            cls._initialized = True
+    
+    @classmethod
+    def register_path(cls, key: str, path: str) -> None:
         """
-        Ensure all required directories exist (files are skipped).
+        Register a new path.
+        
+        Args:
+            key: Unique identifier for the path
+            path: The path to register
         """
-        for key, path in cls._paths_registry.items():
-            # Skip files (like context_db.json), only ensure directories
-            if path.endswith('.json'):
-                continue
-            try:
-                os.makedirs(path, exist_ok=True)
-                if verbose:
-                    logger.info(f"📁 Ensured directory exists: {path}")
-            except Exception as e:
-                logger.error(f"❌ Failed to create directory '{path}': {e}")
-
+        cls._ensure_initialized()
+        abs_path = os.path.abspath(path)
+        if key in cls._paths and cls._paths[key] != abs_path:
+            logger.warning(f"⚠️ Overwriting existing path for key '{key}'")
+        cls._paths[key] = abs_path
+    
     @classmethod
     def get_path(cls, key: str) -> str:
-        path = cls._paths_registry.get(key)
-        if path:
-            logger.debug(f"🔑 Retrieved path for '{key}': {path}")
-        else:
+        """
+        Get a registered path.
+        
+        Args:
+            key: The path identifier
+            
+        Returns:
+            The registered path
+            
+        Raises:
+            ValueError: If the path key is not found
+        """
+        cls._ensure_initialized()
+        if key not in cls._paths:
             logger.warning(f"⚠️ Path key '{key}' not found.")
-        return path
-
+            raise ValueError(f"Path key '{key}' not found.")
+        return cls._paths[key]
+    
     @classmethod
-    def register_path(cls, key: str, path: str):
-        abs_path = os.path.abspath(path)
-        cls._paths_registry[key] = abs_path
-        if not abs_path.endswith('.json'):  # Avoid trying to create files as directories
-            os.makedirs(abs_path, exist_ok=True)
-        logger.info(f"✅ Registered custom path: {key} -> {abs_path}")
-
+    def ensure_directories(cls) -> None:
+        """Ensure all registered directories exist."""
+        cls._ensure_initialized()
+        for key, path in cls._paths.items():
+            # Skip file paths (those with extensions)
+            if os.path.splitext(path)[1]:
+                # For file paths, ensure parent directory exists
+                parent_dir = os.path.dirname(path)
+                os.makedirs(parent_dir, exist_ok=True)
+            else:
+                # For directory paths, ensure directory exists
+                os.makedirs(path, exist_ok=True)
+    
     @classmethod
-    def list_paths(cls) -> dict:
-        return cls._paths_registry.copy()
-
-# === Bootstrap Directories on Load ===
-if __name__ == "__main__":
-    PathManager.ensure_directories(verbose=True)
+    def list_paths(cls) -> Dict[str, str]:
+        """List all registered paths."""
+        cls._ensure_initialized()
+        return cls._paths.copy()
+    
+    @classmethod
+    def get_relative_path(cls, key: str, *paths: str) -> str:
+        """
+        Get a path relative to a registered base path.
+        
+        Args:
+            key: The base path identifier
+            *paths: Additional path components to join
+            
+        Returns:
+            The complete path
+        """
+        base = cls.get_path(key)
+        return os.path.join(base, *paths)

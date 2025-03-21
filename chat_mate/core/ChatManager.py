@@ -12,8 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 
-# New modularized imports
-from utils.DriverManager import DriverManager
+# Updated imports
+from core.UnifiedDriverManager import UnifiedDriverManager
 from core.PromptEngine import PromptEngine
 from core.DiscordManager import DiscordManager
 from core.AletheiaPromptManager import AletheiaPromptManager
@@ -39,7 +39,7 @@ class ChatManager:
     ]
 
     def __init__(self,
-                 driver_manager: Optional[DriverManager] = None,
+                 driver_options: Optional[Dict[str, Any]] = None,
                  prompt_manager: Optional[AletheiaPromptManager] = None,
                  excluded_chats: Optional[List[str]] = None,
                  scroll_pause: float = 1.5,
@@ -72,12 +72,18 @@ class ChatManager:
         self.reverse_checkbox = None
         self.output_dir = None
 
-        # Injected managers; create if not provided.
-        self.driver_manager = driver_manager or DriverManager(profile_dir=Config.PROFILE_DIR, headless=self.headless)
-        self.prompt_manager = prompt_manager or AletheiaPromptManager()
-        self.discord_manager = discord_manager  # Set externally if available
+        # Initialize UnifiedDriverManager with options
+        if headless:
+            if not driver_options:
+                driver_options = {}
+            driver_options["headless"] = True
+        self.driver_manager = UnifiedDriverManager(driver_options)
 
-        # Create a PromptEngine using the driver.
+        # Injected managers
+        self.prompt_manager = prompt_manager or AletheiaPromptManager()
+        self.discord_manager = discord_manager
+
+        # Create a PromptEngine using the driver
         self.prompt_engine = PromptEngine(
             self.driver_manager.get_driver(),
             timeout=self.timeout,
@@ -87,11 +93,13 @@ class ChatManager:
         )
 
     @property
-    def driver(self) -> Any:
+    def driver(self):
+        """Get the current WebDriver instance."""
         return self.driver_manager.get_driver()
 
-    def shutdown_driver(self) -> None:
-        self.driver_manager.quit_driver()
+    def shutdown_driver(self):
+        """Safely quit the WebDriver."""
+        self.driver_manager.quit()
 
     def set_model(self, new_model: str) -> None:
         if new_model not in self.ALLOWED_MODELS:

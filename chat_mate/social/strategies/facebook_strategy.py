@@ -8,6 +8,7 @@ import json
 from functools import wraps
 from datetime import datetime
 from dotenv import load_dotenv
+from typing import Dict, Any, List, Optional
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -25,6 +26,7 @@ from utils.cookie_manager import CookieManager
 from social.log_writer import logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
+from social.strategies.base_platform_strategy import BasePlatformStrategy
 
 MAX_ATTEMPTS = 3
 DEFAULT_WAIT = 10
@@ -404,22 +406,313 @@ class FacebookEngagementBot(FacebookBot):
 # -------------------------------------------------
 # FacebookStrategy Class (Unified Approach)
 # -------------------------------------------------
-class FacebookStrategy(FacebookEngagementBot):
+class FacebookStrategy(BasePlatformStrategy):
     """
     Centralized strategy class for managing Facebook automation and community building.
-    Inherits FacebookEngagementBot for core engagement functionality.
-    Adds:
-      - Dynamic feedback loops with AI sentiment analysis.
-      - Reinforcement loops using ChatGPT responses in my voice.
-      - A reward system for top engaging followers.
-      - Cross-platform feedback loops to merge data from Instagram and Twitter.
+    Extends BasePlatformStrategy with Facebook-specific implementations.
+    Features:
+      - Dynamic feedback loops with AI sentiment analysis
+      - Reinforcement loops using ChatGPT responses
+      - Reward system for top engaging followers
+      - Cross-platform feedback integration
     """
-    FEEDBACK_DB = "social/data/feedback_tracker.json"
-    REWARD_DB = "social/data/reward_tracker.json"
-
+    
     def __init__(self, driver=None):
-        super().__init__(driver=driver)
+        """Initialize Facebook strategy with browser automation."""
+        super().__init__(platform_id="facebook", driver=driver)
+        self.login_url = social_config.get_platform_url("facebook", "login")
+        self.post_url = social_config.get_platform_url("facebook", "post")
+        self.settings_url = social_config.get_platform_url("facebook", "settings")
+        self.email = social_config.get_env("FACEBOOK_EMAIL")
+        self.password = social_config.get_env("FACEBOOK_PASSWORD")
+        self.wait_range = (3, 6)
         self.feedback_data = self._load_feedback_data()
+    
+    def initialize(self, credentials: Dict[str, str]) -> bool:
+        """Initialize Facebook strategy with credentials."""
+        try:
+            if not self.driver:
+                self.driver = self._get_driver()
+            return self.login()
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Facebook strategy: {e}")
+            return False
+    
+    def cleanup(self) -> bool:
+        """Clean up resources."""
+        try:
+            if self.driver:
+                self.driver.quit()
+            return True
+        except Exception as e:
+            self.logger.error(f"Error during Facebook cleanup: {e}")
+            return False
+    
+    def get_community_metrics(self) -> Dict[str, Any]:
+        """Get Facebook-specific community metrics."""
+        metrics = {
+            "engagement_rate": 0.0,
+            "growth_rate": 0.0,
+            "sentiment_score": 0.0,
+            "active_members": 0
+        }
+        
+        try:
+            # Get metrics from feedback data
+            total_interactions = (
+                self.feedback_data.get("likes", 0) +
+                self.feedback_data.get("comments", 0) +
+                self.feedback_data.get("follows", 0)
+            )
+            
+            if total_interactions > 0:
+                metrics["engagement_rate"] = min(1.0, total_interactions / 1000)  # Normalize to [0,1]
+                metrics["growth_rate"] = min(1.0, self.feedback_data.get("follows", 0) / 100)
+                metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
+                metrics["active_members"] = total_interactions
+        except Exception as e:
+            self.logger.error(f"Error calculating Facebook metrics: {e}")
+        
+        return metrics
+    
+    def get_top_members(self) -> List[Dict[str, Any]]:
+        """Get list of top Facebook community members."""
+        top_members = []
+        try:
+            if os.path.exists(self.FOLLOW_DB):
+                with open(self.FOLLOW_DB, "r") as f:
+                    follow_data = json.load(f)
+                
+                # Convert follow data to member list
+                for profile_url, data in follow_data.items():
+                    if data.get("status") == "followed":
+                        member = {
+                            "id": profile_url,
+                            "platform": "facebook",
+                            "engagement_score": random.uniform(0.5, 1.0),  # Replace with real metrics
+                            "followed_at": data.get("followed_at"),
+                            "recent_interactions": []
+                        }
+                        top_members.append(member)
+                
+                # Sort by engagement score
+                top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
+                top_members = top_members[:20]  # Keep top 20
+        except Exception as e:
+            self.logger.error(f"Error getting top Facebook members: {e}")
+        
+        return top_members
+    
+    def track_member_interaction(self, member_id: str, interaction_type: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """Track an interaction with a Facebook member."""
+        try:
+            if not os.path.exists(self.FOLLOW_DB):
+                return False
+            
+            with open(self.FOLLOW_DB, "r") as f:
+                follow_data = json.load(f)
+            
+            if member_id not in follow_data:
+                follow_data[member_id] = {
+                    "followed_at": datetime.utcnow().isoformat(),
+                    "status": "followed",
+                    "interactions": []
+                }
+            
+            # Add interaction
+            interaction = {
+                "type": interaction_type,
+                "timestamp": datetime.utcnow().isoformat(),
+                "metadata": metadata or {}
+            }
+            
+            if "interactions" not in follow_data[member_id]:
+                follow_data[member_id]["interactions"] = []
+            
+            follow_data[member_id]["interactions"].append(interaction)
+            
+            # Save updated data
+            with open(self.FOLLOW_DB, "w") as f:
+                json.dump(follow_data, f, indent=4)
+            
+            self.logger.info(f"Tracked {interaction_type} interaction with Facebook member {member_id}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error tracking Facebook member interaction: {e}")
+            return False
+    
+    def _get_driver(self):
+        """Get configured Chrome WebDriver for Facebook."""
+        options = webdriver.ChromeOptions()
+        profile_path = social_config.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
+        options.add_argument(f"--user-data-dir={profile_path}")
+        options.add_argument("--start-maximized")
+        options.add_argument(f"user-agent={self.get_random_user_agent()}")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+        self.logger.info(f"Chrome driver initialized with profile: {profile_path}")
+        return driver
+    
+    @staticmethod
+    def get_random_user_agent():
+        """Get random user agent string."""
+        return random.choice([
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/113.0.0.0 Safari/537.36"
+        ])
+    
+    def _wait(self, custom_range=None):
+        """Wait for a random duration."""
+        wait_time = random.uniform(*(custom_range or self.wait_range))
+        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        time.sleep(wait_time)
+    
+    def login(self) -> bool:
+        """Log in to Facebook."""
+        self.logger.info("🌐 Initiating Facebook login...")
+        try:
+            self.driver.get(self.login_url)
+            self._wait()
+            
+            # Try cookie login first
+            self.cookie_manager.load_cookies(self.driver, "facebook")
+            self.driver.refresh()
+            self._wait()
+            
+            if self.is_logged_in():
+                self.logger.info("✅ Logged into Facebook via cookies")
+                return True
+            
+            # Try credential login
+            if self.email and self.password:
+                try:
+                    email_input = WebDriverWait(self.driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "email"))
+                    )
+                    password_input = WebDriverWait(self.driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "pass"))
+                    )
+                    
+                    email_input.clear()
+                    email_input.send_keys(self.email)
+                    self._wait((1, 2))
+                    
+                    password_input.clear()
+                    password_input.send_keys(self.password)
+                    self._wait((1, 2))
+                    
+                    password_input.send_keys(Keys.RETURN)
+                    self._wait((4, 6))
+                    
+                    if self.is_logged_in():
+                        self.cookie_manager.save_cookies(self.driver, "facebook")
+                        self.logger.info("✅ Logged into Facebook via credentials")
+                        return True
+                except Exception as e:
+                    self.logger.error(f"Facebook auto-login failed: {e}")
+            
+            # Manual login fallback
+            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "facebook"):
+                self.cookie_manager.save_cookies(self.driver, "facebook")
+                return True
+            
+            return False
+        except Exception as e:
+            self.logger.error(f"Facebook login error: {e}")
+            return False
+    
+    def is_logged_in(self) -> bool:
+        """Check if logged into Facebook."""
+        try:
+            self.driver.get(self.settings_url)
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            return "login" not in self.driver.current_url.lower()
+        except Exception:
+            return False
+    
+    def post_content(self, content: str) -> bool:
+        """Post content to Facebook."""
+        self.logger.info("🚀 Posting content to Facebook...")
+        try:
+            if not self.is_logged_in():
+                if not self.login():
+                    return False
+            
+            self.driver.get(self.post_url)
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            
+            # Click "Create Post" button
+            create_post_btn = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "[aria-label='Create post']"))
+            )
+            create_post_btn.click()
+            self._wait((2, 4))
+            
+            # Enter post content
+            post_text_area = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Write something...']"))
+            )
+            post_text_area.click()
+            post_text_area.send_keys(content)
+            self._wait((2, 3))
+            
+            # Click Post button
+            post_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "[aria-label='Post']"))
+            )
+            post_button.click()
+            self._wait((4, 6))
+            
+            self.logger.info("✅ Facebook post published successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error posting to Facebook: {e}")
+            return False
+    
+    def run_daily_strategy_session(self):
+        """Run complete daily Facebook strategy session."""
+        self.logger.info("🚀 Starting Full Facebook Strategy Session")
+        try:
+            if not self.initialize({}):
+                return
+            
+            # Post AI-generated content
+            content_prompt = (
+                "Write an engaging Facebook post about community building and "
+                "system convergence. Include relevant hashtags and a call to action."
+            )
+            content = self.ai_agent.ask(
+                prompt=content_prompt,
+                metadata={"platform": "facebook", "persona": "Victor"}
+            )
+            if content:
+                self.post_content(content)
+            
+            # Process engagement metrics
+            self.analyze_engagement_metrics()
+            
+            # Sample engagement reinforcement
+            sample_comments = [
+                "This is exactly what I needed to see!",
+                "Not sure about this approach.",
+                "Your insights are always valuable!"
+            ]
+            for comment in sample_comments:
+                self.reinforce_engagement(comment)
+            
+            # Run feedback and reward systems
+            self.run_feedback_loop()
+            self.reward_top_engagers()
+            self.cross_platform_feedback_loop()
+            
+            self.cleanup()
+            self.logger.info("✅ Facebook Strategy Session Complete")
+        except Exception as e:
+            self.logger.error(f"Error in Facebook strategy session: {e}")
+            self.cleanup()
 
     def _load_feedback_data(self):
         """
@@ -542,30 +835,6 @@ class FacebookStrategy(FacebookEngagementBot):
         """
         self.analyze_engagement_metrics()
         self.adaptive_posting_strategy()
-
-    def run_daily_strategy_session(self):
-        """
-        Full daily strategy session:
-          - Run the daily engagement session.
-          - Process dynamic feedback loops.
-          - Analyze and reinforce engagement through sentiment analysis.
-          - Reward top followers.
-          - Merge cross-platform feedback.
-        """
-        logger.info("🚀 Starting Full Facebook Strategy Session.")
-        self.run_daily_session()
-        # Example: Analyze sentiment for each comment made during the session
-        sample_comments = [
-            "This is amazing!",
-            "Not really impressed.",
-            "I love the authentic vibe."
-        ]
-        for comment in sample_comments:
-            self.reinforce_engagement(comment)
-        self.run_feedback_loop()
-        self.reward_top_followers()
-        self.cross_platform_feedback_loop()
-        logger.info("✅ Facebook Strategy Session Complete.")
 
 # ------------------------------------------------------
 # Scheduler Setup for Facebook Strategy Engagement

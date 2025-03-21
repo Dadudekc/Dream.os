@@ -6,6 +6,7 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 from functools import wraps
 from dotenv import load_dotenv
+from typing import Dict, Any, List, Optional
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -19,6 +20,7 @@ from utils.cookie_manager import CookieManager
 from social.social_config import social_config
 from social.log_writer import logger, write_json_log
 from social.AIChatAgent import AIChatAgent
+from social.strategies.base_platform_strategy import BasePlatformStrategy
 
 # Load environment variables
 load_dotenv()
@@ -400,140 +402,311 @@ class LinkedInEngagementBot(BaseEngagementBot):
         return self.driver.find_element(By.XPATH, "//button[contains(text(), 'Following') or contains(text(), 'Connected')]")
 
 # -------------------------------------------------
-# LinkedInStrategy Class (Unified Approach)
+# LinkedinStrategy Class (Unified Approach)
 # -------------------------------------------------
-class LinkedInStrategy(LinkedInEngagementBot):
+class LinkedinStrategy(BasePlatformStrategy):
     """
     Centralized strategy class for LinkedIn automation and community building.
-    Extends LinkedInEngagementBot with:
-      - Dynamic feedback loops with AI sentiment analysis.
-      - Reinforcement loops using ChatGPT responses in my voice.
-      - A reward system for top engaging followers.
-      - Cross-platform feedback loops to merge engagement data.
+    Extends BasePlatformStrategy with LinkedIn-specific implementations.
+    Features:
+      - Dynamic feedback loops with AI sentiment analysis
+      - Reinforcement loops using ChatGPT responses
+      - Reward system for top engaging followers
+      - Cross-platform feedback integration
     """
-    FEEDBACK_DB = "social/data/linkedin_feedback_tracker.json"
-    REWARD_DB = "social/data/linkedin_reward_tracker.json"
-
-    def __init__(self, driver=None, wait_range=(3, 6), follow_db_path=None):
-        super().__init__(driver=driver, wait_range=wait_range, follow_db_path=follow_db_path)
-        self.feedback_data = self._load_feedback_data()
-
-    def _load_feedback_data(self):
-        if os.path.exists(self.FEEDBACK_DB):
-            with open(self.FEEDBACK_DB, "r") as f:
-                return json.load(f)
-        return {}
-
-    def _save_feedback_data(self):
-        with open(self.FEEDBACK_DB, "w") as f:
-            json.dump(self.feedback_data, f, indent=4)
-
-    def analyze_engagement_metrics(self):
-        logger.info("📊 Analyzing LinkedIn engagement metrics...")
-        self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
-        self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
-        self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
-        logger.info(f"👍 Likes: {self.feedback_data['likes']}, 💬 Comments: {self.feedback_data['comments']}, ➕ Follows: {self.feedback_data['follows']}")
-        self._save_feedback_data()
-
-    def adaptive_posting_strategy(self):
-        logger.info("🔄 Adapting LinkedIn posting strategy based on feedback...")
-        if self.feedback_data.get("likes", 0) > 100:
-            logger.info("🔥 High engagement detected! Consider increasing post frequency.")
-        if self.feedback_data.get("comments", 0) > 50:
-            logger.info("💡 More community-focused content may boost discussion.")
-
-    def analyze_comment_sentiment(self, comment):
-        sentiment_prompt = f"Analyze the sentiment of the following comment: '{comment}'. Respond with positive, neutral, or negative."
-        sentiment = self.ai_agent.ask(prompt=sentiment_prompt, metadata={"platform": "LinkedIn", "persona": "Victor"})
-        sentiment = sentiment.strip().lower() if sentiment else "neutral"
-        logger.info(f"Sentiment for comment '{comment}': {sentiment}")
-        return sentiment
-
-    def reinforce_engagement(self, comment):
-        sentiment = self.analyze_comment_sentiment(comment)
-        if sentiment == "positive":
-            reinforcement_prompt = f"As Victor, write an engaging response to: '{comment}' to reinforce our community spirit."
-            response = self.ai_agent.ask(prompt=reinforcement_prompt, metadata={"platform": "LinkedIn", "persona": "Victor"})
-            logger.info(f"Reinforcement response generated: {response}")
-            # Optionally, automate posting the response as a comment or DM.
-            return response
-        return None
-
-    def reward_top_followers(self):
-        logger.info("🎉 Evaluating top engaging followers for rewards on LinkedIn...")
-        if os.path.exists(self.REWARD_DB):
-            with open(self.REWARD_DB, "r") as f:
-                reward_data = json.load(f)
-        else:
-            reward_data = {}
-        if os.path.exists(self.follow_db):
+    
+    def __init__(self, driver=None):
+        """Initialize LinkedIn strategy with browser automation."""
+        super().__init__(platform_id="linkedin", driver=driver)
+        self.login_url = "https://www.linkedin.com/login"
+        self.trending_url = "https://www.linkedin.com/feed/"
+        self.email = social_config.get_env("LINKEDIN_EMAIL")
+        self.password = social_config.get_env("LINKEDIN_PASSWORD")
+        self.wait_range = (3, 6)
+    
+    def initialize(self, credentials: Dict[str, str]) -> bool:
+        """Initialize LinkedIn strategy with credentials."""
+        try:
+            if not self.driver:
+                self.driver = self._get_driver()
+            return self.login()
+        except Exception as e:
+            self.logger.error(f"Failed to initialize LinkedIn strategy: {e}")
+            return False
+    
+    def cleanup(self) -> bool:
+        """Clean up resources."""
+        try:
+            if self.driver:
+                self.driver.quit()
+            return True
+        except Exception as e:
+            self.logger.error(f"Error during LinkedIn cleanup: {e}")
+            return False
+    
+    def get_community_metrics(self) -> Dict[str, Any]:
+        """Get LinkedIn-specific community metrics."""
+        metrics = {
+            "engagement_rate": 0.0,
+            "growth_rate": 0.0,
+            "sentiment_score": 0.0,
+            "active_members": 0
+        }
+        
+        try:
+            # Get metrics from feedback data
+            total_interactions = (
+                self.feedback_data.get("likes", 0) +
+                self.feedback_data.get("comments", 0) +
+                self.feedback_data.get("follows", 0)
+            )
+            
+            if total_interactions > 0:
+                metrics["engagement_rate"] = min(1.0, total_interactions / 1000)  # Normalize to [0,1]
+                metrics["growth_rate"] = min(1.0, self.feedback_data.get("follows", 0) / 100)
+                metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
+                metrics["active_members"] = total_interactions
+        except Exception as e:
+            self.logger.error(f"Error calculating LinkedIn metrics: {e}")
+        
+        return metrics
+    
+    def get_top_members(self) -> List[Dict[str, Any]]:
+        """Get list of top LinkedIn community members."""
+        top_members = []
+        try:
+            if os.path.exists(self.follow_db):
+                with open(self.follow_db, "r") as f:
+                    follow_data = json.load(f)
+                
+                # Convert follow data to member list
+                for profile_url, data in follow_data.items():
+                    if data.get("status") == "followed":
+                        member = {
+                            "id": profile_url,
+                            "platform": "linkedin",
+                            "engagement_score": random.uniform(0.5, 1.0),  # Replace with real metrics
+                            "followed_at": data.get("followed_at"),
+                            "recent_interactions": []
+                        }
+                        top_members.append(member)
+                
+                # Sort by engagement score
+                top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
+                top_members = top_members[:20]  # Keep top 20
+        except Exception as e:
+            self.logger.error(f"Error getting top LinkedIn members: {e}")
+        
+        return top_members
+    
+    def track_member_interaction(self, member_id: str, interaction_type: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """Track an interaction with a LinkedIn member."""
+        try:
+            if not os.path.exists(self.follow_db):
+                return False
+            
             with open(self.follow_db, "r") as f:
                 follow_data = json.load(f)
-            top_follower = max(follow_data.items(), key=lambda x: random.random(), default=(None, None))[0]
-            if top_follower and top_follower not in reward_data:
-                custom_message = "Hey, thanks for your amazing engagement! Your support drives our professional community forward."
-                reward_data[top_follower] = {"rewarded_at": datetime.utcnow().isoformat(), "message": custom_message}
-                logger.info(f"Reward issued to top follower: {top_follower}")
-                write_json_log("linkedin", "success", tags=["reward"], ai_output=top_follower)
-        else:
-            logger.warning("No follower data available for rewards on LinkedIn.")
-        with open(self.REWARD_DB, "w") as f:
-            json.dump(reward_data, f, indent=4)
-
-    def cross_platform_feedback_loop(self):
-        logger.info("🌐 Merging cross-platform feedback loops for LinkedIn...")
-        # Stub: Replace with real API calls or data collection as needed.
-        twitter_data = {"likes": random.randint(8, 15), "comments": random.randint(3, 8)}
-        facebook_data = {"likes": random.randint(10, 20), "comments": random.randint(5, 10)}
-        unified_metrics = {
-            "linkedin": self.feedback_data,
-            "twitter": twitter_data,
-            "facebook": facebook_data
-        }
-        logger.info(f"Unified Metrics: {unified_metrics}")
-
-    def run_feedback_loop(self):
-        self.analyze_engagement_metrics()
-        self.adaptive_posting_strategy()
-
+            
+            if member_id not in follow_data:
+                follow_data[member_id] = {
+                    "followed_at": datetime.utcnow().isoformat(),
+                    "status": "followed",
+                    "interactions": []
+                }
+            
+            # Add interaction
+            interaction = {
+                "type": interaction_type,
+                "timestamp": datetime.utcnow().isoformat(),
+                "metadata": metadata or {}
+            }
+            
+            if "interactions" not in follow_data[member_id]:
+                follow_data[member_id]["interactions"] = []
+            
+            follow_data[member_id]["interactions"].append(interaction)
+            
+            # Save updated data
+            with open(self.follow_db, "w") as f:
+                json.dump(follow_data, f, indent=4)
+            
+            self.logger.info(f"Tracked {interaction_type} interaction with LinkedIn member {member_id}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error tracking LinkedIn member interaction: {e}")
+            return False
+    
+    def _get_driver(self):
+        """Get configured Chrome WebDriver for LinkedIn."""
+        options = webdriver.ChromeOptions()
+        profile_path = social_config.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
+        options.add_argument(f"--user-data-dir={profile_path}")
+        options.add_argument("--start-maximized")
+        options.add_argument(f"user-agent={self.get_random_user_agent()}")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+        self.logger.info(f"Chrome driver initialized with profile: {profile_path}")
+        return driver
+    
+    @staticmethod
+    def get_random_user_agent():
+        """Get random user agent string."""
+        return random.choice([
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/113.0.0.0 Safari/537.36"
+        ])
+    
+    def _wait(self, custom_range=None):
+        """Wait for a random duration."""
+        wait_time = random.uniform(*(custom_range or self.wait_range))
+        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        time.sleep(wait_time)
+    
+    def login(self) -> bool:
+        """Log in to LinkedIn."""
+        self.logger.info("🌐 Initiating LinkedIn login...")
+        try:
+            self.driver.get(self.login_url)
+            self._wait()
+            
+            # Try cookie login first
+            self.cookie_manager.load_cookies(self.driver, "linkedin")
+            self.driver.refresh()
+            self._wait()
+            
+            if self.is_logged_in():
+                self.logger.info("✅ Logged into LinkedIn via cookies")
+                return True
+            
+            # Try credential login
+            if self.email and self.password:
+                try:
+                    email_input = WebDriverWait(self.driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "username"))
+                    )
+                    password_input = WebDriverWait(self.driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "password"))
+                    )
+                    
+                    email_input.clear()
+                    email_input.send_keys(self.email)
+                    self._wait((1, 2))
+                    
+                    password_input.clear()
+                    password_input.send_keys(self.password)
+                    self._wait((1, 2))
+                    
+                    password_input.send_keys(Keys.RETURN)
+                    self._wait((4, 6))
+                    
+                    if self.is_logged_in():
+                        self.cookie_manager.save_cookies(self.driver, "linkedin")
+                        self.logger.info("✅ Logged into LinkedIn via credentials")
+                        return True
+                except Exception as e:
+                    self.logger.error(f"LinkedIn auto-login failed: {e}")
+            
+            # Manual login fallback
+            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "linkedin"):
+                self.cookie_manager.save_cookies(self.driver, "linkedin")
+                return True
+            
+            return False
+        except Exception as e:
+            self.logger.error(f"LinkedIn login error: {e}")
+            return False
+    
+    def is_logged_in(self) -> bool:
+        """Check if logged into LinkedIn."""
+        try:
+            self.driver.get("https://www.linkedin.com/feed/")
+            self._wait((3, 5))
+            return "feed" in self.driver.current_url.lower()
+        except Exception:
+            return False
+    
+    def post_content(self, content: str) -> bool:
+        """Post content to LinkedIn."""
+        self.logger.info("🚀 Posting content to LinkedIn...")
+        try:
+            if not self.is_logged_in():
+                if not self.login():
+                    return False
+            
+            self.driver.get("https://www.linkedin.com/feed/")
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            
+            start_post_btn = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "share-box-feed-entry__trigger"))
+            )
+            start_post_btn.click()
+            self._wait((2, 4))
+            
+            post_text_area = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "ql-editor"))
+            )
+            post_text_area.click()
+            post_text_area.send_keys(content)
+            self._wait((2, 3))
+            
+            post_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(@aria-label, 'Post')]"))
+            )
+            post_button.click()
+            self._wait((4, 6))
+            
+            self.logger.info("✅ LinkedIn post published successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error posting to LinkedIn: {e}")
+            return False
+    
     def run_daily_strategy_session(self):
-        logger.info("🚀 Starting Full LinkedIn Strategy Session.")
-        self.run_daily_session()
-        sample_comments = [
-            "This is incredible!",
-            "Not impressed by this post.",
-            "I love the authentic voice here."
-        ]
-        for comment in sample_comments:
-            self.reinforce_engagement(comment)
-        self.run_feedback_loop()
-        self.reward_top_followers()
-        self.cross_platform_feedback_loop()
-        logger.info("✅ LinkedIn Strategy Session Complete.")
+        """Run complete daily LinkedIn strategy session."""
+        self.logger.info("🚀 Starting Full LinkedIn Strategy Session")
+        try:
+            if not self.initialize({}):
+                return
+            
+            # Post AI-generated content
+            content_prompt = (
+                "Write an insightful LinkedIn post about system convergence and "
+                "community building in the digital age. Include relevant hashtags."
+            )
+            content = self.ai_agent.ask(
+                prompt=content_prompt,
+                metadata={"platform": "linkedin", "persona": "Victor"}
+            )
+            if content:
+                self.post_content(content)
+            
+            # Process engagement metrics
+            self.analyze_engagement_metrics()
+            
+            # Sample engagement reinforcement
+            sample_comments = [
+                "This is exactly what I needed to hear!",
+                "Not sure I agree with this take.",
+                "Your insights are always spot on!"
+            ]
+            for comment in sample_comments:
+                self.reinforce_engagement(comment)
+            
+            # Run feedback and reward systems
+            self.run_feedback_loop()
+            self.reward_top_engagers()
+            self.cross_platform_feedback_loop()
+            
+            self.cleanup()
+            self.logger.info("✅ LinkedIn Strategy Session Complete")
+        except Exception as e:
+            self.logger.error(f"Error in LinkedIn strategy session: {e}")
+            self.cleanup()
 
-# -------------------------------------------------
-# Scheduler for LinkedIn Strategy Engagement
-# -------------------------------------------------
-def start_linkedin_scheduler():
-    from apscheduler.schedulers.background import BackgroundScheduler
-    scheduler = BackgroundScheduler()
-    driver = LinkedInStrategy()._get_driver()
-    bot = LinkedInStrategy(driver=driver)
-    for _ in range(3):
-        hour = random.randint(8, 22)
-        minute = random.randint(0, 59)
-        scheduler.add_job(bot.run_daily_strategy_session, 'cron', hour=hour, minute=minute)
-    scheduler.start()
-    logger.info("🕒 Scheduler started for LinkedIn strategy engagement.")
-
-# -------------------------------------------------
-# Main Execution Example
-# -------------------------------------------------
+# Start the LinkedIn strategy if run directly
 if __name__ == "__main__":
-    start_linkedin_scheduler()
-    try:
-        while True:
-            time.sleep(60)
-    except (KeyboardInterrupt, SystemExit):
-        logger.info("🛑 Scheduler stopped by user.")
+    strategy = LinkedinStrategy()
+    strategy.run_daily_strategy_session()

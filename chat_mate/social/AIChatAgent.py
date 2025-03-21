@@ -6,6 +6,7 @@ from datetime import datetime
 from social.social_config import social_config
 from social.log_writer import logger, write_json_log
 from core.MemoryManager import MemoryManager
+from core.UnifiedPromptEngine import UnifiedPromptEngine
 
 # Constants
 PLATFORM = "AIChatAgent"
@@ -90,7 +91,7 @@ class AIChatAgent:
                 {
                     "role": "system",
                     "content": (
-                        f"You are {self.tone}. Respond introspectively, clearly, and strategically in Victor’s style."
+                        f"You are {self.tone}. Respond introspectively, clearly, and strategically in Victor's style."
                     )
                 },
                 {"role": "user", "content": prompt}
@@ -224,3 +225,25 @@ if __name__ == "__main__":
     agent.append_to_chat_thread(interaction_id, "Additional clarification on workflow automation.")
 
     print("\nAI Response:\n", response)
+
+    # Initialize the engine
+    engine = UnifiedPromptEngine(
+        prompt_manager=prompt_manager,
+        driver_manager=driver_manager,
+        max_retries=3,
+        feedback_threshold=0.7
+    )
+
+    # Execute a prompt with context
+    response = engine.execute_prompt(
+        prompt_type="creative",
+        chat_title="story_generation",
+        context={
+            "creative_mode": True,
+            "require_precision": False
+        },
+        tags=["story", "creative"]
+    )
+
+    # Get execution statistics
+    stats = engine.get_stats("creative")

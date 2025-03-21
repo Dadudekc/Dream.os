@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 
 # Import individual platform strategies
 from social.strategies.twitter_strategy import TwitterStrategy
-from social.strategies.linkedin_strategy import LinkedInStrategy
+from social.strategies.linkedin_strategy import LinkedinStrategy
 from social.strategies.facebook_strategy import FacebookStrategy
 from social.strategies.instagram_strategy import InstagramStrategy
 from social.strategies.reddit_strategy import RedditStrategy
@@ -21,7 +21,7 @@ class AletheiaContentDispatcher:
         # Initialize platform strategies
         self.platforms = {
             "twitter": TwitterStrategy(self.env),
-            "linkedin": LinkedInStrategy(self.env),
+            "linkedin": LinkedinStrategy(self.env),
             "facebook": FacebookStrategy(self.env),
             "instagram": InstagramStrategy(self.env),
             "reddit": RedditStrategy(self.env),

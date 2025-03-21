@@ -22,7 +22,7 @@ from core.ResponseHandler import ResponseHandler
 from core.ChatManager import ChatManager
 from core.FileManager import FileManager
 from core.ReinforcementEngine import ReinforcementEngine
-from core.TemplateManager import TemplateManager  # <-- Updated instantiation below
+from core.TemplateManager import TemplateManager
 
 # Selenium helpers for file upload
 from selenium.webdriver.common.by import By
@@ -31,6 +31,10 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # Jinja2 templating for archival reports and Discord messages
 from jinja2 import Environment, FileSystemLoader, Template, TemplateNotFound, select_autoescape
+
+# New imports for UnifiedDiscordService
+from core.UnifiedDiscordService import UnifiedDiscordService
+from core.UnifiedDriverManager import UnifiedDriverManager
 
 # --------------------------------------------------------------------
 # Project Root & Template Path Handling
@@ -133,10 +137,10 @@ class PromptCycleManager:
         self,
         prompt_manager,
         memory_manager=None,
-        discord_manager=None,
+        discord_service=None,
         append_output=None,
-        driver=None,
-        base_output_dir=BASE_OUTPUT_PATH,
+        driver_options=None,
+        base_output_dir=None,
         discord_templates_dir=None,
         dry_run=False,
         verbose=False
@@ -144,9 +148,9 @@ class PromptCycleManager:
         """
         :param prompt_manager: Manager for retrieving prompt text and associated models.
         :param memory_manager: (Optional) For persisting structured memory updates.
-        :param discord_manager: (Optional) For posting messages to Discord.
+        :param discord_service: (Optional) For posting messages to Discord.
         :param append_output: Callback for logging output (e.g. GUI or console).
-        :param driver: (Optional) Selenium WebDriver; if None, ChatManager lazily creates one.
+        :param driver_options: Optional dictionary of WebDriver configuration options.
         :param base_output_dir: Directory for storing text responses.
         :param discord_templates_dir: Directory for external Discord message templates.
         :param dry_run: If True, simulate operations without actual side effects.
@@ -154,20 +158,22 @@ class PromptCycleManager:
         """
         self.prompt_manager = prompt_manager
         self.memory_manager = memory_manager
-        self.discord_manager = discord_manager
+        self.discord = discord_service
         self.append_output = append_output or (lambda msg: print(msg))
-        self._driver = driver
+        self.driver_manager = UnifiedDriverManager(driver_options)
         self.chat_manager = None
         self.response_handler = None
-        self.base_output_dir = base_output_dir
         self.dry_run = dry_run
         self.verbose = verbose
 
-        # Initialize reinforcement engine for detailed feedback and auto-tuning.
+        # Initialize file management
+        self.file_manager = FileManager()
+        
+        # Initialize reinforcement engine
         self.reinforcement_engine = ReinforcementEngine()
 
-        # Instantiate TemplateManager with proper template directory.
-        self.template_manager = TemplateManager(template_dir=discord_templates_dir or TEMPLATE_DIR)
+        # Instantiate TemplateManager
+        self.template_manager = TemplateManager()
         self.log(f"{LOG_ICONS['info']} TemplateManager initialized.")
 
         # Event hooks for external callback integrations.
@@ -176,7 +182,7 @@ class PromptCycleManager:
 
         # Initialize Discord message queue for batching.
         self.discord_queue = queue.Queue()
-        if self.discord_manager:
+        if self.discord:
             self._start_discord_queue_processor()
 
         # Initialize current cycle speed for dynamic adjustments.
@@ -194,9 +200,12 @@ class PromptCycleManager:
         Ensure ChatManager and ResponseHandler are initialized.
         """
         if not self.chat_manager:
-            self.chat_manager = ChatManager(driver=self._driver, model="gpt-4o")
+            self.chat_manager = ChatManager(
+                driver=self.driver_manager.get_driver(),
+                model="gpt-4o"
+            )
         if not self.response_handler:
-            self.response_handler = ResponseHandler(driver=self.chat_manager.driver)
+            self.response_handler = ResponseHandler(driver=self.driver_manager.get_driver())
 
     def _manual_login(self):
         """
@@ -204,7 +213,7 @@ class PromptCycleManager:
         """
         self.log(f"{LOG_ICONS['warning']} Manual login required. Opening ChatGPT login page...")
         try:
-            self.response_handler.driver.get("https://chat.openai.com/auth/login")
+            self.driver_manager.get_driver().get("https://chat.openai.com/auth/login")
         except Exception as e:
             self.log(f"{LOG_ICONS['error']} Driver error during manual login: {e}")
             self.attempt_relogin()
@@ -252,7 +261,7 @@ class PromptCycleManager:
             try:
                 template_filename, data = self.discord_queue.get(timeout=5)
                 message = self.template_manager.render_discord_template(template_filename, data)
-                self.discord_manager.send_message(template_filename, message)
+                self.discord.send_template(template_filename, data)
                 self.log(f"{LOG_ICONS['upload']} Sent templated Discord message using '{template_filename}'.")
             except queue.Empty:
                 continue
@@ -266,52 +275,32 @@ class PromptCycleManager:
         """
         start_time = time.time()
         try:
-            base_prompt_text = self.prompt_manager.get_prompt(prompt_type)
+            prompt_text = self.prompt_manager.get_prompt(prompt_type)
             model = self.prompt_manager.get_model(prompt_type)
-            prompt_text = base_prompt_text
 
-            if paste_files and files_to_send:
-                prompt_text = self._build_prompt_with_files(base_prompt_text, files_to_send)
+            if files_to_send and (paste_files or upload_files):
+                prompt_text = self._build_prompt_with_files(prompt_text, files_to_send)
 
-            self.chat_manager.set_model(model)
-
-            # Open chat or new session
-            if chat and chat.get("link"):
-                self.log(f"{LOG_ICONS['info']} Opening chat: {chat.get('title', 'Untitled')}")
-                self.response_handler.driver.get(chat.get("link"))
-            else:
-                self.log(f"{LOG_ICONS['info']} Starting new chat for prompt: '{prompt_type}' (Model: {model})")
-                self.response_handler.driver.get(f"https://chat.openai.com/?model={model}")
-
-            self._wait_for_page_load(self.response_handler.driver)
-
-            # Handle file uploads if required (only in single-chat mode)
-            if upload_files and files_to_send:
-                for fpath in files_to_send:
-                    if not self._upload_file_to_chatgpt(fpath):
-                        self.log(f"{LOG_ICONS['warning']} Could not upload file: {fpath}")
-
-            # Dry-run check
-            if self.dry_run:
-                self.log(f"{LOG_ICONS['info']} [DRY RUN] Would send prompt '{prompt_type}'")
-                return 0
-
-            # Send prompt
-            if not self.response_handler.send_prompt(prompt_text):
-                self.log(f"{LOG_ICONS['warning']} Prompt send failed for '{prompt_type}'. Skipping.")
-                return 0
+            self.log(f"{LOG_ICONS['send']} Sending prompt '{prompt_type}' (Model: {model})")
 
             if self.on_prompt_sent:
                 self.on_prompt_sent(prompt_type, prompt_text)
 
+            if not self.response_handler.send_prompt(prompt_text):
+                self.log(f"{LOG_ICONS['error']} Failed to send prompt '{prompt_type}'")
+                return 0
+
             response = self.response_handler.wait_for_stable_response()
+
             if response:
                 elapsed = time.time() - start_time
                 self.log(f"[{prompt_type} - {model}]: {response}")
                 self._save_prompt_response(prompt_type, response)
+                
                 if self.memory_manager:
                     self.memory_manager.update(prompt_type, response)
                     self.log(f"{LOG_ICONS['info']} Persistent memory updated for '{prompt_type}'")
+                    
                 detailed_feedback = self.detailed_reinforcement_feedback(prompt_type, prompt_text, response)
                 self.log(f"{LOG_ICONS['info']} Detailed reinforcement feedback: {detailed_feedback}")
 
@@ -319,8 +308,8 @@ class PromptCycleManager:
                 if self.on_response_received:
                     self.on_response_received(prompt_type, response)
 
-                # Queue Discord message if discord_manager is available
-                if self.discord_manager:
+                # Send to Discord if available
+                if self.discord:
                     template_file = "dreamscape.j2" if prompt_type.lower() == "dreamscape" else "status_update.j2"
                     data = {"prompt": prompt_type, "response": response}
                     if chat:
@@ -328,6 +317,7 @@ class PromptCycleManager:
                     self.send_templated_discord_message(template_file, data)
             else:
                 self.log(f"{LOG_ICONS['warning']} No stable response for '{prompt_type}' (Model: {model}).")
+                
             return time.time() - start_time
         except Exception as e:
             self.log(f"{LOG_ICONS['error']} Error processing prompt '{prompt_type}': {e}")
@@ -431,7 +421,7 @@ class PromptCycleManager:
         and generates a feedback visualization chart.
         """
         from core.ReportExporter import ReportExporter  # Import from your project
-        exporter = ReportExporter(discord_manager=self.discord_manager)
+        exporter = ReportExporter(discord_manager=self.discord)
         md_report = exporter.export_markdown(summary, "prompt_cycle_summary.md")
         html_report = exporter.export_html(summary, "prompt_cycle_summary.html")
         exporter.send_discord_report_sync(summary)
@@ -453,11 +443,17 @@ class PromptCycleManager:
         except Exception as e:
             self.log(f"{LOG_ICONS['error']} Error generating feedback chart: {e}")
 
-    def send_templated_discord_message(self, template_filename: str, data: Dict[str, Any]):
-        """
-        Queues a templated Discord message to be sent via the background processor.
-        """
-        self.discord_queue.put((template_filename, data))
+    def send_templated_discord_message(self, template_name: str, data: dict) -> None:
+        """Send a templated message to Discord."""
+        if not self.discord:
+            self.log(f"{LOG_ICONS['warning']} Discord service not available.")
+            return
+            
+        try:
+            self.discord.send_template(template_name, data)
+            self.log(f"{LOG_ICONS['upload']} Sent templated Discord message using '{template_name}'.")
+        except Exception as e:
+            self.log(f"{LOG_ICONS['error']} Error sending Discord message: {e}")
 
     def detailed_reinforcement_feedback(self, prompt_type: str, prompt: str, response: str) -> Dict[str, Any]:
         """
@@ -507,69 +503,73 @@ class PromptCycleManager:
                 lines.append(f"\n[File read error: {fpath} -> {e}]\n")
         return "\n".join(lines).strip()
 
-    def _save_prompt_response(self, prompt_type, response_text):
+    def _save_prompt_response(self, prompt_type, response_text, chat_title=None):
         """
-        Saves the response text in a subdirectory named after the prompt type.
+        Saves the response text using the unified FileManager.
         """
         try:
-            timestamp = time.strftime("%Y%m%d_%H%M%S")
-            file_name = f"response_{timestamp}.txt"
-            prompt_dir = os.path.join(self.base_output_dir, prompt_type)
-            file_manager = FileManager(base_folder=prompt_dir)
-            file_manager.save_entry(response_text, file_name)
-            self.log(f"{LOG_ICONS['success']} Saved response for '{prompt_type}' in {prompt_dir}/{file_name}")
+            filepath = self.file_manager.save_response(
+                content=response_text,
+                prompt_type=prompt_type,
+                chat_title=chat_title
+            )
+            if filepath:
+                self.log(f"{LOG_ICONS['success']} Saved response for '{prompt_type}' in {filepath}")
+            else:
+                self.log(f"{LOG_ICONS['error']} Failed to save response for {prompt_type}")
         except Exception as e:
             err_msg = f"Failed to save response for {prompt_type}: {e}"
             logger.error(err_msg)
             self.log(err_msg)
 
-    def generate_dreamscape_episodes(self, output_dir="dreamscape_episodes", cycle_speed=0):
+    def generate_dreamscape_episodes(self, output_dir=None, cycle_speed=0):
         """
-        Iterates through all chats, sends the 'dreamscape' prompt, saves narrative episodes,
-        and optionally posts them to Discord.
+        Generates Dreamscape episodes for all chats.
+        Now uses FileManager for file operations.
         """
-        self._lazy_init()
-        if not self.response_handler.is_logged_in():
-            self._manual_login()
+        if not self.is_logged_in():
+            self.log("Not logged in. Please log in first.")
+            return
 
-        all_chats = self.chat_manager.get_all_chat_titles()
-        self.log(f"{LOG_ICONS['info']} Found {len(all_chats)} chats for Dreamscape episode generation.")
-        os.makedirs(output_dir, exist_ok=True)
+        chat_titles = self.chat_manager.get_all_chat_titles()
+        if not chat_titles:
+            self.log("No chats found to process.")
+            return
 
-        base_dreamscape_prompt = self.prompt_manager.get_prompt("dreamscape")
-        for chat in all_chats:
-            chat_title = chat.get("title", "Untitled")
-            chat_link = chat.get("link")
-            if not chat_link:
-                self.log(f"{LOG_ICONS['warning']} Skipping chat '{chat_title}' (no link).")
-                continue
+        self.log(f"Starting Dreamscape episode generation for {len(chat_titles)} chats...")
+        episode_counter = 1
 
-            self.log(f"Processing Dreamscape episode for chat: {chat_title}")
-            self.response_handler.driver.get(chat_link)
-            self._wait_for_page_load(self.response_handler.driver)
-
-            episode_prompt = base_dreamscape_prompt
-            if not self.response_handler.send_prompt(episode_prompt):
-                self.log(f"{LOG_ICONS['error']} Failed to send Dreamscape prompt to chat '{chat_title}'")
-                continue
-
-            episode_response = self.response_handler.wait_for_stable_response()
-            if not episode_response:
-                self.log(f"{LOG_ICONS['warning']} No stable response for Dreamscape episode for chat '{chat_title}'")
-                continue
-
-            current_counter = self.prompt_manager.prompts.get("dreamscape", {}).get("episode_counter", 1) - 1
-            episode_filename = f"episode_{current_counter}_{sanitize(chat_title)}.txt"
-            episode_file_path = os.path.join(output_dir, episode_filename)
+        for chat_title in chat_titles:
+            self.log(f"Processing chat: {chat_title}")
+            
             try:
-                with open(episode_file_path, 'w', encoding='utf-8') as f:
-                    f.write(episode_response)
-                self.log(f"{LOG_ICONS['success']} Saved Dreamscape episode for chat '{chat_title}' as '{episode_file_path}'")
-            except Exception as e:
-                self.log(f"Error saving Dreamscape episode for chat '{chat_title}': {e}")
+                episode_response = self._process_chat_for_dreamscape(chat_title)
+                if not episode_response:
+                    continue
 
-            if self.discord_manager:
-                self.send_templated_discord_message("dreamscape.j2", {"episode_text": episode_response, "chat_title": chat_title})
+                # Save episode using FileManager
+                filepath = self.file_manager.save_response(
+                    content=episode_response,
+                    prompt_type="dreamscape",
+                    chat_title=chat_title
+                )
+                
+                if filepath:
+                    self.log(f"{LOG_ICONS['success']} Saved Dreamscape episode for chat '{chat_title}'")
+                    
+                    if self.discord:
+                        self.send_templated_discord_message(
+                            "dreamscape.j2",
+                            {"episode_text": episode_response, "chat_title": chat_title}
+                        )
+                else:
+                    self.log(f"{LOG_ICONS['error']} Failed to save Dreamscape episode for chat '{chat_title}'")
+
+            except Exception as e:
+                self.log(f"Error processing chat '{chat_title}': {e}")
+                continue
+
+            episode_counter += 1
             time.sleep(cycle_speed)
 
         self.log(f"{LOG_ICONS['success']} Completed Dreamscape episode generation.")
@@ -641,13 +641,14 @@ class PromptCycleManager:
             self.log("Login detected. Proceeding with scraping.")
         else:
             self.log("Not logged in. Manual login required...")
-            self.chat_manager.driver.get("https://chat.openai.com/auth/login")
+            self.driver_manager.get_driver().get("https://chat.openai.com/auth/login")
             input(">> Press ENTER after logging in... <<")
             if self.chat_manager.is_logged_in():
                 self.log("Manual login successful.")
             else:
                 self.log("Login unsuccessful. Exiting scraping session.")
-                self.chat_manager.shutdown_driver()
+                if not keep_driver_open:
+                    self.driver_manager.quit()
                 return
 
         self.log("Starting chat scraping process...")
@@ -661,7 +662,7 @@ class PromptCycleManager:
             self.log(f"Scrape found chat: {chat['title']} => {chat['link']}")
         self.log("Scraping session complete!")
         if not keep_driver_open:
-            self.chat_manager.shutdown_driver()
+            self.driver_manager.quit()
 
     # ---------------------------
     # Additional Utility Methods
@@ -708,9 +709,9 @@ class PromptCycleManager:
 
     def launch_discord_bot(self, bot_token: str, channel_id: int):
         self.log("Launching Discord bot...")
-        self.discord_manager = __import__("core.DiscordManager", fromlist=["DiscordManager"]).DiscordManager(bot_token, channel_id)
+        self.discord = __import__("core.DiscordManager", fromlist=["DiscordManager"]).DiscordManager(bot_token, channel_id)
         def run_bot():
-            self.discord_manager.run_bot()
+            self.discord.run_bot()
         self.discord_thread = threading.Thread(target=run_bot, daemon=True)
         self.discord_thread.start()
         self.log("Discord bot launched in background.")
@@ -774,6 +775,11 @@ class PromptCycleManager:
                 self.log(f"Failed to update persistent memory: {e}")
         else:
             self.log("No MEMORY_UPDATE JSON found in the response.")
+
+    def __del__(self):
+        """Cleanup when the manager is destroyed."""
+        if hasattr(self, 'driver_manager'):
+            self.driver_manager.quit()
 
 # --------------------------------------------------------------------
 # Main Entry Point - Launch the GUI

@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 from functools import wraps
 from dotenv import load_dotenv
+from typing import Dict, Any, List, Optional
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -23,6 +24,7 @@ from utils.cookie_manager import CookieManager
 from social.log_writer import logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
+from social.strategies.base_platform_strategy import BasePlatformStrategy
 
 # Constants
 DEFAULT_WAIT = 10
@@ -504,82 +506,366 @@ Speak directly and authentically, inspiring community discussion.
 # -------------------------------------------------
 # InstagramStrategy Class (Unified Approach)
 # -------------------------------------------------
-class InstagramStrategy(InstagramEngagementBot):
+class InstagramStrategy(BasePlatformStrategy):
     """
     Centralized strategy class for Instagram automation and community building.
-    Extends InstagramEngagementBot with:
-      - Dynamic feedback loops and AI sentiment analysis.
-      - Reinforcement loops using ChatGPT responses in my voice.
-      - A reward system for top engaging followers.
-      - Cross-platform feedback loops to merge engagement data.
+    Extends BasePlatformStrategy with Instagram-specific implementations.
+    Features:
+      - Dynamic feedback loops with AI sentiment analysis
+      - Reinforcement loops using ChatGPT responses
+      - Reward system for top engaging followers
+      - Cross-platform feedback integration
     """
-    FEEDBACK_DB = "social/data/insta_feedback_tracker.json"
-    REWARD_DB = "social/data/insta_reward_tracker.json"
-
-    def __init__(self, driver, hashtags=None):
-        super().__init__(driver, hashtags)
+    
+    def __init__(self, driver=None):
+        """Initialize Instagram strategy with browser automation."""
+        super().__init__(platform_id="instagram", driver=driver)
+        self.login_url = social_config.get_platform_url("instagram", "login")
+        self.post_url = social_config.get_platform_url("instagram", "post")
+        self.settings_url = social_config.get_platform_url("instagram", "settings")
+        self.email = social_config.get_env("INSTAGRAM_EMAIL")
+        self.password = social_config.get_env("INSTAGRAM_PASSWORD")
+        self.wait_range = (3, 6)
         self.feedback_data = self._load_feedback_data()
+        self.hashtags = ["daytrading", "systembuilder", "automation", "personalfinance"]
+    
+    def initialize(self, credentials: Dict[str, str]) -> bool:
+        """Initialize Instagram strategy with credentials."""
+        try:
+            if not self.driver:
+                self.driver = self._get_driver(mobile=True)
+            return self.login()
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Instagram strategy: {e}")
+            return False
+    
+    def cleanup(self) -> bool:
+        """Clean up resources."""
+        try:
+            if self.driver:
+                self.driver.quit()
+            return True
+        except Exception as e:
+            self.logger.error(f"Error during Instagram cleanup: {e}")
+            return False
+    
+    def get_community_metrics(self) -> Dict[str, Any]:
+        """Get Instagram-specific community metrics."""
+        metrics = {
+            "engagement_rate": 0.0,
+            "growth_rate": 0.0,
+            "sentiment_score": 0.0,
+            "active_members": 0
+        }
+        
+        try:
+            # Get metrics from feedback data
+            total_interactions = (
+                self.feedback_data.get("likes", 0) +
+                self.feedback_data.get("comments", 0) +
+                self.feedback_data.get("follows", 0)
+            )
+            
+            if total_interactions > 0:
+                metrics["engagement_rate"] = min(1.0, total_interactions / 1000)  # Normalize to [0,1]
+                metrics["growth_rate"] = min(1.0, self.feedback_data.get("follows", 0) / 100)
+                metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
+                metrics["active_members"] = total_interactions
+        except Exception as e:
+            self.logger.error(f"Error calculating Instagram metrics: {e}")
+        
+        return metrics
+    
+    def get_top_members(self) -> List[Dict[str, Any]]:
+        """Get list of top Instagram community members."""
+        top_members = []
+        try:
+            if os.path.exists(self.FOLLOW_DB):
+                with open(self.FOLLOW_DB, "r") as f:
+                    follow_data = json.load(f)
+                
+                # Convert follow data to member list
+                for profile_url, data in follow_data.items():
+                    if data.get("status") == "followed":
+                        member = {
+                            "id": profile_url,
+                            "platform": "instagram",
+                            "engagement_score": random.uniform(0.5, 1.0),  # Replace with real metrics
+                            "followed_at": data.get("followed_at"),
+                            "recent_interactions": []
+                        }
+                        top_members.append(member)
+                
+                # Sort by engagement score
+                top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
+                top_members = top_members[:20]  # Keep top 20
+        except Exception as e:
+            self.logger.error(f"Error getting top Instagram members: {e}")
+        
+        return top_members
+    
+    def track_member_interaction(self, member_id: str, interaction_type: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
+        """Track an interaction with an Instagram member."""
+        try:
+            if not os.path.exists(self.FOLLOW_DB):
+                return False
+            
+            with open(self.FOLLOW_DB, "r") as f:
+                follow_data = json.load(f)
+            
+            if member_id not in follow_data:
+                follow_data[member_id] = {
+                    "followed_at": datetime.utcnow().isoformat(),
+                    "status": "followed",
+                    "interactions": []
+                }
+            
+            # Add interaction
+            interaction = {
+                "type": interaction_type,
+                "timestamp": datetime.utcnow().isoformat(),
+                "metadata": metadata or {}
+            }
+            
+            if "interactions" not in follow_data[member_id]:
+                follow_data[member_id]["interactions"] = []
+            
+            follow_data[member_id]["interactions"].append(interaction)
+            
+            # Save updated data
+            with open(self.FOLLOW_DB, "w") as f:
+                json.dump(follow_data, f, indent=4)
+            
+            self.logger.info(f"Tracked {interaction_type} interaction with Instagram member {member_id}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error tracking Instagram member interaction: {e}")
+            return False
+    
+    def _get_driver(self, mobile=True, headless=False):
+        """Get configured Chrome WebDriver for Instagram."""
+        options = webdriver.ChromeOptions()
+        if headless:
+            options.add_argument("--headless=new")
+        if mobile:
+            mobile_emulation = {"deviceName": "Pixel 5"}
+            options.add_experimental_option("mobileEmulation", mobile_emulation)
+            options.add_argument(f"user-agent={get_random_mobile_user_agent()}")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-infobars")
+        profile_path = social_config.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
+        options.add_argument(f"--user-data-dir={profile_path}")
+        driver = webdriver.Chrome(
+            service=Service(ChromeDriverManager().install()),
+            options=options
+        )
+        self.logger.info("✅ Instagram driver initialized with mobile emulation.")
+        return driver
+    
+    def _wait(self, custom_range=None):
+        """Wait for a random duration."""
+        wait_time = random.uniform(*(custom_range or self.wait_range))
+        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        time.sleep(wait_time)
+    
+    def login(self) -> bool:
+        """Log in to Instagram."""
+        self.logger.info("🌐 Initiating Instagram login...")
+        try:
+            self.driver.get(self.login_url)
+            self._wait()
+            
+            # Try cookie login first
+            self.cookie_manager.load_cookies(self.driver, "instagram")
+            self.driver.refresh()
+            self._wait()
+            
+            if self.is_logged_in():
+                self.logger.info("✅ Logged into Instagram via cookies")
+                return True
+            
+            # Try credential login
+            if self.email and self.password:
+                try:
+                    username_input = self.driver.find_element("name", "username")
+                    password_input = self.driver.find_element("name", "password")
+                    username_input.clear()
+                    password_input.clear()
+                    username_input.send_keys(self.email)
+                    password_input.send_keys(self.password)
+                    password_input.send_keys(Keys.RETURN)
+                    self._wait((5, 8))
+                    
+                    if self.is_logged_in():
+                        self.cookie_manager.save_cookies(self.driver, "instagram")
+                        self.logger.info("✅ Logged into Instagram via credentials")
+                        return True
+                except Exception as e:
+                    self.logger.error(f"Instagram auto-login failed: {e}")
+            
+            # Manual login fallback
+            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "instagram"):
+                self.cookie_manager.save_cookies(self.driver, "instagram")
+                return True
+            
+            return False
+        except Exception as e:
+            self.logger.error(f"Instagram login error: {e}")
+            return False
+    
+    def is_logged_in(self) -> bool:
+        """Check if logged into Instagram."""
+        try:
+            self.driver.get("https://www.instagram.com/")
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            return "login" not in self.driver.current_url.lower()
+        except Exception:
+            return False
+    
+    def post_content(self, content: str, image_path: str = None) -> bool:
+        """Post content to Instagram."""
+        self.logger.info("🚀 Posting content to Instagram...")
+        try:
+            if not self.is_logged_in():
+                if not self.login():
+                    return False
+            
+            if not image_path:
+                self.logger.error("Cannot post to Instagram without an image")
+                return False
+            
+            self.driver.get("https://www.instagram.com/")
+            self._wait((3, 5))
+            
+            # Click the "+" (Create Post) button on mobile
+            upload_button = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div[@role='menuitem']"))
+            )
+            upload_button.click()
+            self._wait()
+            
+            # Upload the image file
+            file_input = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//input[@accept='image/jpeg,image/png']"))
+            )
+            file_input.send_keys(image_path)
+            self.logger.info("📂 Image uploaded.")
+            self._wait((3, 5))
+            
+            # Click "Next" (may need to repeat if UI requires two steps)
+            for _ in range(2):
+                next_button = WebDriverWait(self.driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[text()='Next']"))
+                )
+                next_button.click()
+                self._wait((2, 3))
+            
+            # Enter caption text
+            caption_box = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='Write a caption…']"))
+            )
+            caption_box.send_keys(content)
+            self.logger.info(f"📝 Caption added: {content[:50]}...")
+            self._wait((2, 3))
+            
+            # Share the post
+            share_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[text()='Share']"))
+            )
+            share_button.click()
+            self._wait((5, 7))
+            
+            self.logger.info("✅ Instagram post shared successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error posting to Instagram: {e}")
+            return False
+    
+    def run_daily_strategy_session(self):
+        """Run complete daily Instagram strategy session."""
+        self.logger.info("🚀 Starting Full Instagram Strategy Session")
+        try:
+            if not self.initialize({}):
+                return
+            
+            # Post AI-generated content
+            content_prompt = (
+                "Write an engaging Instagram caption about community building and "
+                "system convergence. Include relevant hashtags and a call to action."
+            )
+            content = self.ai_agent.ask(
+                prompt=content_prompt,
+                metadata={"platform": "instagram", "persona": "Victor"}
+            )
+            
+            # Process engagement metrics
+            self.analyze_engagement_metrics()
+            
+            # Sample engagement reinforcement
+            sample_comments = [
+                "This is exactly what I needed to see!",
+                "Not sure about this approach.",
+                "Your insights are always valuable!"
+            ]
+            for comment in sample_comments:
+                self.reinforce_engagement(comment)
+            
+            # Run feedback and reward systems
+            self.run_feedback_loop()
+            self.reward_top_engagers()
+            self.cross_platform_feedback_loop()
+            
+            self.cleanup()
+            self.logger.info("✅ Instagram Strategy Session Complete")
+        except Exception as e:
+            self.logger.error(f"Error in Instagram strategy session: {e}")
+            self.cleanup()
 
     def _load_feedback_data(self):
+        """Load or initialize feedback data."""
         if os.path.exists(self.FEEDBACK_DB):
             with open(self.FEEDBACK_DB, "r") as f:
                 return json.load(f)
         return {}
 
     def _save_feedback_data(self):
+        """Save updated feedback data."""
         with open(self.FEEDBACK_DB, "w") as f:
             json.dump(self.feedback_data, f, indent=4)
 
     def analyze_engagement_metrics(self):
-        """
-        Analyze engagement and update feedback data.
-        """
-        logger.info("📊 Analyzing Instagram engagement metrics...")
+        """Analyze engagement results to optimize strategy."""
+        self.logger.info("📊 Analyzing Instagram engagement metrics...")
         self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
         self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
         self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
-        logger.info(f"👍 Likes: {self.feedback_data['likes']}, 💬 Comments: {self.feedback_data['comments']}, ➕ Follows: {self.feedback_data['follows']}")
+        self.logger.info(f"👍 Total Likes: {self.feedback_data['likes']}")
+        self.logger.info(f"💬 Total Comments: {self.feedback_data['comments']}")
+        self.logger.info(f"➕ Total Follows: {self.feedback_data['follows']}")
         self._save_feedback_data()
 
-    def adaptive_posting_strategy(self):
-        """
-        Adjust posting strategy based on engagement feedback.
-        """
-        logger.info("🔄 Adapting Instagram posting strategy based on feedback...")
-        if self.feedback_data.get("likes", 0) > 100:
-            logger.info("🔥 High engagement detected! Consider increasing post frequency.")
-        if self.feedback_data.get("comments", 0) > 50:
-            logger.info("💡 More community-focused content may boost discussion.")
-
     def analyze_comment_sentiment(self, comment):
-        """
-        Analyze the sentiment of a comment using AI.
-        Returns 'positive', 'neutral', or 'negative'.
-        """
+        """Analyze comment sentiment using AI."""
         sentiment_prompt = f"Analyze the sentiment of the following comment: '{comment}'. Respond with positive, neutral, or negative."
-        sentiment = self.ai.ask(prompt=sentiment_prompt, metadata={"platform": "Instagram", "persona": "Victor"})
+        sentiment = self.ai_agent.ask(prompt=sentiment_prompt, metadata={"platform": "Instagram", "persona": "Victor"})
         sentiment = sentiment.strip().lower() if sentiment else "neutral"
-        logger.info(f"Sentiment for comment '{comment}': {sentiment}")
+        self.logger.info(f"Sentiment for comment '{comment}': {sentiment}")
         return sentiment
 
     def reinforce_engagement(self, comment):
-        """
-        If a comment is positive, generate an authentic response in my voice.
-        """
+        """Generate response to positive comments."""
         sentiment = self.analyze_comment_sentiment(comment)
         if sentiment == "positive":
-            reinforcement_prompt = f"As Victor, write an engaging response to: '{comment}' to reinforce our community spirit."
-            response = self.ai.ask(prompt=reinforcement_prompt, metadata={"platform": "Instagram", "persona": "Victor"})
-            logger.info(f"Reinforcement response generated: {response}")
-            # Optionally, automate posting the response as a comment or DM.
+            reinforcement_prompt = f"As Victor, write an engaging response to: '{comment}' to reinforce community growth."
+            response = self.ai_agent.ask(prompt=reinforcement_prompt, metadata={"platform": "Instagram", "persona": "Victor"})
+            self.logger.info(f"Reinforcement response generated: {response}")
             return response
         return None
 
-    def reward_top_followers(self):
-        """
-        Reward top engaging followers with custom messages and shout-outs.
-        """
-        logger.info("🎉 Evaluating top engaging followers for rewards...")
+    def reward_top_engagers(self):
+        """Reward top engaging followers."""
+        self.logger.info("🎉 Evaluating top engaging followers for rewards...")
         if os.path.exists(self.REWARD_DB):
             with open(self.REWARD_DB, "r") as f:
                 reward_data = json.load(f)
@@ -593,20 +879,17 @@ class InstagramStrategy(InstagramEngagementBot):
             if top_follower and top_follower not in reward_data:
                 custom_message = "Hey, thanks for your amazing engagement! Your support fuels our community."
                 reward_data[top_follower] = {"rewarded_at": datetime.utcnow().isoformat(), "message": custom_message}
-                logger.info(f"Reward issued to top follower: {top_follower}")
-                write_json_log(self.PLATFORM, "successful", tags=["reward"], ai_output=top_follower)
+                self.logger.info(f"Reward issued to top follower: {top_follower}")
+                write_json_log("instagram", "successful", tags=["reward"], ai_output=top_follower)
         else:
-            logger.warning("No follower data available for rewards.")
+            self.logger.warning("No follower data available for rewards.")
 
         with open(self.REWARD_DB, "w") as f:
             json.dump(reward_data, f, indent=4)
 
     def cross_platform_feedback_loop(self):
-        """
-        Merge Instagram engagement with data from other platforms for unified strategy.
-        """
-        logger.info("🌐 Merging cross-platform feedback loops for Instagram...")
-        # Stub: Replace with real API calls or data collection as needed.
+        """Merge engagement data from other platforms."""
+        self.logger.info("🌐 Merging cross-platform feedback loops for Instagram...")
         twitter_data = {"likes": random.randint(8, 15), "comments": random.randint(3, 8)}
         facebook_data = {"likes": random.randint(10, 20), "comments": random.randint(5, 10)}
         unified_metrics = {
@@ -614,34 +897,12 @@ class InstagramStrategy(InstagramEngagementBot):
             "twitter": twitter_data,
             "facebook": facebook_data
         }
-        logger.info(f"Unified Metrics: {unified_metrics}")
+        self.logger.info(f"Unified Metrics: {unified_metrics}")
 
     def run_feedback_loop(self):
+        """Run the dynamic feedback loop process."""
         self.analyze_engagement_metrics()
         self.adaptive_posting_strategy()
-
-    def run_daily_strategy_session(self):
-        """
-        Full daily strategy session:
-          - Execute daily engagement.
-          - Analyze comment sentiment and reinforce engagement.
-          - Run dynamic feedback loops.
-          - Reward top followers.
-          - Merge cross-platform engagement data.
-        """
-        logger.info("🚀 Starting Full Instagram Strategy Session.")
-        self.run_daily_session()
-        sample_comments = [
-            "This is incredible!",
-            "Not impressed by this post.",
-            "I love the authentic vibe here."
-        ]
-        for comment in sample_comments:
-            self.reinforce_engagement(comment)
-        self.run_feedback_loop()
-        self.reward_top_followers()
-        self.cross_platform_feedback_loop()
-        logger.info("✅ Instagram Strategy Session Complete.")
 
 # -------------------------------------------------
 # Scheduler Setup for Instagram Strategy Engagement

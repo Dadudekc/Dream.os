@@ -1,0 +1,461 @@
+{
+    "main.py": {
+        "hash": "b765d81f7be4a61c22b8090184e26cd3"
+    },
+    "__init__.py": {
+        "hash": "37a6d3c159fa5ad61975ab07ecaa6eb8"
+    },
+    "app\\main.py": {
+        "hash": "33d696b1090498f8983e5fef8e59d278"
+    },
+    "app\\core\\config.py": {
+        "hash": "8f2b177750e045d080c1dff151f42646"
+    },
+    "chat_mate_config.py": {
+        "hash": "c3db9b9f606a570f7bd120552f383559"
+    },
+    "app\\api\\v1\\endpoints\\health.py": {
+        "hash": "f5aa7faa24cce4d4abcccc6db4ceeb57"
+    },
+    "app\\api\\v1\\endpoints\\discord.py": {
+        "hash": "c2f84e0b72a917c72622b4deaeab0720"
+    },
+    "app\\__init__.py": {
+        "hash": "afa1fcf0e3905752f39cb2826962a872"
+    },
+    "app\\api\\v1\\endpoints\\users.py": {
+        "hash": "0061c518ccaffaf8b6d7463ba1599332"
+    },
+    "app\\api\\v1\\endpoints\\prompts.py": {
+        "hash": "d813b34f27397f3ef53a8c82a26bec2b"
+    },
+    "ProjectScanner.py": {
+        "hash": "a30e3935add962bd5df0f150a9f02cfb"
+    },
+    "app\\api\\v1\\endpoints\\__init__.py": {
+        "hash": "e8b18557130de3307c4d77a27463f4d6"
+    },
+    "app\\core\\logger.py": {
+        "hash": "38233ceebaa704b679f7fea0780f9c58"
+    },
+    "app\\db\\session.py": {
+        "hash": "7558bae0faa7a99ee2996e9fd77fbd30"
+    },
+    "app\\core\\__init__.py": {
+        "hash": "437cc567cea34cd3b0c98b808981a00d"
+    },
+    "app\\db\\__init__.py": {
+        "hash": "cd038cc3f3527068f1d4e6e331a96402"
+    },
+    "app\\models\\user.py": {
+        "hash": "950518c240ec30c676a0a654e2c593aa"
+    },
+    "app\\models\\__init__.py": {
+        "hash": "37b07d7c8f4c9334f0de4311f597f9a9"
+    },
+    "app\\schemas\\discord_schema.py": {
+        "hash": "b38cc4bbd38c92f1558fc93dcb137046"
+    },
+    "app\\schemas\\health_schema.py": {
+        "hash": "481c0b0aef94b92690ce1e20529e8149"
+    },
+    "app\\schemas\\prompt_schema.py": {
+        "hash": "3696e567ae6c097132947f0341c9edfb"
+    },
+    "app\\schemas\\__init__.py": {
+        "hash": "e54279a62c04ea289658a8681f6e0c05"
+    },
+    "app\\schemas\\user_schema.py": {
+        "hash": "5b3b9e45008adaf15b61f48ec970604d"
+    },
+    "app\\services\\discord_service.py": {
+        "hash": "f8d6c54ca069e54f93f8e173a20848a4"
+    },
+    "app\\services\\prompt_service.py": {
+        "hash": "214e4b2a3ef9b335f2bad6f0b298e61a"
+    },
+    "app\\services\\user_service.py": {
+        "hash": "a6ab6e96078fe05188bc43e1da5f999a"
+    },
+    "app\\services\\__init__.py": {
+        "hash": "fbdf854b83eb0971b76c3895f00bc42f"
+    },
+    "app\\services\\discord\\bot_manager.py": {
+        "hash": "114c32b2ded7aa2b97da7d4fc55c6550"
+    },
+    "app\\services\\discord\\status_monitor.py": {
+        "hash": "01c9e1c0b1ce7bee3ecba1550ee71b1e"
+    },
+    "app\\services\\discord\\__init__.py": {
+        "hash": "69621f53684d36effcedea7cb8569dee"
+    },
+    "app\\services\\prompt\\prompt_executor.py": {
+        "hash": "c0a4f4d5bdc5fcec004fa8a723ec7537"
+    },
+    "app\\services\\prompt\\cycle_manager.py": {
+        "hash": "8c4aafc3dfe2836d2393c39c3703d13f"
+    },
+    "app\\services\\prompt\\__init__.py": {
+        "hash": "f46bccacef9c9a43b2e02d6a8bce689e"
+    },
+    "archive\\pof\\content_ideas.py": {
+        "hash": "6ffee549623284e58e8092e355199470"
+    },
+    "archive\\pof\\digitalDreamscape.py": {
+        "hash": "ac9c35236ab6575970debd6334dd9236"
+    },
+    "archive\\pof\\devlog_automation.py": {
+        "hash": "f9f821bd148136639059a5005a67d244"
+    },
+    "archive\\pof\\__init__.py": {
+        "hash": "9aa2677ca617adce6135f1efe692d0c8"
+    },
+    "content\\__init__.py": {
+        "hash": "f8a45c10bd4c45d7c2b9e227b01e710f"
+    },
+    "content\\AletheiaContentDispatcher.py": {
+        "hash": "fd2b4ec942572d0cd1291f76e1d13293"
+    },
+    "core\\AgentDispatcher.py": {
+        "hash": "c6eefd69fdf83ecd1d956fa632806a54"
+    },
+    "core\\AIOutputLogAnalyzer.py": {
+        "hash": "7b608a82dba2d0b5a7bfe53965e4ac09"
+    },
+    "core\\AletheiaFeedbackLoopManager.py": {
+        "hash": "fa8785839e5e0ca2cf764156e61edc59"
+    },
+    "core\\AletheiaPromptManager.py": {
+        "hash": "2522857825e5277d2fdcf6a5e97ae222"
+    },
+    "core\\ChatManager.py": {
+        "hash": "43bd7331df8b18ca586ffe447d870dc0"
+    },
+    "core\\DiscordManager.py": {
+        "hash": "19c4ef24e80db84141a30abf64f9384d"
+    },
+    "core\\config.py": {
+        "hash": "4b6fa90174b83e98711818f46730257b"
+    },
+    "core\\DiscordTemplateManager.py": {
+        "hash": "0ae42b83edfaf48f1773effb5e6d351c"
+    },
+    "core\\EngagementAgent.py": {
+        "hash": "23cace36c00ef87722a2734796736120"
+    },
+    "core\\EventMessageBuilder.py": {
+        "hash": "073fe9132e55f25badb3888ac03f0aef"
+    },
+    "core\\feedback.py": {
+        "hash": "482d439f2dc50d2822deccd4eb6debd7"
+    },
+    "core\\DriverManager.py": {
+        "hash": "5180199d58c0285cd9e01633d6b0095b"
+    },
+    "core\\MemoryManager.py": {
+        "hash": "97b47501591ce61c5fb36eb39cf4e603"
+    },
+    "core\\FileManager.py": {
+        "hash": "84c08e28e97ef7fe82e3e352413ceb8e"
+    },
+    "core\\OpenAIPromptEngine.py": {
+        "hash": "80fa59bde50a7090531467c726488a8f"
+    },
+    "core\\PathManager.py": {
+        "hash": "094547bbc7eb899b1e6a836a9409f5f1"
+    },
+    "core\\PromptCycleManager.py": {
+        "hash": "856d7a5e669b6ce67866fc18d9c734d9"
+    },
+    "core\\PromptEngine.py": {
+        "hash": "9315fa91f57dac046901a251d3ce2c84"
+    },
+    "core\\reinforcement_tools.py": {
+        "hash": "7e456a0d2c9fff712f63b7ef116c8162"
+    },
+    "core\\ReinforcementEngine.py": {
+        "hash": "ae26f2397a3987f34973c46f1b8a7145"
+    },
+    "core\\ReportExporter.py": {
+        "hash": "e4669825dcb4ccfcaa754c2847717fbf"
+    },
+    "core\\TemplateManager.py": {
+        "hash": "d89ec33e3274ce0252698f01b2e6e258"
+    },
+    "core\\ResponseHandler.py": {
+        "hash": "01e1d6c49027310a8b6b8d27b4048b32"
+    },
+    "core\\TaskManager.py": {
+        "hash": "b53cd1c6f7a8478be82b17ab4ed1f9e3"
+    },
+    "core\\UnifiedConfigManager.py": {
+        "hash": "fd4686e3221a794b19845958aa23af58"
+    },
+    "core\\UnifiedDreamscapeGenerator.py": {
+        "hash": "6d7556e91c6387de5bdfd9620087e248"
+    },
+    "core\\UnifiedFeedbackMemory.py": {
+        "hash": "19721f46631b261426f49aa0f1660547"
+    },
+    "core\\UnifiedLoggingAgent.py": {
+        "hash": "643132a4a3c53160afa567709d1f3c83"
+    },
+    "core\\UnifiedPromptEngine.py": {
+        "hash": "c1384be62297c9bdaf1d28134aa55786"
+    },
+    "core\\__init__.py": {
+        "hash": "d747671c4faf011e2939618050aeb46e"
+    },
+    "core\\Agents\\base_agent.py": {
+        "hash": "2ed597ad64331be97d57979bd39cff7b"
+    },
+    "core\\Agents\\chat_scraper_agent.py": {
+        "hash": "21d957d5467b265863b36d7aaddd4762"
+    },
+    "core\\Agents\\agent_dispatcher.py": {
+        "hash": "08ae5c5c4690124b5ac0ed00682c0552"
+    },
+    "core\\Agents\\main.py": {
+        "hash": "e20ecf933bc84d9a61ee4fc891587dde"
+    },
+    "core\\Agents\\driver_manager.py": {
+        "hash": "976af31cfdf8f70aba015be4dab8d64c"
+    },
+    "core\\Agents\\__init__.py": {
+        "hash": "bf7887301b979d85b0b8eda8fa2b2cef"
+    },
+    "core\\chat_engine\\chat_cycle_controller.py": {
+        "hash": "3c0d45587d189911ecdd082282b854fc"
+    },
+    "core\\chat_engine\\chat_scraper_service.py": {
+        "hash": "cad5cbd0a22041ad66964ba51754b594"
+    },
+    "core\\chat_engine\\discord_dispatcher.py": {
+        "hash": "fa81f862979ec2f15ca2466a718f96a3"
+    },
+    "core\\chat_engine\\driver_manager.py": {
+        "hash": "976af31cfdf8f70aba015be4dab8d64c"
+    },
+    "core\\chat_engine\\feedback_engine.py": {
+        "hash": "6299a4245e6a72eca0659d6bc748252e"
+    },
+    "core\\chat_engine\\gui_event_handler.py": {
+        "hash": "09ed59f96668d0cbc8e32d90d7e4344a"
+    },
+    "core\\chat_engine\\prompt_execution_service.py": {
+        "hash": "dba70877c7e3be0a0b9fa3d20485b64b"
+    },
+    "core\\chat_engine\\__init__.py": {
+        "hash": "fb4c61d900c5a3a9cc9b1ccfcbd0c7c6"
+    },
+    "gui\\bootstrap.py": {
+        "hash": "57a52c887864ae792d96aed6329c7a7b"
+    },
+    "gui\\DreamscapeMainWindow.py": {
+        "hash": "2f3bed4d21caf553e0fc890486ea3658"
+    },
+    "gui\\dreamscape_gui.py": {
+        "hash": "46a9e2b47a0baa46db8f7801c1f7fa4e"
+    },
+    "gui\\dreamscape_services.py": {
+        "hash": "77f104d198bb6a4d5f4b262e8eee8f50"
+    },
+    "gui\\feedback_dashboard.py": {
+        "hash": "682986f76a0e89ff3e1b44172fec2add"
+    },
+    "gui\\dreamscape_ui_logic.py": {
+        "hash": "b5726adcffc9d718e94065a56b33749d"
+    },
+    "gui\\IntegratedMainWindow.py": {
+        "hash": "fdd55d66b562cd4a8b79ca139cf36b60"
+    },
+    "gui\\main.py": {
+        "hash": "7ed3e5bc1eb048b784c1ec467ccd5149"
+    },
+    "gui\\__init__.py": {
+        "hash": "ca0526bc786bc9a845c8e37b3cbee5e3"
+    },
+    "gui\\components\\discord_tab.py": {
+        "hash": "52a09167f6119daa8f3a35350fd0d294"
+    },
+    "gui\\components\\logs_panel.py": {
+        "hash": "d605a535ed42688e799aad908509d86e"
+    },
+    "gui\\components\\logs_tab.py": {
+        "hash": "61e7ad2587767fbe622b0e2136bd5fe6"
+    },
+    "gui\\components\\prompt_execution_tab.py": {
+        "hash": "b5b1c1753597b31e75e8eaf8639a18f1"
+    },
+    "gui\\components\\prompt_panel.py": {
+        "hash": "e657d3db0c9e17be28ee0af3f894bb06"
+    },
+    "gui\\components\\__init__.py": {
+        "hash": "eeffb26cd55994d304759b83ebc74a2b"
+    },
+    "gui\\components\\dialogs\\discord_settings.py": {
+        "hash": "601ad22fff79c9c4005f940358bc0e76"
+    },
+    "gui\\components\\dialogs\\exclusions_dialog.py": {
+        "hash": "0e83be69de2f2b4f47204f7f0003b3b6"
+    },
+    "gui\\components\\dialogs\\reinforcement_dialog.py": {
+        "hash": "22cfc583ec6194736c2b15012ab83215"
+    },
+    "gui\\components\\dialogs\\__init__.py": {
+        "hash": "32ce688e039a761787ef3c68d247be94"
+    },
+    "gui\\tabs\\ConfigurationTab.py": {
+        "hash": "c3c0c26a4ecbaf3c4b72d3008caef4fb"
+    },
+    "gui\\tabs\\LogsTab.py": {
+        "hash": "07a163d25d8a7ea3e676eba3121594c1"
+    },
+    "gui\\tabs\\DreamscapeGenerationTab.py": {
+        "hash": "f4c681897b4b6fa48fd638e97de4dcf5"
+    },
+    "gui\\tabs\\MainTabs.py": {
+        "hash": "5ce85cc307d31504207fed509791ad24"
+    },
+    "gui\\tabs\\__init__.py": {
+        "hash": "c747029e1a7c04c39f191bf0c53dd6dd"
+    },
+    "gui\\tabs\\PromptExecutionTab.py": {
+        "hash": "306e5138e4da6499aff0bf5669c9b9cd"
+    },
+    "scripts\\migrate_configs.py": {
+        "hash": "3770b7a8da7634753c636876c8e05401"
+    },
+    "services\\discord_service.py": {
+        "hash": "e17a6456164d5fc176ace623cf3c8043"
+    },
+    "services\\prompt_service.py": {
+        "hash": "f6d6d8970b59826fa45f559d2a736b94"
+    },
+    "services\\__init__.py": {
+        "hash": "f27ef45ba3a8b363600c8a03701b7d80"
+    },
+    "social\\AIChatAgent.py": {
+        "hash": "fc473f9593466b8232e4f8b2601bd330"
+    },
+    "social\\log_writer.py": {
+        "hash": "803bf6d5092d96d445beb64ddc0f7886"
+    },
+    "social\\driver_manager.py": {
+        "hash": "3e3abfd4c07d3c7289d0adb8fde62bc8"
+    },
+    "social\\platform_login_manager.py": {
+        "hash": "268a1dd19b0fd35176feb9cb3522fa4e"
+    },
+    "social\\social_config.py": {
+        "hash": "2f4f577aa8fe657e399e1472be02753c"
+    },
+    "social\\social_post_db.py": {
+        "hash": "8067356208a6da2ac3466e424229697d"
+    },
+    "social\\social_post_manager.py": {
+        "hash": "3405d5ff87fbbdff7339d9df60eea62c"
+    },
+    "social\\__init__.py": {
+        "hash": "ec4e3552efe2d70c933d13eeb4498568"
+    },
+    "social\\TaskQueueManager.py": {
+        "hash": "fb8f27e5201b9baa5274952fac259960"
+    },
+    "social\\strategies\\BaseEngagementBot.py": {
+        "hash": "ab0110d6cfd3115b2f2947ac151f77f0"
+    },
+    "social\\strategies\\config_loader.py": {
+        "hash": "abce1cf2e05093753a36e8584c098ecc"
+    },
+    "social\\strategies\\context_db.py": {
+        "hash": "b3c52298d488657c30af063b040ecbf8"
+    },
+    "social\\strategies\\facebook_strategy.py": {
+        "hash": "ee291ffc413b7d41c363d25ad0caf43b"
+    },
+    "social\\strategies\\instagram_strategy.py": {
+        "hash": "b6aeaa910af82c957a8bf48a84be7e3b"
+    },
+    "social\\strategies\\linkedin_strategy.py": {
+        "hash": "86080d8c55410471b3d3638bff9b8e80"
+    },
+    "social\\strategies\\reddit_strategy.py": {
+        "hash": "b8cf987bc1ea9d31e0b8c523acd8d7cf"
+    },
+    "social\\strategies\\stocktwits_strategy.py": {
+        "hash": "ed5b0ef7ee4591d993507eece0dc4ca6"
+    },
+    "social\\strategies\\twitter_strategy.py": {
+        "hash": "0a4be2b713fbb54cc3b79adee52437ba"
+    },
+    "tests\\conftest.py": {
+        "hash": "df18e3ce9ef44d98dd028b811d7e97d1"
+    },
+    "social\\strategies\\__init__.py": {
+        "hash": "9aac100eff668b2a51e7685f0e7698e7"
+    },
+    "tests\\test_ChatManager.py": {
+        "hash": "4d0837ecc26fd34edb6eecba2b53f390"
+    },
+    "tests\\test_DriverManager.py": {
+        "hash": "da26fab7283030403e8c5b6f6ccf68ac"
+    },
+    "tests\\test_FileManager.py": {
+        "hash": "b4c85064f0ad3df486b49ac51467ef7b"
+    },
+    "tests\\test_MemoryManager.py": {
+        "hash": "e59b34e68a8e54ac1c57cbb4d93befea"
+    },
+    "tests\\test_PathManager.py": {
+        "hash": "06d452c04f44d74f870df48431d2f114"
+    },
+    "tests\\test_PromptManager.py": {
+        "hash": "173293f8b30e2eed557af62fb3acc504"
+    },
+    "tests\\test_prompt_endpoints.py": {
+        "hash": "9993a1f3c79e38bc525aaa10dec15b9d"
+    },
+    "tests\\test_ResponseHandler.py": {
+        "hash": "956e1b5d74bd616065a1c9bdcd448c7a"
+    },
+    "tests\\test_TemplateManager.py": {
+        "hash": "44ae13ad40d3df8953dee6f2577727ed"
+    },
+    "tests\\__init__.py": {
+        "hash": "db300780b2902777cfae9fcbd0f46378"
+    },
+    "utils\\ai_output_logger.py": {
+        "hash": "37c5c44cbdb5cdd0d080023f38f8a8c1"
+    },
+    "utils\\cookie_manager.py": {
+        "hash": "a8647655089629239f68304bb43f273a"
+    },
+    "utils\\driver_factory.py": {
+        "hash": "5edb9c8e07bc51e1c456def7ae9b8265"
+    },
+    "utils\\helpers.py": {
+        "hash": "38cceac0e4e76fd6d6ca41fb7caea309"
+    },
+    "utils\\prompt_tuner.py": {
+        "hash": "800c238fd321d10683ff2d250a67df33"
+    },
+    "utils\\proxy_utils.py": {
+        "hash": "77f5a0c5eb57b6e8323f2be94760a3cd"
+    },
+    "utils\\reinforcement_trainer.py": {
+        "hash": "9bce5f4c31f75691f111e8bccd03edfa"
+    },
+    "utils\\run_summary.py": {
+        "hash": "4e95bf9be51ee08fe2df6844b1fad4a5"
+    },
+    "utils\\SentimentAnalyzer.py": {
+        "hash": "8140e9ce42aeb48029883cf5ee42aeba"
+    },
+    "utils\\ua_utils.py": {
+        "hash": "d2cae011145edd07d4cd836c0d8f058d"
+    },
+    "utils\\__init__.py": {
+        "hash": "785c43949a8a1ba50194b38551773119"
+    }
+}

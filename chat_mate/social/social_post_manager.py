@@ -2,7 +2,7 @@ import threading
 from datetime import datetime
 
 # Import the unified DriverManager
-from utils.DriverManager import DriverManager
+from core.DriverManager import DriverManager
 
 # Import platform strategies
 from social.strategies.twitter_strategy import TwitterStrategy
@@ -10,7 +10,7 @@ from social.strategies.facebook_strategy import FacebookStrategy
 from social.strategies.instagram_strategy import InstagramStrategy
 from social.strategies.reddit_strategy import RedditStrategy
 from social.strategies.stocktwits_strategy import StocktwitsStrategy
-from social.strategies.linkedin_strategy import LinkedInStrategy
+from social.strategies.linkedin_strategy import LinkedinStrategy
 
 # Import logging tools
 from social.log_writer import logger, write_json_log
@@ -43,7 +43,7 @@ class SocialPostManager:
         self.instagram_strategy = InstagramStrategy(driver=self.driver)
         self.reddit_strategy = RedditStrategy(driver=self.driver)
         self.stocktwits_strategy = StocktwitsStrategy(driver=self.driver)
-        self.linkedin_strategy = LinkedInStrategy(driver=self.driver)
+        self.linkedin_strategy = LinkedinStrategy(driver=self.driver)
 
         logger.info("✅ SocialPostManager initialized with all platform strategies.")
 

@@ -3,16 +3,21 @@ import json
 import os
 import random
 from datetime import datetime
+from typing import Dict, Any, List, Optional
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import (
     NoSuchElementException, TimeoutException, ElementClickInterceptedException
 )
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from utils.cookie_manager import CookieManager
 from social.social_config import social_config
 from social.log_writer import write_json_log, logger
 from social.AIChatAgent import AIChatAgent
+from social.strategies.base_platform_strategy import BasePlatformStrategy
+from utils.SentimentAnalyzer import SentimentAnalyzer
 
 PLATFORM = "twitter"
 FOLLOW_DB = "social/data/twitter_follow_tracker.json"

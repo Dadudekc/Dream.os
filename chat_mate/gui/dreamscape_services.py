@@ -13,10 +13,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from core.ChatManager import ChatManager
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.FileManager import FileManager
-from core.DiscordManager import DiscordManager
+from core.UnifiedDiscordService import UnifiedDiscordService
 from core.PromptCycleManager import PromptCycleManager
 from core.ReinforcementEngine import ReinforcementEngine
 from utils.run_summary import sanitize_filename, generate_full_run_json
+from core.UnifiedDriverManager import UnifiedDriverManager
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -41,7 +42,7 @@ class DreamscapeService:
             memory_file=self.config.memory_file
         )
         self.chat_manager = None
-        self.discord_manager = None
+        self.discord = None
         self.file_manager = FileManager()
         self.cycle_manager = PromptCycleManager(
             prompt_manager=self.prompt_manager,
@@ -66,8 +67,17 @@ class DreamscapeService:
         headless = headless if headless is not None else self.config.headless
         excluded_chats = excluded_chats or self.config.excluded_chats
 
+        # Create driver options
+        driver_options = {
+            "headless": headless,
+            "window_size": (1920, 1080),
+            "disable_gpu": True,
+            "no_sandbox": True,
+            "disable_dev_shm": True
+        }
+
         self.chat_manager = ChatManager(
-            driver=None,
+            driver_options=driver_options,
             excluded_chats=excluded_chats,
             model=model,
             timeout=timeout,
@@ -75,7 +85,6 @@ class DreamscapeService:
             poll_interval=poll_interval,
             headless=headless
         )
-        self.chat_manager.headless = headless
         self.logger.info("ChatManager created with model '%s' and headless=%s", model, headless)
 
     def execute_prompt(self, prompt_text: str) -> list:
@@ -120,7 +129,8 @@ class DreamscapeService:
                 continue
 
             # Navigate to the chat and allow time for it to load
-            self.chat_manager.driver.get(chat_link)
+            driver = self.chat_manager.driver_manager.get_driver()
+            driver.get(chat_link)
             time.sleep(3)
 
             chat_responses = []
@@ -147,8 +157,8 @@ class DreamscapeService:
                     chat_filename = f"episode_{episode_counter}_{sanitize_filename(chat_title)}.txt"
                     self.prompt_manager.prompts["dreamscape"]["episode_counter"] = episode_counter + 1
                     self.prompt_manager.save_prompts()
-                    if self.discord_manager:
-                        self.discord_manager.send_message(
+                    if self.discord:
+                        self.discord.send_message(
                             f"New Dreamscape Episode from '{chat_title}':\n{response}"
                         )
                         self.logger.info("Posted new Dreamscape episode to Discord for '%s'", chat_title)
@@ -225,7 +235,6 @@ class DreamscapeService:
 
     # --- Discord Bot Management ---
 
-
     def launch_discord_bot(self, bot_token: str, channel_id: int, log_callback=None) -> None:
         """
         Launch the Discord bot if it's not already running.
@@ -235,22 +244,25 @@ class DreamscapeService:
         :param channel_id: Default channel ID.
         :param log_callback: Optional callback for logging Discord messages.
         """
-        if self.discord_manager and self.discord_manager.is_running:
+        if self.discord and self.discord.is_running:
             self.logger.warning("Discord bot is already running.")
             return
 
-        # Instantiate a new DiscordManager and configure the logging callback.
-        self.discord_manager = DiscordManager(bot_token=bot_token, channel_id=channel_id)
-        if log_callback:
-            self.discord_manager.set_log_callback(log_callback)
-        else:
-            self.discord_manager.set_log_callback(lambda msg: self.logger.info("Discord: %s", msg))
-
-        # Launch the bot in a separate daemon thread to avoid blocking.
-        def run_bot():
-            self.discord_manager.run_bot()
+        # Initialize UnifiedDiscordService with configuration
+        self.discord = UnifiedDiscordService(
+            bot_token=bot_token,
+            default_channel_id=channel_id,
+            template_dir=os.path.join(self.config.template_dir, "discord")
+        )
         
-        threading.Thread(target=run_bot, daemon=True).start()
+        # Set up logging callback
+        if log_callback:
+            self.discord.set_log_callback(log_callback)
+        else:
+            self.discord.set_log_callback(lambda msg: self.logger.info("Discord: %s", msg))
+
+        # Start the bot
+        self.discord.run()
         self.logger.info("Discord bot launched.")
 
     def stop_discord_bot(self) -> None:
@@ -258,11 +270,61 @@ class DreamscapeService:
         Stop the Discord bot if it is running.
         This method ensures that the Discord lifecycle is managed only by DreamscapeService.
         """
-        if self.discord_manager and self.discord_manager.is_running:
-            self.discord_manager.stop_bot()
+        if self.discord and self.discord.is_running:
+            self.discord.stop()
             self.logger.info("Discord bot stopped.")
         else:
             self.logger.warning("Discord bot is not running.")
+
+    def send_discord_message(self, message: str, channel_id: int = None) -> None:
+        """
+        Send a message through Discord.
+        
+        :param message: The message to send.
+        :param channel_id: Optional channel ID (uses default if not specified).
+        """
+        if not self.discord or not self.discord.is_running:
+            self.logger.warning("Discord bot is not running.")
+            return
+
+        self.discord.send_message(message, channel_id)
+
+    def send_discord_file(self, file_path: str, content: str = "", channel_id: int = None) -> None:
+        """
+        Send a file through Discord.
+        
+        :param file_path: Path to the file to send.
+        :param content: Optional message to send with the file.
+        :param channel_id: Optional channel ID (uses default if not specified).
+        """
+        if not self.discord or not self.discord.is_running:
+            self.logger.warning("Discord bot is not running.")
+            return
+
+        self.discord.send_file(file_path, content, channel_id)
+
+    def send_discord_template(self, template_name: str, context: dict, channel_id: int = None) -> None:
+        """
+        Send a templated message through Discord.
+        
+        :param template_name: Name of the template to use.
+        :param context: Dictionary of context variables for the template.
+        :param channel_id: Optional channel ID (uses default if not specified).
+        """
+        if not self.discord or not self.discord.is_running:
+            self.logger.warning("Discord bot is not running.")
+            return
+
+        self.discord.send_template(template_name, context, channel_id)
+
+    def get_discord_status(self) -> dict:
+        """Get current Discord bot status."""
+        if not self.discord:
+            return {
+                "is_running": False,
+                "message": "Discord bot not initialized"
+            }
+        return self.discord.get_status()
 
     # --- Reinforcement Tools ---
 
