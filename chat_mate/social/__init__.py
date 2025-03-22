@@ -2,7 +2,12 @@
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
 from . import AIChatAgent
+from . import CommunityIntegrationManager
+from . import StrategyLoader
 from . import TaskQueueManager
+from . import UnifiedCommunityDashboard
+from . import UnifiedPostManager
+from . import community_integration
 from . import driver_manager
 from . import log_writer
 from . import platform_login_manager
@@ -12,7 +17,12 @@ from . import social_post_manager
 
 __all__ = [
     'AIChatAgent',
+    'CommunityIntegrationManager',
+    'StrategyLoader',
     'TaskQueueManager',
+    'UnifiedCommunityDashboard',
+    'UnifiedPostManager',
+    'community_integration',
     'driver_manager',
     'log_writer',
     'platform_login_manager',

@@ -6,7 +6,8 @@ from datetime import datetime
 from social.social_config import social_config
 from social.log_writer import logger, write_json_log
 from core.MemoryManager import MemoryManager
-from core.UnifiedPromptEngine import UnifiedPromptEngine
+from core.PromptEngine import PromptEngine
+
 
 # Constants
 PLATFORM = "AIChatAgent"
@@ -227,7 +228,7 @@ if __name__ == "__main__":
     print("\nAI Response:\n", response)
 
     # Initialize the engine
-    engine = UnifiedPromptEngine(
+    engine = PromptEngine(
         prompt_manager=prompt_manager,
         driver_manager=driver_manager,
         max_retries=3,

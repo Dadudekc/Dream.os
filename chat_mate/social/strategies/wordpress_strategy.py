@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from core.UnifiedConfigManager import UnifiedConfigManager
+from core.ConfigManager import ConfigManager
 
 class WordPressCommunityStrategy(BasePlatformStrategy):
     """
@@ -27,7 +27,7 @@ class WordPressCommunityStrategy(BasePlatformStrategy):
     def __init__(self, driver=None):
         """Initialize WordPress strategy."""
         super().__init__(platform_id="wordpress", driver=driver)
-        self.config = UnifiedConfigManager().get_config("wordpress")
+        self.config = ConfigManager().get_config("wordpress")
         self.logger = logging.getLogger(__name__)
         self.wp_client = None
         self.sentiment_analyzer = SentimentAnalyzer()

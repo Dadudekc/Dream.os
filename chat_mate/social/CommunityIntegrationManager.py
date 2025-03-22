@@ -17,7 +17,7 @@ from core.PathManager import PathManager
 from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard
 from social.social_post_manager import SocialPostManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from core.UnifiedConfigManager import UnifiedConfigManager
+from core.ConfigManager import ConfigManager
 from social.UnifiedPostManager import UnifiedPostManager
 from social.StrategyLoader import StrategyLoader
 
@@ -75,7 +75,7 @@ class CommunityIntegrationManager:
         self.logger.info("Initializing Community Integration Manager")
         
         # Initialize configuration
-        self.config_manager = UnifiedConfigManager()
+        self.config_manager = ConfigManager()
         self.config = config or self.config_manager.get_config("community_integration")
         
         # Initialize dashboard
