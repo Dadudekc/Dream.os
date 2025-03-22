@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatMate Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .status-running {
+            background-color: #28a745;
+        }
+        .status-stopped {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">ChatMate Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashboard-card">
+                    <h4>System Status</h4>
+                    <div id="status-container">
+                        <p>Loading status...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h4>Recent Activity</h4>
+                    <p>No recent activity to display.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card">
+                    <h4>System Resources</h4>
+                    <p>Resource monitoring coming soon.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('status-container');
+                    let html = '<div class="mb-2">';
+                    
+                    // Overall status
+                    html += `<span class="status-indicator ${data.status === 'running' ? 'status-running' : 'status-stopped'}"></span>`;
+                    html += `<strong>System Status:</strong> ${data.status}<br>`;
+                    
+                    // Services status
+                    html += '<div class="mt-3"><strong>Services:</strong><br>';
+                    for (const [service, running] of Object.entries(data.services)) {
+                        html += `<span class="status-indicator ${running ? 'status-running' : 'status-stopped'}"></span>`;
+                        html += `${service}: ${running ? 'Running' : 'Stopped'}<br>`;
+                    }
+                    html += '</div>';
+                    
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error fetching status:', error);
+                    document.getElementById('status-container').innerHTML = 
+                        '<p class="text-danger">Error loading status</p>';
+                });
+        }
+
+        // Update status every 5 seconds
+        updateStatus();
+        setInterval(updateStatus, 5000);
+    </script>
+</body>
+</html> 

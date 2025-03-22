@@ -5,7 +5,7 @@ from typing import Dict, Any
 import shutil
 from datetime import datetime
 
-from core.UnifiedConfigManager import UnifiedConfigManager
+from core.ConfigManager import ConfigManager
 from core.PathManager import PathManager
 
 def load_json_file(filepath: str) -> Dict[str, Any]:
@@ -44,9 +44,9 @@ def backup_config_files(files_to_backup: list) -> str:
     return backup_dir
 
 def migrate_configs():
-    """Migrate all existing configurations to UnifiedConfigManager."""
+    """Migrate all existing configurations to ConfigManager."""
     # Initialize the unified config
-    config_manager = UnifiedConfigManager()
+    config_manager = ConfigManager()
     
     # List of config files to migrate
     config_files = {

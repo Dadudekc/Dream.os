@@ -22,6 +22,14 @@ except ImportError:
         def ensure_directories(cls):
             os.makedirs(cls.logs_dir, exist_ok=True)
 
+CUSTOM_GPT_URL = "https://your.custom.gpt.endpoint"
+PROMPT_INPUT_SELECTOR = "input.prompt-selector"
+RESPONSE_CONTAINER_SELECTOR = ".response-container"
+STOP_BUTTON_XPATH = "//button[@id='stop']"
+RETRY_ATTEMPTS = 3
+RETRY_DELAY_SECONDS = 2
+INTERACTION_LOG_PATH = "path/to/log.json"
+
 class Config:
     """
     Centralized runtime configuration for ChatMate Agents.
