@@ -1,4 +1,5 @@
 import threading
+import logging
 from gui.dreamscape_services import DreamscapeService
 
 class DreamscapeUILogic:
@@ -16,9 +17,8 @@ class DreamscapeUILogic:
         self.output_callback = output_callback or print
         self.discord_log_callback = None
         self.status_update_callback = None
-
-        # Initialize backend services
-        self.service = DreamscapeService()
+        self.service = None  # Will be set by the main application
+        self.logger = logging.getLogger(__name__)
 
     # --- Signal Handlers ---
 
@@ -43,16 +43,80 @@ class DreamscapeUILogic:
     # --- Logging Helpers ---
 
     def _output(self, message: str):
+        """Output a message to the UI and log it."""
         if callable(self.output_callback):
             self.output_callback(message)
+        self.logger.info(message)
 
     def _discord_log(self, message: str):
+        """Output a Discord-related message to the UI and log it."""
         if callable(self.discord_log_callback):
             self.discord_log_callback(message)
+        self.logger.info(f"[Discord] {message}")
 
     def _update_status(self, message: str):
+        """Update the UI status and log it."""
         if callable(self.status_update_callback):
             self.status_update_callback(message)
+        self.logger.info(f"[Status] {message}")
+
+    # --- Service Access ---
+
+    def get_service(self, service_name: str):
+        """Get a service by name, with proper error handling."""
+        if not self.service:
+            self._output(f"Error: Service '{service_name}' not available - services not initialized")
+            return None
+        return getattr(self.service, service_name, None)
+
+    def is_service_available(self, service_name: str) -> bool:
+        """Check if a service is available."""
+        return bool(self.get_service(service_name))
+
+    # --- UI Action Handlers ---
+
+    def execute_prompt(self, prompt_text: str):
+        """Execute a prompt and handle the response."""
+        if not self.is_service_available('prompt_manager'):
+            self._output("Error: Prompt manager not available")
+            return []
+
+        try:
+            self._update_status("Executing prompt...")
+            responses = self.service.prompt_manager.execute_prompt(prompt_text)
+            self._output(f"Prompt executed successfully. Got {len(responses)} responses.")
+            return responses
+        except Exception as e:
+            self._output(f"Error executing prompt: {str(e)}")
+            return []
+
+    def save_prompts(self):
+        """Save current prompts to storage."""
+        if not self.is_service_available('prompt_manager'):
+            self._output("Error: Prompt manager not available")
+            return False
+
+        try:
+            self.service.prompt_manager.save_prompts()
+            self._output("Prompts saved successfully")
+            return True
+        except Exception as e:
+            self._output(f"Error saving prompts: {str(e)}")
+            return False
+
+    def reset_prompts(self):
+        """Reset prompts to default values."""
+        if not self.is_service_available('prompt_manager'):
+            self._output("Error: Prompt manager not available")
+            return False
+
+        try:
+            self.service.prompt_manager.reset_to_defaults()
+            self._output("Prompts reset to defaults")
+            return True
+        except Exception as e:
+            self._output(f"Error resetting prompts: {str(e)}")
+            return False
 
     # --- Prompt Operations ---
 
@@ -169,16 +233,6 @@ class DreamscapeUILogic:
             self._output(f"Prompt '{prompt_type}' saved successfully.")
         except Exception as e:
             self._output(f"Error saving prompt '{prompt_type}': {e}")
-
-    def reset_prompts(self):
-        """
-        Reset all prompts to defaults.
-        """
-        try:
-            self.service.reset_prompts()
-            self._output("Prompts reset to defaults.")
-        except Exception as e:
-            self._output(f"Error resetting prompts: {e}")
 
     # --- Discord Bot Operations ---
 

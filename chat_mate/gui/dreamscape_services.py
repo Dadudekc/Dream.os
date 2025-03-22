@@ -17,7 +17,7 @@ from core.UnifiedDiscordService import UnifiedDiscordService
 from core.PromptCycleManager import PromptCycleManager
 from core.ReinforcementEngine import ReinforcementEngine
 from utils.run_summary import sanitize_filename, generate_full_run_json
-from core.UnifiedDriverManager import UnifiedDriverManager
+from core.DriverManager import DriverManager
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

@@ -4,12 +4,11 @@
 from . import DreamscapeMainWindow
 from . import IntegratedMainWindow
 from . import bootstrap
+from . import dreamscape_gui
 from . import dreamscape_services
 from . import dreamscape_ui_logic
 from . import feedback_dashboard
-
-# Import dreamscape_gui last to avoid circular imports
-from . import dreamscape_gui
+from . import splash_screen
 
 __all__ = [
     'DreamscapeMainWindow',
@@ -19,4 +18,5 @@ __all__ = [
     'dreamscape_services',
     'dreamscape_ui_logic',
     'feedback_dashboard',
+    'splash_screen',
 ]
