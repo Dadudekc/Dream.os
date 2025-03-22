@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import statistics
 from core.PathManager import PathManager
+from nltk.sentiment import SentimentIntensityAnalyzer
+from .nltk_init import ensure_nltk_data
 
 try:
     # Try to import nltk for more advanced NLP
@@ -69,7 +71,8 @@ class SentimentAnalyzer:
             nltk.download('vader_lexicon')
             
         # Initialize the sentiment analyzer
-        self.analyzer = SentimentIntensityAnalyzer()
+        self.sia = None
+        self._initialize()
         
         # Load custom lexicon if provided
         if custom_lexicon:
@@ -80,6 +83,18 @@ class SentimentAnalyzer:
             if os.path.exists(lexicon_path):
                 self.load_lexicon(lexicon_path)
     
+    def _initialize(self):
+        """Initialize the sentiment analyzer with proper error handling"""
+        try:
+            if ensure_nltk_data():
+                self.sia = SentimentIntensityAnalyzer()
+                logging.info("Sentiment analyzer initialized successfully")
+            else:
+                logging.warning("Failed to initialize sentiment analyzer - NLTK data not available")
+        except Exception as e:
+            logging.error(f"Error initializing sentiment analyzer: {str(e)}")
+            self.sia = None
+    
     def load_lexicon(self, lexicon_path):
         """Load a custom lexicon to enhance sentiment analysis"""
         try:
@@ -88,7 +103,7 @@ class SentimentAnalyzer:
                     lexicon = json.load(f)
                     
                 # Update the lexicon
-                self.analyzer.lexicon.update(lexicon)
+                self.sia.lexicon.update(lexicon)
                 self.logger.info(f"Loaded custom lexicon with {len(lexicon)} entries")
                 return True
             else:
@@ -99,27 +114,19 @@ class SentimentAnalyzer:
             return False
     
     def analyze(self, text):
-        """Analyze sentiment for a single text"""
-        if not text or not isinstance(text, str):
-            return {"compound": 0, "positive": 0, "negative": 0, "neutral": 0}
-        
-        try:
-            # Get sentiment scores
-            scores = self.analyzer.polarity_scores(text)
+        """
+        Analyze the sentiment of the given text.
+        Returns a dictionary with sentiment scores or None if analysis fails.
+        """
+        if not self.sia:
+            logging.warning("Sentiment analysis requested but analyzer not initialized")
+            return None
             
-            # Add sentiment label
-            compound = scores['compound']
-            if compound >= 0.05:
-                scores['sentiment'] = 'positive'
-            elif compound <= -0.05:
-                scores['sentiment'] = 'negative'
-            else:
-                scores['sentiment'] = 'neutral'
-                
-            return scores
+        try:
+            return self.sia.polarity_scores(text)
         except Exception as e:
-            self.logger.error(f"Error analyzing sentiment: {e}")
-            return {"compound": 0, "positive": 0, "negative": 0, "neutral": 0, "sentiment": "neutral"}
+            logging.error(f"Error during sentiment analysis: {str(e)}")
+            return None
     
     def analyze_batch(self, texts):
         """Analyze sentiment for a batch of texts"""
@@ -521,9 +528,9 @@ class SentimentAnalyzer:
             # Validate and add entries
             for word, score in lexicon.items():
                 if isinstance(score, (int, float)) and -1.0 <= score <= 1.0:
-                    self.analyzer.lexicon[word] = float(score)
+                    self.sia.lexicon[word] = float(score)
             
-            logger.info(f"✅ Loaded {len(self.analyzer.lexicon)} entries from custom lexicon")
+            logger.info(f"✅ Loaded {len(self.sia.lexicon)} entries from custom lexicon")
             return True
         except Exception as e:
             logger.error(f"❌ Error loading lexicon file: {e}")
