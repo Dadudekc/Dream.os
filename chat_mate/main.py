@@ -143,6 +143,11 @@ def main():
     """Main entry point of the Dreamscape Execution System."""
     setup_logging()
 
+    # Initialize core services
+    config_manager = ConfigManager()
+    logger = UnifiedLoggingAgent(config_manager)
+    config_manager.set_logger(logger)
+
     parser = argparse.ArgumentParser(description="Dreamscape Execution System")
     parser.add_argument(
         "--mode",
@@ -152,9 +157,7 @@ def main():
     )
     args = parser.parse_args()
 
-    # Initialize core services
-    services = initialize_services()
-    errors = []
+    # Continue with the rest of the initialization...
 
     # Handle errors if present
     if errors and args.mode != "agent":
