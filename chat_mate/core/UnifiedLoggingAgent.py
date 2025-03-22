@@ -8,6 +8,7 @@ from pathlib import Path
 
 from core.FileManager import FileManager
 from core.PathManager import PathManager
+from core.ConfigManager import ConfigManager  # Added for type hint clarity
 
 class UnifiedLoggingAgent:
     """
@@ -31,31 +32,47 @@ class UnifiedLoggingAgent:
         "reinforcement": "jsonl"
     }
 
-    def __init__(self):
+    def __init__(self, config_service: ConfigManager):
         """Initialize the UnifiedLoggingAgent with necessary components."""
+        self.config_service = config_service
         self.file_manager = FileManager()
         self.write_lock = threading.Lock()
         
+        # Get logs directory path and ensure it's a string
+        self.logs_dir = str(self.config_service.get('logs_dir', 'outputs/logs'))
+        self.logger = logging.getLogger(__name__)
+        self.logger.debug(f"Logs directory path: {self.logs_dir} (type: {type(self.logs_dir)})")
+        
+        # Ensure logs directory exists
+        os.makedirs(self.logs_dir, exist_ok=True)
+        
         # Set up the main logger
-        self.logger = logging.getLogger("unified_logger")
         self.logger.setLevel(logging.INFO)
         
         # Ensure all log directories exist
         self._setup_log_directories()
         
-        # Add file handler for the main log
-        main_log_path = os.path.join(PathManager.get_path("logs"), "unified_log.log")
-        file_handler = logging.FileHandler(main_log_path)
-        file_handler.setFormatter(
-            logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
-        )
-        self.logger.addHandler(file_handler)
+        # Setup file handler
+        self._setup_file_handler()
 
     def _setup_log_directories(self) -> None:
         """Ensure all necessary log directories exist."""
         for domain in self.DOMAINS:
-            domain_path = os.path.join(PathManager.get_path("logs"), domain)
+            domain_path = os.path.join(self.logs_dir, domain)
             os.makedirs(domain_path, exist_ok=True)
+
+    def _setup_file_handler(self):
+        """Setup the file handler for logging."""
+        try:
+            log_file = os.path.join(self.logs_dir, f"dreamscape_{datetime.now().strftime('%Y%m%d')}.log")
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            ))
+            self.logger.addHandler(file_handler)
+            self.logger.info(f"Logging initialized at {self.logs_dir}")
+        except Exception as e:
+            self.logger.error(f"Failed to setup file handler: {str(e)}")
 
     def log(
         self,
@@ -214,7 +231,7 @@ class UnifiedLoggingAgent:
             List of log entries matching the criteria
         """
         logs = []
-        log_dir = os.path.join(PathManager.get_path("logs"), domain)
+        log_dir = os.path.join(self.logs_dir, domain)
         
         if not os.path.exists(log_dir):
             self.logger.warning(f"Log directory not found: {log_dir}")
@@ -279,4 +296,19 @@ class UnifiedLoggingAgent:
 
             return True
         except Exception:
-            return False 
+            return False
+
+    def log_error(self, error: Exception, context: Optional[Dict[str, Any]] = None) -> None:
+        """
+        Log an error with context.
+        
+        :param error: The exception to log
+        :param context: Additional context information
+        """
+        try:
+            error_msg = f"Error: {str(error)}"
+            if context:
+                error_msg += f"\nContext: {context}"
+            self.logger.error(error_msg)
+        except Exception as e:
+            print(f"Failed to save error log: {str(e)}")

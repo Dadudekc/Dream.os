@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 
 # Updated imports
-from core.UnifiedDriverManager import UnifiedDriverManager
+from core.DriverManager import DriverManager
 from core.PromptEngine import PromptEngine
 from core.DiscordManager import DiscordManager
 from core.AletheiaPromptManager import AletheiaPromptManager
@@ -72,12 +72,12 @@ class ChatManager:
         self.reverse_checkbox = None
         self.output_dir = None
 
-        # Initialize UnifiedDriverManager with options
+        # Initialize DriverManager with options
         if headless:
             if not driver_options:
                 driver_options = {}
             driver_options["headless"] = True
-        self.driver_manager = UnifiedDriverManager(driver_options)
+        self.driver_manager = DriverManager(driver_options)
 
         # Injected managers
         self.prompt_manager = prompt_manager or AletheiaPromptManager()

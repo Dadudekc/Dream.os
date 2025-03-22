@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from enum import Enum, auto
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from core.OptimizedMemoryManager import OptimizedMemoryManager
+from core.MemoryManager import MemoryManager
 from core.ThreadPoolManager import ThreadPoolManager, TaskPriority
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class ResilientPromptExecutor:
     def __init__(
         self,
         prompt_service: Any,
-        memory_manager: Optional[OptimizedMemoryManager] = None,
+        memory_manager: Optional[MemoryManager] = None,
         thread_pool: Optional[ThreadPoolManager] = None,
         max_retries: int = 3,
         base_delay: float = 2.0,
@@ -44,7 +44,7 @@ class ResilientPromptExecutor:
         
         Args:
             prompt_service: Service for executing prompts
-            memory_manager: Optional OptimizedMemoryManager instance
+            memory_manager: Optional MemoryManager instance
             thread_pool: Optional ThreadPoolManager instance
             max_retries: Maximum number of retry attempts
             base_delay: Base delay for exponential backoff
@@ -52,7 +52,7 @@ class ResilientPromptExecutor:
             timeout: Default timeout for prompt execution
         """
         self.prompt_service = prompt_service
-        self.memory_manager = memory_manager or OptimizedMemoryManager()
+        self.memory_manager = memory_manager or MemoryManager()
         self.thread_pool = thread_pool or ThreadPoolManager()
         self.logger = UnifiedLoggingAgent()
         

@@ -100,9 +100,9 @@ class DatabaseManager:
 ###############################################################################
 # Unified Memory Manager (In-Memory + DB + Narrative)
 ###############################################################################
-class UnifiedMemoryManager:
+class MemoryManager:
     """
-    UnifiedMemoryManager combines features from an optimized memory manager with:
+    MemoryManager combines features from an optimized memory manager with:
       - LRU caching and data compression (for fast short-term storage)
       - JSON file storage for ephemeral memory
       - SQLite-based long-term storage of interactions
@@ -472,7 +472,7 @@ class UnifiedMemoryManager:
 ###############################################################################
 if __name__ == "__main__":
     # Create an instance of the unified memory manager.
-    mm = UnifiedMemoryManager()
+    mm = MemoryManager()
 
     # Record an interaction.
     mm.record_interaction(

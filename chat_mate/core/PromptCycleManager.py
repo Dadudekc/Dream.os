@@ -34,7 +34,7 @@ from jinja2 import Environment, FileSystemLoader, Template, TemplateNotFound, se
 
 # New imports for UnifiedDiscordService
 from core.UnifiedDiscordService import UnifiedDiscordService
-from core.UnifiedDriverManager import UnifiedDriverManager
+from core.DriverManager import DriverManager
 
 # --------------------------------------------------------------------
 # Project Root & Template Path Handling
@@ -160,7 +160,7 @@ class PromptCycleManager:
         self.memory_manager = memory_manager
         self.discord = discord_service
         self.append_output = append_output or (lambda msg: print(msg))
-        self.driver_manager = UnifiedDriverManager(driver_options)
+        self.driver_manager = DriverManager(driver_options)
         self.chat_manager = None
         self.response_handler = None
         self.dry_run = dry_run

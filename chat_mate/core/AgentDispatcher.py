@@ -329,8 +329,8 @@ class AgentDispatcher:
 
     def _execute_chat_task(self, task: Task) -> Any:
         """Execute a chat engine related task."""
-        from core.UnifiedPromptEngine import UnifiedPromptEngine
-        engine = UnifiedPromptEngine()
+        from core.PromptEngine import PromptEngine
+        engine = PromptEngine()
         return engine.execute_prompt(
             prompt_type=task.task_type,
             chat_title=task.payload.get("chat_title", "Untitled"),

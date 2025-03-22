@@ -18,7 +18,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # ---------------------------
 # Logger Setup
 # ---------------------------
-def setup_logger(name="UnifiedDriverManager", log_dir=os.path.join(os.getcwd(), "logs", "core")):
+def setup_logger(name="DriverManager", log_dir=os.path.join(os.getcwd(), "logs", "core")):
     os.makedirs(log_dir, exist_ok=True)
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
@@ -35,9 +35,9 @@ def setup_logger(name="UnifiedDriverManager", log_dir=os.path.join(os.getcwd(), 
 logger = setup_logger()
 
 # ---------------------------
-# UnifiedDriverManager Class
+# DriverManager Class
 # ---------------------------
-class UnifiedDriverManager:
+class DriverManager:
     """
     Singleton class for managing an undetected Chrome WebDriver instance.
     
@@ -48,12 +48,12 @@ class UnifiedDriverManager:
       - Context management for automatic cleanup
       - Ability to update driver options dynamically
     """
-    _instance: Optional['UnifiedDriverManager'] = None
+    _instance: Optional['DriverManager'] = None
     _lock = threading.Lock()
 
     CHATGPT_URL = "https://chat.openai.com/"
 
-    def __new__(cls, *args, **kwargs) -> 'UnifiedDriverManager':
+    def __new__(cls, *args, **kwargs) -> 'DriverManager':
         with cls._lock:
             if cls._instance is None:
                 instance = super().__new__(cls)
@@ -87,7 +87,7 @@ class UnifiedDriverManager:
             os.makedirs(self.driver_cache_dir, exist_ok=True)
             os.makedirs(os.path.dirname(self.cookie_file), exist_ok=True)
 
-            logger.info(f"UnifiedDriverManager initialized: Headless={self.headless}, Mobile={self.mobile_emulation}")
+            logger.info(f"DriverManager initialized: Headless={self.headless}, Mobile={self.mobile_emulation}")
             self._initialized = True
 
     # ---------------------------
@@ -298,7 +298,7 @@ class UnifiedDriverManager:
 # Example Execution
 # ---------------------------
 def main():
-    with UnifiedDriverManager(headless=True, mobile_emulation=False) as manager:
+    with DriverManager(headless=True, mobile_emulation=False) as manager:
         driver = manager.get_driver()
         driver.get("https://chat.openai.com/")
         time.sleep(5)

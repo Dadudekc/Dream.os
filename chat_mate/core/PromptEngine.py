@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Configure module logger
-logger = logging.getLogger("UnifiedPromptEngine")
+logger = logging.getLogger("PromptEngine")
 logger.setLevel(logging.INFO)
 
 
@@ -160,13 +160,13 @@ class PromptEngine:
 
 
 ###############################################################################
-# Higher-level UnifiedPromptEngine
+# Higher-level PromptEngine
 ###############################################################################
 class PromptExecutionError(Exception):
     """Raised when prompt execution fails."""
 
 
-class UnifiedPromptEngine:
+class PromptEngine:
     """
     Centralized prompt execution engine that:
       - Retrieves and optionally optimizes a prompt template.

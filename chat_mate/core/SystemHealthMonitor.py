@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from core.OptimizedMemoryManager import OptimizedMemoryManager
+from core.MemoryManager import MemoryManager
 from core.ThreadPoolManager import ThreadPoolManager
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class SystemHealthMonitor:
     def __init__(
         self,
         driver_manager: Any,
-        memory_manager: OptimizedMemoryManager,
+        memory_manager: MemoryManager,
         thread_pool: ThreadPoolManager,
         check_interval: int = 60,
         history_size: int = 1000

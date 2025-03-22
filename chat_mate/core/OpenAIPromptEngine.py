@@ -10,8 +10,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from config import (CUSTOM_GPT_URL, PROMPT_INPUT_SELECTOR, RESPONSE_CONTAINER_SELECTOR,
-                    STOP_BUTTON_XPATH, RETRY_ATTEMPTS, RETRY_DELAY_SECONDS, INTERACTION_LOG_PATH)
+from chat_mate_config import Config
+from chat_mate_config import (CUSTOM_GPT_URL, PROMPT_INPUT_SELECTOR, RESPONSE_CONTAINER_SELECTOR,
+                               STOP_BUTTON_XPATH, RETRY_ATTEMPTS, RETRY_DELAY_SECONDS, INTERACTION_LOG_PATH)
 
 logger = logging.getLogger("OpenAIPromptEngine")
 logger.setLevel(logging.INFO)
