@@ -7,7 +7,8 @@ pytest-cov==4.1.0
 undetected-chromedriver==3.5.5
 openai==1.14.2
 textblob==0.17.1
-discord.py==2.3.2
+discord.py>=2.0.0
 watchdog==4.0.0
 numpy==1.26.4
-matplotlib==3.8.3 
+matplotlib==3.8.3
+python-dotenv>=0.19.0 

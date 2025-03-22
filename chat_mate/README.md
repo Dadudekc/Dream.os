@@ -125,4 +125,24 @@ To add your social accounts:
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📝 License
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Environment Variables
+
+This project requires certain environment variables to be set in a `.env` file in the root directory:
+
+```
+DISCORD_BOT_TOKEN=your_discord_bot_token
+DISCORD_CLIENT_ID=your_client_id
+DISCORD_PUBLIC_KEY=your_public_key
+DISCORD_GUILD_ID=your_guild_id
+```
+
+**Important:** Never commit the `.env` file to the repository. It is already included in `.gitignore`.
+
+## Setup
+
+1. Clone the repository
+2. Install dependencies
+3. Create a `.env` file with the required variables
+4. Run the application 
