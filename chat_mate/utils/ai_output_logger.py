@@ -7,10 +7,12 @@ from utils.reinforcement_trainer import process_feedback
 from core.FileManager import FileManager
 from core.PathManager import PathManager
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
+from core.ConfigManager import ConfigManager
 from typing import Optional, List
 
-# Initialize the unified logger
-_unified_logger = UnifiedLoggingAgent()
+# Initialize the unified logger with ConfigManager
+config_manager = ConfigManager()
+_unified_logger = UnifiedLoggingAgent(config_manager)
 logger = logging.getLogger("ai_output_logger")
 logging.basicConfig(
     level=logging.INFO,

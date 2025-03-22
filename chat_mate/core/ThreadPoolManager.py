@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
+from core.ConfigManager import ConfigManager
 
 logger = logging.getLogger(__name__)
 
@@ -45,17 +46,23 @@ class ThreadPoolManager:
     - Task statistics and metrics
     """
 
-    def __init__(self, max_workers: int = 5, task_timeout: float = 300):
+    def __init__(self, max_workers: int = 5, task_timeout: float = 300, config=None):
         """
         Initialize the ThreadPoolManager.
         
         Args:
             max_workers: Maximum number of worker threads
             task_timeout: Default timeout for tasks in seconds
+            config: Optional ConfigManager instance. If not provided, a new one will be created.
         """
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
         self.default_timeout = task_timeout
-        self.logger = UnifiedLoggingAgent()
+        
+        # Initialize config manager if not provided
+        self.config = config or ConfigManager()
+        
+        # Initialize logger with config manager
+        self.logger = UnifiedLoggingAgent(self.config)
         
         # Task management
         self.tasks: Dict[str, Task] = {}

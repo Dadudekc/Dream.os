@@ -8,7 +8,8 @@ from collections import defaultdict
 from core.FileManager import FileManager
 from core.PathManager import PathManager
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from core.config import config
+from chat_mate_config import Config
+from core.ConfigManager import ConfigManager
 
 class FeedbackEntry:
     """Structured feedback entry for reinforcement learning."""
@@ -75,10 +76,20 @@ class UnifiedFeedbackMemory:
     - Context-aware learning
     """
 
-    def __init__(self):
-        """Initialize the UnifiedFeedbackMemory system."""
+    def __init__(self, config=None):
+        """
+        Initialize the UnifiedFeedbackMemory system.
+        
+        Args:
+            config: Optional ConfigManager instance. If not provided, a new one will be created.
+        """
         self.file_manager = FileManager()
-        self.logger = UnifiedLoggingAgent()
+        
+        # Initialize config manager if not provided
+        self.config = config or ConfigManager()
+        
+        # Initialize logger with config manager
+        self.logger = UnifiedLoggingAgent(self.config)
         self._lock = threading.Lock()
         
         # Memory segments
@@ -86,9 +97,9 @@ class UnifiedFeedbackMemory:
         self.context_stats: Dict[str, Dict[str, Any]] = defaultdict(dict)
         
         # Load configuration
-        self.max_entries = config.get("ai.memory.max_entries", 10000)
-        self.min_score_threshold = config.get("ai.memory.min_score", -0.5)
-        self.prune_threshold = config.get("ai.memory.prune_threshold", 0.8)
+        self.max_entries = Config.get("ai.memory.max_entries", 10000)
+        self.min_score_threshold = Config.get("ai.memory.min_score", -0.5)
+        self.prune_threshold = Config.get("ai.memory.prune_threshold", 0.8)
         
         # Load existing memory
         self.load()

@@ -8,9 +8,9 @@ from pathlib import Path
 
 from core.FileManager import FileManager
 from core.PathManager import PathManager
-from core.ConfigManager import ConfigManager  # Added for type hint clarity
+from core.interfaces.ILoggingAgent import ILoggingAgent
 
-class UnifiedLoggingAgent:
+class UnifiedLoggingAgent(ILoggingAgent):
     """
     Centralized logging system for ChatMate that handles all logging operations.
     Features:
@@ -32,14 +32,25 @@ class UnifiedLoggingAgent:
         "reinforcement": "jsonl"
     }
 
-    def __init__(self, config_service: ConfigManager):
-        """Initialize the UnifiedLoggingAgent with necessary components."""
-        self.config_service = config_service
+    def __init__(self, config_manager):
+        """
+        Initialize the UnifiedLoggingAgent with necessary components.
+        
+        Args:
+            config_manager: Required ConfigManager instance for configuration access
+            
+        Raises:
+            ValueError: If config_manager is not provided
+        """
+        if not config_manager:
+            raise ValueError("ConfigManager is required for UnifiedLoggingAgent initialization")
+            
+        self.config_manager = config_manager
         self.file_manager = FileManager()
         self.write_lock = threading.Lock()
         
         # Get logs directory path and ensure it's a string
-        self.logs_dir = str(self.config_service.get('logs_dir', 'outputs/logs'))
+        self.logs_dir = str(self.config_manager.get('logs_dir', 'outputs/logs'))
         self.logger = logging.getLogger(__name__)
         self.logger.debug(f"Logs directory path: {self.logs_dir} (type: {type(self.logs_dir)})")
         
@@ -74,68 +85,8 @@ class UnifiedLoggingAgent:
         except Exception as e:
             self.logger.error(f"Failed to setup file handler: {str(e)}")
 
-    def log(
-        self,
-        message: str,
-        domain: str = "system",
-        level: str = "info",
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None
-    ) -> Optional[str]:
-        """
-        Main logging method that handles all types of logs.
-        
-        Args:
-            message: The main message to log
-            domain: Logging domain (ai_output, social, system, etc.)
-            level: Logging level (info, warning, error, critical)
-            metadata: Additional structured data to include
-            tags: List of tags for categorization
-            
-        Returns:
-            Optional[str]: Path to the saved log file if successful
-        """
-        if domain not in self.DOMAINS:
-            self.logger.warning(f"Unknown logging domain: {domain}, defaulting to 'system'")
-            domain = "system"
-
-        # Prepare the log entry
-        timestamp = datetime.now(UTC).isoformat() + "Z"
-        
-        if self.DOMAINS[domain] in ("json", "jsonl"):
-            log_entry = {
-                "timestamp": timestamp,
-                "level": level,
-                "message": message,
-                "domain": domain,
-                "metadata": metadata or {},
-                "tags": tags or []
-            }
-            content = json.dumps(log_entry, ensure_ascii=False)
-            if self.DOMAINS[domain] == "jsonl":
-                content += "\n"
-        else:
-            content = f"[{timestamp}] [{level.upper()}] {message}"
-            if metadata:
-                content += f" | Metadata: {json.dumps(metadata)}"
-            if tags:
-                content += f" | Tags: {','.join(tags)}"
-            content += "\n"
-
-        # Log to the Python logger
-        log_method = getattr(self.logger, level.lower(), self.logger.info)
-        log_method(message)
-
-        # Save using FileManager
-        try:
-            with self.write_lock:
-                return self.file_manager.save_log(
-                    content=content,
-                    log_type=domain
-                )
-        except Exception as e:
-            self.logger.error(f"Failed to save log entry: {e}")
-            return None
+    def log(self, message: str):
+        print(f"[LOG]: {message}")
 
     def log_ai_output(
         self,
@@ -312,3 +263,14 @@ class UnifiedLoggingAgent:
             self.logger.error(error_msg)
         except Exception as e:
             print(f"Failed to save error log: {str(e)}")
+
+    def log_debug(self, message: str):
+        # Optional debug flag logic
+        if self.config_manager and self.config_manager.get("debug_mode"):
+            print(f"[DEBUG]: {message}")
+        else:
+            print(f"[DEBUG]: {message}")
+
+    def log_event(self, event_name: str, payload: dict):
+        # Example structured event logging
+        print(f"[EVENT]: {event_name} - Payload: {payload}")

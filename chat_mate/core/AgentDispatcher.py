@@ -9,8 +9,9 @@ import json
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
 from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory
-from core.config import config
+from chat_mate_config import Config
 from core.PathManager import PathManager
+from core.ConfigManager import ConfigManager
 
 class TaskPriority(Enum):
     """Task priority levels for intelligent dispatching."""
@@ -63,9 +64,18 @@ class AgentDispatcher:
     - Performance analytics
     """
 
-    def __init__(self):
-        """Initialize the dispatcher with necessary components."""
-        self.logger = UnifiedLoggingAgent()
+    def __init__(self, config=None):
+        """
+        Initialize the dispatcher with necessary components.
+        
+        Args:
+            config: Optional ConfigManager instance. If not provided, a new one will be created.
+        """
+        # Initialize config manager if not provided
+        self.config = config or ConfigManager()
+        
+        # Initialize logger with config manager
+        self.logger = UnifiedLoggingAgent(self.config)
         self.feedback_memory = UnifiedFeedbackMemory()
         
         # Task management
@@ -107,11 +117,11 @@ class AgentDispatcher:
     def _load_config(self) -> None:
         """Load dispatcher configuration from the unified config."""
         self.config = {
-            "max_workers": config.get("dispatcher.max_workers", 5),
-            "batch_size": config.get("dispatcher.batch_size", 10),
-            "min_batch_interval": config.get("dispatcher.min_batch_interval", 1.0),
-            "resource_limits": config.get("dispatcher.resource_limits", {}),
-            "priority_weights": config.get("dispatcher.priority_weights", {
+            "max_workers": Config.get("dispatcher.max_workers", 5),
+            "batch_size": Config.get("dispatcher.batch_size", 10),
+            "min_batch_interval": Config.get("dispatcher.min_batch_interval", 1.0),
+            "resource_limits": Config.get("dispatcher.resource_limits", {}),
+            "priority_weights": Config.get("dispatcher.priority_weights", {
                 "CRITICAL": 0,
                 "HIGH": 1,
                 "MEDIUM": 2,
