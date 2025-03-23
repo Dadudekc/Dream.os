@@ -36,7 +36,7 @@ class CommunityIntegrationManager:
         self._initialize_dashboard()
         self._initialize_post_manager()
         
-        logger.info("🔄 Community Integration Manager initialized")
+        logger.info(" Community Integration Manager initialized")
     
     def _initialize_strategies(self) -> None:
         """Initialize strategy objects for each enabled platform."""
@@ -50,9 +50,9 @@ class CommunityIntegrationManager:
                     config=twitter_config,
                     feedback_file=twitter_config.get("feedback_file", "social/data/twitter_feedback.json")
                 )
-                logger.info("✅ Twitter strategy initialized")
+                logger.info(" Twitter strategy initialized")
             except Exception as e:
-                logger.error(f"❌ Failed to initialize Twitter strategy: {e}")
+                logger.error(f" Failed to initialize Twitter strategy: {e}")
         
         # Facebook
         if platform_configs.get("facebook", {}).get("enabled", False):
@@ -62,9 +62,9 @@ class CommunityIntegrationManager:
                     config=facebook_config,
                     feedback_file=facebook_config.get("feedback_file", "social/data/facebook_feedback.json")
                 )
-                logger.info("✅ Facebook strategy initialized")
+                logger.info(" Facebook strategy initialized")
             except Exception as e:
-                logger.error(f"❌ Failed to initialize Facebook strategy: {e}")
+                logger.error(f" Failed to initialize Facebook strategy: {e}")
         
         # Reddit
         if platform_configs.get("reddit", {}).get("enabled", False):
@@ -74,9 +74,9 @@ class CommunityIntegrationManager:
                     config=reddit_config,
                     feedback_file=reddit_config.get("feedback_file", "social/data/reddit_feedback.json")
                 )
-                logger.info("✅ Reddit strategy initialized")
+                logger.info(" Reddit strategy initialized")
             except Exception as e:
-                logger.error(f"❌ Failed to initialize Reddit strategy: {e}")
+                logger.error(f" Failed to initialize Reddit strategy: {e}")
         
         # Stocktwits
         if platform_configs.get("stocktwits", {}).get("enabled", False):
@@ -86,9 +86,9 @@ class CommunityIntegrationManager:
                     config=stocktwits_config,
                     feedback_file=stocktwits_config.get("feedback_file", "social/data/stocktwits_feedback.json")
                 )
-                logger.info("✅ Stocktwits strategy initialized")
+                logger.info(" Stocktwits strategy initialized")
             except Exception as e:
-                logger.error(f"❌ Failed to initialize Stocktwits strategy: {e}")
+                logger.error(f" Failed to initialize Stocktwits strategy: {e}")
         
         # LinkedIn
         if platform_configs.get("linkedin", {}).get("enabled", False):
@@ -98,9 +98,9 @@ class CommunityIntegrationManager:
                     config=linkedin_config,
                     feedback_file=linkedin_config.get("feedback_file", "social/data/linkedin_feedback.json")
                 )
-                logger.info("✅ LinkedIn strategy initialized")
+                logger.info(" LinkedIn strategy initialized")
             except Exception as e:
-                logger.error(f"❌ Failed to initialize LinkedIn strategy: {e}")
+                logger.error(f" Failed to initialize LinkedIn strategy: {e}")
         
         # Instagram
         if platform_configs.get("instagram", {}).get("enabled", False):
@@ -110,17 +110,17 @@ class CommunityIntegrationManager:
                     config=instagram_config,
                     feedback_file=instagram_config.get("feedback_file", "social/data/instagram_feedback.json")
                 )
-                logger.info("✅ Instagram strategy initialized")
+                logger.info(" Instagram strategy initialized")
             except Exception as e:
-                logger.error(f"❌ Failed to initialize Instagram strategy: {e}")
+                logger.error(f" Failed to initialize Instagram strategy: {e}")
     
     def _initialize_dashboard(self) -> None:
         """Initialize the unified community dashboard."""
         try:
             self.dashboard = UnifiedCommunityDashboard(platform_strategies=self.platform_strategies)
-            logger.info("✅ Unified Community Dashboard initialized")
+            logger.info(" Unified Community Dashboard initialized")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Unified Community Dashboard: {e}")
+            logger.error(f" Failed to initialize Unified Community Dashboard: {e}")
             self.dashboard = None
     
     def _initialize_post_manager(self) -> None:
@@ -130,15 +130,15 @@ class CommunityIntegrationManager:
                 platform_configs=self.config.get("platforms", {}),
                 platform_strategies=self.platform_strategies
             )
-            logger.info("✅ Social Post Manager initialized")
+            logger.info(" Social Post Manager initialized")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Social Post Manager: {e}")
+            logger.error(f" Failed to initialize Social Post Manager: {e}")
             self.post_manager = None
     
     def analyze_community_health(self) -> Dict[str, Any]:
         """Analyze community health across all platforms."""
         if not self.dashboard:
-            logger.error("❌ Cannot analyze community health - dashboard not initialized")
+            logger.error(" Cannot analyze community health - dashboard not initialized")
             return {}
         
         try:
@@ -147,59 +147,59 @@ class CommunityIntegrationManager:
             
             # Generate health report
             health_report = self.dashboard.analyze_community_health()
-            logger.info(f"✅ Community health analysis completed with score: {health_report['overall_score']}")
+            logger.info(f" Community health analysis completed with score: {health_report['overall_score']}")
             
             return health_report
         except Exception as e:
-            logger.error(f"❌ Error in community health analysis: {e}")
+            logger.error(f" Error in community health analysis: {e}")
             return {}
     
     def generate_insights_and_recommendations(self) -> Dict[str, Any]:
         """Generate community insights and actionable recommendations."""
         if not self.dashboard:
-            logger.error("❌ Cannot generate insights - dashboard not initialized")
+            logger.error(" Cannot generate insights - dashboard not initialized")
             return {}
         
         try:
             insights = self.dashboard.generate_community_insights()
-            logger.info(f"✅ Generated {len(insights.get('recommended_actions', []))} community recommendations")
+            logger.info(f" Generated {len(insights.get('recommended_actions', []))} community recommendations")
             return insights
         except Exception as e:
-            logger.error(f"❌ Error generating community insights: {e}")
+            logger.error(f" Error generating community insights: {e}")
             return {}
     
     def create_community_building_plan(self, days: int = 30) -> Dict[str, Any]:
         """Create a structured community building plan."""
         if not self.dashboard:
-            logger.error("❌ Cannot create community plan - dashboard not initialized")
+            logger.error(" Cannot create community plan - dashboard not initialized")
             return {}
         
         try:
             plan = self.dashboard.create_community_building_plan(days=days)
-            logger.info(f"✅ Created {days}-day community building plan")
+            logger.info(f" Created {days}-day community building plan")
             return plan
         except Exception as e:
-            logger.error(f"❌ Error creating community building plan: {e}")
+            logger.error(f" Error creating community building plan: {e}")
             return {}
     
     def identify_advocates(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Identify top community advocates across all platforms."""
         if not self.dashboard:
-            logger.error("❌ Cannot identify advocates - dashboard not initialized")
+            logger.error(" Cannot identify advocates - dashboard not initialized")
             return []
         
         try:
             advocates = self.dashboard.identify_top_community_members(limit=limit)
-            logger.info(f"✅ Identified {len(advocates)} community advocates")
+            logger.info(f" Identified {len(advocates)} community advocates")
             return advocates
         except Exception as e:
-            logger.error(f"❌ Error identifying community advocates: {e}")
+            logger.error(f" Error identifying community advocates: {e}")
             return []
     
     def post_across_platforms(self, content: Dict[str, Any]) -> Dict[str, Any]:
         """Post content across multiple platforms."""
         if not self.post_manager:
-            logger.error("❌ Cannot post content - post manager not initialized")
+            logger.error(" Cannot post content - post manager not initialized")
             return {"success": False, "message": "Post manager not initialized"}
         
         try:
@@ -217,7 +217,7 @@ class CommunityIntegrationManager:
             
             return results
         except Exception as e:
-            logger.error(f"❌ Error posting across platforms: {e}")
+            logger.error(f" Error posting across platforms: {e}")
             return {"success": False, "message": str(e)}
     
     def track_member_interaction(self, platform: str, member_id: str, username: str, 
@@ -235,7 +235,7 @@ class CommunityIntegrationManager:
             bool: Success status
         """
         if not self.dashboard:
-            logger.error("❌ Cannot track member - dashboard not initialized")
+            logger.error(" Cannot track member - dashboard not initialized")
             return False
         
         try:
@@ -253,13 +253,13 @@ class CommunityIntegrationManager:
             )
             return True
         except Exception as e:
-            logger.error(f"❌ Error tracking member interaction: {e}")
+            logger.error(f" Error tracking member interaction: {e}")
             return False
     
     def optimize_platform_strategies(self) -> Dict[str, List[str]]:
         """Optimize strategies for each platform based on community data."""
         if not self.dashboard:
-            logger.error("❌ Cannot optimize strategies - dashboard not initialized")
+            logger.error(" Cannot optimize strategies - dashboard not initialized")
             return {}
         
         try:
@@ -276,16 +276,16 @@ class CommunityIntegrationManager:
                             "applied_at": "now"  # Would be a timestamp in real system
                         })
             
-            logger.info(f"✅ Optimized strategies for {len(optimization)} platforms")
+            logger.info(f" Optimized strategies for {len(optimization)} platforms")
             return optimization
         except Exception as e:
-            logger.error(f"❌ Error optimizing platform strategies: {e}")
+            logger.error(f" Error optimizing platform strategies: {e}")
             return {}
     
     def generate_visualizations(self, output_dir: Optional[str] = None) -> bool:
         """Generate visualizations of community metrics."""
         if not self.dashboard:
-            logger.error("❌ Cannot generate visualizations - dashboard not initialized")
+            logger.error(" Cannot generate visualizations - dashboard not initialized")
             return False
         
         try:
@@ -294,10 +294,10 @@ class CommunityIntegrationManager:
             else:
                 self.dashboard.visualize_community_metrics()
             
-            logger.info("✅ Generated community visualizations")
+            logger.info(" Generated community visualizations")
             return True
         except Exception as e:
-            logger.error(f"❌ Error generating visualizations: {e}")
+            logger.error(f" Error generating visualizations: {e}")
             return False
     
     def run_daily_community_management(self) -> Dict[str, Any]:
@@ -356,10 +356,10 @@ class CommunityIntegrationManager:
             viz_success = self.generate_visualizations()
             results["visualizations_generated"] = viz_success
             
-            logger.info("✅ Daily community management workflow completed")
+            logger.info(" Daily community management workflow completed")
             return results
         except Exception as e:
-            logger.error(f"❌ Error in daily community management workflow: {e}")
+            logger.error(f" Error in daily community management workflow: {e}")
             return results
 
 # Example usage

@@ -437,9 +437,9 @@ class SentimentAnalyzer:
             plt.savefig(output_path)
             plt.close()
             
-            logger.info(f"✅ Sentiment trend visualization saved to {output_path}")
+            logger.info(f" Sentiment trend visualization saved to {output_path}")
         except Exception as e:
-            logger.error(f"❌ Error generating sentiment visualization: {e}")
+            logger.error(f" Error generating sentiment visualization: {e}")
     
     def extract_topics(self, texts: List[str], top_n: int = 10) -> List[Tuple[str, int]]:
         """
@@ -500,7 +500,7 @@ class SentimentAnalyzer:
         if negative_words:
             self.NEGATIVE_KEYWORDS.update(set(negative_words))
         
-        logger.info(f"✅ Added {len(positive_words or [])} positive and {len(negative_words or [])} negative custom keywords")
+        logger.info(f" Added {len(positive_words or [])} positive and {len(negative_words or [])} negative custom keywords")
     
     def load_custom_lexicon(self, lexicon_file: str) -> bool:
         """
@@ -514,7 +514,7 @@ class SentimentAnalyzer:
             Success status
         """
         if not os.path.exists(lexicon_file):
-            logger.error(f"❌ Lexicon file not found: {lexicon_file}")
+            logger.error(f" Lexicon file not found: {lexicon_file}")
             return False
         
         try:
@@ -522,7 +522,7 @@ class SentimentAnalyzer:
                 lexicon = json.load(f)
             
             if not isinstance(lexicon, dict):
-                logger.error("❌ Lexicon file must contain a dictionary")
+                logger.error(" Lexicon file must contain a dictionary")
                 return False
                 
             # Validate and add entries
@@ -530,10 +530,10 @@ class SentimentAnalyzer:
                 if isinstance(score, (int, float)) and -1.0 <= score <= 1.0:
                     self.sia.lexicon[word] = float(score)
             
-            logger.info(f"✅ Loaded {len(self.sia.lexicon)} entries from custom lexicon")
+            logger.info(f" Loaded {len(self.sia.lexicon)} entries from custom lexicon")
             return True
         except Exception as e:
-            logger.error(f"❌ Error loading lexicon file: {e}")
+            logger.error(f" Error loading lexicon file: {e}")
             return False
 
 # Example usage

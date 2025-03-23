@@ -98,27 +98,27 @@ class BaseEngagementBot(ABC):
     # -- Core Login and Session Management --
     @retry_on_failure()
     def login(self):
-        logger.info(f"🌐 Initiating login for {self.platform.capitalize()}.")
+        logger.info(f" Initiating login for {self.platform.capitalize()}.")
         self.driver.get(self.login_url)
         self._wait()
         self.cookie_manager.load_cookies(self.driver, self.platform)
         self.driver.refresh()
         self._wait()
         if self.is_logged_in():
-            logger.info(f"✅ Logged into {self.platform.capitalize()} via cookies.")
+            logger.info(f" Logged into {self.platform.capitalize()} via cookies.")
             write_json_log(self.platform, "success", tags=["cookie_login"])
             return True
         if not self.email or not self.password:
-            logger.error(f"❌ Missing credentials for {self.platform.capitalize()}.")
+            logger.error(f" Missing credentials for {self.platform.capitalize()}.")
             return False
         self._login_with_credentials()
         if not self.is_logged_in():
-            logger.warning(f"⚠️ Auto-login failed for {self.platform.capitalize()}. Awaiting manual login.")
+            logger.warning(f"️ Auto-login failed for {self.platform.capitalize()}. Awaiting manual login.")
             if not self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, self.platform):
-                logger.error(f"❌ Manual login failed for {self.platform.capitalize()}.")
+                logger.error(f" Manual login failed for {self.platform.capitalize()}.")
                 return False
         self.cookie_manager.save_cookies(self.driver, self.platform)
-        logger.info(f"✅ Logged into {self.platform.capitalize()} successfully.")
+        logger.info(f" Logged into {self.platform.capitalize()} successfully.")
         return True
 
     @abstractmethod
@@ -139,7 +139,7 @@ class BaseEngagementBot(ABC):
 
     # -- Engagement Actions --
     def like_posts(self):
-        logger.info(f"❤️ Liking posts on {self.platform.capitalize()}...")
+        logger.info(f"️ Liking posts on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((5, 8))
         posts = self._find_posts()
@@ -147,13 +147,13 @@ class BaseEngagementBot(ABC):
             try:
                 like_button = self._find_like_button(post)
                 like_button.click()
-                logger.info("❤️ Liked a post.")
+                logger.info("️ Liked a post.")
                 self._wait((2, 4))
             except Exception as e:
-                logger.warning(f"⚠️ Could not like a post: {e}")
+                logger.warning(f"️ Could not like a post: {e}")
 
     def comment_on_posts(self, comments):
-        logger.info(f"💬 Commenting on posts on {self.platform.capitalize()}...")
+        logger.info(f" Commenting on posts on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((5, 8))
         posts = self._find_posts()
@@ -163,13 +163,13 @@ class BaseEngagementBot(ABC):
                 comment_box.click()
                 comment_box.send_keys(comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Commented: {comment}")
+                logger.info(f" Commented: {comment}")
                 self._wait((4, 6))
             except Exception as e:
-                logger.warning(f"⚠️ Could not comment on a post: {e}")
+                logger.warning(f"️ Could not comment on a post: {e}")
 
     def follow_users(self):
-        logger.info(f"➕ Following users on {self.platform.capitalize()}...")
+        logger.info(f" Following users on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((5, 8))
         users_followed = []
@@ -182,18 +182,18 @@ class BaseEngagementBot(ABC):
                 follow_button = self._find_follow_button()
                 follow_button.click()
                 users_followed.append(profile_url)
-                logger.info(f"➕ Followed: {profile_url}")
+                logger.info(f" Followed: {profile_url}")
                 self._wait((10, 15))
             except Exception as e:
-                logger.warning(f"⚠️ Could not follow user: {e}")
+                logger.warning(f"️ Could not follow user: {e}")
         if users_followed:
             self._log_followed_users(users_followed)
         return users_followed
 
     def unfollow_non_returners(self, days_threshold=3):
-        logger.info(f"➖ Unfollowing non-returners on {self.platform.capitalize()}...")
+        logger.info(f" Unfollowing non-returners on {self.platform.capitalize()}...")
         if not os.path.exists(self.follow_db):
-            logger.warning("⚠️ No follow database found.")
+            logger.warning("️ No follow database found.")
             return
         with open(self.follow_db, "r") as f:
             follow_data = json.load(f)
@@ -210,13 +210,13 @@ class BaseEngagementBot(ABC):
                     follow_data[user]["status"] = "unfollowed"
                     unfollowed.append(user)
                 except Exception as e:
-                    logger.warning(f"⚠️ Could not unfollow {user}: {e}")
+                    logger.warning(f"️ Could not unfollow {user}: {e}")
         with open(self.follow_db, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"➖ Unfollowed {len(unfollowed)} users on {self.platform.capitalize()}.")
+        logger.info(f" Unfollowed {len(unfollowed)} users on {self.platform.capitalize()}.")
 
     def go_viral(self):
-        logger.info(f"🔥 Activating viral mode on {self.platform.capitalize()}...")
+        logger.info(f" Activating viral mode on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((3, 5))
         posts = self._find_posts()
@@ -234,10 +234,10 @@ class BaseEngagementBot(ABC):
                 comment_box.click()
                 comment_box.send_keys(comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Viral comment posted: {comment}")
+                logger.info(f" Viral comment posted: {comment}")
                 self._wait((2, 3))
             except Exception as e:
-                logger.warning(f"⚠️ Viral action failed: {e}")
+                logger.warning(f"️ Viral action failed: {e}")
 
     def _log_followed_users(self, users):
         if not users:
@@ -251,7 +251,7 @@ class BaseEngagementBot(ABC):
             follow_data[user] = {"followed_at": datetime.utcnow().isoformat(), "status": "followed"}
         with open(self.follow_db, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"💾 Logged {len(users)} new follows.")
+        logger.info(f" Logged {len(users)} new follows.")
 
     # -- Abstract Helpers (platform-specific implementations) --
     @abstractmethod
@@ -286,9 +286,9 @@ class BaseEngagementBot(ABC):
 
     # -- Daily Session Runner --
     def run_daily_session(self):
-        logger.info(f"🚀 Running daily session for {self.platform.capitalize()}...")
+        logger.info(f" Running daily session for {self.platform.capitalize()}...")
         if not self.login():
-            logger.error(f"❌ Login failed for {self.platform.capitalize()}. Ending session.")
+            logger.error(f" Login failed for {self.platform.capitalize()}. Ending session.")
             return
         hashtags = ["automation", "systemconvergence", "strategicgrowth"]
         comments = []
@@ -300,7 +300,7 @@ class BaseEngagementBot(ABC):
         self.follow_users()
         self.unfollow_non_returners()
         self.go_viral()
-        logger.info(f"✅ {self.platform.capitalize()} session complete.")
+        logger.info(f" {self.platform.capitalize()} session complete.")
 
 # -------------------------------------------------
 # LinkedIn Engagement Bot Implementation
@@ -337,13 +337,13 @@ class LinkedInEngagementBot(BaseEngagementBot):
             password_input.send_keys(Keys.RETURN)
             self._wait((4, 6))
         except Exception as e:
-            logger.error(f"❌ Auto-login error on LinkedIn: {e}")
+            logger.error(f" Auto-login error on LinkedIn: {e}")
             raise
 
     def post(self, content_prompt):
-        logger.info("🚀 Attempting to post on LinkedIn...")
+        logger.info(" Attempting to post on LinkedIn...")
         if not self.login():
-            logger.error("❌ LinkedIn login failed. Cannot post.")
+            logger.error(" LinkedIn login failed. Cannot post.")
             return {"platform": "linkedin", "status": "failed", "details": "Not logged in"}
         content = self.ai_agent.ask(
             prompt=content_prompt,
@@ -370,11 +370,11 @@ class LinkedInEngagementBot(BaseEngagementBot):
             )
             post_button.click()
             self._wait((4, 6))
-            logger.info("✅ LinkedIn post published successfully.")
+            logger.info(" LinkedIn post published successfully.")
             write_json_log("linkedin", "success", message="Post dispatched successfully.")
             return {"platform": "linkedin", "status": "success", "details": "Post published"}
         except Exception as e:
-            logger.error(f"🚨 LinkedIn post failed: {e}")
+            logger.error(f" LinkedIn post failed: {e}")
             write_json_log("linkedin", "error", message=f"Post failed: {e}")
             return {"platform": "linkedin", "status": "failed", "details": str(e)}
 
@@ -392,7 +392,7 @@ class LinkedInEngagementBot(BaseEngagementBot):
         try:
             return post.find_element(By.XPATH, ".//a[contains(@href, '/in/')]").get_attribute("href")
         except Exception as e:
-            logger.error(f"❌ Could not extract profile URL: {e}")
+            logger.error(f" Could not extract profile URL: {e}")
             raise
 
     def _find_follow_button(self):
@@ -566,7 +566,7 @@ class LinkedinStrategy(BasePlatformStrategy):
     
     def login(self) -> bool:
         """Log in to LinkedIn."""
-        self.logger.info("🌐 Initiating LinkedIn login...")
+        self.logger.info(" Initiating LinkedIn login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -577,7 +577,7 @@ class LinkedinStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info("✅ Logged into LinkedIn via cookies")
+                self.logger.info(" Logged into LinkedIn via cookies")
                 return True
             
             # Try credential login
@@ -603,7 +603,7 @@ class LinkedinStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "linkedin")
-                        self.logger.info("✅ Logged into LinkedIn via credentials")
+                        self.logger.info(" Logged into LinkedIn via credentials")
                         return True
                 except Exception as e:
                     self.logger.error(f"LinkedIn auto-login failed: {e}")
@@ -629,7 +629,7 @@ class LinkedinStrategy(BasePlatformStrategy):
     
     def post_content(self, content: str) -> bool:
         """Post content to LinkedIn."""
-        self.logger.info("🚀 Posting content to LinkedIn...")
+        self.logger.info(" Posting content to LinkedIn...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -658,7 +658,7 @@ class LinkedinStrategy(BasePlatformStrategy):
             post_button.click()
             self._wait((4, 6))
             
-            self.logger.info("✅ LinkedIn post published successfully")
+            self.logger.info(" LinkedIn post published successfully")
             return True
         except Exception as e:
             self.logger.error(f"Error posting to LinkedIn: {e}")
@@ -666,7 +666,7 @@ class LinkedinStrategy(BasePlatformStrategy):
     
     def run_daily_strategy_session(self):
         """Run complete daily LinkedIn strategy session."""
-        self.logger.info("🚀 Starting Full LinkedIn Strategy Session")
+        self.logger.info(" Starting Full LinkedIn Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -701,7 +701,7 @@ class LinkedinStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info("✅ LinkedIn Strategy Session Complete")
+            self.logger.info(" LinkedIn Strategy Session Complete")
         except Exception as e:
             self.logger.error(f"Error in LinkedIn strategy session: {e}")
             self.cleanup()

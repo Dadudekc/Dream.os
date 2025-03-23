@@ -46,9 +46,9 @@ def retry_on_failure(max_attempts=MAX_ATTEMPTS, delay=2):
                     return func(*args, **kwargs)
                 except Exception as e:
                     attempts += 1
-                    logger.warning(f"⚠️ Attempt {attempts} in {func.__name__} failed: {e}")
+                    logger.warning(f"️ Attempt {attempts} in {func.__name__} failed: {e}")
                     time.sleep(delay * attempts)
-            logger.error(f"❌ All {max_attempts} attempts failed in {func.__name__}.")
+            logger.error(f" All {max_attempts} attempts failed in {func.__name__}.")
             raise Exception(f"Max retry reached for {func.__name__}")
         return wrapper_retry
     return decorator_retry
@@ -104,7 +104,7 @@ class InstagramBot:
             service=Service(ChromeDriverManager().install()),
             options=options
         )
-        logger.info("✅ Instagram driver initialized with mobile emulation.")
+        logger.info(" Instagram driver initialized with mobile emulation.")
         return driver
 
     def _wait(self, custom_range=None):
@@ -120,7 +120,7 @@ class InstagramBot:
         """
         Log into Instagram via cookies first; fallback to credential login.
         """
-        logger.info(f"🌐 Logging into {self.PLATFORM.capitalize()}")
+        logger.info(f" Logging into {self.PLATFORM.capitalize()}")
         self.driver.get(self.LOGIN_URL)
         self._wait()
 
@@ -129,13 +129,13 @@ class InstagramBot:
         self.driver.refresh()
         self._wait()
         if self.is_logged_in():
-            logger.info(f"✅ Logged in via cookies on {self.PLATFORM.capitalize()}")
+            logger.info(f" Logged in via cookies on {self.PLATFORM.capitalize()}")
             write_json_log(self.PLATFORM, "successful", tags=["cookie_login"])
             return True
 
         # Fallback to credential-based login
         if not self.email or not self.password:
-            logger.error("❌ Missing Instagram credentials.")
+            logger.error(" Missing Instagram credentials.")
             write_json_log(self.PLATFORM, "failed", tags=["auto_login"], ai_output="Missing credentials.")
             return False
 
@@ -147,27 +147,27 @@ class InstagramBot:
             username_input.send_keys(self.email)
             password_input.send_keys(self.password)
             password_input.send_keys(Keys.RETURN)
-            logger.info("📨 Credentials submitted. Waiting for login...")
+            logger.info(" Credentials submitted. Waiting for login...")
             self._wait((5, 8))
         except Exception as e:
-            logger.error(f"🚨 Login error: {e}")
+            logger.error(f" Login error: {e}")
             write_json_log(self.PLATFORM, "failed", tags=["auto_login"], ai_output=str(e))
 
         if self.is_logged_in():
             self.cookie_manager.save_cookies(self.driver, self.PLATFORM)
             write_json_log(self.PLATFORM, "successful", tags=["auto_login"])
-            logger.info(f"✅ Successfully logged in to {self.PLATFORM.capitalize()}")
+            logger.info(f" Successfully logged in to {self.PLATFORM.capitalize()}")
             return True
 
-        logger.warning("⚠️ Auto-login failed. Awaiting manual login...")
+        logger.warning("️ Auto-login failed. Awaiting manual login...")
         if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, self.PLATFORM):
             self.cookie_manager.save_cookies(self.driver, self.PLATFORM)
             write_json_log(self.PLATFORM, "successful", tags=["manual_login"])
-            logger.info(f"✅ Manual login successful for {self.PLATFORM.capitalize()}")
+            logger.info(f" Manual login successful for {self.PLATFORM.capitalize()}")
             return True
 
         write_json_log(self.PLATFORM, "failed", tags=["manual_login"])
-        logger.error(f"❌ Manual login failed for {self.PLATFORM.capitalize()}")
+        logger.error(f" Manual login failed for {self.PLATFORM.capitalize()}")
         return False
 
     @retry_on_failure()
@@ -179,9 +179,9 @@ class InstagramBot:
         self._wait((3, 5))
         try:
             if "login" not in self.driver.current_url.lower():
-                logger.debug(f"✅ {self.PLATFORM.capitalize()} session active.")
+                logger.debug(f" {self.PLATFORM.capitalize()} session active.")
                 return True
-            logger.debug(f"🔎 {self.PLATFORM.capitalize()} session inactive.")
+            logger.debug(f" {self.PLATFORM.capitalize()} session inactive.")
             return False
         except Exception:
             return False
@@ -194,9 +194,9 @@ class InstagramBot:
         """
         Create and publish a new Instagram post with AI-generated caption.
         """
-        logger.info(f"📤 Creating post on {self.PLATFORM.capitalize()}...")
+        logger.info(f" Creating post on {self.PLATFORM.capitalize()}...")
         if not self.is_logged_in():
-            logger.error(f"❌ Cannot post; not logged in to {self.PLATFORM.capitalize()}")
+            logger.error(f" Cannot post; not logged in to {self.PLATFORM.capitalize()}")
             return False
 
         # Generate caption using AI (fallback to prompt if necessary)
@@ -222,7 +222,7 @@ class InstagramBot:
                 EC.presence_of_element_located((By.XPATH, "//input[@accept='image/jpeg,image/png']"))
             )
             file_input.send_keys(image_path)
-            logger.info("📂 Image uploaded.")
+            logger.info(" Image uploaded.")
             self._wait((3, 5))
 
             # Click "Next" (may need to repeat if UI requires two steps)
@@ -238,7 +238,7 @@ class InstagramBot:
                 EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='Write a caption…']"))
             )
             caption_box.send_keys(caption)
-            logger.info(f"📝 Caption added: {caption[:50]}...")
+            logger.info(f" Caption added: {caption[:50]}...")
             self._wait((2, 3))
 
             # Share the post
@@ -248,12 +248,12 @@ class InstagramBot:
             share_button.click()
             self._wait((5, 7))
 
-            logger.info("✅ Instagram post shared successfully.")
+            logger.info(" Instagram post shared successfully.")
             write_json_log(self.PLATFORM, "successful", tags=["post"])
             return True
 
         except Exception as e:
-            logger.error(f"🚨 Failed to post on Instagram: {e}")
+            logger.error(f" Failed to post on Instagram: {e}")
             write_json_log(self.PLATFORM, "failed", tags=["post"], ai_output=str(e))
             return False
 
@@ -265,7 +265,7 @@ class InstagramBot:
         """
         Like a specified number of posts for a given hashtag.
         """
-        logger.info(f"❤️ Liking posts for #{hashtag}...")
+        logger.info(f"️ Liking posts for #{hashtag}...")
         self.driver.get(self.HASHTAG_URL_TEMPLATE.format(hashtag))
         self._wait((5, 8))
         post_links = self._gather_post_links(max_links=max_likes)
@@ -277,17 +277,17 @@ class InstagramBot:
                     EC.element_to_be_clickable((By.XPATH, "//span[@aria-label='Like']"))
                 )
                 like_button.click()
-                logger.info(f"❤️ Liked post: {link}")
+                logger.info(f"️ Liked post: {link}")
                 self._wait((2, 4))
             except Exception as e:
-                logger.warning(f"⚠️ Could not like post {link}: {e}")
+                logger.warning(f"️ Could not like post {link}: {e}")
 
     @retry_on_failure()
     def comment_on_posts(self, hashtag, comments, max_comments=5):
         """
         Comment on a specified number of posts for a given hashtag.
         """
-        logger.info(f"💬 Commenting on posts for #{hashtag}...")
+        logger.info(f" Commenting on posts for #{hashtag}...")
         self.driver.get(self.HASHTAG_URL_TEMPLATE.format(hashtag))
         self._wait((5, 8))
         post_links = self._gather_post_links(max_links=max_comments)
@@ -300,10 +300,10 @@ class InstagramBot:
                 chosen_comment = random.choice(comments)
                 comment_box.send_keys(chosen_comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Commented on {link}: '{chosen_comment}'")
+                logger.info(f" Commented on {link}: '{chosen_comment}'")
                 self._wait((4, 6))
             except Exception as e:
-                logger.warning(f"⚠️ Could not comment on post {link}: {e}")
+                logger.warning(f"️ Could not comment on post {link}: {e}")
 
     def _gather_post_links(self, max_links=10):
         """
@@ -323,7 +323,7 @@ class InstagramBot:
             if new_height == last_height:
                 break
             last_height = new_height
-        logger.info(f"🔗 Collected {len(post_links)} post links.")
+        logger.info(f" Collected {len(post_links)} post links.")
         return list(post_links)
 
     @retry_on_failure()
@@ -331,7 +331,7 @@ class InstagramBot:
         """
         Follow users based on posts under a given hashtag.
         """
-        logger.info(f"🚀 Following users from posts under #{hashtag}...")
+        logger.info(f" Following users from posts under #{hashtag}...")
         self.driver.get(self.HASHTAG_URL_TEMPLATE.format(hashtag))
         self._wait((5, 8))
         post_links = self._gather_post_links()
@@ -349,13 +349,13 @@ class InstagramBot:
                 self._wait((3, 6))
                 follow_button = self.driver.find_element("xpath", "//button[contains(text(), 'Follow')]")
                 follow_button.click()
-                logger.info(f"➕ Followed: {profile_url}")
+                logger.info(f" Followed: {profile_url}")
                 write_json_log(self.PLATFORM, "successful", tags=["follow", f"#{hashtag}"], ai_output=profile_url)
                 follows_done += 1
                 followed_users.append(profile_url)
                 self._wait((10, 15))
             except Exception as e:
-                logger.error(f"❌ Error following user from post {post}: {e}")
+                logger.error(f" Error following user from post {post}: {e}")
         return followed_users
 
     @retry_on_failure()
@@ -371,10 +371,10 @@ class InstagramBot:
             self._wait((1, 3))
             confirm_button = self.driver.find_element("xpath", "//button[text()='Unfollow']")
             confirm_button.click()
-            logger.info(f"➖ Unfollowed: {profile_url}")
+            logger.info(f" Unfollowed: {profile_url}")
             return True
         except Exception as e:
-            logger.error(f"❌ Error unfollowing {profile_url}: {e}")
+            logger.error(f" Error unfollowing {profile_url}: {e}")
             return False
 
 # -------------------------------------------------
@@ -389,9 +389,9 @@ class InstagramEngagementBot:
         self.ai = AIChatAgent(model="gpt-4", tone="Victor")
 
     def run_daily_session(self):
-        logger.info("🚀 Starting Instagram Daily Engagement Session")
+        logger.info(" Starting Instagram Daily Engagement Session")
         if not InstagramBot(driver=self.driver).login():
-            logger.error("❌ Login failed. Ending session.")
+            logger.error(" Login failed. Ending session.")
             return
         comments = self.generate_ai_comments()
         self.like_posts()
@@ -399,7 +399,7 @@ class InstagramEngagementBot:
         self.follow_users()
         self.unfollow_non_returners()
         self.go_viral()
-        logger.info("✅ Daily Engagement Complete.")
+        logger.info(" Daily Engagement Complete.")
 
     def generate_ai_comments(self):
         comments = []
@@ -409,27 +409,27 @@ You are Victor. Write a raw, insightful comment on a post with hashtag #{tag}.
 Speak directly and authentically, inspiring community discussion.
 """
             response = self.ai.ask(prompt)
-            logger.info(f"📝 Generated comment for #{tag}: {response}")
+            logger.info(f" Generated comment for #{tag}: {response}")
             comments.append(response.strip())
         return comments
 
     def like_posts(self):
         for tag in self.hashtags:
             max_likes = random.randint(3, 6)
-            logger.info(f"❤️ Liking {max_likes} posts for #{tag}")
+            logger.info(f"️ Liking {max_likes} posts for #{tag}")
             InstagramBot(driver=self.driver).like_posts(tag, max_likes=max_likes)
 
     def comment_on_posts(self, comments):
         for tag, comment in zip(self.hashtags, comments):
             max_comments = random.randint(2, 4)
-            logger.info(f"💬 Commenting on posts for #{tag}")
+            logger.info(f" Commenting on posts for #{tag}")
             InstagramBot(driver=self.driver).comment_on_posts(tag, [comment], max_comments=max_comments)
 
     def follow_users(self):
         users_followed = []
         for tag in self.hashtags:
             max_follows = random.randint(2, 5)
-            logger.info(f"➕ Following {max_follows} users from #{tag}")
+            logger.info(f" Following {max_follows} users from #{tag}")
             users = InstagramBot(driver=self.driver).follow_users(tag, max_follows=max_follows)
             users_followed.extend(users)
         if users_followed:
@@ -437,7 +437,7 @@ Speak directly and authentically, inspiring community discussion.
 
     def unfollow_non_returners(self, days_threshold=3):
         if not os.path.exists(self.FOLLOW_DB):
-            logger.warning("⚠️ No follow data found.")
+            logger.warning("️ No follow data found.")
             return
         with open(self.FOLLOW_DB, "r") as f:
             follow_data = json.load(f)
@@ -451,7 +451,7 @@ Speak directly and authentically, inspiring community discussion.
                     unfollowed.append(user)
         with open(self.FOLLOW_DB, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"➖ Unfollowed {len(unfollowed)} users not following back.")
+        logger.info(f" Unfollowed {len(unfollowed)} users not following back.")
 
     def _log_followed_users(self, users):
         if not users:
@@ -465,7 +465,7 @@ Speak directly and authentically, inspiring community discussion.
             follow_data[user] = {"followed_at": datetime.utcnow().isoformat(), "status": "followed"}
         with open(self.FOLLOW_DB, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"💾 Logged {len(users)} new follows.")
+        logger.info(f" Logged {len(users)} new follows.")
 
     def go_viral(self):
         viral_prompt = (
@@ -477,7 +477,7 @@ Speak directly and authentically, inspiring community discussion.
         time.sleep(random.uniform(3, 5))
         posts = self.driver.find_elements("css selector", "article")
         if not posts:
-            logger.warning("⚠️ No trending posts found for viral engagement.")
+            logger.warning("️ No trending posts found for viral engagement.")
             return
         random.shuffle(posts)
         for post in posts[:3]:
@@ -497,10 +497,10 @@ Speak directly and authentically, inspiring community discussion.
                 time.sleep(random.uniform(1, 2))
                 comment_field.send_keys(comment)
                 comment_field.send_keys(Keys.RETURN)
-                logger.info(f"💬 Viral mode: Commented on trending post: {comment}")
+                logger.info(f" Viral mode: Commented on trending post: {comment}")
                 time.sleep(random.uniform(2, 3))
             except Exception as e:
-                logger.warning(f"⚠️ Viral engagement error on a trending post: {e}")
+                logger.warning(f"️ Viral engagement error on a trending post: {e}")
                 continue
 
 # -------------------------------------------------
@@ -659,7 +659,7 @@ class InstagramStrategy(BasePlatformStrategy):
             service=Service(ChromeDriverManager().install()),
             options=options
         )
-        self.logger.info("✅ Instagram driver initialized with mobile emulation.")
+        self.logger.info(" Instagram driver initialized with mobile emulation.")
         return driver
     
     def _wait(self, custom_range=None):
@@ -670,7 +670,7 @@ class InstagramStrategy(BasePlatformStrategy):
     
     def login(self) -> bool:
         """Log in to Instagram."""
-        self.logger.info("🌐 Initiating Instagram login...")
+        self.logger.info(" Initiating Instagram login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -681,7 +681,7 @@ class InstagramStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info("✅ Logged into Instagram via cookies")
+                self.logger.info(" Logged into Instagram via cookies")
                 return True
             
             # Try credential login
@@ -698,7 +698,7 @@ class InstagramStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "instagram")
-                        self.logger.info("✅ Logged into Instagram via credentials")
+                        self.logger.info(" Logged into Instagram via credentials")
                         return True
                 except Exception as e:
                     self.logger.error(f"Instagram auto-login failed: {e}")
@@ -725,7 +725,7 @@ class InstagramStrategy(BasePlatformStrategy):
     
     def post_content(self, content: str, image_path: str = None) -> bool:
         """Post content to Instagram."""
-        self.logger.info("🚀 Posting content to Instagram...")
+        self.logger.info(" Posting content to Instagram...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -750,7 +750,7 @@ class InstagramStrategy(BasePlatformStrategy):
                 EC.presence_of_element_located((By.XPATH, "//input[@accept='image/jpeg,image/png']"))
             )
             file_input.send_keys(image_path)
-            self.logger.info("📂 Image uploaded.")
+            self.logger.info(" Image uploaded.")
             self._wait((3, 5))
             
             # Click "Next" (may need to repeat if UI requires two steps)
@@ -766,7 +766,7 @@ class InstagramStrategy(BasePlatformStrategy):
                 EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='Write a caption…']"))
             )
             caption_box.send_keys(content)
-            self.logger.info(f"📝 Caption added: {content[:50]}...")
+            self.logger.info(f" Caption added: {content[:50]}...")
             self._wait((2, 3))
             
             # Share the post
@@ -776,7 +776,7 @@ class InstagramStrategy(BasePlatformStrategy):
             share_button.click()
             self._wait((5, 7))
             
-            self.logger.info("✅ Instagram post shared successfully")
+            self.logger.info(" Instagram post shared successfully")
             return True
         except Exception as e:
             self.logger.error(f"Error posting to Instagram: {e}")
@@ -784,7 +784,7 @@ class InstagramStrategy(BasePlatformStrategy):
     
     def run_daily_strategy_session(self):
         """Run complete daily Instagram strategy session."""
-        self.logger.info("🚀 Starting Full Instagram Strategy Session")
+        self.logger.info(" Starting Full Instagram Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -817,7 +817,7 @@ class InstagramStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info("✅ Instagram Strategy Session Complete")
+            self.logger.info(" Instagram Strategy Session Complete")
         except Exception as e:
             self.logger.error(f"Error in Instagram strategy session: {e}")
             self.cleanup()
@@ -836,13 +836,13 @@ class InstagramStrategy(BasePlatformStrategy):
 
     def analyze_engagement_metrics(self):
         """Analyze engagement results to optimize strategy."""
-        self.logger.info("📊 Analyzing Instagram engagement metrics...")
+        self.logger.info(" Analyzing Instagram engagement metrics...")
         self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
         self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
         self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
-        self.logger.info(f"👍 Total Likes: {self.feedback_data['likes']}")
-        self.logger.info(f"💬 Total Comments: {self.feedback_data['comments']}")
-        self.logger.info(f"➕ Total Follows: {self.feedback_data['follows']}")
+        self.logger.info(f" Total Likes: {self.feedback_data['likes']}")
+        self.logger.info(f" Total Comments: {self.feedback_data['comments']}")
+        self.logger.info(f" Total Follows: {self.feedback_data['follows']}")
         self._save_feedback_data()
 
     def analyze_comment_sentiment(self, comment):
@@ -865,7 +865,7 @@ class InstagramStrategy(BasePlatformStrategy):
 
     def reward_top_engagers(self):
         """Reward top engaging followers."""
-        self.logger.info("🎉 Evaluating top engaging followers for rewards...")
+        self.logger.info(" Evaluating top engaging followers for rewards...")
         if os.path.exists(self.REWARD_DB):
             with open(self.REWARD_DB, "r") as f:
                 reward_data = json.load(f)
@@ -889,7 +889,7 @@ class InstagramStrategy(BasePlatformStrategy):
 
     def cross_platform_feedback_loop(self):
         """Merge engagement data from other platforms."""
-        self.logger.info("🌐 Merging cross-platform feedback loops for Instagram...")
+        self.logger.info(" Merging cross-platform feedback loops for Instagram...")
         twitter_data = {"likes": random.randint(8, 15), "comments": random.randint(3, 8)}
         facebook_data = {"likes": random.randint(10, 20), "comments": random.randint(5, 10)}
         unified_metrics = {
@@ -919,7 +919,7 @@ def start_scheduler():
         minute = random.randint(0, 59)
         scheduler.add_job(bot.run_daily_strategy_session, 'cron', hour=hour, minute=minute)
     scheduler.start()
-    logger.info("🕒 Scheduler started for Instagram strategy engagement.")
+    logger.info(" Scheduler started for Instagram strategy engagement.")
 
 # -------------------------------------------------
 # Quick Functional Wrapper for Instagram Posting
@@ -942,4 +942,4 @@ if __name__ == "__main__":
         while True:
             time.sleep(60)
     except (KeyboardInterrupt, SystemExit):
-        logger.info("🛑 Scheduler stopped by user.")
+        logger.info(" Scheduler stopped by user.")

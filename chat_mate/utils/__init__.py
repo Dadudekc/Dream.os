@@ -5,6 +5,7 @@ from . import SentimentAnalyzer
 from . import ai_output_logger
 from . import cookie_manager
 from . import driver_factory
+from . import emoji_cleaner
 from . import helpers
 from . import nltk_init
 from . import prompt_tuner
@@ -18,6 +19,7 @@ __all__ = [
     'ai_output_logger',
     'cookie_manager',
     'driver_factory',
+    'emoji_cleaner',
     'helpers',
     'nltk_init',
     'prompt_tuner',

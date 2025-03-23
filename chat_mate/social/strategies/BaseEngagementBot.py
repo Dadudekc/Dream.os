@@ -103,27 +103,27 @@ class BaseEngagementBot(ABC):
         Handles login using cookies first; if that fails, performs credential-based auto-login.
         Falls back to manual login if needed.
         """
-        logger.info(f"🌐 Initiating login for {self.platform.capitalize()}.")
+        logger.info(f" Initiating login for {self.platform.capitalize()}.")
         self.driver.get(self.login_url)
         self._wait()
         self.cookie_manager.load_cookies(self.driver, self.platform)
         self.driver.refresh()
         self._wait()
         if self.is_logged_in():
-            logger.info(f"✅ Logged into {self.platform.capitalize()} via cookies.")
+            logger.info(f" Logged into {self.platform.capitalize()} via cookies.")
             write_json_log(self.platform, "successful", tags=["cookie_login"])
             return True
         if not self.email or not self.password:
-            logger.warning(f"⚠️ Missing credentials for {self.platform.capitalize()}.")
+            logger.warning(f"️ Missing credentials for {self.platform.capitalize()}.")
             return False
         self._login_with_credentials()
         if not self.is_logged_in():
-            logger.warning(f"⚠️ Auto-login failed for {self.platform.capitalize()}. Awaiting manual login.")
+            logger.warning(f"️ Auto-login failed for {self.platform.capitalize()}. Awaiting manual login.")
             if not self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, self.platform):
-                logger.error(f"❌ Manual login failed for {self.platform.capitalize()}.")
+                logger.error(f" Manual login failed for {self.platform.capitalize()}.")
                 return False
         self.cookie_manager.save_cookies(self.driver, self.platform)
-        logger.info(f"✅ Logged into {self.platform.capitalize()} successfully.")
+        logger.info(f" Logged into {self.platform.capitalize()} successfully.")
         return True
 
     @abstractmethod
@@ -149,7 +149,7 @@ class BaseEngagementBot(ABC):
     # -------------------------------
     def like_posts(self):
         """Like posts from the trending page."""
-        logger.info(f"❤️ Liking posts on {self.platform.capitalize()}...")
+        logger.info(f"️ Liking posts on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((5, 8))
         posts = self._find_posts()
@@ -157,14 +157,14 @@ class BaseEngagementBot(ABC):
             try:
                 like_button = self._find_like_button(post)
                 like_button.click()
-                logger.info("❤️ Liked a post.")
+                logger.info("️ Liked a post.")
                 self._wait((2, 4))
             except Exception as e:
-                logger.warning(f"⚠️ Could not like post: {e}")
+                logger.warning(f"️ Could not like post: {e}")
 
     def comment_on_posts(self, comments):
         """Comment on posts from the trending page using provided comment texts."""
-        logger.info(f"💬 Commenting on posts for {self.platform.capitalize()}...")
+        logger.info(f" Commenting on posts for {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((5, 8))
         posts = self._find_posts()
@@ -174,14 +174,14 @@ class BaseEngagementBot(ABC):
                 comment_box.click()
                 comment_box.send_keys(comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Commented: {comment}")
+                logger.info(f" Commented: {comment}")
                 self._wait((4, 6))
             except Exception as e:
-                logger.warning(f"⚠️ Could not comment on post: {e}")
+                logger.warning(f"️ Could not comment on post: {e}")
 
     def follow_users(self):
         """Follow users based on posts from the trending page."""
-        logger.info(f"➕ Following users on {self.platform.capitalize()}...")
+        logger.info(f" Following users on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((5, 8))
         users_followed = []
@@ -194,18 +194,18 @@ class BaseEngagementBot(ABC):
                 follow_button = self._find_follow_button()
                 follow_button.click()
                 users_followed.append(profile_url)
-                logger.info(f"➕ Followed {profile_url}")
+                logger.info(f" Followed {profile_url}")
                 self._wait((10, 15))
             except Exception as e:
-                logger.warning(f"⚠️ Could not follow user: {e}")
+                logger.warning(f"️ Could not follow user: {e}")
         if users_followed:
             self._log_followed_users(users_followed)
 
     def unfollow_non_returners(self, days_threshold=3):
         """Unfollow users who have not reciprocated after a threshold of days."""
-        logger.info(f"➖ Unfollowing non-returners on {self.platform.capitalize()}...")
+        logger.info(f" Unfollowing non-returners on {self.platform.capitalize()}...")
         if not os.path.exists(self.follow_db):
-            logger.warning("⚠️ No follow database found.")
+            logger.warning("️ No follow database found.")
             return
         with open(self.follow_db, "r") as f:
             follow_data = json.load(f)
@@ -222,14 +222,14 @@ class BaseEngagementBot(ABC):
                     follow_data[user]["status"] = "unfollowed"
                     unfollowed.append(user)
                 except Exception as e:
-                    logger.warning(f"⚠️ Could not unfollow {user}: {e}")
+                    logger.warning(f"️ Could not unfollow {user}: {e}")
         with open(self.follow_db, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"➖ Unfollowed {len(unfollowed)} users on {self.platform.capitalize()}.")
+        logger.info(f" Unfollowed {len(unfollowed)} users on {self.platform.capitalize()}.")
 
     def go_viral(self):
         """Perform viral engagement actions by liking and commenting on top posts."""
-        logger.info(f"🔥 Activating viral mode on {self.platform.capitalize()}...")
+        logger.info(f" Activating viral mode on {self.platform.capitalize()}...")
         self.driver.get(self.trending_url)
         self._wait((3, 5))
         posts = self._find_posts()
@@ -247,10 +247,10 @@ class BaseEngagementBot(ABC):
                 comment_box.click()
                 comment_box.send_keys(comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Viral comment posted: {comment}")
+                logger.info(f" Viral comment posted: {comment}")
                 self._wait((2, 3))
             except Exception as e:
-                logger.warning(f"⚠️ Viral action failed: {e}")
+                logger.warning(f"️ Viral action failed: {e}")
 
     def _log_followed_users(self, users):
         """Logs new follows to a local JSON tracker."""
@@ -265,7 +265,7 @@ class BaseEngagementBot(ABC):
             follow_data[user] = {"followed_at": datetime.utcnow().isoformat(), "status": "followed"}
         with open(self.follow_db, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"💾 Logged {len(users)} new follows.")
+        logger.info(f" Logged {len(users)} new follows.")
 
     # -------------------------------
     # Abstract Helper Methods:
@@ -306,9 +306,9 @@ class BaseEngagementBot(ABC):
     # -------------------------------------------
     def run_daily_session(self):
         """Runs a full daily engagement session for the platform."""
-        logger.info(f"🚀 Running daily session for {self.platform.capitalize()}...")
+        logger.info(f" Running daily session for {self.platform.capitalize()}...")
         if not self.login():
-            logger.error(f"❌ Login failed for {self.platform.capitalize()}. Ending session.")
+            logger.error(f" Login failed for {self.platform.capitalize()}. Ending session.")
             return
         hashtags = ["automation", "systemconvergence", "strategicgrowth"]
         comments = []
@@ -321,4 +321,4 @@ class BaseEngagementBot(ABC):
         self.follow_users()
         self.unfollow_non_returners()
         self.go_viral()
-        logger.info(f"✅ {self.platform.capitalize()} session complete.")
+        logger.info(f" {self.platform.capitalize()} session complete.")

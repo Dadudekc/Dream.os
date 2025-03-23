@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (
 )
 import threading
 import os
+import logging
 
 # Core Services
 from core.CycleExecutionService import CycleExecutionService
@@ -20,23 +21,55 @@ class DreamscapeGenerationTab(QWidget):
     2. UnifiedDreamscapeGenerator for advanced Dreamscape episode creation
     """
 
-    def __init__(self, prompt_manager=None, chat_manager=None, response_handler=None, memory_manager=None, discord_manager=None):
+    def __init__(self, prompt_manager=None, chat_manager=None, response_handler=None, 
+                 memory_manager=None, discord_manager=None, ui_logic=None, 
+                 config_manager=None, logger=None):
+        """
+        Initialize the DreamscapeGenerationTab.
+        
+        Supports two initialization styles:
+        1. Service-based: Directly pass service instances (prompt_manager, chat_manager, etc.)
+        2. UI logic-based: Pass ui_logic, config_manager and logger
+        
+        Args:
+            prompt_manager: Service for managing prompts
+            chat_manager: Service for chat interactions
+            response_handler: Service for handling prompt responses
+            memory_manager: Service for memory management
+            discord_manager: Service for Discord integration
+            ui_logic: UI logic controller (alternative initialization)
+            config_manager: Configuration manager (alternative initialization)
+            logger: Logger instance (alternative initialization)
+        """
         super().__init__()
 
-        # Store managers
-        self.prompt_manager = prompt_manager
-        self.chat_manager = chat_manager
-        self.response_handler = response_handler
-        self.memory_manager = memory_manager
-        self.discord_manager = discord_manager
+        # Store references based on initialization style
+        self.ui_logic = ui_logic
+        self.config_manager = config_manager
+        self.logger = logger or logging.getLogger(__name__)
+        
+        # If UI logic is provided, try to get services from it
+        if ui_logic and hasattr(ui_logic, 'get_service'):
+            self.prompt_manager = ui_logic.get_service('prompt_manager') or prompt_manager
+            self.chat_manager = ui_logic.get_service('chat_manager') or chat_manager
+            self.response_handler = ui_logic.get_service('response_handler') or response_handler
+            self.memory_manager = ui_logic.get_service('memory_manager') or memory_manager
+            self.discord_manager = ui_logic.get_service('discord_service') or discord_manager
+        else:
+            # Direct service initialization
+            self.prompt_manager = prompt_manager
+            self.chat_manager = chat_manager
+            self.response_handler = response_handler
+            self.memory_manager = memory_manager
+            self.discord_manager = discord_manager
 
         # Initialize new services
         self.cycle_service = CycleExecutionService(
-            prompt_manager=prompt_manager,
-            chat_manager=chat_manager,
-            response_handler=response_handler,
-            memory_manager=memory_manager,
-            discord_manager=discord_manager
+            prompt_manager=self.prompt_manager,
+            chat_manager=self.chat_manager,
+            response_handler=self.response_handler,
+            memory_manager=self.memory_manager,
+            discord_manager=self.discord_manager
         )
         self.prompt_handler = PromptResponseHandler()
         self.discord_processor = DiscordQueueProcessor()
@@ -73,7 +106,10 @@ class DreamscapeGenerationTab(QWidget):
         Append messages to the output display and print to console.
         """
         self.output_display.append(message)
-        print(message)
+        if self.logger:
+            self.logger.info(message)
+        else:
+            print(message)
 
     def generate_dreamscape_episodes(self):
         """

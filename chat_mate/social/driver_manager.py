@@ -30,7 +30,7 @@ class DriverSession:
         self.driver = None
 
     def initialize_driver(self):
-        logger.info(f"🚀 Initializing driver for session: {self.session_id}")
+        logger.info(f" Initializing driver for session: {self.session_id}")
         options = self._build_chrome_options()
 
         try:
@@ -38,11 +38,11 @@ class DriverSession:
             self.driver = webdriver.Chrome(service=service, options=options)
             self._apply_stealth_settings()
 
-            logger.info(f"✅ Driver initialized for session {self.session_id}")
+            logger.info(f" Driver initialized for session {self.session_id}")
             return self.driver
 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize driver for session {self.session_id}: {e}")
+            logger.error(f" Failed to initialize driver for session {self.session_id}: {e}")
             self.cleanup_profile()
             sys.exit(1)
 
@@ -64,7 +64,7 @@ class DriverSession:
 
         # Proxy setup
         if self.proxy:
-            logger.info(f"🕵️ Using proxy for session {self.session_id}: {self.proxy}")
+            logger.info(f"️ Using proxy for session {self.session_id}: {self.proxy}")
             options.add_argument(f"--proxy-server={self.proxy}")
 
         # User agent spoofing
@@ -81,7 +81,7 @@ class DriverSession:
         profile_dir = self._get_profile_dir()
         os.makedirs(profile_dir, exist_ok=True)
         options.add_argument(f"--user-data-dir={profile_dir}")
-        logger.info(f"💾 Chrome profile directory: {profile_dir}")
+        logger.info(f" Chrome profile directory: {profile_dir}")
 
         return options
 
@@ -89,7 +89,7 @@ class DriverSession:
         if not self.driver:
             return
 
-        logger.debug(f"⚙️ Applying stealth settings for session {self.session_id}")
+        logger.debug(f"️ Applying stealth settings for session {self.session_id}")
         self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": """
                 Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
@@ -101,7 +101,7 @@ class DriverSession:
 
     def shutdown_driver(self):
         if self.driver:
-            logger.info(f"🛑 Shutting down driver for session {self.session_id}")
+            logger.info(f" Shutting down driver for session {self.session_id}")
             self.driver.quit()
             self.driver = None
 
@@ -113,10 +113,10 @@ class DriverSession:
                 logger.info(f"🧹 Cleaning up profile for session {self.session_id}")
                 shutil.rmtree(profile_dir)
             except Exception as e:
-                logger.warning(f"⚠️ Failed to remove profile directory {profile_dir}: {e}")
+                logger.warning(f"️ Failed to remove profile directory {profile_dir}: {e}")
 
     def restart_driver(self):
-        logger.info(f"♻️ Restarting driver for session {self.session_id}")
+        logger.info(f"️ Restarting driver for session {self.session_id}")
         self.shutdown_driver()
         return self.initialize_driver()
 
@@ -145,5 +145,5 @@ def get_multi_driver_sessions(session_ids, proxy_rotation=True, headless=False, 
         driver_session.initialize_driver()
         sessions.append(driver_session)
 
-    logger.info(f"🚀 {len(sessions)} driver sessions initialized.")
+    logger.info(f" {len(sessions)} driver sessions initialized.")
     return sessions

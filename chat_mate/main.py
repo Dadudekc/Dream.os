@@ -15,8 +15,15 @@ from core.logging.factories.LoggerFactory import LoggerFactory
 # GUI and Web imports
 from gui.DreamscapeMainWindow import DreamscapeMainWindow
 from gui.dreamscape_ui_logic import DreamscapeUILogic
+from gui.IntegratedMainWindow import IntegratedMainWindow
+from gui.components.prompt_panel import PromptPanel
+from gui.components.logs_panel import LogsPanel
+from gui.tabs.MainTabs import MainTabs
+from gui.tabs.PromptExecutionTab import PromptExecutionTab
+from gui.tabs.LogsTab import LogsTab
+from gui.tabs.ConfigurationTab import ConfigurationTab
+from gui.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from web.app import start_flask_app
-from gui.splash_screen import show_splash_screen
 from services.config_service import ConfigService
 from services.prompt_service import PromptService
 
@@ -74,14 +81,32 @@ def run_agent_dispatcher(services):
 
 def run_pyqt_gui(app, services):
     """Run the PyQt GUI application."""
-    # Initialize services
+    # Initialize UI logic
     ui_logic = DreamscapeUILogic()
-    ui_logic.service = services['prompt']
+    ui_logic.service = services['prompt']  # Example: assign the prompt service
 
-    # Create and show main window
+    # Extract required dependencies from the services dictionary
+    prompt_manager = services.get('prompt_manager')
+    config_manager = services.get('config_manager')
+    logger = services.get('logger')
+    discord_manager = services.get('discord_manager')  # Optional, if available
+    memory_manager = services.get('memory_manager')      # Optional, if available
+
+    # Now pass all dependencies to MainTabs
+    main_tabs = MainTabs(
+        ui_logic=ui_logic,
+        prompt_manager=prompt_manager,
+        config_manager=config_manager,
+        logger=logger,
+        discord_manager=discord_manager,
+        memory_manager=memory_manager
+    )
+
+    # Create your main window and set its central widget
     main_window = DreamscapeMainWindow(ui_logic)
+    main_window.setCentralWidget(main_tabs)
     main_window.show()
-
+    
     return main_window
 
 
@@ -108,7 +133,6 @@ def execute_mode(mode, services, app=None):
     elif mode == "gui":
         if not app:
             app = QApplication(sys.argv)
-
         run_pyqt_gui(app, services)
         sys.exit(app.exec_())
 
@@ -133,7 +157,6 @@ def execute_mode(mode, services, app=None):
         # Start PyQt GUI in main thread
         if not app:
             app = QApplication(sys.argv)
-
         run_pyqt_gui(app, services)
         sys.exit(app.exec_())
 
@@ -167,34 +190,21 @@ def main():
     parser.add_argument(
         "--mode",
         choices=["agent", "gui", "web", "all"],
-        default=None,
-        help="Execution mode selection."
+        default="gui",
+        help="Execution mode selection. Defaults to 'gui' if not specified."
     )
     args = parser.parse_args()
 
-    # Handle errors if present
+    # If there are errors and mode is not agent, show error dialog
     if errors and args.mode != "agent":
         app = QApplication(sys.argv)
         if not show_error_dialog(errors):
             logging.info("User aborted execution due to initialization errors.")
             return
 
-    # Direct execution if mode is set
-    if args.mode:
-        app = QApplication(sys.argv) if args.mode in ["gui", "all"] else None
-        execute_mode(args.mode, services, app=app)
-
-    else:
-        # No mode selected: show splash screen for mode selection
-        app = QApplication(sys.argv)
-        splash = show_splash_screen()
-
-        def on_mode_selected(mode):
-            splash.close()
-            execute_mode(mode, services, app=app)
-
-        splash.mode_selected.connect(on_mode_selected)
-        sys.exit(app.exec_())
+    # Execute the chosen mode
+    app = QApplication(sys.argv) if args.mode in ["gui", "all"] else None
+    execute_mode(args.mode, services, app=app)
 
 
 if __name__ == "__main__":

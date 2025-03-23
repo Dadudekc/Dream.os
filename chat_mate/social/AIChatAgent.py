@@ -13,6 +13,8 @@ from core.PromptEngine import PromptEngine
 PLATFORM = "AIChatAgent"
 OLLAMA_HOST = social_config.get_env("OLLAMA_HOST") or "http://127.0.0.1:11434"
 
+logger = logging.getLogger(__name__)
+
 class AIChatAgent:
     """
     AIChatAgent: Unified AI assistant optimized for context-rich, personalized interactions in Victor's voice.
@@ -40,7 +42,7 @@ class AIChatAgent:
         if self.provider == "openai":
             openai.api_key = social_config.get_env("OPENAI_API_KEY")
 
-        logger.info(f"🚀 AIChatAgent initialized with model: {self.model}, provider: {self.provider}")
+        logger.info(f" AIChatAgent initialized with model: {self.model}, provider: {self.provider}")
 
     def ask(
         self,
@@ -76,7 +78,7 @@ class AIChatAgent:
                 )
             return response
         except Exception as e:
-            logger.error(f"❌ AIChatAgent error ({self.provider}): {e}")
+            logger.error(f" AIChatAgent error ({self.provider}): {e}")
             write_json_log(
                 platform=PLATFORM,
                 status="failed",
@@ -101,7 +103,7 @@ class AIChatAgent:
             max_tokens=self.max_tokens
         )
         content = response['choices'][0]['message']['content'].strip()
-        logger.info("✅ OpenAI response received")
+        logger.info(" OpenAI response received")
         return content
 
     def _ask_ollama(self, prompt: str) -> str:
@@ -119,7 +121,7 @@ class AIChatAgent:
         content = response.json().get("response", "").strip()
         if not content:
             raise ValueError("No content received from Ollama.")
-        logger.info("✅ Ollama response received")
+        logger.info(" Ollama response received")
         return content
 
     def _build_prompt(self, user_prompt: str, additional_context: Optional[str], metadata: Optional[Dict[str, Any]]) -> str:
@@ -145,7 +147,7 @@ class AIChatAgent:
             interaction_id=interaction_id,
             chatgpt_url=None
         )
-        logger.info(f"📌 New ChatGPT thread initialized for interaction_id: {interaction_id}")
+        logger.info(f" New ChatGPT thread initialized for interaction_id: {interaction_id}")
 
     def append_to_chat_thread(self, interaction_id: str, message: str, role: str = "assistant"):
         """
@@ -162,7 +164,7 @@ class AIChatAgent:
             interaction_id=interaction_id,
             chatgpt_url=None
         )
-        logger.info(f"📌 Appended message to chat thread {interaction_id}")
+        logger.info(f" Appended message to chat thread {interaction_id}")
 
     def _log_interaction(self, prompt: str, response: str, metadata: Optional[Dict[str, Any]], interaction_id: Optional[str]):
         """
@@ -191,7 +193,7 @@ class AIChatAgent:
             tags=["ai_response", self.provider],
             ai_output=log_data
         )
-        logger.info("📝 Interaction logged successfully for fine-tuning & memory updates.")
+        logger.info(" Interaction logged successfully for fine-tuning & memory updates.")
 
 # ----------------------------------------------------------------
 # Example Updated Usage

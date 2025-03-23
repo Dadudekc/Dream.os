@@ -6,7 +6,7 @@ from core.AIOutputLogAnalyzer import AIOutputLogAnalyzer # Your class
 from social.social_config import social_config   # Singleton config w/ rate limits
 from social.log_writer import write_json_log     # Logger
 
-logger = logging.getLogger("AletheiaFeedbackLoopManager")
+logger = logging.getLogger(__name__)
 
 class AletheiaFeedbackLoopManager:
     """
@@ -18,12 +18,13 @@ class AletheiaFeedbackLoopManager:
 
     def __init__(self, log_dir="social/logs/json_logs", verbose=True):
         self.analyzer = AIOutputLogAnalyzer(log_dir=log_dir, verbose=verbose)
+        logger.info("Aletheia Feedback Loop Manager initialized.")
 
     def generate_feedback_loops(self):
         """
         Analyze logs ➜ generate feedback ➜ trigger adaptive loops.
         """
-        logger.info("🔎 Running feedback loop analysis...")
+        logger.info(" Running feedback loop analysis...")
 
         # Get raw summary
         summary = self.analyzer.summarize()
@@ -60,14 +61,14 @@ class AletheiaFeedbackLoopManager:
             event_type="system"
         )
 
-        logger.info("✅ Feedback loop executed.")
+        logger.info(" Feedback loop executed.")
         return feedback_loop_payload
 
     def _calculate_success_rate(self, summary):
         total = summary.get("total_entries", 1)
         successful = summary.get("successful", 0)
         success_rate = successful / total
-        logger.info(f"📊 Success Rate: {success_rate:.2%}")
+        logger.info(f" Success Rate: {success_rate:.2%}")
         return success_rate
 
     def _get_top_tags(self, summary, result_type="failed", top_n=5):
@@ -76,7 +77,7 @@ class AletheiaFeedbackLoopManager:
         """
         tag_counter = summary.get("tag_distribution", {})
         sorted_tags = sorted(tag_counter.items(), key=lambda x: x[1], reverse=True)
-        logger.info(f"🏷️  Top tags by {result_type}: {sorted_tags[:top_n]}")
+        logger.info(f"️  Top tags by {result_type}: {sorted_tags[:top_n]}")
         return sorted_tags[:top_n]
 
     def _auto_adjust_rate_limits(self, top_failed_tags):
@@ -93,7 +94,7 @@ class AletheiaFeedbackLoopManager:
                 new_cooldown = min(current_cooldown * 1.5, 3600)
 
                 social_config.rate_limits[platform][action]["cooldown"] = new_cooldown
-                logger.warning(f"🔧 Increased cooldown for {platform}:{action} ➜ {new_cooldown} sec")
+                logger.warning(f" Increased cooldown for {platform}:{action}  {new_cooldown} sec")
 
     # Optional Export for Dashboard or Discord
     def export_feedback_report(self, output_file="feedback_report.json"):
@@ -102,9 +103,12 @@ class AletheiaFeedbackLoopManager:
         try:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(loops, f, indent=4)
-            logger.info(f"📤 Feedback report exported to {output_file}")
+            logger.info(f" Feedback report exported to {output_file}")
         except Exception as e:
-            logger.error(f"❌ Failed to export feedback report: {e}")
+            logger.error(f" Failed to export feedback report: {e}")
+
+    def process_feedback(self, feedback):
+        logger.info(f"Processing feedback: {feedback}")
 
 
 # ---------------------------

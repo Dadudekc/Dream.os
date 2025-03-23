@@ -33,7 +33,7 @@ console_handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
-logger.debug(f"✅ Logging initialized at {SOCIAL_LOG_DIR}")
+logger.debug(f" Logging initialized at {SOCIAL_LOG_DIR}")
 
 # -------------------------------------------------------------------
 # Aletheia JSON Log Writer
@@ -66,10 +66,10 @@ def write_json_log(
         with open(file_path, "a", encoding="utf-8") as f:
             json.dump(log_entry, f)
             f.write("\n")
-        logger.debug(f"📝 JSON log recorded: {platform.upper()} [{event_type.upper()}]")
+        logger.debug(f" JSON log recorded: {platform.upper()} [{event_type.upper()}]")
 
     except Exception as e:
-        logger.exception(f"❌ Failed to write JSON log for {platform.upper()}: {e}")
+        logger.exception(f" Failed to write JSON log for {platform.upper()}: {e}")
 
     # Synchronous plain-text INFO log
     logger.info(f"[{platform.upper()}] {event_type.upper()} | Result: {result.upper()} | Tags: {tags} | AI Output: {ai_output or 'N/A'}")
@@ -98,11 +98,11 @@ def log_error(platform, error_msg, tags=None):
 #         payload = {"content": message}
 #         response = requests.post(webhook_url, json=payload)
 #         if response.status_code in [200, 204]:
-#             logger.info(f"📣 Discord alert sent: {message}")
+#             logger.info(f" Discord alert sent: {message}")
 #         else:
-#             logger.warning(f"⚠️ Discord alert failed. Status: {response.status_code}")
+#             logger.warning(f"️ Discord alert failed. Status: {response.status_code}")
 #     except Exception as e:
-#         logger.exception(f"❌ Failed to send Discord alert: {e}")
+#         logger.exception(f" Failed to send Discord alert: {e}")
 
 # -------------------------------------------------------------------
 # Future Extension: JSON Log Rotation (Optional)
@@ -121,14 +121,14 @@ def log_error(platform, error_msg, tags=None):
 #         rotated_file = f"{base_file}.{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.bak"
 #         rotated_path = os.path.join(JSON_LOG_DIR, rotated_file)
 #         os.rename(file_path, rotated_path)
-#         logger.info(f"🔄 Rotated JSON log: {rotated_file}")
+#         logger.info(f" Rotated JSON log: {rotated_file}")
 
 # -------------------------------------------------------------------
 # Example Usage (Local Testing)
 # -------------------------------------------------------------------
 
 if __name__ == "__main__":
-    logger.info("🚀 Running log writer test sequence...")
+    logger.info(" Running log writer test sequence...")
 
     log_login("twitter", tags=["cookie_login", "session_restore"])
     log_post("linkedin", result="successful", tags=["ai_generated", "scheduled"])
@@ -137,4 +137,4 @@ if __name__ == "__main__":
     # Uncomment if testing Discord alerts
     # send_discord_alert("VictorOS alert test!", webhook_url="YOUR_WEBHOOK_URL_HERE")
 
-    logger.info("✅ Log writer test complete.")
+    logger.info(" Log writer test complete.")

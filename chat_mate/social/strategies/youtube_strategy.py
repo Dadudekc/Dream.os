@@ -207,7 +207,7 @@ class YouTubeStrategy(BasePlatformStrategy):
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-infobars")
         driver = webdriver.Chrome(options=options)
-        self.logger.info("✅ YouTube driver initialized")
+        self.logger.info(" YouTube driver initialized")
         return driver
     
     def _wait(self, custom_range=None):
@@ -218,7 +218,7 @@ class YouTubeStrategy(BasePlatformStrategy):
     
     def login(self) -> bool:
         """Log in to YouTube."""
-        self.logger.info("🌐 Initiating YouTube login...")
+        self.logger.info(" Initiating YouTube login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -229,7 +229,7 @@ class YouTubeStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info("✅ Logged into YouTube via cookies")
+                self.logger.info(" Logged into YouTube via cookies")
                 return True
             
             # Try credential login
@@ -255,7 +255,7 @@ class YouTubeStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "youtube")
-                        self.logger.info("✅ Logged into YouTube via credentials")
+                        self.logger.info(" Logged into YouTube via credentials")
                         return True
                 except Exception as e:
                     self.logger.error(f"YouTube auto-login failed: {e}")
@@ -282,7 +282,7 @@ class YouTubeStrategy(BasePlatformStrategy):
     
     def post_video(self, video_path: str, title: str, description: str, tags: List[str] = None, is_short: bool = False) -> bool:
         """Post a video to YouTube."""
-        self.logger.info("🚀 Posting video to YouTube...")
+        self.logger.info(" Posting video to YouTube...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -344,7 +344,7 @@ class YouTubeStrategy(BasePlatformStrategy):
             publish_button.click()
             self._wait((5, 8))
             
-            self.logger.info("✅ Successfully posted video to YouTube")
+            self.logger.info(" Successfully posted video to YouTube")
             write_json_log("youtube", "success", "Posted video")
             return True
         except Exception as e:
@@ -353,7 +353,7 @@ class YouTubeStrategy(BasePlatformStrategy):
     
     def run_daily_strategy_session(self):
         """Run complete daily YouTube strategy session."""
-        self.logger.info("🚀 Starting Full YouTube Strategy Session")
+        self.logger.info(" Starting Full YouTube Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -384,7 +384,7 @@ class YouTubeStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info("✅ YouTube Strategy Session Complete")
+            self.logger.info(" YouTube Strategy Session Complete")
         except Exception as e:
             self.logger.error(f"Error in YouTube strategy session: {e}")
             self.cleanup()
@@ -403,7 +403,7 @@ class YouTubeStrategy(BasePlatformStrategy):
 
     def analyze_engagement_metrics(self):
         """Analyze engagement results to optimize strategy."""
-        self.logger.info("📊 Analyzing YouTube engagement metrics...")
+        self.logger.info(" Analyzing YouTube engagement metrics...")
         
         # Regular video metrics
         self.feedback_data["video_views"] = self.feedback_data.get("video_views", 0) + random.randint(50, 200)
@@ -421,9 +421,9 @@ class YouTubeStrategy(BasePlatformStrategy):
         # Subscriber metrics
         self.feedback_data["subscribers"] = self.feedback_data.get("subscribers", 0) + random.randint(1, 5)
         
-        self.logger.info(f"📺 Regular Video Views: {self.feedback_data['video_views']}")
-        self.logger.info(f"🎬 Shorts Views: {self.feedback_data['shorts_views']}")
-        self.logger.info(f"👥 Total Subscribers: {self.feedback_data['subscribers']}")
+        self.logger.info(f" Regular Video Views: {self.feedback_data['video_views']}")
+        self.logger.info(f" Shorts Views: {self.feedback_data['shorts_views']}")
+        self.logger.info(f" Total Subscribers: {self.feedback_data['subscribers']}")
         self.logger.info(f"⏱️ Watch Time (hours): {self.feedback_data['watch_time'] / 3600:.2f}")
         
         self._save_feedback_data()
@@ -435,26 +435,26 @@ class YouTubeStrategy(BasePlatformStrategy):
 
     def adaptive_posting_strategy(self):
         """Adjust posting strategy based on engagement feedback."""
-        self.logger.info("🔄 Adapting YouTube posting strategy based on feedback...")
+        self.logger.info(" Adapting YouTube posting strategy based on feedback...")
         
         # Analyze regular videos performance
         if self.feedback_data.get("video_views", 0) > 1000:
-            self.logger.info("🎥 Regular videos are performing well! Consider increasing production quality.")
+            self.logger.info(" Regular videos are performing well! Consider increasing production quality.")
         
         # Analyze Shorts performance
         if self.feedback_data.get("shorts_views", 0) > 5000:
-            self.logger.info("📱 Shorts are getting great traction! Consider creating more short-form content.")
+            self.logger.info(" Shorts are getting great traction! Consider creating more short-form content.")
         
         # Analyze watch time
         avg_watch_time = self.feedback_data.get("watch_time", 0) / max(self.feedback_data.get("video_views", 1), 1)
         if avg_watch_time > 300:  # More than 5 minutes
             self.logger.info("⭐ High average watch time! Content length is optimal.")
         else:
-            self.logger.info("⚠️ Consider adjusting content length to improve watch time.")
+            self.logger.info("️ Consider adjusting content length to improve watch time.")
 
     def reward_top_creators(self):
         """Reward top content creators in our community."""
-        self.logger.info("🏆 Identifying and rewarding top YouTube creators...")
+        self.logger.info(" Identifying and rewarding top YouTube creators...")
         top_members = self.get_top_members()
         
         for member in top_members[:5]:  # Reward top 5
@@ -471,7 +471,7 @@ class YouTubeStrategy(BasePlatformStrategy):
 
     def cross_platform_feedback_loop(self):
         """Integrate YouTube performance data with other platforms."""
-        self.logger.info("🌐 Running cross-platform feedback analysis for YouTube...")
+        self.logger.info(" Running cross-platform feedback analysis for YouTube...")
         try:
             # Simulate cross-platform metrics
             platform_metrics = {
@@ -487,11 +487,11 @@ class YouTubeStrategy(BasePlatformStrategy):
                 platform_metrics["instagram"]["reels_views"]
             )
             
-            self.logger.info(f"📊 Total video views across platforms: {total_video_views}")
+            self.logger.info(f" Total video views across platforms: {total_video_views}")
             
             # Update strategy based on cross-platform performance
             if total_video_views > 5000:
-                self.logger.info("💡 Video content is performing well across platforms")
+                self.logger.info(" Video content is performing well across platforms")
                 
             # Compare performance across platforms
             platform_distribution = {
@@ -502,6 +502,6 @@ class YouTubeStrategy(BasePlatformStrategy):
             }
             
             best_platform = max(platform_distribution.items(), key=lambda x: x[1])[0]
-            self.logger.info(f"🏆 Best performing platform: {best_platform}")
+            self.logger.info(f" Best performing platform: {best_platform}")
         except Exception as e:
             self.logger.error(f"Error in cross-platform analysis: {e}") 

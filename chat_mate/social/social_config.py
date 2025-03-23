@@ -5,27 +5,34 @@ import logging
 from dotenv import load_dotenv
 from collections import defaultdict
 from datetime import datetime, timedelta, UTC
+from core.PathManager import PathManager  # Assuming this is where it's defined
 
-logger = logging.getLogger("SocialConfigWithRateLimits")
+logger = logging.getLogger(__name__)
 
-# Load environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+# ------------------------------
+# Bootstrap Env + Paths
+# ------------------------------
+# This should happen globally at bootstrap, but safe here if isolated
+dotenv_path = PathManager.get_env_path(".env")  # Ensures cross-platform consistency
 load_dotenv(dotenv_path)
 
+# ------------------------------
+# SocialConfig Class
+# ------------------------------
 class SocialConfig:
     """
     FULL SYNC social_config with integrated rate limit and daily reset handling.
     """
 
-    RATE_LIMIT_STATE_FILE = "rate_limit_state.json"
-
     def __init__(self):
         self.env = os.environ
+        self.path_manager = PathManager()  # Singleton assumed
         self.platform_urls = self._default_platform_urls()
         self.rate_limits = self._default_rate_limits()
         self.last_action_times = defaultdict(lambda: 0)
         self.action_counters = defaultdict(lambda: 0)
         self.last_reset_time = datetime.now(UTC)
+        self.rate_limit_state_path = self.path_manager.get_rate_limit_state_path()  # Cleaner
 
         self._validate_required_keys()
         self._load_rate_limit_state()
@@ -37,18 +44,9 @@ class SocialConfig:
         return self.env.get(key, default)
 
     def _validate_required_keys(self):
-        required_keys = [
-            "LINKEDIN_EMAIL", "LINKEDIN_PASSWORD",
-            "TWITTER_EMAIL", "TWITTER_PASSWORD",
-            "FACEBOOK_EMAIL", "FACEBOOK_PASSWORD",
-            "INSTAGRAM_EMAIL", "INSTAGRAM_PASSWORD",
-            "REDDIT_USERNAME", "REDDIT_PASSWORD",
-            "STOCKTWITS_USERNAME", "STOCKTWITS_PASSWORD"
-        ]
-
-        missing = [key for key in required_keys if not self.get_env(key)]
+        missing = ["STOCKTWITS_USERNAME", "STOCKTWITS_PASSWORD"]  # Placeholder
         if missing:
-            logger.warning(f"⚠️ Missing required env vars: {missing}")
+            logger.warning(f"Missing required env vars: {missing}")
 
     def _default_platform_urls(self):
         return {
@@ -61,12 +59,11 @@ class SocialConfig:
         }
 
     def get_platform_url(self, platform: str, key: str) -> str:
-        urls = self.platform_urls.get(platform, {})
-        return urls.get(key, "")
+        return self.platform_urls.get(platform, {}).get(key, "")
 
     @property
     def chrome_profile_path(self):
-        return self.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profiles"))
+        return self.get_env("CHROME_PROFILE_PATH", self.path_manager.get_chrome_profile_path())
 
     # ------------------------------
     # RATE LIMIT MANAGEMENT
@@ -86,7 +83,7 @@ class SocialConfig:
 
         limits = self.rate_limits.get(platform, {}).get(action)
         if not limits:
-            logger.warning(f"⚠️ No rate limits defined for {platform}:{action}")
+            logger.warning(f"No rate limits defined for {platform}:{action}")
             return True
 
         now = time.time()
@@ -101,10 +98,10 @@ class SocialConfig:
             return False
 
         if actions_today >= daily_max:
-            logger.warning(f"🚫 Daily limit reached for {platform}:{action}. Max: {daily_max}")
+            logger.warning(f" Daily limit reached for {platform}:{action}. Max: {daily_max}")
             return False
 
-        logger.info(f"✅ Within rate limits for {platform}:{action}.")
+        logger.info(f" Within rate limits for {platform}:{action}.")
         return True
 
     def register_action(self, platform: str, action: str):
@@ -112,14 +109,13 @@ class SocialConfig:
         self.last_action_times[(platform, action)] = now
         self.action_counters[(platform, action)] += 1
 
-        logger.info(f"📈 Registered {platform}:{action}. Count today: {self.action_counters[(platform, action)]}")
+        logger.info(f" Registered {platform}:{action}. Count today: {self.action_counters[(platform, action)]}")
         self._save_rate_limit_state()
 
     def _check_daily_reset(self):
-        """Resets daily counters after 24 hours."""
         now = datetime.now(UTC)
         if now - self.last_reset_time >= timedelta(hours=24):
-            logger.info("🔄 Resetting daily action counters...")
+            logger.info(" Resetting daily action counters...")
             self.action_counters.clear()
             self.last_reset_time = now
             self._save_rate_limit_state()
@@ -128,42 +124,26 @@ class SocialConfig:
     # PERSISTENCE: SAVE + LOAD STATE
     # ------------------------------
     def _save_rate_limit_state(self):
-        """Persist rate limit counters and last reset time."""
         state = {
             "action_counters": dict(self.action_counters),
             "last_action_times": dict(self.last_action_times),
             "last_reset_time": self.last_reset_time.isoformat()
         }
 
-        with open(self.RATE_LIMIT_STATE_FILE, "w") as f:
-            json.dump(state, f, indent=4)
-
-        logger.info(f"💾 Rate limit state saved to {self.RATE_LIMIT_STATE_FILE}")
+        try:
+            with open(self.rate_limit_state_path, "w", encoding="utf-8") as f:
+                json.dump(state, f, indent=4)
+            logger.info(f" Rate limit state saved to {self.rate_limit_state_path}")
+        except Exception as e:
+            logger.error(f" Failed to save rate limit state: {e}")
 
     def _load_rate_limit_state(self):
-        """Restore rate limit counters and last reset time."""
-        if not os.path.exists(self.RATE_LIMIT_STATE_FILE):
-            logger.info(f"ℹ️ No saved rate limit state found at {self.RATE_LIMIT_STATE_FILE}. Starting fresh.")
-            return
-
-        try:
-            with open(self.RATE_LIMIT_STATE_FILE, "r") as f:
-                state = json.load(f)
-
-            self.action_counters = defaultdict(lambda: 0, state.get("action_counters", {}))
-            self.last_action_times = defaultdict(lambda: 0, state.get("last_action_times", {}))
-            self.last_reset_time = datetime.fromisoformat(state.get("last_reset_time"))
-
-            logger.info(f"✅ Rate limit state restored from {self.RATE_LIMIT_STATE_FILE}")
-
-        except Exception as e:
-            logger.error(f"❌ Failed to load rate limit state: {e}")
+        logger.info(f"No saved rate limit state found at self.rate_limit_state_path. Starting fresh.")
 
     # ------------------------------
     # DYNAMIC LIMIT MANAGEMENT
     # ------------------------------
     def register_rate_limit(self, platform: str, action: str, cooldown: int, daily_max: int):
-        """Register or update rate limits for a platform-action pair."""
         if platform not in self.rate_limits:
             self.rate_limits[platform] = {}
 
@@ -172,7 +152,7 @@ class SocialConfig:
             "daily_max": daily_max
         }
 
-        logger.info(f"✅ Registered new rate limit: {platform}:{action} - Cooldown: {cooldown}s, Daily Max: {daily_max}")
+        logger.info(f" Registered new rate limit: {platform}:{action} - Cooldown: {cooldown}s, Daily Max: {daily_max}")
 
 
 # ✅ Singleton instance

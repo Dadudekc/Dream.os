@@ -3,6 +3,20 @@ from core.chat_engine.chat_scraper_service import ChatScraperService
 from core.chat_engine.prompt_execution_service import PromptExecutionService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 from core.chat_engine.feedback_engine import FeedbackEngine
+import re
+
+def sanitize_filename(filename):
+    """
+    Sanitize a filename by removing invalid characters.
+    
+    Args:
+        filename (str): The filename to sanitize
+        
+    Returns:
+        str: The sanitized filename
+    """
+    # Remove invalid characters for filenames across operating systems
+    return re.sub(r'[\\/*?:"<>|]', '_', filename)
 
 class ChatManager:
     def __init__(self, config, logger):
@@ -18,7 +32,7 @@ class ChatManager:
 
     def start(self):
         """Start the chat manager and all services."""
-        self.logger.info("🚀 ChatManager starting...")
+        self.logger.info(" ChatManager starting...")
 
         self.driver_manager.launch_driver()
         self.logger.info("Driver launched successfully.")
@@ -28,12 +42,12 @@ class ChatManager:
 
     def send_prompt(self, prompt: str):
         """Send a prompt and handle the response."""
-        self.logger.info(f"➡️ Sending prompt: {prompt}")
+        self.logger.info(f"️ Sending prompt: {prompt}")
 
         self.prompt_executor.send_prompt(prompt)
         response = self.chat_scraper.get_latest_response()
 
-        self.logger.info(f"✅ Received response: {response}")
+        self.logger.info(f" Received response: {response}")
 
         # Dispatch response to Discord (if enabled)
         if self.config.discord_enabled:
@@ -46,9 +60,9 @@ class ChatManager:
 
     def shutdown(self):
         """Cleanly shutdown all services."""
-        self.logger.info("🛑 Shutting down ChatManager...")
+        self.logger.info(" Shutting down ChatManager...")
 
         self.driver_manager.quit_driver()
         self.feedback_engine.save_feedback_data()
 
-        self.logger.info("✅ Shutdown complete.")
+        self.logger.info(" Shutdown complete.")

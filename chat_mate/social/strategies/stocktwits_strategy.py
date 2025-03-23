@@ -43,7 +43,7 @@ class StocktwitsCommunityArchitect:
     # LOGIN
     # ===================================
     def login(self):
-        logger.info(f"🚀 Logging in to {PLATFORM}")
+        logger.info(f" Logging in to {PLATFORM}")
         login_url = social_config.get_platform_url(PLATFORM, "login")
         self.driver.get(login_url)
         time.sleep(3)
@@ -51,7 +51,7 @@ class StocktwitsCommunityArchitect:
         self.driver.refresh()
         time.sleep(3)
         if self.is_logged_in():
-            logger.info(f"✅ Logged into {PLATFORM} via cookies.")
+            logger.info(f" Logged into {PLATFORM} via cookies.")
             write_json_log(PLATFORM, "success", tags=["login", "cookie"])
             return True
 
@@ -74,20 +74,20 @@ class StocktwitsCommunityArchitect:
             login_button.click()
             time.sleep(LOGIN_WAIT_TIME)
         except Exception as e:
-            logger.warning(f"⚠️ Auto-login failed: {e}")
+            logger.warning(f"️ Auto-login failed: {e}")
             write_json_log(PLATFORM, "failed", tags=["login", "auto"], ai_output=str(e))
 
         if not self.is_logged_in():
-            logger.warning(f"⚠️ Manual login fallback initiated for {PLATFORM}")
+            logger.warning(f"️ Manual login fallback initiated for {PLATFORM}")
             self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, PLATFORM)
 
         if self.is_logged_in():
             self.cookie_manager.save_cookies(self.driver, PLATFORM)
-            logger.info(f"✅ Login successful for {PLATFORM}")
+            logger.info(f" Login successful for {PLATFORM}")
             write_json_log(PLATFORM, "success", tags=["login"])
             return True
         else:
-            logger.error(f"❌ Login failed for {PLATFORM}")
+            logger.error(f" Login failed for {PLATFORM}")
             write_json_log(PLATFORM, "failed", tags=["login"])
             return False
 
@@ -96,16 +96,16 @@ class StocktwitsCommunityArchitect:
         self.driver.get(settings_url)
         time.sleep(3)
         logged_in = "settings" in self.driver.current_url
-        logger.info(f"🔎 Login status on {PLATFORM}: {'✅ Logged in' if logged_in else '❌ Not logged in'}")
+        logger.info(f" Login status on {PLATFORM}: {' Logged in' if logged_in else ' Not logged in'}")
         return logged_in
 
     # ===================================
     # POSTING
     # ===================================
     def post(self, content, retries=MAX_RETRIES):
-        logger.info(f"📝 Preparing to post to {PLATFORM}")
+        logger.info(f" Preparing to post to {PLATFORM}")
         if not self.is_logged_in():
-            logger.warning("⚠️ Cannot post—user not logged in")
+            logger.warning("️ Cannot post—user not logged in")
             return False
 
         post_url = social_config.get_platform_url(PLATFORM, "post")
@@ -119,13 +119,13 @@ class StocktwitsCommunityArchitect:
                 post_field.send_keys(content)
                 time.sleep(1)
                 post_button.click()
-                logger.info(f"✅ Post published on {PLATFORM}")
+                logger.info(f" Post published on {PLATFORM}")
                 write_json_log(PLATFORM, "success", tags=["post"], ai_output=f"{content[:50]}...")
                 return True
             except Exception as e:
-                logger.warning(f"⚠️ Attempt {attempt} failed: {e}")
+                logger.warning(f"️ Attempt {attempt} failed: {e}")
                 time.sleep(RETRY_DELAY)
-        logger.error(f"❌ Failed to post on {PLATFORM} after {retries} attempts")
+        logger.error(f" Failed to post on {PLATFORM} after {retries} attempts")
         write_json_log(PLATFORM, "failed", tags=["post"])
         return False
 
@@ -133,13 +133,13 @@ class StocktwitsCommunityArchitect:
     # COMMUNITY ENGAGEMENT
     # ===================================
     def engage_community(self, viral_prompt, interactions=5):
-        logger.info(f"🚀 Engaging community on {PLATFORM}")
+        logger.info(f" Engaging community on {PLATFORM}")
         trending_url = social_config.get_platform_url(PLATFORM, "trending")
         self.driver.get(trending_url)
         time.sleep(ENGAGE_WAIT_TIME)
         posts = self.driver.find_elements(By.CSS_SELECTOR, "article")
         if not posts:
-            logger.warning(f"⚠️ No posts found on {PLATFORM}")
+            logger.warning(f"️ No posts found on {PLATFORM}")
             return
         random.shuffle(posts)
         selected_posts = posts[:interactions]
@@ -163,19 +163,19 @@ class StocktwitsCommunityArchitect:
                 comment_field = self.driver.find_element(By.XPATH, "//textarea[@placeholder='Add a comment']")
                 comment_field.send_keys(comment)
                 comment_field.send_keys(Keys.CONTROL, Keys.RETURN)
-                logger.info(f"💬 Comment posted: {comment}")
+                logger.info(f" Comment posted: {comment}")
                 # Optional: Attempt follow (if available)
                 try:
                     follow_button = post.find_element(By.XPATH, ".//button[contains(text(), 'Follow')]")
                     if follow_button.is_displayed():
                         follow_button.click()
-                        logger.info("👥 Followed the post author.")
+                        logger.info(" Followed the post author.")
                         self._log_follow(follow_button.get_attribute("href"))
                         time.sleep(1)
                 except NoSuchElementException:
                     logger.debug("No follow button found.")
             except Exception as e:
-                logger.warning(f"⚠️ Issue engaging with post: {e}")
+                logger.warning(f"️ Issue engaging with post: {e}")
                 continue
 
     # ===================================
@@ -195,11 +195,11 @@ class StocktwitsCommunityArchitect:
         }
         with open(FOLLOW_DB, "w") as f:
             json.dump(data, f, indent=4)
-        logger.info(f"📁 Logged new follow: {profile_url}")
+        logger.info(f" Logged new follow: {profile_url}")
 
     def unfollow_non_returners(self, days_threshold=3):
         if not os.path.exists(FOLLOW_DB):
-            logger.warning("⚠️ No follow log found.")
+            logger.warning("️ No follow log found.")
             return
         with open(FOLLOW_DB, "r") as f:
             follows = json.load(f)
@@ -212,22 +212,22 @@ class StocktwitsCommunityArchitect:
                     self.driver.get(user)
                     unfollow_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Following')]")
                     unfollow_button.click()
-                    logger.info(f"➖ Unfollowed {user}")
+                    logger.info(f" Unfollowed {user}")
                     follows[user]["status"] = "unfollowed"
                     unfollowed.append(user)
                 except Exception as e:
-                    logger.warning(f"⚠️ Failed to unfollow {user}: {e}")
+                    logger.warning(f"️ Failed to unfollow {user}: {e}")
         with open(FOLLOW_DB, "w") as f:
             json.dump(follows, f, indent=4)
-        logger.info(f"✅ Unfollowed {len(unfollowed)} users.")
+        logger.info(f" Unfollowed {len(unfollowed)} users.")
 
     # ===================================
     # DAILY SESSION RUNNER
     # ===================================
     def run_daily_session(self, post_prompt=None, viral_prompt=None):
-        logger.info(f"🚀 Running daily session on {PLATFORM}")
+        logger.info(f" Running daily session on {PLATFORM}")
         if not self.login():
-            logger.error("❌ Login failed. Aborting session.")
+            logger.error(" Login failed. Aborting session.")
             return
         # Post content if prompt provided
         if post_prompt:
@@ -238,7 +238,7 @@ class StocktwitsCommunityArchitect:
             self.post(post_content)
         self.engage_community(viral_prompt=viral_prompt)
         self.unfollow_non_returners()
-        logger.info(f"✅ Daily session completed on {PLATFORM}")
+        logger.info(f" Daily session completed on {PLATFORM}")
 
 # ===================================
 # Unified Stocktwits Strategy Class
@@ -385,7 +385,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-infobars")
         driver = webdriver.Chrome(options=options)
-        self.logger.info("✅ Stocktwits driver initialized")
+        self.logger.info(" Stocktwits driver initialized")
         return driver
     
     def _wait(self, custom_range=None):
@@ -396,7 +396,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
     
     def login(self) -> bool:
         """Log in to Stocktwits."""
-        self.logger.info("🌐 Initiating Stocktwits login...")
+        self.logger.info(" Initiating Stocktwits login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -407,7 +407,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info("✅ Logged into Stocktwits via cookies")
+                self.logger.info(" Logged into Stocktwits via cookies")
                 return True
             
             # Try credential login
@@ -427,7 +427,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "stocktwits")
-                        self.logger.info("✅ Logged into Stocktwits via credentials")
+                        self.logger.info(" Logged into Stocktwits via credentials")
                         return True
                 except Exception as e:
                     self.logger.error(f"Stocktwits auto-login failed: {e}")
@@ -454,7 +454,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
     
     def post_content(self, message: str, symbols: List[str] = None) -> bool:
         """Post content to Stocktwits."""
-        self.logger.info("🚀 Posting content to Stocktwits...")
+        self.logger.info(" Posting content to Stocktwits...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -490,7 +490,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
             submit_button.click()
             self._wait((3, 5))
             
-            self.logger.info("✅ Successfully posted to Stocktwits")
+            self.logger.info(" Successfully posted to Stocktwits")
             write_json_log("stocktwits", "success", "Posted message")
             return True
         except Exception as e:
@@ -499,7 +499,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
     
     def run_daily_strategy_session(self):
         """Run complete daily Stocktwits strategy session."""
-        self.logger.info("🚀 Starting Full Stocktwits Strategy Session")
+        self.logger.info(" Starting Full Stocktwits Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -535,7 +535,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info("✅ Stocktwits Strategy Session Complete")
+            self.logger.info(" Stocktwits Strategy Session Complete")
         except Exception as e:
             self.logger.error(f"Error in Stocktwits strategy session: {e}")
             self.cleanup()
@@ -554,13 +554,13 @@ class StocktwitsStrategy(BasePlatformStrategy):
 
     def analyze_engagement_metrics(self):
         """Analyze engagement results to optimize strategy."""
-        self.logger.info("📊 Analyzing Stocktwits engagement metrics...")
+        self.logger.info(" Analyzing Stocktwits engagement metrics...")
         self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
         self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
         self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
-        self.logger.info(f"👍 Total Likes: {self.feedback_data['likes']}")
-        self.logger.info(f"💬 Total Comments: {self.feedback_data['comments']}")
-        self.logger.info(f"➕ Total Follows: {self.feedback_data['follows']}")
+        self.logger.info(f" Total Likes: {self.feedback_data['likes']}")
+        self.logger.info(f" Total Comments: {self.feedback_data['comments']}")
+        self.logger.info(f" Total Follows: {self.feedback_data['follows']}")
         self._save_feedback_data()
 
     def run_feedback_loop(self):
@@ -570,11 +570,11 @@ class StocktwitsStrategy(BasePlatformStrategy):
 
     def adaptive_posting_strategy(self):
         """Adjust posting strategy based on engagement feedback."""
-        self.logger.info("🔄 Adapting Stocktwits posting strategy based on feedback...")
+        self.logger.info(" Adapting Stocktwits posting strategy based on feedback...")
         if self.feedback_data.get("likes", 0) > 100:
-            self.logger.info("🔥 High engagement detected! Consider increasing post frequency.")
+            self.logger.info(" High engagement detected! Consider increasing post frequency.")
         if self.feedback_data.get("comments", 0) > 50:
-            self.logger.info("💡 More technical analysis posts may yield better community interaction.")
+            self.logger.info(" More technical analysis posts may yield better community interaction.")
 
     def reinforce_engagement(self, comment):
         """
@@ -593,7 +593,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
         """
         Reward top community engagers with custom shout-outs.
         """
-        logger.info("🎉 Evaluating top engagers for rewards on Stocktwits...")
+        logger.info(" Evaluating top engagers for rewards on Stocktwits...")
         if os.path.exists(self.REWARD_DB):
             with open(self.REWARD_DB, "r") as f:
                 reward_data = json.load(f)
@@ -618,7 +618,7 @@ class StocktwitsStrategy(BasePlatformStrategy):
         """
         Merge Stocktwits engagement data with that from other platforms (stub implementation).
         """
-        logger.info("🌐 Merging cross-platform feedback loops for Stocktwits...")
+        logger.info(" Merging cross-platform feedback loops for Stocktwits...")
         twitter_data = {"upvotes": random.randint(8, 15), "comments": random.randint(3, 8)}
         facebook_data = {"upvotes": random.randint(10, 20), "comments": random.randint(5, 10)}
         unified_metrics = {

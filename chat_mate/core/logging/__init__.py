@@ -2,7 +2,9 @@
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
 from . import CompositeLogger
+from . import ConsoleLogger
 
 __all__ = [
     'CompositeLogger',
+    'ConsoleLogger',
 ]

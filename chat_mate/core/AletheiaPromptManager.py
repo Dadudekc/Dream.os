@@ -85,8 +85,8 @@ class AletheiaPromptManager:
         # Initialize DiscordManager for notifications.
         self.discord_manager = DiscordManager()
 
-        logger.info(f"🚀 Aletheia initializing with memory file: {self.memory_file}")
-        logger.info(f"📁 Loading templates from: {self.template_path}")
+        logger.info(f" Aletheia initializing with memory file: {self.memory_file}")
+        logger.info(f" Loading templates from: {self.template_path}")
 
         # Load all memory states
         self.load_all_memory_states()
@@ -176,7 +176,7 @@ class AletheiaPromptManager:
             rendered_prompt = template.render(**context)
             return rendered_prompt
         except Exception as e:
-            logger.error(f"❌ Failed to load or render template for '{prompt_type}': {e}")
+            logger.error(f" Failed to load or render template for '{prompt_type}': {e}")
             raise e
 
     def load_conversation_memory(self) -> None:
@@ -203,11 +203,11 @@ class AletheiaPromptManager:
                     with open(file_path, 'r', encoding='utf-8') as file:
                         loaded_state = json.load(file)
                         default_state.update(loaded_state)
-                    logger.info(f"✅ Loaded {state_name} from {file_path}")
+                    logger.info(f" Loaded {state_name} from {file_path}")
                 except Exception as e:
-                    logger.error(f"❌ Failed to load {state_name}: {e}")
+                    logger.error(f" Failed to load {state_name}: {e}")
             else:
-                logger.warning(f"⚠️ No {state_name} file found at {file_path}. Using default state.")
+                logger.warning(f"️ No {state_name} file found at {file_path}. Using default state.")
 
     def _merge_cycle_memory_updates(self, cycle_id: str) -> None:
         """Merge all memory updates from a conversation cycle into the main memory state."""
@@ -233,7 +233,7 @@ class AletheiaPromptManager:
             templates = [f.replace('.j2', '') for f in os.listdir(self.template_path) if f.endswith('.j2')]
             return templates
         except Exception as e:
-            logger.error(f"❌ Failed to list templates: {e}")
+            logger.error(f" Failed to list templates: {e}")
             return []
 
     def load_memory_state(self) -> None:
@@ -245,12 +245,12 @@ class AletheiaPromptManager:
                 try:
                     with open(self.memory_file, 'r', encoding='utf-8') as file:
                         self.memory_state = json.load(file)
-                    logger.info(f"✅ Loaded persistent memory from {self.memory_file}")
+                    logger.info(f" Loaded persistent memory from {self.memory_file}")
                 except Exception as e:
-                    logger.error(f"❌ Failed to load memory state: {e}")
+                    logger.error(f" Failed to load memory state: {e}")
                     self.memory_state = {"version": 1, "last_updated": None, "data": {}}
             else:
-                logger.warning("⚠️ No memory file found. Starting with empty state.")
+                logger.warning("️ No memory file found. Starting with empty state.")
                 self.memory_state = {"version": 1, "last_updated": None, "data": {}}
 
     def save_memory_state(self) -> None:
@@ -267,9 +267,9 @@ class AletheiaPromptManager:
         updates version and timestamp, and then archives the processed file.
         Also sends a Discord notification about the new archived episode.
         """
-        logger.info("🔍 Parsing structured memory updates from file...")
+        logger.info(" Parsing structured memory updates from file...")
         if not os.path.exists(file_path):
-            logger.error(f"❌ File not found: {file_path}")
+            logger.error(f" File not found: {file_path}")
             return
 
         with self._lock:
@@ -279,7 +279,7 @@ class AletheiaPromptManager:
 
                 updates = self._extract_memory_update_block(content)
                 if not updates:
-                    logger.error("❌ MEMORY_UPDATE block not found or invalid.")
+                    logger.error(" MEMORY_UPDATE block not found or invalid.")
                     return
 
                 previous_state = json.dumps(self.memory_state, indent=2)
@@ -288,12 +288,12 @@ class AletheiaPromptManager:
                 self.memory_state["version"] = self.memory_state.get("version", 1) + 1
                 self.memory_state["last_updated"] = datetime.now(timezone.utc).isoformat()
 
-                logger.info(f"✅ Memory updated with: {updates}")
+                logger.info(f" Memory updated with: {updates}")
                 self._log_memory_diff(previous_state, self.memory_state)
                 self.save_memory_state()
 
             except Exception as e:
-                logger.error(f"❌ Error processing memory updates: {e}")
+                logger.error(f" Error processing memory updates: {e}")
 
             finally:
                 self.archive_episode(file_path)
@@ -373,16 +373,16 @@ class AletheiaPromptManager:
             base_name = os.path.basename(file_path)
             archived_path = os.path.join(archive_dir, base_name)
             os.rename(file_path, archived_path)
-            logger.info(f"📦 Archived episode file to: {archived_path}")
+            logger.info(f" Archived episode file to: {archived_path}")
         except Exception as e:
-            logger.warning(f"⚠️ Failed to archive file {file_path}: {e}")
+            logger.warning(f"️ Failed to archive file {file_path}: {e}")
 
     def _log_memory_diff(self, previous: str, current: Dict[str, Any]) -> None:
         current_state = json.dumps(current, indent=2)
-        logger.info(f"📜 Memory diff:\nPrevious:\n{previous}\n\nUpdated:\n{current_state}")
+        logger.info(f" Memory diff:\nPrevious:\n{previous}\n\nUpdated:\n{current_state}")
 
     def review_memory_log(self) -> Dict[str, Any]:
-        logger.info("📖 Reviewing persistent memory log:")
+        logger.info(" Reviewing persistent memory log:")
         for key, value in self.memory_state.items():
             logger.info(f"{key}: {value}")
         return self.memory_state
@@ -393,9 +393,9 @@ class AletheiaPromptManager:
                 try:
                     with open(file_path, 'w', encoding='utf-8') as file:
                         json.dump(data, file, indent=4, ensure_ascii=False)
-                    logger.info(f"💾 {data_type.capitalize()} saved to {file_path}")
+                    logger.info(f" {data_type.capitalize()} saved to {file_path}")
                 except Exception as e:
-                    logger.error(f"❌ Failed to save {data_type}: {e}")
+                    logger.error(f" Failed to save {data_type}: {e}")
         threading.Thread(target=save_task, daemon=True).start()
 
 # ---------------------------

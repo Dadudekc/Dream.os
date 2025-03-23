@@ -1,98 +1,103 @@
-from typing import List, Optional
+import os
 import logging
-from core.ConfigManager import ConfigManager
-from core.interfaces.ILoggingAgent import ILoggingAgent
-from core.ConsoleLogger import ConsoleLogger
-from core.FileLogger import FileLogger
-from core.DiscordLogger import DiscordLogger
-from core.logging.CompositeLogger import CompositeLogger
+from typing import Optional, Dict, Any
+from pathlib import Path
+
+from core.logging.LoggingService import LoggingService
+from core.bootstrap import get_bootstrap_paths
 
 class LoggerFactory:
-    """Factory class for creating different types of loggers."""
+    """
+    Factory class for creating standardized loggers across the application.
+    Provides methods to create different types of loggers with consistent 
+    configuration.
+    """
     
-    @staticmethod
-    def create_logger(config_manager: ConfigManager) -> ILoggingAgent:
+    _loggers: Dict[str, LoggingService] = {}
+    
+    @classmethod
+    def create_standard_logger(
+        cls,
+        name: str,
+        level: int = logging.INFO,
+        log_to_file: bool = False
+    ) -> LoggingService:
         """
-        Create a logger instance based on configuration.
+        Create or retrieve a standard logger with consistent formatting.
         
         Args:
-            config_manager: ConfigManager instance for configuration access
+            name: Logger name (typically module or component name)
+            level: Logging level (default: INFO)
+            log_to_file: Whether to log to a file as well as console
             
         Returns:
-            ILoggingAgent: Configured logger instance
-            
-        Raises:
-            ValueError: If logger type is invalid
+            LoggingService: The configured logger
         """
-        logger_config = config_manager.get('logging', {})
-        logger_types = logger_config.get('types', ['console'])
+        # Return existing logger if already created
+        if name in cls._loggers:
+            return cls._loggers[name]
         
-        if not isinstance(logger_types, list):
-            logger_types = [logger_types]
+        # Determine log file path if needed
+        log_file = None
+        if log_to_file:
+            paths = get_bootstrap_paths()
+            log_dir = paths.get('logs', os.path.join(os.path.dirname(__file__), '..', '..', '..', 'outputs', 'logs'))
+            log_file = os.path.join(log_dir, f"{name.lower().replace(' ', '_')}.log")
+        
+        # Create new logger
+        logger = LoggingService(
+            name=name,
+            level=level,
+            log_file=log_file
+        )
+        
+        # Cache the logger
+        cls._loggers[name] = logger
+        
+        if log_file:
+            logger.info(f"Logging initialized at {log_file}")
+        else:
+            logger.info(f"Logging initialized for {name}")
             
-        loggers: List[ILoggingAgent] = []
-        
-        for logger_type in logger_types:
-            try:
-                if logger_type == 'console':
-                    loggers.append(ConsoleLogger(config_manager))
-                elif logger_type == 'file':
-                    loggers.append(FileLogger(config_manager))
-                elif logger_type == 'discord':
-                    loggers.append(DiscordLogger(config_manager))
-                else:
-                    raise ValueError(f"Invalid logger type: {logger_type}")
-            except Exception as e:
-                # Log error but continue with other loggers
-                print(f"Failed to initialize logger {logger_type}: {str(e)}")
-                
-        if not loggers:
-            # Fallback to console logger if no loggers were created
-            return ConsoleLogger(config_manager)
-            
-        # Create composite logger with all successfully initialized loggers
-        return CompositeLogger(loggers)
-        
-    @staticmethod
-    def create_standard_logger(name: str, level: int = logging.INFO, log_to_file: Optional[str] = None) -> logging.Logger:
+        return logger
+    
+    @classmethod
+    def create_module_logger(cls, module_name: str, level: int = logging.INFO) -> LoggingService:
         """
-        Create a standard Python logger with consistent formatting.
+        Create a logger specifically for a module.
         
         Args:
-            name (str): Name of the logger
-            level (int): Logging level (default: logging.INFO)
-            log_to_file (Optional[str]): Path to a log file (optional)
+            module_name: Name of the module
+            level: Logging level
             
         Returns:
-            logging.Logger: Configured standard logger instance
-            
-        Raises:
-            TypeError: If logger name is not a string
+            LoggingService: The configured logger
         """
-        if not isinstance(name, str):
-            raise TypeError('A logger name must be a string')
-            
-        logger = logging.getLogger(name)
-        logger.setLevel(level)
+        return cls.create_standard_logger(f"module.{module_name}", level)
+    
+    @classmethod
+    def create_agent_logger(cls, agent_name: str, level: int = logging.INFO) -> LoggingService:
+        """
+        Create a logger specifically for an agent.
         
-        # Prevent duplicate handlers on repeated calls
-        if not logger.handlers:
-            formatter = logging.Formatter(
-                fmt='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S'
-            )
+        Args:
+            agent_name: Name of the agent
+            level: Logging level
             
-            # Console handler
-            console_handler = logging.StreamHandler()
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
+        Returns:
+            LoggingService: The configured logger
+        """
+        return cls.create_standard_logger(f"agent.{agent_name}", level, log_to_file=True)
+    
+    @classmethod
+    def get_logger(cls, name: str) -> Optional[LoggingService]:
+        """
+        Retrieve an existing logger.
+        
+        Args:
+            name: Logger name
             
-            # Optional file handler
-            if log_to_file:
-                file_handler = logging.FileHandler(log_to_file, encoding='utf-8')
-                file_handler.setFormatter(formatter)
-                logger.addHandler(file_handler)
-                
-            logger.propagate = False
-            
-        return logger 
+        Returns:
+            Optional[LoggingService]: The logger if it exists, None otherwise
+        """
+        return cls._loggers.get(name) 

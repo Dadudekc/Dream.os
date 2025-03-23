@@ -104,10 +104,10 @@ class ReinforcementToolsDialog(QDialog):
                 json.dump(self.engine.memory_data.get("reinforcement_feedback", {}), f, indent=4, ensure_ascii=False)
 
             QMessageBox.information(self, "Success", f"Feedback exported successfully to:\n{file_path}")
-            logger.info(f"✅ Feedback exported to {file_path}")
+            logger.info(f" Feedback exported to {file_path}")
 
         except Exception as e:
-            logger.error(f"❌ Failed to export feedback: {e}")
+            logger.error(f" Failed to export feedback: {e}")
             QMessageBox.critical(self, "Error", f"Failed to export feedback:\n{e}")
 
     def clear_feedback(self):
@@ -122,7 +122,7 @@ class ReinforcementToolsDialog(QDialog):
         self.engine.memory_data["prompt_scores"] = {}
         self.engine.save_memory()
 
-        logger.info("🗑️ Cleared all reinforcement feedback data.")
+        logger.info("️ Cleared all reinforcement feedback data.")
         QMessageBox.information(self, "Cleared", "All feedback records have been cleared.")
         self.load_feedback()
         self.feedback_details.clear()
@@ -139,8 +139,8 @@ class ReinforcementToolsDialog(QDialog):
 
             self.engine.auto_tune_prompts(prompt_manager)
             QMessageBox.information(self, "Auto-Tune", "Prompts auto-tuned based on feedback.")
-            logger.info("🎛️ Auto-tuned prompts successfully.")
+            logger.info("️ Auto-tuned prompts successfully.")
 
         except Exception as e:
-            logger.error(f"❌ Failed to auto-tune prompts: {e}")
+            logger.error(f" Failed to auto-tune prompts: {e}")
             QMessageBox.critical(self, "Error", f"Auto-tuning failed:\n{e}")

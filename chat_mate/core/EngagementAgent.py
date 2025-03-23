@@ -59,7 +59,7 @@ class EngagementAgent:
 
         # Setup logging
         self.logger = logging.getLogger("EngagementAgent")
-        logger.info(f"🚀 EngagementAgent initialized using model '{ai_chat_agent}' via {ai_provider}.")
+        logger.info(f" EngagementAgent initialized using model '{ai_chat_agent}' via {ai_provider}.")
 
     # ----------------------------------------
     # Core Methods
@@ -68,11 +68,11 @@ class EngagementAgent:
     def handle_mentions(self, platform: str, use_task_queue: bool = True):
         strategy = self.platform_strategies.get(platform)
         if not strategy:
-            logger.error(f"❌ No strategy found for {platform}.")
+            logger.error(f" No strategy found for {platform}.")
             return
 
         mentions = strategy.fetch_recent_mentions()
-        logger.info(f"📥 Fetched {len(mentions)} mentions from {platform}.")
+        logger.info(f" Fetched {len(mentions)} mentions from {platform}.")
 
         for mention in mentions:
             task_func = lambda m=mention: self._process_mention(platform, m)
@@ -88,7 +88,7 @@ class EngagementAgent:
     def proactive_engagement(self, platform: str, topics: List[str], use_task_queue: bool = True):
         strategy = self.platform_strategies.get(platform)
         if not strategy:
-            logger.error(f"❌ No strategy found for {platform}.")
+            logger.error(f" No strategy found for {platform}.")
             return
 
         conversations = strategy.search_conversations(topics)
@@ -181,5 +181,5 @@ class EngagementAgent:
             event_type="engagement"
         )
 
-        logger.info(f"📊 Logged {interaction_type} interaction on {platform} | Status: {status}")
+        logger.info(f" Logged {interaction_type} interaction on {platform} | Status: {status}")
 

@@ -39,7 +39,7 @@ MAX_ATTEMPTS = 3
 def load_cookies(driver, platform):
     cookie_file = os.path.join(COOKIES_DIR, f"{platform}.pkl")
     if not os.path.exists(cookie_file):
-        logger.info(f"⚠️ No cookies found for {platform}.")
+        logger.info(f"️ No cookies found for {platform}.")
         return
     with open(cookie_file, "rb") as f:
         cookies = pickle.load(f)
@@ -48,27 +48,27 @@ def load_cookies(driver, platform):
             try:
                 driver.add_cookie(cookie)
             except Exception as e:
-                logger.error(f"❌ Failed to load a cookie for {platform}: {e}")
-    logger.info(f"🍪 Cookies loaded for {platform}")
+                logger.error(f" Failed to load a cookie for {platform}: {e}")
+    logger.info(f" Cookies loaded for {platform}")
 
 def save_cookies(driver, platform):
     cookie_file = os.path.join(COOKIES_DIR, f"{platform}.pkl")
     with open(cookie_file, "wb") as f:
         pickle.dump(driver.get_cookies(), f)
-    logger.info(f"💾 Cookies saved for {platform}")
+    logger.info(f" Cookies saved for {platform}")
 
 def wait_for_manual_login(driver, platform, validate_func, attempts=MAX_ATTEMPTS):
     attempt = 0
     while attempt < attempts:
         input(f"➡️ Manually login to {platform}. Press ENTER when done...")
         if validate_func(driver):
-            logger.info(f"✅ {platform.capitalize()} manual login successful.")
+            logger.info(f" {platform.capitalize()} manual login successful.")
             save_cookies(driver, platform)
             write_json_log(platform, "successful", tags=["manual_login"])
             return True
-        logger.warning(f"❌ {platform.capitalize()} login validation failed.")
+        logger.warning(f" {platform.capitalize()} login validation failed.")
         attempt += 1
-    logger.error(f"🚫 Maximum manual login attempts reached for {platform}.")
+    logger.error(f" Maximum manual login attempts reached for {platform}.")
     return False
 
 # ----------------------------------------
@@ -81,7 +81,7 @@ class PlatformStrategy:
         self.driver = driver
 
     def login(self):
-        logger.info(f"🔐 Logging into {self.platform}...")
+        logger.info(f" Logging into {self.platform}...")
         try:
             self.driver.get(self.strategy.LOGIN_URL)
             time.sleep(2)
@@ -90,32 +90,32 @@ class PlatformStrategy:
             time.sleep(3)
 
             if self.strategy.is_logged_in(self.driver):
-                logger.info(f"✅ {self.platform} login restored via cookies.")
+                logger.info(f" {self.platform} login restored via cookies.")
                 write_json_log(self.platform, "successful", tags=["cookie_login"])
                 return True
 
             if self.strategy.login(self.driver) and self.strategy.is_logged_in(self.driver):
-                logger.info(f"✅ {self.platform} auto-login successful.")
+                logger.info(f" {self.platform} auto-login successful.")
                 save_cookies(self.driver, self.platform)
                 write_json_log(self.platform, "successful", tags=["auto_login"])
                 return True
 
-            logger.warning(f"⚠️ Auto-login failed for {self.platform}. Prompting manual login...")
+            logger.warning(f"️ Auto-login failed for {self.platform}. Prompting manual login...")
             return wait_for_manual_login(self.driver, self.platform, self.strategy.is_logged_in)
 
         except Exception as e:
-            logger.error(f"❌ Error during {self.platform} login: {e}")
+            logger.error(f" Error during {self.platform} login: {e}")
             write_json_log(self.platform, "failed", tags=["error"], ai_output=str(e))
             return False
 
     def post(self, content):
-        logger.info(f"📢 Posting to {self.platform}: {content}")
+        logger.info(f" Posting to {self.platform}: {content}")
         try:
             post_result = self.strategy.post(self.driver, content)
-            logger.info(f"✅ Post result for {self.platform}: {post_result}")
+            logger.info(f" Post result for {self.platform}: {post_result}")
             write_json_log(self.platform, "successful", tags=["post"])
         except Exception as e:
-            logger.error(f"❌ Failed to post on {self.platform}: {e}")
+            logger.error(f" Failed to post on {self.platform}: {e}")
             write_json_log(self.platform, "failed", tags=["post"], ai_output=str(e))
 
 # ----------------------------------------
@@ -141,7 +141,7 @@ class SocialPlatformDispatcher:
         )
 
     def dispatch_all(self):
-        logger.info("🚀 Starting multi-platform dispatch cycle...")
+        logger.info(" Starting multi-platform dispatch cycle...")
         threads = []
         for index, strategy in enumerate(self.platforms):
             driver_session = self.driver_sessions[index]
@@ -157,14 +157,14 @@ class SocialPlatformDispatcher:
         for thread in threads:
             thread.join()
 
-        logger.info("✅ Dispatch cycle complete. Shutting down drivers...")
+        logger.info(" Dispatch cycle complete. Shutting down drivers...")
         self._shutdown_all_drivers()
 
     def _process_platform(self, dispatcher, content):
         if dispatcher.login():
             dispatcher.post(content)
         else:
-            logger.warning(f"❌ Skipping post for {dispatcher.platform} — login failed.")
+            logger.warning(f" Skipping post for {dispatcher.platform} — login failed.")
 
     def _generate_content(self, platform):
         # Dynamic content generation from memory_update

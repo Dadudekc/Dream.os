@@ -45,7 +45,7 @@ class SocialPostManager:
         self.stocktwits_strategy = StocktwitsStrategy(driver=self.driver)
         self.linkedin_strategy = LinkedinStrategy(driver=self.driver)
 
-        logger.info("✅ SocialPostManager initialized with all platform strategies.")
+        logger.info(" SocialPostManager initialized with all platform strategies.")
 
     def post_next(self):
         """
@@ -71,10 +71,10 @@ class SocialPostManager:
             """
             try:
                 strategy_instance.post(post["content"])
-                logger.info(f"✅ {platform_name} post successful.")
+                logger.info(f" {platform_name} post successful.")
                 write_json_log(platform_name, "successful", tags=["post"])
             except Exception as e:
-                logger.error(f"❌ {platform_name} post failed: {e}")
+                logger.error(f" {platform_name} post failed: {e}")
                 write_json_log(platform_name, "failed", tags=["post", "error"], ai_output=str(e))
                 failed_platforms.append(platform_name)
 
@@ -141,4 +141,4 @@ class SocialPostManager:
         Cleanly shuts down the driver manager.
         """
         self.driver_manager.quit_driver()
-        logger.info("🔒 DriverManager shutdown complete.")
+        logger.info(" DriverManager shutdown complete.")

@@ -44,7 +44,7 @@ class CommunityScheduler:
         }
         
         self._save_schedules()
-        self.logger.info(f"✅ Scheduled task for video {video_data['video_id']} at {post_time}")
+        self.logger.info(f" Scheduled task for video {video_data['video_id']} at {post_time}")
 
     def schedule_engagement_check(self, strategy: WordPressCommunityStrategy, interval_minutes: int = 30):
         """Schedule regular engagement checks."""
@@ -64,7 +64,7 @@ class CommunityScheduler:
         }
         
         self._save_schedules()
-        self.logger.info(f"✅ Scheduled engagement checks every {interval_minutes} minutes")
+        self.logger.info(f" Scheduled engagement checks every {interval_minutes} minutes")
 
     def schedule_ai_responses(self, strategy: WordPressCommunityStrategy, check_interval: int = 15):
         """Schedule automated AI responses to comments."""
@@ -84,7 +84,7 @@ class CommunityScheduler:
         }
         
         self._save_schedules()
-        self.logger.info(f"✅ Scheduled AI responses every {check_interval} minutes")
+        self.logger.info(f" Scheduled AI responses every {check_interval} minutes")
 
     def schedule_daily_report(self, strategy: WordPressCommunityStrategy, time: str = "00:00"):
         """Schedule daily engagement report generation."""
@@ -104,7 +104,7 @@ class CommunityScheduler:
         }
         
         self._save_schedules()
-        self.logger.info(f"✅ Scheduled daily reports at {time}")
+        self.logger.info(f" Scheduled daily reports at {time}")
 
     async def _process_comments(self, strategy: WordPressCommunityStrategy):
         """Process new comments and generate AI responses."""
@@ -132,7 +132,7 @@ class CommunityScheduler:
                     # Track the processed comment
                     self._mark_comment_processed(comment.id)
                     
-            self.logger.info("✅ Processed new comments")
+            self.logger.info(" Processed new comments")
             
         except Exception as e:
             self.logger.error(f"Error processing comments: {e}")
@@ -155,7 +155,7 @@ class CommunityScheduler:
                     post.post_status = 'publish'
                     strategy.wp_client.call(posts.NewPost(post))
             
-            self.logger.info("✅ Completed engagement check")
+            self.logger.info(" Completed engagement check")
             
         except Exception as e:
             self.logger.error(f"Error checking engagement: {e}")
@@ -170,7 +170,7 @@ class CommunityScheduler:
             with open(report_file, 'w') as f:
                 json.dump(report, f, indent=4)
             
-            self.logger.info("✅ Generated daily report")
+            self.logger.info(" Generated daily report")
             
         except Exception as e:
             self.logger.error(f"Error generating daily report: {e}")
@@ -213,7 +213,7 @@ class CommunityScheduler:
         """Start the scheduler."""
         if not self.scheduler.running:
             self.scheduler.start()
-            self.logger.info("✅ Scheduler started")
+            self.logger.info(" Scheduler started")
 
     def stop(self):
         """Stop the scheduler."""

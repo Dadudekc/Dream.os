@@ -34,9 +34,9 @@ class UnifiedContextEngine:
             self.conn = sqlite3.connect(self.db_path)
             self.conn.row_factory = sqlite3.Row  # Return dict-like rows
             self.create_tables()
-            logger.info(f"✅ Connected to DB: {self.db_path}")
+            logger.info(f" Connected to DB: {self.db_path}")
         except sqlite3.Error as e:
-            logger.error(f"❌ Failed to connect to DB: {e}")
+            logger.error(f" Failed to connect to DB: {e}")
             raise
 
     # ------------------------------------------------------
@@ -73,7 +73,7 @@ class UnifiedContextEngine:
                     last_reset TEXT NOT NULL
                 )
             """)
-        logger.info("✅ Tables ensured: posts, engagements, rate_limits")
+        logger.info(" Tables ensured: posts, engagements, rate_limits")
 
     # ------------------------------------------------------
     # Core Post Logging with Sentiment
@@ -85,7 +85,7 @@ class UnifiedContextEngine:
                 INSERT INTO posts (platform, post_content, post_time, engagement, sentiment)
                 VALUES (?, ?, ?, ?, ?)
             """, (platform, post_content, post_time, engagement, sentiment))
-        logger.info(f"📝 Post logged on {platform} | Sentiment: {sentiment}")
+        logger.info(f" Post logged on {platform} | Sentiment: {sentiment}")
 
     def fetch_recent_posts(self, platform=None, limit=10):
         cursor = self.conn.cursor()
@@ -99,7 +99,7 @@ class UnifiedContextEngine:
                 SELECT * FROM posts ORDER BY post_time DESC LIMIT ?
             """, (limit,))
         results = cursor.fetchall()
-        logger.debug(f"📦 Fetched {len(results)} posts from {platform or 'all platforms'}")
+        logger.debug(f" Fetched {len(results)} posts from {platform or 'all platforms'}")
         return results
 
     def fetch_last_post_content(self, platform):
@@ -109,7 +109,7 @@ class UnifiedContextEngine:
             ORDER BY post_time DESC LIMIT 1
         """, (platform,))
         result = cursor.fetchone()
-        logger.info(f"🔍 Last post content fetched for {platform}")
+        logger.info(f" Last post content fetched for {platform}")
         return result["post_content"] if result else None
 
     # ------------------------------------------------------
@@ -122,7 +122,7 @@ class UnifiedContextEngine:
                 INSERT INTO engagements (post_id, action, action_time, details)
                 VALUES (?, ?, ?, ?)
             """, (post_id, action, action_time, details))
-        logger.info(f"👍 Engagement logged | Post ID: {post_id} | Action: {action}")
+        logger.info(f" Engagement logged | Post ID: {post_id} | Action: {action}")
 
     def fetch_engagements_for_post(self, post_id):
         cursor = self.conn.cursor()
@@ -130,7 +130,7 @@ class UnifiedContextEngine:
             SELECT * FROM engagements WHERE post_id = ?
         """, (post_id,))
         results = cursor.fetchall()
-        logger.debug(f"📊 Fetched {len(results)} engagements for post ID {post_id}")
+        logger.debug(f" Fetched {len(results)} engagements for post ID {post_id}")
         return results
 
     # ------------------------------------------------------
@@ -161,7 +161,7 @@ class UnifiedContextEngine:
                     VALUES (?, ?, ?, ?)
                 """, (platform, action, limit_count, last_reset))
 
-        logger.info(f"🔄 Rate limit updated: {platform} {action} => {limit_count}")
+        logger.info(f" Rate limit updated: {platform} {action} => {limit_count}")
 
     # ------------------------------------------------------
     # Sentiment Update for Feedback Loops
@@ -180,7 +180,7 @@ class UnifiedContextEngine:
     # ------------------------------------------------------
     def close(self):
         self.conn.close()
-        logger.info("🔒 DB connection closed")
+        logger.info(" DB connection closed")
 
 # ------------------------------------------------------
 # Example Usage (Optional Testing)

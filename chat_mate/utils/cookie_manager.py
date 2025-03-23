@@ -51,7 +51,7 @@ class CookieManager:
                     try:
                         driver.add_cookie(cookie)
                     except Exception as e:
-                        self.logger.error("❌ Error adding cookie for %s: %s", platform, e)
+                        self.logger.error(" Error adding cookie for %s: %s", platform, e)
                         write_json_log(platform, "failed", tags=["cookie_add"], ai_output=str(e))
 
             msg = f"✅ Loaded cookies for {platform}"

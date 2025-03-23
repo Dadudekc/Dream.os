@@ -68,7 +68,7 @@ class BasePlatformStrategy(ABC):
         Returns:
             Dict: Updated metrics
         """
-        self.logger.info(f"📊 Analyzing {self.platform_id} engagement metrics...")
+        self.logger.info(f" Analyzing {self.platform_id} engagement metrics...")
         
         # Update basic metrics (override for platform-specific metrics)
         metrics = {
@@ -125,7 +125,7 @@ class BasePlatformStrategy(ABC):
     
     def reward_top_engagers(self):
         """Reward top community engagers with custom shout-outs."""
-        self.logger.info(f"🎉 Evaluating top engagers for rewards on {self.platform_id}")
+        self.logger.info(f" Evaluating top engagers for rewards on {self.platform_id}")
         
         # Load existing reward data
         if os.path.exists(self.reward_db):
@@ -161,7 +161,7 @@ class BasePlatformStrategy(ABC):
         Returns:
             Dict: Unified metrics across platforms
         """
-        self.logger.info(f"🌐 Merging cross-platform feedback loops for {self.platform_id}")
+        self.logger.info(f" Merging cross-platform feedback loops for {self.platform_id}")
         
         # Demo data (override for real implementation)
         other_platforms = {

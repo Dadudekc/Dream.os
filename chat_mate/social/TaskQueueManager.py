@@ -38,10 +38,10 @@ class TaskQueueManager:
     def start(self):
         """Starts the worker threads."""
         if self.shutdown_event.is_set():
-            logger.warning("⚠️ TaskQueueManager is already stopped. Reset shutdown_event to start again.")
+            logger.warning("️ TaskQueueManager is already stopped. Reset shutdown_event to start again.")
             return
 
-        logger.info(f"🚀 Starting TaskQueueManager with {self.worker_count} workers...")
+        logger.info(f" Starting TaskQueueManager with {self.worker_count} workers...")
         self.shutdown_event.clear()
         for i in range(self.worker_count):
             thread = threading.Thread(target=self._worker, daemon=True, name=f"Worker-{i+1}")
@@ -50,14 +50,14 @@ class TaskQueueManager:
 
     def stop(self):
         """Gracefully stops all workers."""
-        logger.info("🛑 Stopping TaskQueueManager...")
+        logger.info(" Stopping TaskQueueManager...")
         self.shutdown_event.set()  # Signal workers to stop
 
         # Wait for each worker to finish; timeout after a short period to avoid hanging indefinitely.
         for thread in self.workers:
             thread.join(timeout=3)
         self.workers.clear()
-        logger.info("✅ TaskQueueManager stopped.")
+        logger.info(" TaskQueueManager stopped.")
 
     # ----------------------------------------
     # ADD TASK TO QUEUE
@@ -85,7 +85,7 @@ class TaskQueueManager:
             "data": task_data or {},
             "delay": delay
         }
-        logger.info(f"📥 Queuing task: {task_data} | Priority: {priority} | Delay: {delay}s")
+        logger.info(f" Queuing task: {task_data} | Priority: {priority} | Delay: {delay}s")
         # Use current time as a tiebreaker for tasks with equal priority.
         self.task_queue.put((priority, time.time(), task))
 
@@ -110,10 +110,10 @@ class TaskQueueManager:
                     logger.info(f"⏳ {thread_name}: Delaying task execution by {delay}s for task {task_data}")
                     time.sleep(delay)
 
-                logger.info(f"⚙️ {thread_name}: Executing task: {task_data}")
+                logger.info(f"️ {thread_name}: Executing task: {task_data}")
                 try:
                     result = task_fn()
-                    logger.info(f"✅ {thread_name}: Task completed: {task_data} -> {result}")
+                    logger.info(f" {thread_name}: Task completed: {task_data} -> {result}")
 
                     write_json_log(
                         platform="TaskQueueManager",
@@ -129,7 +129,7 @@ class TaskQueueManager:
                 except Exception as e:
                     # Log the full traceback for debugging.
                     error_trace = traceback.format_exc()
-                    logger.error(f"❌ {thread_name}: Task failed: {task_data}, retries left: {retries}, error: {e}\n{error_trace}")
+                    logger.error(f" {thread_name}: Task failed: {task_data}, retries left: {retries}, error: {e}\n{error_trace}")
 
                     write_json_log(
                         platform="TaskQueueManager",
@@ -146,7 +146,7 @@ class TaskQueueManager:
                     if retries > 0:
                         # Calculate exponential backoff delay.
                         new_delay = delay + (self.base_retry_delay * (2 ** (self.default_retry - retries)))
-                        logger.info(f"🔁 {thread_name}: Requeuing task after {new_delay}s | Retries remaining: {retries - 1}")
+                        logger.info(f" {thread_name}: Requeuing task after {new_delay}s | Retries remaining: {retries - 1}")
                         self.add_task(
                             task_fn,
                             task_data=task_data,
@@ -155,7 +155,7 @@ class TaskQueueManager:
                             delay=new_delay
                         )
                     else:
-                        logger.warning(f"⚠️ {thread_name}: Task permanently failed: {task_data}")
+                        logger.warning(f"️ {thread_name}: Task permanently failed: {task_data}")
 
                 self.task_queue.task_done()
 
@@ -185,7 +185,7 @@ class TaskQueueManager:
 if __name__ == "__main__":
     # Dummy task function for testing
     def sample_task():
-        logger.info("🔨 Running sample task...")
+        logger.info(" Running sample task...")
         time.sleep(1)
         return "Sample task result"
 

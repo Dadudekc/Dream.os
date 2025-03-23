@@ -109,9 +109,9 @@ class FacebookBot:
         WebDriverWait(self.driver, DEFAULT_WAIT).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         self._wait((3, 5))
         if "login" not in self.driver.current_url.lower():
-            logger.info(f"✅ {self.platform.capitalize()} login confirmed via settings.")
+            logger.info(f" {self.platform.capitalize()} login confirmed via settings.")
             return True
-        logger.debug(f"🔎 {self.platform.capitalize()} login check failed.")
+        logger.debug(f" {self.platform.capitalize()} login check failed.")
         return False
 
     @retry_on_failure()
@@ -119,18 +119,18 @@ class FacebookBot:
         """
         Automate the Facebook login flow.
         """
-        logger.info(f"🌐 Initiating login process for {self.platform.capitalize()}.")
+        logger.info(f" Initiating login process for {self.platform.capitalize()}.")
         self.driver.get(self.login_url)
         self._wait()
         self.cookie_manager.load_cookies(self.driver, self.platform)
         self.driver.refresh()
         self._wait()
         if self.is_logged_in():
-            logger.info(f"✅ Logged into {self.platform.capitalize()} via cookies.")
+            logger.info(f" Logged into {self.platform.capitalize()} via cookies.")
             write_json_log(self.platform, "successful", tags=["cookie_login"])
             return True
         if not self.email or not self.password:
-            logger.warning(f"⚠️ No {self.platform} credentials provided.")
+            logger.warning(f"️ No {self.platform} credentials provided.")
             write_json_log(self.platform, "failed", tags=["auto_login"], ai_output="Missing credentials.")
             return False
         try:
@@ -141,23 +141,23 @@ class FacebookBot:
             email_field.send_keys(self.email)
             pass_field.send_keys(self.password)
             pass_field.send_keys(Keys.RETURN)
-            logger.info(f"📨 Submitted credentials for {self.platform.capitalize()}.")
+            logger.info(f" Submitted credentials for {self.platform.capitalize()}.")
             WebDriverWait(self.driver, DEFAULT_WAIT).until(EC.url_changes(self.login_url))
             self._wait((5, 10))
         except Exception as e:
-            logger.error(f"🚨 Error during {self.platform.capitalize()} auto-login: {e}")
+            logger.error(f" Error during {self.platform.capitalize()} auto-login: {e}")
             write_json_log(self.platform, "failed", tags=["auto_login"], ai_output=str(e))
         if not self.is_logged_in():
-            logger.warning(f"⚠️ Auto-login failed for {self.platform.capitalize()}. Awaiting manual login...")
+            logger.warning(f"️ Auto-login failed for {self.platform.capitalize()}. Awaiting manual login...")
             if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, self.platform):
                 write_json_log(self.platform, "successful", tags=["manual_login"])
             else:
                 msg = "Manual login failed."
-                logger.error(f"❌ {msg} for {self.platform.capitalize()}.")
+                logger.error(f" {msg} for {self.platform.capitalize()}.")
                 write_json_log(self.platform, "failed", tags=["manual_login"], ai_output=msg)
                 return False
         self.cookie_manager.save_cookies(self.driver, self.platform)
-        logger.info(f"✅ Logged in successfully to {self.platform.capitalize()}.")
+        logger.info(f" Logged in successfully to {self.platform.capitalize()}.")
         write_json_log(self.platform, "successful", tags=["auto_login"])
         return True
 
@@ -166,10 +166,10 @@ class FacebookBot:
         """
         Publish a Facebook post with AI-generated content.
         """
-        logger.info(f"🚀 Attempting to post on {self.platform.capitalize()}.")
+        logger.info(f" Attempting to post on {self.platform.capitalize()}.")
         if not self.is_logged_in():
             msg = "Not logged in."
-            logger.warning(f"⚠️ Cannot post to {self.platform.capitalize()}: {msg}")
+            logger.warning(f"️ Cannot post to {self.platform.capitalize()}: {msg}")
             write_json_log(self.platform, "failed", tags=["post"], ai_output=msg)
             return {"platform": self.platform, "status": "failed", "details": msg}
         content = self.ai_agent.ask(
@@ -195,11 +195,11 @@ class FacebookBot:
             )
             post_button.click()
             self._wait((5, 8))
-            logger.info(f"✅ Post published on {self.platform.capitalize()} in my authentic voice.")
+            logger.info(f" Post published on {self.platform.capitalize()} in my authentic voice.")
             write_json_log(self.platform, "successful", tags=["post"])
             return {"platform": self.platform, "status": "success", "details": "Post published"}
         except Exception as e:
-            logger.error(f"🚨 Failed to post on {self.platform.capitalize()}: {e}")
+            logger.error(f" Failed to post on {self.platform.capitalize()}: {e}")
             write_json_log(self.platform, "failed", tags=["post"], ai_output=str(e))
             return {"platform": self.platform, "status": "failed", "details": str(e)}
 
@@ -230,11 +230,11 @@ class FacebookEngagementBot(FacebookBot):
             try:
                 like_button = post.find_element(By.XPATH, ".//div[contains(@aria-label, 'Like')]")
                 like_button.click()
-                logger.info("❤️ Liked a post on Facebook.")
+                logger.info("️ Liked a post on Facebook.")
                 liked += 1
                 self._wait((2, 4))
             except Exception as e:
-                logger.warning(f"⚠️ Could not like a post: {e}")
+                logger.warning(f"️ Could not like a post: {e}")
 
     def comment_on_posts(self, comments):
         """
@@ -254,11 +254,11 @@ class FacebookEngagementBot(FacebookBot):
                 comment_box.click()
                 comment_box.send_keys(comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Commented: '{comment}' on a post.")
+                logger.info(f" Commented: '{comment}' on a post.")
                 commented += 1
                 self._wait((4, 6))
             except Exception as e:
-                logger.warning(f"⚠️ Could not comment on a post: {e}")
+                logger.warning(f"️ Could not comment on a post: {e}")
 
     def follow_users(self):
         """
@@ -280,13 +280,13 @@ class FacebookEngagementBot(FacebookBot):
                 self._wait((3, 6))
                 follow_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Add Friend') or contains(text(), 'Follow')]")
                 follow_button.click()
-                logger.info(f"➕ Sent friend request to: {profile_url}")
+                logger.info(f" Sent friend request to: {profile_url}")
                 write_json_log(self.platform, "successful", tags=["follow"], ai_output=profile_url)
                 followed += 1
                 followed_users.append(profile_url)
                 self._wait((10, 15))
             except Exception as e:
-                logger.error(f"❌ Error following user from post: {e}")
+                logger.error(f" Error following user from post: {e}")
         return followed_users
 
     def unfollow_non_returners(self, days_threshold=3):
@@ -294,7 +294,7 @@ class FacebookEngagementBot(FacebookBot):
         Unfollow users who haven't reciprocated the connection after a threshold.
         """
         if not os.path.exists(self.FOLLOW_DB):
-            logger.warning("⚠️ No friend tracker data found.")
+            logger.warning("️ No friend tracker data found.")
             return
         with open(self.FOLLOW_DB, "r") as f:
             follow_data = json.load(f)
@@ -311,14 +311,14 @@ class FacebookEngagementBot(FacebookBot):
                     self._wait((1, 3))
                     confirm_button = self.driver.find_element(By.XPATH, "//button[text()='Unfriend']")
                     confirm_button.click()
-                    logger.info(f"➖ Unfriended: {user}")
+                    logger.info(f" Unfriended: {user}")
                     follow_data[user]["status"] = "unfriended"
                     unfollowed.append(user)
                 except Exception as e:
-                    logger.error(f"❌ Error unfriending {user}: {e}")
+                    logger.error(f" Error unfriending {user}: {e}")
         with open(self.FOLLOW_DB, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"➖ Unfriended {len(unfollowed)} users.")
+        logger.info(f" Unfriended {len(unfollowed)} users.")
 
     def _log_followed_users(self, users):
         """
@@ -335,7 +335,7 @@ class FacebookEngagementBot(FacebookBot):
             follow_data[user] = {"followed_at": datetime.utcnow().isoformat(), "status": "followed"}
         with open(self.FOLLOW_DB, "w") as f:
             json.dump(follow_data, f, indent=4)
-        logger.info(f"💾 Logged {len(users)} new friend requests.")
+        logger.info(f" Logged {len(users)} new friend requests.")
 
     def go_viral(self):
         """
@@ -350,7 +350,7 @@ class FacebookEngagementBot(FacebookBot):
         self._wait((3, 5))
         posts = self.driver.find_elements(By.CSS_SELECTOR, "div[data-pagelet='FeedUnit']")
         if not posts:
-            logger.warning("⚠️ No trending posts found for viral engagement.")
+            logger.warning("️ No trending posts found for viral engagement.")
             return
         random.shuffle(posts)
         for post in posts[:3]:
@@ -369,10 +369,10 @@ class FacebookEngagementBot(FacebookBot):
                 comment_box.click()
                 comment_box.send_keys(comment)
                 comment_box.send_keys(Keys.RETURN)
-                logger.info(f"💬 Viral mode: Commented: {comment}")
+                logger.info(f" Viral mode: Commented: {comment}")
                 self._wait((2, 3))
             except Exception as e:
-                logger.warning(f"⚠️ Viral engagement error on a trending post: {e}")
+                logger.warning(f"️ Viral engagement error on a trending post: {e}")
                 continue
 
     def run_daily_session(self):
@@ -381,9 +381,9 @@ class FacebookEngagementBot(FacebookBot):
           - Log in (if needed)
           - Like posts, comment, follow users, unfollow non-returners, and go viral.
         """
-        logger.info("🚀 Starting Facebook Daily Engagement Session")
+        logger.info(" Starting Facebook Daily Engagement Session")
         if not self.login():
-            logger.error("❌ Facebook login failed. Ending session.")
+            logger.error(" Facebook login failed. Ending session.")
             return
         # Generate AI-powered comments for engagement
         comments = []
@@ -401,7 +401,7 @@ class FacebookEngagementBot(FacebookBot):
             self._log_followed_users(followed)
         self.unfollow_non_returners()
         self.go_viral()
-        logger.info("✅ Facebook Daily Engagement Session Complete.")
+        logger.info(" Facebook Daily Engagement Session Complete.")
 
 # -------------------------------------------------
 # FacebookStrategy Class (Unified Approach)
@@ -570,7 +570,7 @@ class FacebookStrategy(BasePlatformStrategy):
     
     def login(self) -> bool:
         """Log in to Facebook."""
-        self.logger.info("🌐 Initiating Facebook login...")
+        self.logger.info(" Initiating Facebook login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -581,7 +581,7 @@ class FacebookStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info("✅ Logged into Facebook via cookies")
+                self.logger.info(" Logged into Facebook via cookies")
                 return True
             
             # Try credential login
@@ -607,7 +607,7 @@ class FacebookStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "facebook")
-                        self.logger.info("✅ Logged into Facebook via credentials")
+                        self.logger.info(" Logged into Facebook via credentials")
                         return True
                 except Exception as e:
                     self.logger.error(f"Facebook auto-login failed: {e}")
@@ -634,7 +634,7 @@ class FacebookStrategy(BasePlatformStrategy):
     
     def post_content(self, content: str) -> bool:
         """Post content to Facebook."""
-        self.logger.info("🚀 Posting content to Facebook...")
+        self.logger.info(" Posting content to Facebook...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -666,7 +666,7 @@ class FacebookStrategy(BasePlatformStrategy):
             post_button.click()
             self._wait((4, 6))
             
-            self.logger.info("✅ Facebook post published successfully")
+            self.logger.info(" Facebook post published successfully")
             return True
         except Exception as e:
             self.logger.error(f"Error posting to Facebook: {e}")
@@ -674,7 +674,7 @@ class FacebookStrategy(BasePlatformStrategy):
     
     def run_daily_strategy_session(self):
         """Run complete daily Facebook strategy session."""
-        self.logger.info("🚀 Starting Full Facebook Strategy Session")
+        self.logger.info(" Starting Full Facebook Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -709,7 +709,7 @@ class FacebookStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info("✅ Facebook Strategy Session Complete")
+            self.logger.info(" Facebook Strategy Session Complete")
         except Exception as e:
             self.logger.error(f"Error in Facebook strategy session: {e}")
             self.cleanup()
@@ -738,27 +738,27 @@ class FacebookStrategy(BasePlatformStrategy):
         - Best performing comments
         - Follower growth patterns
         """
-        logger.info("📊 Analyzing Facebook engagement metrics...")
+        logger.info(" Analyzing Facebook engagement metrics...")
         # For demo purposes, increment metrics by random values
         self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
         self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
         self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
 
-        logger.info(f"👍 Total Likes: {self.feedback_data['likes']}")
-        logger.info(f"💬 Total Comments: {self.feedback_data['comments']}")
-        logger.info(f"➕ Total Follows: {self.feedback_data['follows']}")
+        logger.info(f" Total Likes: {self.feedback_data['likes']}")
+        logger.info(f" Total Comments: {self.feedback_data['comments']}")
+        logger.info(f" Total Follows: {self.feedback_data['follows']}")
         self._save_feedback_data()
 
     def adaptive_posting_strategy(self):
         """
         Adjust posting strategy based on feedback loops.
         """
-        logger.info("🔄 Adapting Facebook posting strategy based on feedback...")
+        logger.info(" Adapting Facebook posting strategy based on feedback...")
         if self.feedback_data.get("likes", 0) > 100:
-            logger.info("🔥 High engagement detected! Increasing post frequency.")
+            logger.info(" High engagement detected! Increasing post frequency.")
             # Hook into scheduler or additional sessions as needed.
         if self.feedback_data.get("comments", 0) > 50:
-            logger.info("💡 Shifting to more community-focused discussion posts.")
+            logger.info(" Shifting to more community-focused discussion posts.")
 
     def analyze_comment_sentiment(self, comment):
         """
@@ -788,7 +788,7 @@ class FacebookStrategy(BasePlatformStrategy):
         """
         Reward top engaging followers with custom messages and shout-outs.
         """
-        logger.info("🎉 Evaluating top engaging followers for rewards...")
+        logger.info(" Evaluating top engaging followers for rewards...")
         # Load current reward data or initialize empty rewards.
         if os.path.exists(self.REWARD_DB):
             with open(self.REWARD_DB, "r") as f:
@@ -817,7 +817,7 @@ class FacebookStrategy(BasePlatformStrategy):
         """
         Merge engagement data from Instagram and Twitter with Facebook to create a unified strategy.
         """
-        logger.info("🌐 Merging cross-platform feedback loops...")
+        logger.info(" Merging cross-platform feedback loops...")
         # Stub: In a real implementation, gather data from Instagram/Twitter APIs or logs.
         instagram_data = {"likes": random.randint(10, 20), "comments": random.randint(5, 10)}
         twitter_data = {"likes": random.randint(8, 15), "comments": random.randint(3, 8)}
@@ -853,7 +853,7 @@ def start_scheduler():
         scheduler.add_job(bot.run_daily_strategy_session, 'cron', hour=hour, minute=minute)
 
     scheduler.start()
-    logger.info("🕒 Scheduler started for Facebook strategy engagement.")
+    logger.info(" Scheduler started for Facebook strategy engagement.")
 
 # ------------------------------------------------------
 # Functional Wrapper for Quick Facebook Posting
@@ -874,4 +874,4 @@ if __name__ == "__main__":
         while True:
             time.sleep(60)
     except (KeyboardInterrupt, SystemExit):
-        logger.info("🛑 Scheduler stopped by user.")
+        logger.info(" Scheduler stopped by user.")

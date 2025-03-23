@@ -1,16 +1,26 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QPushButton, QLabel, QHBoxLayout
 from PyQt5.QtCore import Qt
+import logging
 
 class LogsTab(QWidget):
     """
     LogsTab provides a display area for system logs, feedback, and real-time updates.
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, logger=None):
+        """
+        Initialize the logs tab.
+        
+        Args:
+            parent: Parent widget
+            logger: Logger instance
+        """
         super().__init__(parent)
-        self.parent = parent  # Typically DreamscapeGUI
+        self.parent = parent
+        self.logger = logger or logging.getLogger(__name__)
         self.initUI()
 
     def initUI(self):
+        """Initialize the user interface components."""
         layout = QVBoxLayout()
 
         # Header label
@@ -40,8 +50,21 @@ class LogsTab(QWidget):
     def append_log(self, message: str):
         """
         Appends a log message to the log display.
+        
+        Args:
+            message: The message to append
         """
         self.log_display.append(message)
+        self.logger.info(message)
+        
+    def append_output(self, message: str):
+        """
+        Alternative method name for append_log to maintain compatibility.
+        
+        Args:
+            message: The message to append
+        """
+        self.append_log(message)
 
     def clear_logs(self):
         """

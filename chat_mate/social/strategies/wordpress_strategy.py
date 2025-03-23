@@ -61,10 +61,10 @@ class WordPressCommunityStrategy(BasePlatformStrategy):
             
             # Test connection
             self.wp_client.call(posts.GetPosts({'number': 1}))
-            self.logger.info("✅ Successfully connected to WordPress")
+            self.logger.info(" Successfully connected to WordPress")
             return True
         except Exception as e:
-            self.logger.error(f"❌ Failed to initialize WordPress connection: {e}")
+            self.logger.error(f" Failed to initialize WordPress connection: {e}")
             return False
 
     def cleanup(self) -> bool:
@@ -131,11 +131,11 @@ class WordPressCommunityStrategy(BasePlatformStrategy):
             }
             
             self._save_community_data()
-            self.logger.info(f"✅ Successfully synced YouTube video to WordPress: {post_id}")
+            self.logger.info(f" Successfully synced YouTube video to WordPress: {post_id}")
             return True
             
         except Exception as e:
-            self.logger.error(f"❌ Failed to sync YouTube video: {e}")
+            self.logger.error(f" Failed to sync YouTube video: {e}")
             return False
 
     def moderate_comment(self, comment_text: str) -> bool:
