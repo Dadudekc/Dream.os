@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.prompt_schema import PromptRequest, PromptResponse, CycleRequest
-from app.services.prompt import prompt_service
+from app.services.prompt_service import prompt_service
 
 router = APIRouter()
 
@@ -8,7 +8,7 @@ router = APIRouter()
 async def execute_prompt(request: PromptRequest):
     """Execute a single prompt"""
     try:
-        return await prompt_service.executor.execute(request)
+        return await prompt_service.execute_prompt(request)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -16,6 +16,6 @@ async def execute_prompt(request: PromptRequest):
 async def start_cycle(request: CycleRequest):
     """Start a prompt cycle"""
     try:
-        return await prompt_service.cycle_manager.start_cycle(request)
+        return await prompt_service.start_prompt_cycle(request)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 

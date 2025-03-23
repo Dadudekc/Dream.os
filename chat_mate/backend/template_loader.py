@@ -27,7 +27,7 @@ def discover_templates():
                 t for t in os.listdir(dir_path) if t.endswith('.j2')
             ])
             
-    logger.info(f"🔎 Discovered {len(discovered_templates)} templates across {len(template_dirs)} directories")
+    logger.info(f" Discovered {len(discovered_templates)} templates across {len(template_dirs)} directories")
     return discovered_templates
 
 # Populate allowed_templates at module initialization
@@ -65,16 +65,16 @@ class TemplateManager(QObject):
         if os.path.exists(self.template_dir):
             available_templates = [t for t in os.listdir(self.template_dir) if t.endswith('.j2')]
             
-        logger.info(f"✅ Loaded {len(available_templates)} templates from {self.template_dir}")
+        logger.info(f" Loaded {len(available_templates)} templates from {self.template_dir}")
         self.templates_updated.emit(available_templates)  # Signal GUI update
 
     def set_active_template(self, template_name):
         """Set the active template."""
         if template_name.endswith('.j2'):
             self.active_template = template_name
-            logger.info(f"🔥 Active template set: {template_name}")
+            logger.info(f" Active template set: {template_name}")
         else:
-            logger.warning(f"❌ Invalid template format: {template_name} - Must be a .j2 file")
+            logger.warning(f" Invalid template format: {template_name} - Must be a .j2 file")
 
     def render_template(self, context=None):
         """
@@ -87,17 +87,17 @@ class TemplateManager(QObject):
             str: Rendered template or None if error occurs
         """
         if not self.active_template:
-            logger.error("❌ No active template selected.")
+            logger.error(" No active template selected.")
             return None
 
         try:
             template = self.env.get_template(self.active_template)
             return template.render(context or {})
         except TemplateNotFound:
-            logger.error(f"❌ Template not found: {self.active_template}")
+            logger.error(f" Template not found: {self.active_template}")
             return None
         except Exception as e:
-            logger.error(f"❌ Error rendering {self.active_template}: {e}")
+            logger.error(f" Error rendering {self.active_template}: {e}")
             return None
             
     def change_template_dir(self, new_dir):
@@ -111,12 +111,12 @@ class TemplateManager(QObject):
             bool: True if successful, False otherwise
         """
         if not os.path.exists(new_dir):
-            logger.error(f"❌ Template directory does not exist: {new_dir}")
+            logger.error(f" Template directory does not exist: {new_dir}")
             return False
             
         self.template_dir = new_dir
         self.load_templates()
-        logger.info(f"✅ Changed template directory to: {new_dir}")
+        logger.info(f" Changed template directory to: {new_dir}")
         return True
 
 def load_template(template_name):
@@ -130,7 +130,7 @@ def load_template(template_name):
         jinja2.Template: The template object if found, None otherwise
     """
     if not template_name.endswith('.j2'):
-        logger.warning(f"❌ Invalid template format: {template_name} - Must be a .j2 file")
+        logger.warning(f" Invalid template format: {template_name} - Must be a .j2 file")
         return None
         
     # Find the template in available directories
@@ -148,13 +148,13 @@ def load_template(template_name):
             try:
                 env = Environment(loader=FileSystemLoader(template_dir))
                 template = env.get_template(template_name)
-                logger.info(f"✅ Successfully loaded template: {template_name} from {template_dir}")
+                logger.info(f" Successfully loaded template: {template_name} from {template_dir}")
                 return template
             except TemplateNotFound:
                 continue
             except Exception as e:
-                logger.error(f"❌ Error loading {template_name}: {e}")
+                logger.error(f" Error loading {template_name}: {e}")
                 continue
     
-    logger.error(f"❌ Template not found in any directory: {template_name}")
+    logger.error(f" Template not found in any directory: {template_name}")
     return None

@@ -2,11 +2,11 @@ import asyncio
 from datetime import datetime
 from typing import Dict, Optional
 from app.schemas.prompt_schema import PromptRequest, PromptResponse, CycleRequest
-from app.core.dreamscape import DreamscapeService  # Your existing service
+from app.core.dreamscape import dreamscape_service
 
 class PromptService:
     def __init__(self):
-        self.dreamscape = DreamscapeService()
+        self.dreamscape = dreamscape_service
 
     async def execute_prompt(self, request: PromptRequest) -> PromptResponse:
         start_time = datetime.utcnow()

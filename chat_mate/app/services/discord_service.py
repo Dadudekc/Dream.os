@@ -3,12 +3,14 @@ from datetime import datetime
 from typing import Optional, Dict
 from app.schemas.discord_schema import BotConfig, BotStatus
 from app.core.discord_bot import DreamscapeBot  # Your existing Discord bot
+from app.core.dreamscape import dreamscape_service
 
 class DiscordService:
     def __init__(self):
         self.bot: Optional[DreamscapeBot] = None
         self.start_time: Optional[datetime] = None
         self._lock = asyncio.Lock()
+        self.dreamscape = dreamscape_service
 
     async def launch_bot(self, config: BotConfig) -> None:
         async with self._lock:
