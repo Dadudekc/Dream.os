@@ -101,17 +101,12 @@ class ConfigManager:
         }
     }
 
-    def __init__(self, logger: ILoggingAgent = None):
-        self.logger = logger
-
-    def set_logger(self, logger: ILoggingAgent):
-        self.logger = logger
-
     def __init__(
         self,
         config_name: str = "unified_config.yaml",
         env_prefix: str = "CHATMATE_",
-        auto_reload: bool = True
+        auto_reload: bool = True,
+        logger: Optional[ILoggingAgent] = None
     ):
         """
         Initialize the ConfigManager.
@@ -120,10 +115,12 @@ class ConfigManager:
             config_name: Name of the main config file
             env_prefix: Prefix for environment variables
             auto_reload: Whether to watch for config file changes
+            logger: Optional ILoggingAgent instance for logging
         """
         self.config_name = config_name
         self.env_prefix = env_prefix
         self.auto_reload = auto_reload
+        self._logger = logger
 
         # Set up internal state BEFORE creating the logger.
         self._lock = threading.Lock()
@@ -135,17 +132,25 @@ class ConfigManager:
         self.config_path = os.path.join(self.config_dir, config_name)
         os.makedirs(self.config_dir, exist_ok=True)
 
-        # Lazy import to avoid circular dependencies:
-        from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-        # Pass self as the config service:
-        self.logger = UnifiedLoggingAgent(self)
-
         # Load initial configuration
         self.reload()
 
         # Start auto-reload if enabled
         if auto_reload:
             self._start_auto_reload()
+
+    @property
+    def logger(self) -> ILoggingAgent:
+        """Lazy load the logger if not already set."""
+        if self._logger is None:
+            # Lazy import to avoid circular dependencies
+            from core.UnifiedLoggingAgent import UnifiedLoggingAgent
+            self._logger = UnifiedLoggingAgent(self)
+        return self._logger
+
+    def set_logger(self, logger: ILoggingAgent) -> None:
+        """Set the logger instance."""
+        self._logger = logger
 
     def _start_auto_reload(self) -> None:
         """Start the auto-reload thread."""

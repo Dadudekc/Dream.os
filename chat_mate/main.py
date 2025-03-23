@@ -10,7 +10,7 @@ from core.bootstrap import get_bootstrap_paths
 from core.AgentDispatcher import AgentDispatcher
 from core.ConfigManager import ConfigManager
 from core.DriverManager import DriverManager
-from core.UnifiedLoggingAgent import UnifiedLoggingAgent
+from core.logger_factory import LoggerFactory
 
 # GUI and Web imports
 from gui.DreamscapeMainWindow import DreamscapeMainWindow
@@ -145,8 +145,24 @@ def main():
 
     # Initialize core services
     config_manager = ConfigManager()
-    logger = UnifiedLoggingAgent(config_manager)
+    logger = LoggerFactory.create_logger(config_manager)
     config_manager.set_logger(logger)
+
+    # Initialize application services
+    services = initialize_services()
+    services['config_manager'] = config_manager
+    services['logger'] = logger
+
+    # Track initialization errors
+    errors = []
+
+    try:
+        # Initialize driver manager if needed
+        driver_manager = DriverManager(config_manager)
+        services['driver_manager'] = driver_manager
+    except Exception as e:
+        errors.append(f"Failed to initialize DriverManager: {str(e)}")
+        logger.log_error(str(e))
 
     parser = argparse.ArgumentParser(description="Dreamscape Execution System")
     parser.add_argument(
@@ -156,8 +172,6 @@ def main():
         help="Execution mode selection."
     )
     args = parser.parse_args()
-
-    # Continue with the rest of the initialization...
 
     # Handle errors if present
     if errors and args.mode != "agent":

@@ -328,6 +328,12 @@ class AgentDispatcher:
             return self._execute_chat_task(task)
         elif agent_type == "reinforcement":
             return self._execute_reinforcement_task(task)
+        elif agent_type == "refactor":
+            return self._execute_refactor_task(task)
+        elif agent_type == "test":
+            return self._execute_test_task(task)
+        elif agent_type == "doc":
+            return self._execute_doc_task(task)
         else:
             raise ValueError(f"Unknown agent type: {agent_type}")
 
@@ -353,6 +359,24 @@ class AgentDispatcher:
         from core.ReinforcementEngine import ReinforcementEngine
         engine = ReinforcementEngine()
         return engine.process_task(task.task_type, task.payload)
+
+    def _execute_refactor_task(self, task: Task) -> Any:
+        """Execute a code refactoring task."""
+        from core.Agents.specialized_agents import RefactorAgent
+        agent = RefactorAgent()
+        return agent.handle_task(task.payload)
+
+    def _execute_test_task(self, task: Task) -> Any:
+        """Execute a test generation task."""
+        from core.Agents.specialized_agents import TestAgent
+        agent = TestAgent()
+        return agent.handle_task(task.payload)
+
+    def _execute_doc_task(self, task: Task) -> Any:
+        """Execute a documentation generation task."""
+        from core.Agents.specialized_agents import DocAgent
+        agent = DocAgent()
+        return agent.handle_task(task.payload)
 
     def _retry_task(self, task: Task) -> None:
         """Retry a failed task with exponential backoff."""
