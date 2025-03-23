@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from dataclasses import dataclass
-from core.agents.CursorAgentInterface import CursorAgentInterface
+from core.Agents.CursorAgentInterface import CursorAgentInterface
 
 @dataclass
 class EvaluationMetrics:

@@ -1,7 +1,7 @@
 # main.py
 
 import time
-from agent_dispatcher import AgentDispatcher
+from AgentDispatcher import AgentDispatcher
 import sys
 import os
 

@@ -2,8 +2,8 @@
 
 import time
 import logging
-from base_agent import BaseAgent
-from driver_manager import DriverManager  # Reuse existing manager if available
+from core.Agents.base_agent import BaseAgent
+from core.DriverManager import DriverManager  # Reuse existing manager if available
 
 logger = logging.getLogger("ChatScraperAgent")
 
@@ -35,7 +35,7 @@ class ChatScraperAgent(BaseAgent):
 
         elif action == "validate_login":
             logged_in = self.validate_login()
-            logger.info(f"[{self.name}] Login status: {'✅' if logged_in else '❌'}")
+            logger.info(f"[{self.name}] Login status: {'' if logged_in else ''}")
         
         else:
             logger.warning(f"[{self.name}] Unknown action: {action}")

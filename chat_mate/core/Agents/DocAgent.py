@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from core.agents.CursorAgentInterface import CursorAgentInterface
+from core.Agents.CursorAgentInterface import CursorAgentInterface
 
 class DocAgent(CursorAgentInterface):
     """Agent for handling documentation generation tasks."""

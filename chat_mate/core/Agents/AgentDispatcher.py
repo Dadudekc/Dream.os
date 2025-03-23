@@ -4,21 +4,18 @@ import threading
 import queue
 import logging
 import time
-
-# Assume these are already implemented in your architecture
-from chat_scraper_agent import ChatScraperAgent
 import sys
 import os
 
 # Add the core directory to sys.path dynamically
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from chat_engine.prompt_execution_service import PromptExecutionService
-
-from chat_engine.prompt_execution_service import PromptExecutionService
-from chat_engine.feedback_engine import FeedbackEngine
-from chat_engine.discord_dispatcher import DiscordDispatcher
-from driver_manager import DriverManager
+# Fixed imports
+from ..chat_engine.chat_scraper_service import ChatScraperService as ChatScraperAgent
+from ..chat_engine.prompt_execution_service import PromptExecutionService
+from ..chat_engine.feedback_engine import FeedbackEngine
+from ..chat_engine.discord_dispatcher import DiscordDispatcher
+from ..DriverManager import DriverManager
 
 logger = logging.getLogger("AgentDispatcher")
 logger.setLevel(logging.INFO)
@@ -30,7 +27,7 @@ class AgentDispatcher:
     """
 
     def __init__(self, config):
-        logger.info("🚀 Initializing AgentDispatcher...")
+        logger.info(" Initializing AgentDispatcher...")
 
         # Core config
         self.config = config
@@ -49,14 +46,14 @@ class AgentDispatcher:
             default_channel_id=int(self.config.get("discord_channel_id", 0))
         )
 
-        logger.info("✅ AgentDispatcher initialized successfully.")
+        logger.info(" AgentDispatcher initialized successfully.")
 
     # ---------------------------------------------------
     # DISPATCHER LIFECYCLE
     # ---------------------------------------------------
 
     def start(self):
-        logger.info("🚦 Starting AgentDispatcher...")
+        logger.info(" Starting AgentDispatcher...")
 
         # Boot up Discord bot (if enabled)
         if self.config.get("discord_enabled", False):
@@ -69,7 +66,7 @@ class AgentDispatcher:
         self.event_loop()
 
     def stop(self):
-        logger.info("🛑 Stopping AgentDispatcher...")
+        logger.info(" Stopping AgentDispatcher...")
 
         self.running = False
         self.scraper_agent.stop()
@@ -77,7 +74,7 @@ class AgentDispatcher:
         self.driver_manager.shutdown_driver()
 
     def event_loop(self):
-        logger.info("🔄 Starting AgentDispatcher event loop...")
+        logger.info(" Starting AgentDispatcher event loop...")
         while self.running:
             try:
                 task = self.task_queue.get(timeout=1)
@@ -85,7 +82,7 @@ class AgentDispatcher:
             except queue.Empty:
                 continue
             except Exception as e:
-                logger.error(f"❌ Error in event loop: {e}")
+                logger.error(f" Error in event loop: {e}")
 
     # ---------------------------------------------------
     # TASK DISPATCH
@@ -93,7 +90,7 @@ class AgentDispatcher:
 
     def add_task(self, task):
         """Enqueue a task for execution."""
-        logger.info(f"📥 Received new task: {task.get('action', 'unknown')}")
+        logger.info(f" Received new task: {task.get('action', 'unknown')}")
         self.task_queue.put(task)
 
     def _handle_task(self, task):
@@ -122,7 +119,7 @@ class AgentDispatcher:
             self.discord_dispatcher.send_message(channel, message)
 
         else:
-            logger.warning(f"⚠️ Unknown action: {action}")
+            logger.warning(f"️ Unknown action: {action}")
 
     # ---------------------------------------------------
     # INTERNAL TASKS
@@ -132,10 +129,10 @@ class AgentDispatcher:
         chat_title = chat.get("title", "Untitled")
         chat_link = chat.get("link")
 
-        logger.info(f"🚀 Executing prompts on chat: {chat_title}")
+        logger.info(f" Executing prompts on chat: {chat_title}")
 
         if not chat_link:
-            logger.warning(f"❌ Chat '{chat_title}' has no link. Aborting.")
+            logger.warning(f" Chat '{chat_title}' has no link. Aborting.")
             return
 
         # Load chat in browser
@@ -144,12 +141,12 @@ class AgentDispatcher:
 
         # Loop through prompts
         for prompt_name in prompt_list:
-            logger.info(f"📝 Executing prompt '{prompt_name}' on chat '{chat_title}'")
+            logger.info(f" Executing prompt '{prompt_name}' on chat '{chat_title}'")
             prompt_text = self.prompt_executor.get_prompt(prompt_name)
             response = self.prompt_executor.execute_prompt_cycle(prompt_text)
 
             if not response:
-                logger.warning(f"⚠️ No response for prompt '{prompt_name}' on chat '{chat_title}'")
+                logger.warning(f"️ No response for prompt '{prompt_name}' on chat '{chat_title}'")
                 continue
 
             # Analyze + feedback
