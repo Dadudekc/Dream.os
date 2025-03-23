@@ -89,22 +89,22 @@ class Config:
         self._ensure_directories()
         self.logger = self._setup_logger("Config")
 
-        self.logger.info("⚙️ Config initialization started.")
+        self.logger.info("️ Config initialization started.")
 
         if config_file:
             self.load_from_file(config_file)
 
-        self.logger.info("✅ Config initialized successfully.")
+        self.logger.info(" Config initialized successfully.")
 
     # ----------------------
     # JSON Config Loading
     # ----------------------
     def load_from_file(self, path: str):
         """Load runtime overrides from JSON configuration."""
-        self.logger.info(f"📂 Loading configuration from: {path}")
+        self.logger.info(f" Loading configuration from: {path}")
 
         if not os.path.isfile(path):
-            self.logger.error(f"❌ Config file not found: {path}")
+            self.logger.error(f" Config file not found: {path}")
             return
 
         try:
@@ -114,12 +114,12 @@ class Config:
             for key, value in config_data.items():
                 if hasattr(self, key):
                     setattr(self, key, value)
-                    self.logger.info(f"🔧 Loaded config value: {key} = {value}")
+                    self.logger.info(f" Loaded config value: {key} = {value}")
 
-            self.logger.info("✅ Configuration successfully loaded.")
+            self.logger.info(" Configuration successfully loaded.")
 
         except Exception as e:
-            self.logger.error(f"❌ Failed to load config: {e}")
+            self.logger.error(f" Failed to load config: {e}")
 
     # ----------------------
     # Directory Setup
@@ -137,7 +137,7 @@ class Config:
         for path in paths:
             try:
                 os.makedirs(path, exist_ok=True)
-                self.logger and self.logger.info(f"📁 Ensured directory: {path}")
+                self.logger and self.logger.info(f" Ensured directory: {path}")
             except Exception as e:
                 print(f"❌ Failed to create directory {path}: {e}")
 
@@ -152,7 +152,7 @@ class Config:
             options.add_argument("--headless=new")
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
-            self.logger.info("✅ Headless mode enabled.")
+            self.logger.info(" Headless mode enabled.")
 
         options.add_argument("--start-maximized")
         options.add_argument(f"--user-data-dir={self.profile_dir}")
@@ -161,27 +161,27 @@ class Config:
 
         try:
             driver = uc.Chrome(options=options, driver_executable_path=driver_path)
-            self.logger.info("🚀 ChromeDriver initialized successfully.")
+            self.logger.info(" ChromeDriver initialized successfully.")
             return driver
         except Exception as e:
-            self.logger.error(f"❌ Failed to initialize ChromeDriver: {e}")
+            self.logger.error(f" Failed to initialize ChromeDriver: {e}")
             raise
 
     def _get_cached_driver(self):
         """Retrieve existing ChromeDriver or download/cache a fresh one."""
         if os.path.exists(self.driver_path):
-            self.logger.info(f"✅ Using cached ChromeDriver at {self.driver_path}")
+            self.logger.info(f" Using cached ChromeDriver at {self.driver_path}")
             return self.driver_path
 
-        self.logger.warning("⚠️ Cached ChromeDriver missing. Downloading latest...")
+        self.logger.warning("️ Cached ChromeDriver missing. Downloading latest...")
 
         try:
             latest_driver = ChromeDriverManager().install()
             shutil.copy(latest_driver, self.driver_path)
-            self.logger.info(f"✅ ChromeDriver cached at {self.driver_path}")
+            self.logger.info(f" ChromeDriver cached at {self.driver_path}")
             return self.driver_path
         except Exception as e:
-            self.logger.error(f"❌ Failed to download/cache ChromeDriver: {e}")
+            self.logger.error(f" Failed to download/cache ChromeDriver: {e}")
             raise
 
     # ----------------------
@@ -276,6 +276,6 @@ def get_logger(name: str = "chat_mate", log_dir: str = None):
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
-    logger.debug(f"✅ Logger '{name}' initialized at {log_file}")
+    logger.debug(f" Logger '{name}' initialized at {log_file}")
 
     return logger

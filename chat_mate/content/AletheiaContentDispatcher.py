@@ -28,25 +28,25 @@ class AletheiaContentDispatcher:
             "stocktwits": StocktwitsStrategy(self.env)
         }
 
-        logger.info("🚀 AletheiaContentDispatcher initialized with multi-platform strategies.")
+        logger.info(" AletheiaContentDispatcher initialized with multi-platform strategies.")
 
     def execute_full_dispatch(self):
-        logger.info("🚀 Dispatching content to all platforms...")
+        logger.info(" Dispatching content to all platforms...")
         
         # Iterate and post to each platform strategy
         for platform, strategy in self.platforms.items():
             try:
-                logger.info(f"⚙️ Generating content for {platform.capitalize()}...")
+                logger.info(f"️ Generating content for {platform.capitalize()}...")
                 content = strategy.generate_content(self.memory_update)
                 
-                logger.info(f"📤 Dispatching to {platform.capitalize()}...")
+                logger.info(f" Dispatching to {platform.capitalize()}...")
                 strategy.dispatch_content(content)
                 
-                logger.info(f"✅ {platform.capitalize()} post dispatched successfully.")
+                logger.info(f" {platform.capitalize()} post dispatched successfully.")
             except Exception as e:
-                logger.error(f"❌ Failed to dispatch content to {platform.capitalize()}: {e}")
+                logger.error(f" Failed to dispatch content to {platform.capitalize()}: {e}")
 
-        logger.info("✅ All content dispatched via AletheiaContentDispatcher.")
+        logger.info(" All content dispatched via AletheiaContentDispatcher.")
 
 # -----------------------------
 # Example Usage
