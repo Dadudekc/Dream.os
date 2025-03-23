@@ -10,7 +10,7 @@ from core.bootstrap import get_bootstrap_paths
 from core.AgentDispatcher import AgentDispatcher
 from core.ConfigManager import ConfigManager
 from core.DriverManager import DriverManager
-from core.logger_factory import LoggerFactory
+from core.logging.factories.LoggerFactory import LoggerFactory
 
 # GUI and Web imports
 from gui.DreamscapeMainWindow import DreamscapeMainWindow
@@ -32,15 +32,15 @@ def setup_logging():
 def initialize_services():
     """Initialize application services."""
     services = {}
-    
+
     # Initialize config service
     config_service = ConfigService()
     services['config'] = config_service
-    
+
     # Initialize prompt service
     prompt_service = PromptService(config_service)
     services['prompt'] = prompt_service
-    
+
     return services
 
 
@@ -72,22 +72,17 @@ def run_agent_dispatcher(services):
         services.get("logger", {}).log_system_event("System shutdown complete.")
 
 
-def run_pyqt_gui():
+def run_pyqt_gui(app, services):
     """Run the PyQt GUI application."""
     # Initialize services
-    services = initialize_services()
-    
-    # Create UI logic instance
     ui_logic = DreamscapeUILogic()
-    ui_logic.service = services['prompt']  # Pass the prompt service
-    
+    ui_logic.service = services['prompt']
+
     # Create and show main window
-    app = QApplication(sys.argv)
     main_window = DreamscapeMainWindow(ui_logic)
     main_window.show()
-    
-    # Start the event loop
-    sys.exit(app.exec_())
+
+    return main_window
 
 
 def run_flask_app(services):
@@ -98,45 +93,49 @@ def run_flask_app(services):
             start_flask_app(services)
         except Exception as e:
             logging.error(f"Flask app error: {str(e)}")
-            
+
     # Start Flask in a separate thread
     flask_thread = threading.Thread(target=flask_thread, daemon=True)
     flask_thread.start()
     return flask_thread
 
 
-def execute_mode(mode, services):
+def execute_mode(mode, services, app=None):
     """Execute the selected mode."""
     if mode == "agent":
         run_agent_dispatcher(services)
+
     elif mode == "gui":
-        run_pyqt_gui()
+        if not app:
+            app = QApplication(sys.argv)
+
+        run_pyqt_gui(app, services)
+        sys.exit(app.exec_())
+
     elif mode == "web":
-        # Start Flask in a separate thread
         flask_thread = run_flask_app(services)
-        # Keep the main thread alive
         try:
             while flask_thread.is_alive():
                 time.sleep(1)
         except KeyboardInterrupt:
             logging.info("Shutting down Flask server...")
+
     elif mode == "all":
         logging.info("Launching all systems concurrently...")
+
         # Start Flask in a separate thread
         flask_thread = run_flask_app(services)
-        
-        # Start other components in separate threads
-        threads = [
-            threading.Thread(target=run_agent_dispatcher, args=(services,), daemon=True),
-            threading.Thread(target=run_pyqt_gui, daemon=True),
-        ]
-        
-        for t in threads:
-            t.start()
-            
-        # Wait for all threads
-        for t in threads + [flask_thread]:
-            t.join()
+
+        # Start Agent Dispatcher in another thread
+        agent_thread = threading.Thread(target=run_agent_dispatcher, args=(services,), daemon=True)
+        agent_thread.start()
+
+        # Start PyQt GUI in main thread
+        if not app:
+            app = QApplication(sys.argv)
+
+        run_pyqt_gui(app, services)
+        sys.exit(app.exec_())
 
 
 def main():
@@ -145,7 +144,7 @@ def main():
 
     # Initialize core services
     config_manager = ConfigManager()
-    logger = LoggerFactory.create_logger(config_manager)
+    logger = LoggerFactory.create_standard_logger("Dreamscape", level=logging.INFO)
     config_manager.set_logger(logger)
 
     # Initialize application services
@@ -157,12 +156,12 @@ def main():
     errors = []
 
     try:
-        # Initialize driver manager if needed
         driver_manager = DriverManager(config_manager)
         services['driver_manager'] = driver_manager
     except Exception as e:
-        errors.append(f"Failed to initialize DriverManager: {str(e)}")
-        logger.log_error(str(e))
+        error_msg = f"Failed to initialize DriverManager: {str(e)}"
+        errors.append(error_msg)
+        logger.error(error_msg)
 
     parser = argparse.ArgumentParser(description="Dreamscape Execution System")
     parser.add_argument(
@@ -175,24 +174,26 @@ def main():
 
     # Handle errors if present
     if errors and args.mode != "agent":
+        app = QApplication(sys.argv)
         if not show_error_dialog(errors):
             logging.info("User aborted execution due to initialization errors.")
             return
 
     # Direct execution if mode is set
     if args.mode:
-        execute_mode(args.mode, services)
+        app = QApplication(sys.argv) if args.mode in ["gui", "all"] else None
+        execute_mode(args.mode, services, app=app)
+
     else:
-        # Show splash screen if no mode is given
+        # No mode selected: show splash screen for mode selection
         app = QApplication(sys.argv)
         splash = show_splash_screen()
 
         def on_mode_selected(mode):
             splash.close()
-            execute_mode(mode, services)
+            execute_mode(mode, services, app=app)
 
         splash.mode_selected.connect(on_mode_selected)
-        # Only call exec_() once here
         sys.exit(app.exec_())
 
 

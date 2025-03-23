@@ -5,15 +5,18 @@ from PyQt5.QtWidgets import (
 import threading
 import os
 
-# Core Managers
-from core.PromptCycleManager import PromptCycleManager, PromptCycleDialog
+# Core Services
+from core.CycleExecutionService import CycleExecutionService
+from core.PromptResponseHandler import PromptResponseHandler
+from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.TaskOrchestrator import TaskOrchestrator
 from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
 
 
 class DreamscapeGenerationTab(QWidget):
     """
     Dreamscape Generation Tab that integrates both:
-    1. PromptCycleManager for Single/Multi Chat Cycles
+    1. CycleExecutionService for Single/Multi Chat Cycles
     2. UnifiedDreamscapeGenerator for advanced Dreamscape episode creation
     """
 
@@ -26,6 +29,18 @@ class DreamscapeGenerationTab(QWidget):
         self.response_handler = response_handler
         self.memory_manager = memory_manager
         self.discord_manager = discord_manager
+
+        # Initialize new services
+        self.cycle_service = CycleExecutionService(
+            prompt_manager=prompt_manager,
+            chat_manager=chat_manager,
+            response_handler=response_handler,
+            memory_manager=memory_manager,
+            discord_manager=discord_manager
+        )
+        self.prompt_handler = PromptResponseHandler()
+        self.discord_processor = DiscordQueueProcessor()
+        self.task_orchestrator = TaskOrchestrator()
 
         self.initUI()
 

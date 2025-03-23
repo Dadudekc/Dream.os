@@ -1,32 +1,23 @@
 from typing import Dict, Any
-from core.AgentDispatcher import AgentDispatcher
-from core.cycle.CycleExecutionService import CycleExecutionService
-from core.ConfigManager import ConfigManager
+from core.CycleExecutionService import CycleExecutionService
 from core.logging.CompositeLogger import CompositeLogger
 
 class TaskOrchestrator:
-    """Coordinates task execution between Agents and Cycle services."""
+    """Coordinates task execution between agents and cycle services."""
 
-    def __init__(self, config_manager: ConfigManager, logger: CompositeLogger):
-        self.config_manager = config_manager
+    def __init__(self, logger: CompositeLogger):
         self.logger = logger
-        self.agent_dispatcher = AgentDispatcher(config_manager, logger)
-        self.cycle_executor = CycleExecutionService(config_manager, logger)
+        self.cycle_service = CycleExecutionService()
 
     def execute_task(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Execute an incoming task through the appropriate service.
+        Execute a task by determining the appropriate service.
 
         Args:
-            task: Task payload.
+            task: Task payload with execution parameters.
 
         Returns:
-            Task execution result.
+            Task execution results.
         """
-        self.logger.log(f"Orchestrating task of type {task.get('type')}", domain="TaskOrchestrator")
-
-        task_type = task.get("type")
-        if task_type in {"single_cycle", "multi_cycle"}:
-            return self.cycle_executor.run_cycle(task.get("payload"), cycle_type=task_type)
-        else:
-            return self.agent_dispatcher.dispatch_task(task)
+        self.logger.log(f"Executing task: {task.get('type', 'unknown')}", domain="TaskOrchestrator")
+        return self.cycle_service.run_cycle(task)

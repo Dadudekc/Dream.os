@@ -14,10 +14,14 @@ from core.ChatManager import ChatManager
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.FileManager import FileManager
 from core.UnifiedDiscordService import UnifiedDiscordService
-from core.PromptCycleManager import PromptCycleManager
 from core.ReinforcementEngine import ReinforcementEngine
 from utils.run_summary import sanitize_filename, generate_full_run_json
 from core.DriverManager import DriverManager
+from core.CycleExecutionService import CycleExecutionService
+from core.PromptResponseHandler import PromptResponseHandler
+from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.TaskOrchestrator import TaskOrchestrator
+from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -52,6 +56,19 @@ class DreamscapeService:
 
         self.logger = self.config.get_logger("DreamscapeService")
         self.logger.info("DreamscapeService initialized.")
+
+        # Initialize new services
+        self.cycle_service = CycleExecutionService(
+            prompt_manager=self.prompt_manager,
+            chat_manager=self.chat_manager,
+            response_handler=PromptResponseHandler(),
+            memory_manager=None,
+            discord_manager=self.discord
+        )
+        self.prompt_handler = PromptResponseHandler()
+        self.discord_processor = DiscordQueueProcessor()
+        self.task_orchestrator = TaskOrchestrator()
+        self.dreamscape_generator = DreamscapeEpisodeGenerator()
 
     # --- Chat Manager & Prompt Execution ---
 

@@ -10,8 +10,12 @@ from PyQt5.QtGui import QIcon
 from core.ChatManager import ChatManager
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.DiscordManager import DiscordManager
-from core.PromptCycleManager import PromptCycleManager
 from core.ReinforcementEngine import ReinforcementEngine
+from core.CycleExecutionService import CycleExecutionService
+from core.PromptResponseHandler import PromptResponseHandler
+from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.TaskOrchestrator import TaskOrchestrator
+from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
 
 from .components.prompt_execution_tab import PromptExecutionTab
 from .components.discord_tab import DiscordTab

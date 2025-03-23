@@ -1,14 +1,23 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit, QComboBox
-from core.PromptCycleManager import PromptCycleManager
-from core.AletheiaPromptManager import AletheiaPromptManager
+from core.CycleExecutionService import CycleExecutionService
+from core.PromptResponseHandler import PromptResponseHandler
+from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.TaskOrchestrator import TaskOrchestrator
 
 class PromptExecutionTab(QWidget):
-    def __init__(self, parent=None):  # ✅ Add parent param
-        super().__init__(parent)       # ✅ Pass parent to QWidget constructor
+    def __init__(self, prompt_manager=None):
+        super().__init__()
+        self.prompt_manager = prompt_manager
         
-        self.prompt_manager = AletheiaPromptManager()
-        self.cycle_manager = PromptCycleManager(prompt_manager=self.prompt_manager)
+        # Initialize new services
+        self.cycle_service = CycleExecutionService(prompt_manager=self.prompt_manager)
+        self.prompt_handler = PromptResponseHandler()
+        self.discord_processor = DiscordQueueProcessor()
+        self.task_orchestrator = TaskOrchestrator()
+        
+        self.initUI()
 
+    def initUI(self):
         # Layout setup
         layout = QVBoxLayout()
 
