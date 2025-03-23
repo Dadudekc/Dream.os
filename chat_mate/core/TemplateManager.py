@@ -40,7 +40,7 @@ class TemplateManager:
         }
 
         for category, path in self.template_categories.items():
-            logger.info(f"✅ Loaded {category} templates from: {path}")
+            logger.info(f" Loaded {category} templates from: {path}")
 
     def _init_environment(self, path: str) -> Environment:
         """
@@ -59,7 +59,7 @@ class TemplateManager:
         :param data: Dict of data to inject into the template.
         """
         if category not in self.environments:
-            logger.error(f"❌ Template category '{category}' is not registered.")
+            logger.error(f" Template category '{category}' is not registered.")
             return f"❌ Unknown template category: {category}"
 
         # Merge default data + provided data (priority to provided data)
@@ -75,11 +75,11 @@ class TemplateManager:
             return rendered
 
         except TemplateNotFound:
-            logger.error(f"❌ Template not found: {template_filename} (Category: {category})")
+            logger.error(f" Template not found: {template_filename} (Category: {category})")
             return f"❌ Template '{template_filename}' not found in category '{category}'."
 
         except Exception as e:
-            logger.error(f"❌ Error rendering template '{template_filename}' (Category: {category}): {e}")
+            logger.error(f" Error rendering template '{template_filename}' (Category: {category}): {e}")
             return f"❌ Error rendering template '{template_filename}': {e}"
 
     def render_discord_template(self, template_filename: str, data: Dict) -> str:
@@ -106,7 +106,7 @@ class TemplateManager:
         """
         path = self.template_categories.get(category)
         if not path or not os.path.isdir(path):
-            logger.warning(f"⚠️ No valid directory found for template category: {category}")
+            logger.warning(f"️ No valid directory found for template category: {category}")
             return []
 
         return [
@@ -124,7 +124,7 @@ class TemplateManager:
             "data": data
         }
 
-        logger.info(f"📝 Template rendered: {category}/{template_filename}")
+        logger.info(f" Template rendered: {category}/{template_filename}")
         write_json_log(
             platform="TemplateManager",
             status="successful",

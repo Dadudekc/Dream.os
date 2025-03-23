@@ -27,14 +27,14 @@ class DiscordTemplateManager:
 
         if not os.path.isdir(self.template_dir):
             os.makedirs(self.template_dir, exist_ok=True)
-            logger.info(f"📂 Created template directory at: {self.template_dir}")
+            logger.info(f" Created template directory at: {self.template_dir}")
 
         self.env = Environment(
             loader=FileSystemLoader(self.template_dir),
             autoescape=select_autoescape(['html', 'xml'])
         )
 
-        logger.info(f"✅ DiscordTemplateManager initialized. Template directory: {self.template_dir}")
+        logger.info(f" DiscordTemplateManager initialized. Template directory: {self.template_dir}")
 
     def _resolve_template_dir(self, config_file: str) -> str:
         """
@@ -43,7 +43,7 @@ class DiscordTemplateManager:
         # 1. Environment variable override
         env_path = os.getenv("DISCORD_TEMPLATE_DIR")
         if env_path and os.path.isdir(env_path):
-            logger.info(f"🌐 Loaded template dir from environment: {env_path}")
+            logger.info(f" Loaded template dir from environment: {env_path}")
             return env_path
 
         # 2. JSON config lookup
@@ -54,16 +54,16 @@ class DiscordTemplateManager:
 
                 json_path = cfg_data.get("discord_templates_dir")
                 if json_path and os.path.isdir(json_path):
-                    logger.info(f"🗂️ Loaded template dir from config: {json_path}")
+                    logger.info(f"️ Loaded template dir from config: {json_path}")
                     return json_path
                 else:
-                    logger.warning(f"⚠️ 'discord_templates_dir' not found or invalid in {config_file}.")
+                    logger.warning(f"️ 'discord_templates_dir' not found or invalid in {config_file}.")
             except Exception as e:
-                logger.error(f"❌ Failed to parse {config_file}: {e}")
+                logger.error(f" Failed to parse {config_file}: {e}")
 
         # 3. Fallback to centralized config
         fallback_dir = Config.DISCORD_TEMPLATE_DIR
-        logger.warning(f"⚠️ Falling back to centralized template dir: {fallback_dir}")
+        logger.warning(f"️ Falling back to centralized template dir: {fallback_dir}")
         return fallback_dir
 
     def render_message(self, template_name: str, context: dict) -> str:
@@ -79,19 +79,19 @@ class DiscordTemplateManager:
             message = template.render(context)
             render_time = round((time.time() - start_time), 3)
 
-            logger.info(f"✅ Rendered template '{template_file}' in {render_time}s.")
+            logger.info(f" Rendered template '{template_file}' in {render_time}s.")
 
             if render_time > 1.0:
-                logger.warning(f"⚠️ Rendering '{template_file}' took {render_time}s. Consider optimizing the template.")
+                logger.warning(f"️ Rendering '{template_file}' took {render_time}s. Consider optimizing the template.")
 
             return message
 
         except TemplateNotFound:
-            logger.error(f"❌ Template '{template_file}' not found in {self.template_dir}.")
+            logger.error(f" Template '{template_file}' not found in {self.template_dir}.")
             return f"⚠️ Template '{template_name}' not found."
 
         except Exception as e:
-            logger.error(f"❌ Error rendering '{template_file}': {e}")
+            logger.error(f" Error rendering '{template_file}': {e}")
             return f"⚠️ Error rendering template '{template_name}': {e}"
 
     def list_templates(self) -> list:
@@ -103,9 +103,9 @@ class DiscordTemplateManager:
                 f for f in os.listdir(self.template_dir)
                 if f.endswith(self.template_extension)
             ]
-            logger.info(f"📃 Available templates: {templates}")
+            logger.info(f" Available templates: {templates}")
             return templates
 
         except Exception as e:
-            logger.error(f"❌ Error listing templates: {e}")
+            logger.error(f" Error listing templates: {e}")
             return []

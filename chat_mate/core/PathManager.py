@@ -70,7 +70,7 @@ class PathManager(metaclass=PathManagerMeta):
         cls._ensure_initialized()
         abs_path = os.path.abspath(path)
         if key in cls._paths and cls._paths[key] != abs_path:
-            logger.warning(f"⚠️ Overwriting existing path for key '{key}'")
+            logger.warning(f"️ Overwriting existing path for key '{key}'")
         cls._paths[key] = abs_path
         # Regenerate dynamic properties for the new key.
         cls.__class__._generate_properties()
@@ -91,7 +91,7 @@ class PathManager(metaclass=PathManagerMeta):
         """
         cls._ensure_initialized()
         if key not in cls._paths:
-            logger.warning(f"⚠️ Path key '{key}' not found.")
+            logger.warning(f"️ Path key '{key}' not found.")
             raise ValueError(f"Path key '{key}' not found.")
         return cls._paths[key]
     
@@ -154,3 +154,30 @@ class PathManager(metaclass=PathManagerMeta):
                 compat_name = f"{key}_dir"
                 result[compat_name] = cls._paths[key]
         return result
+
+    @classmethod
+    def get_env_path(cls, filename=".env") -> str:
+        """
+        Return absolute path to the .env file.
+        Defaults to the project's base directory.
+        """
+        cls._ensure_initialized()
+        base_dir = cls.get_path('base')
+        return os.path.join(base_dir, filename)
+
+    @classmethod
+    def get_rate_limit_state_path(cls, filename="rate_limit_state.json") -> str:
+        """
+        Return absolute path to the rate limit state file.
+        Defaults to the cache directory.
+        """
+        cls._ensure_initialized()
+        return os.path.join(cls.get_path('cache'), filename)
+
+    @classmethod
+    def get_chrome_profile_path(cls, sub_dir="chrome_profiles") -> str:
+        """
+        Return the chrome profile path, defaults to a subdirectory in drivers.
+        """
+        cls._ensure_initialized()
+        return os.path.join(cls.get_path('drivers'), sub_dir)

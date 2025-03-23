@@ -354,7 +354,7 @@ class DiscordManager:
         if key not in self.status_data:
             self._log(f"⚠️ Unknown status key: {key}", level=logging.WARNING)
         self.status_data[key] = value
-        logger.debug(f"🔧 Updated status_data[{key}] = {value}")
+        logger.debug(f" Updated status_data[{key}] = {value}")
 
 
 class DiscordSettingsDialog(QDialog):

@@ -35,7 +35,7 @@ class OpenAIPromptEngine:
         self.driver = driver
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir), trim_blocks=True, lstrip_blocks=True)
         self.tts_function = tts_function
-        logger.info("🚀 OpenAIPromptEngine initialized using custom GPT scraper.")
+        logger.info(" OpenAIPromptEngine initialized using custom GPT scraper.")
 
     def _is_driver_alive(self) -> bool:
         """
@@ -61,7 +61,7 @@ class OpenAIPromptEngine:
         try:
             template = self.jinja_env.get_template(template_name)
         except Exception as e:
-            logger.error(f"❌ Failed to load template '{template_name}': {e}")
+            logger.error(f" Failed to load template '{template_name}': {e}")
             raise e
 
         context = {
@@ -70,7 +70,7 @@ class OpenAIPromptEngine:
             "METADATA": metadata or {}
         }
         prompt = template.render(context)
-        logger.info(f"📝 Prompt rendered from template '{template_name}'.")
+        logger.info(f" Prompt rendered from template '{template_name}'.")
         return prompt
 
     def _retry(self, func, *args, **kwargs):
@@ -119,7 +119,7 @@ class OpenAIPromptEngine:
             return response_text
 
         except Exception as e:
-            logger.error(f"❌ Error sending prompt: {e}")
+            logger.error(f" Error sending prompt: {e}")
             return None
 
     def _wait_for_response_completion(self, timeout: int):

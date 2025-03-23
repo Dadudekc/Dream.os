@@ -21,17 +21,17 @@ class TemplateChangeHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         if event.src_path.endswith(self.event_builder.template_extension):
-            logger.info(f"🔄 Template modified: {event.src_path}")
+            logger.info(f" Template modified: {event.src_path}")
             self.event_builder.clear_cache()
 
     def on_created(self, event):
         if event.src_path.endswith(self.event_builder.template_extension):
-            logger.info(f"➕ New template created: {event.src_path}")
+            logger.info(f" New template created: {event.src_path}")
             self.event_builder.clear_cache()
 
     def on_deleted(self, event):
         if event.src_path.endswith(self.event_builder.template_extension):
-            logger.info(f"❌ Template deleted: {event.src_path}")
+            logger.info(f" Template deleted: {event.src_path}")
             self.event_builder.clear_cache()
 
 
@@ -57,7 +57,7 @@ class EventMessageBuilder:
 
         if not os.path.isdir(self.template_dir):
             os.makedirs(self.template_dir, exist_ok=True)
-            logger.info(f"📁 Created template directory at '{self.template_dir}'")
+            logger.info(f" Created template directory at '{self.template_dir}'")
 
         # Initialize the Jinja2 environment with autoescaping for html and xml.
         self.env = Environment(
@@ -65,7 +65,7 @@ class EventMessageBuilder:
             autoescape=select_autoescape(['html', 'xml'])
         )
 
-        logger.info(f"🚀 EventMessageBuilder initialized. Template directory: {repr(self.template_dir)}")
+        logger.info(f" EventMessageBuilder initialized. Template directory: {repr(self.template_dir)}")
 
         # Start the template directory watcher.
         self._start_template_watcher()
@@ -77,7 +77,7 @@ class EventMessageBuilder:
         observer.schedule(event_handler, path=self.template_dir, recursive=False)
         observer_thread = threading.Thread(target=observer.start, daemon=True)
         observer_thread.start()
-        logger.info(f"👀 Watching template directory for changes: {self.template_dir}")
+        logger.info(f" Watching template directory for changes: {self.template_dir}")
 
     def build_message(self, event_type: str, data: dict) -> str:
         """
@@ -88,7 +88,7 @@ class EventMessageBuilder:
         :return: The rendered message as a string.
         """
         if not isinstance(data, dict) or not data:
-            logger.warning(f"⚠️ Event data for '{event_type}' is empty or invalid. Using empty dict.")
+            logger.warning(f"️ Event data for '{event_type}' is empty or invalid. Using empty dict.")
             data = {}
 
         template_name = f"{event_type}{self.template_extension}"
@@ -96,27 +96,27 @@ class EventMessageBuilder:
             # Attempt to use cached template first.
             if template_name in self.template_cache:
                 template = self.template_cache[template_name]
-                logger.debug(f"💾 Loaded template for '{event_type}' from cache")
+                logger.debug(f" Loaded template for '{event_type}' from cache")
             else:
                 template = self.env.get_template(template_name)
                 self.template_cache[template_name] = template
-                logger.info(f"📄 Loaded and cached template: '{template_name}'")
+                logger.info(f" Loaded and cached template: '{template_name}'")
             message = template.render(data)
-            logger.info(f"✅ Successfully built message for event '{event_type}'")
+            logger.info(f" Successfully built message for event '{event_type}'")
             return message
         except TemplateNotFound:
-            logger.error(f"❌ Template '{template_name}' not found in '{self.template_dir}'")
+            logger.error(f" Template '{template_name}' not found in '{self.template_dir}'")
         except TemplateError as e:
-            logger.error(f"❌ Template error in '{template_name}': {e}")
+            logger.error(f" Template error in '{template_name}': {e}")
         except Exception as e:
-            logger.error(f"❌ Unexpected error rendering '{template_name}': {e}")
+            logger.error(f" Unexpected error rendering '{template_name}': {e}")
 
         # Fallback message if template rendering fails.
         fallback_msg = (
             f"📢 **{event_type.replace('_', ' ').title()}**\n"
             f"```json\n{json.dumps(data, indent=2)}```"
         )
-        logger.warning(f"⚠️ Using fallback message for event '{event_type}'")
+        logger.warning(f"️ Using fallback message for event '{event_type}'")
         return fallback_msg
 
     def list_available_templates(self) -> list:
@@ -128,10 +128,10 @@ class EventMessageBuilder:
         try:
             files = os.listdir(self.template_dir)
             templates = [f for f in files if f.endswith(self.template_extension)]
-            logger.info(f"📜 Found {len(templates)} available templates.")
+            logger.info(f" Found {len(templates)} available templates.")
             return templates
         except Exception as e:
-            logger.error(f"❌ Failed to list templates: {e}")
+            logger.error(f" Failed to list templates: {e}")
             return []
 
     def clear_cache(self) -> None:
@@ -140,7 +140,7 @@ class EventMessageBuilder:
         created, or deleted.
         """
         self.template_cache.clear()
-        logger.info("♻️ Cleared template cache due to template change.")
+        logger.info("️ Cleared template cache due to template change.")
 
 
 # Example Usage:

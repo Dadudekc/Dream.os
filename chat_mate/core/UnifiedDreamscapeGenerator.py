@@ -83,7 +83,7 @@ class DreamscapeEpisodeGenerator:
             json.dump(data, f, indent=4)
 
     def generate_dreamscape_episodes(self, max_workers=3):
-        logger.info("🚀 Starting Dreamscape episode generation cycle...")
+        logger.info(" Starting Dreamscape episode generation cycle...")
         chats = self.chat_manager.get_all_chat_titles()
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -95,7 +95,7 @@ class DreamscapeEpisodeGenerator:
                 except Exception as e:
                     logger.error(f"Failed to process chat {chat['title']}: {e}")
 
-        logger.info("✅ Dreamscape episode generation complete.")
+        logger.info(" Dreamscape episode generation complete.")
 
     def _process_chat(self, chat):
         chat_title = chat.get("title", "Untitled")
@@ -147,7 +147,7 @@ class DreamscapeEpisodeGenerator:
             message = f"📜 **{episode_record['title']}**:\n{enhanced_episode[:1500]}..."
             self.discord_manager.send_message(message)
 
-        logger.info(f"✅ Episode {episode_number} '{chat_title}' processed successfully.")
+        logger.info(f" Episode {episode_number} '{chat_title}' processed successfully.")
 
     def _enhance_with_ollama(self, episode_text):
         prompt = (
@@ -184,7 +184,7 @@ class DreamscapeEpisodeGenerator:
             })
             self._save_file(self.episode_file, self.episodes)
             self._save_file(self.index_file, self.episode_index)
-            logger.info(f"🗂️ Episode data saved: {filepath}")
+            logger.info(f"️ Episode data saved: {filepath}")
 
     def _save_memory_update(self, episode_number, update, title, timestamp):
         with self.memory_lock:

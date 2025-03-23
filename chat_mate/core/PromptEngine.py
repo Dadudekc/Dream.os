@@ -120,10 +120,10 @@ class PromptEngine:
                 stable_start = time.time()
             elif stable_start and (time.time() - stable_start) >= self.stable_period:
                 response_time = round(time.time() - start_time, 2)
-                logger.info(f"✅ Stable AI response achieved in {response_time}s.")
+                logger.info(f" Stable AI response achieved in {response_time}s.")
                 self.log_ai_response(last_response, response_time=response_time)
                 return self.clean_response(last_response)
-        logger.warning("⚠️ AI response stabilization timeout. Returning last available response.")
+        logger.warning("️ AI response stabilization timeout. Returning last available response.")
         self.log_ai_response(last_response, timeout_reached=True)
         return self.clean_response(last_response)
 
@@ -142,12 +142,12 @@ class PromptEngine:
         if response_time:
             ai_observations["response_time"] = response_time
 
-        logger.info(f"📊 AI Response Metrics:\n{json.dumps(ai_observations, indent=2)}")
+        logger.info(f" AI Response Metrics:\n{json.dumps(ai_observations, indent=2)}")
 
         if self.reinforcement_engine:
             try:
                 feedback_score = self.reinforcement_engine.analyze_response("N/A", response)
-                logger.info(f"🎯 Reinforcement score: {feedback_score}")
+                logger.info(f" Reinforcement score: {feedback_score}")
             except Exception as e:
                 logger.error(f"Error in reinforcement engine processing: {e}")
 

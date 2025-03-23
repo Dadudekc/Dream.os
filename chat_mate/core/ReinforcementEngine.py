@@ -21,7 +21,9 @@ if not logger.handlers:
 # ReinforcementEngine Class
 # -------------------------------------------
 class ReinforcementEngine:
-    def __init__(self, memory_file=None):
+    def __init__(self, config_manager, logger, memory_file=None):
+        self.config_manager = config_manager
+        self.logger = logger
         # If not provided, use default path relative to this file
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         if memory_file is None:
@@ -38,10 +40,10 @@ class ReinforcementEngine:
             try:
                 with open(self.memory_file, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                    logger.info(f"✅ Loaded memory from {self.memory_file}")
+                    logger.info(f" Loaded memory from {self.memory_file}")
                     return data
             except Exception as e:
-                logger.error(f"❌ Failed to load memory: {e}")
+                logger.error(f" Failed to load memory: {e}")
         # Initialize default structure
         logger.info("Initializing new memory structure.")
         return {
@@ -58,9 +60,9 @@ class ReinforcementEngine:
         try:
             with open(self.memory_file, "w", encoding="utf-8") as f:
                 json.dump(self.memory_data, f, indent=4, ensure_ascii=False)
-            logger.info(f"💾 Memory saved to {self.memory_file}")
+            logger.info(f" Memory saved to {self.memory_file}")
         except Exception as e:
-            logger.error(f"❌ Failed to save memory: {e}")
+            logger.error(f" Failed to save memory: {e}")
 
     # ---------------------------
     # FEEDBACK COLLECTION & ANALYSIS
@@ -176,7 +178,7 @@ class ReinforcementEngine:
         self.append_tuning_log(tuned_count)
 
     def append_tuning_log(self, tuned_count: int):
-        logger.info(f"✅ Auto-tuned {tuned_count} prompts based on reinforcement feedback.")
+        logger.info(f" Auto-tuned {tuned_count} prompts based on reinforcement feedback.")
 
 
 # -------------------------------------------
@@ -265,9 +267,9 @@ class ReinforcementToolsDialog(QDialog):
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(self.engine.memory_data.get("reinforcement_feedback", {}), f, indent=4, ensure_ascii=False)
             QMessageBox.information(self, "Success", f"Feedback exported to:\n{file_path}")
-            logger.info(f"✅ Feedback exported to {file_path}")
+            logger.info(f" Feedback exported to {file_path}")
         except Exception as e:
-            logger.error(f"❌ Failed to export feedback: {e}")
+            logger.error(f" Failed to export feedback: {e}")
             QMessageBox.critical(self, "Error", f"Export failed:\n{e}")
 
     def clear_feedback(self):
@@ -294,5 +296,5 @@ class ReinforcementToolsDialog(QDialog):
             self.engine.auto_tune_prompts(prompt_manager)
             QMessageBox.information(self, "Auto-Tune", "Prompts auto-tuned based on feedback.")
         except Exception as e:
-            logger.error(f"❌ Auto-tuning failed: {e}")
+            logger.error(f" Auto-tuning failed: {e}")
             QMessageBox.critical(self, "Error", f"Auto-tuning failed:\n{e}")
