@@ -35,7 +35,7 @@ class ChatCycleController:
         config_path="config.json",
         output_callback=None
     ):
-        logger.info("⚡ Initializing ChatCycleController...")
+        logger.info(" Initializing ChatCycleController...")
 
         # OUTPUT HANDLING
         self.output_callback = output_callback or self._default_output_callback
@@ -61,7 +61,7 @@ class ChatCycleController:
 
         self.excluded_chats = set(self.config.get("excluded_chats", []))
 
-        logger.info("✅ ChatCycleController initialized.")
+        logger.info(" ChatCycleController initialized.")
 
     # ---------------------------------------------------
     # OUTPUT HANDLING
@@ -84,7 +84,7 @@ class ChatCycleController:
         """
         Starts the chat cycle orchestration loop.
         """
-        logger.info("🚀 Starting chat cycle controller...")
+        logger.info(" Starting chat cycle controller...")
         self.append_output("🚀 Chat cycle starting...")
 
         # Start Discord bot in a thread if enabled
@@ -102,13 +102,13 @@ class ChatCycleController:
             chat_list.reverse()
             self.append_output("🔄 Reversing chat order...")
 
-        logger.info(f"📋 {len(chat_list)} chats ready for processing.")
+        logger.info(f" {len(chat_list)} chats ready for processing.")
         self.append_output(f"📋 {len(chat_list)} chats ready for processing.")
 
         for chat in chat_list:
             self.process_chat(chat)
 
-        logger.info("✅ Chat cycle complete.")
+        logger.info(" Chat cycle complete.")
         self.append_output("✅ Chat cycle complete.")
 
     def process_chat(self, chat):
@@ -122,7 +122,7 @@ class ChatCycleController:
         self.append_output(f"\n--- Processing chat: {chat_title} ---")
 
         if not chat_link:
-            logger.warning(f"⚠️ Missing chat link for {chat_title}. Skipping.")
+            logger.warning(f"️ Missing chat link for {chat_title}. Skipping.")
             self.append_output(f"⚠️ Missing chat link for {chat_title}. Skipping.")
             return
 
@@ -134,20 +134,20 @@ class ChatCycleController:
         cycle_start_time = time.time()
 
         for prompt_name in prompt_names:
-            logger.info(f"📝 Executing prompt: {prompt_name} on chat: {chat_title}")
+            logger.info(f" Executing prompt: {prompt_name} on chat: {chat_title}")
             self.append_output(f"📝 Executing prompt: {prompt_name} on chat: {chat_title}")
 
             try:
                 prompt_text = self.executor.get_prompt(prompt_name)
             except Exception as e:
-                logger.error(f"❌ Failed to load prompt '{prompt_name}': {e}")
+                logger.error(f" Failed to load prompt '{prompt_name}': {e}")
                 self.append_output(f"❌ Failed to load prompt '{prompt_name}': {e}")
                 continue
 
             response = self.executor.send_prompt_and_wait(prompt_text)
 
             if not response:
-                logger.warning(f"⚠️ No stable response for {prompt_name} in {chat_title}")
+                logger.warning(f"️ No stable response for {prompt_name} in {chat_title}")
                 self.append_output(f"⚠️ No stable response for {prompt_name} in {chat_title}")
                 continue
 
@@ -190,7 +190,7 @@ class ChatCycleController:
             self.scraper.archive_chat(chat)
             self.append_output(f"📦 Archived chat: {chat_title}")
 
-        logger.info(f"✅ Completed processing for {chat_title}")
+        logger.info(f" Completed processing for {chat_title}")
         self.append_output(f"✅ Completed processing for {chat_title}")
 
     # ---------------------------------------------------
@@ -202,7 +202,7 @@ class ChatCycleController:
         Runs a prompt on a single chat.
         """
         chat_title = chat_link.split("/")[-1] or "Untitled"
-        logger.info(f"🔍 Running single prompt '{prompt_name}' on chat: {chat_title}")
+        logger.info(f" Running single prompt '{prompt_name}' on chat: {chat_title}")
         self.append_output(f"🔍 Running single prompt '{prompt_name}' on chat: {chat_title}")
 
         self.scraper.load_chat(chat_link)
@@ -211,14 +211,14 @@ class ChatCycleController:
         try:
             prompt_text = self.executor.get_prompt(prompt_name)
         except Exception as e:
-            logger.error(f"❌ Failed to load prompt '{prompt_name}': {e}")
+            logger.error(f" Failed to load prompt '{prompt_name}': {e}")
             self.append_output(f"❌ Failed to load prompt '{prompt_name}': {e}")
             return
 
         response = self.executor.send_prompt_and_wait(prompt_text)
 
         if not response:
-            logger.warning(f"⚠️ No response from chat '{chat_title}'")
+            logger.warning(f"️ No response from chat '{chat_title}'")
             self.append_output(f"⚠️ No response from chat '{chat_title}'")
             return
 
@@ -232,7 +232,7 @@ class ChatCycleController:
         else:
             self.discord.dispatch_general_response(chat_title, prompt_name, response)
 
-        logger.info(f"✅ Single chat execution complete for: {chat_title}")
+        logger.info(f" Single chat execution complete for: {chat_title}")
         self.append_output(f"✅ Single chat execution complete for: {chat_title}")
 
     # ---------------------------------------------------
@@ -252,9 +252,9 @@ class ChatCycleController:
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(response)
-            logger.info(f"💾 Saved response: {file_path}")
+            logger.info(f" Saved response: {file_path}")
         except Exception as e:
-            logger.error(f"❌ Failed to save response file {file_path}: {e}")
+            logger.error(f" Failed to save response file {file_path}: {e}")
 
     def _save_run_summary(self, chat_title, chat_responses, metadata):
         """
@@ -274,9 +274,9 @@ class ChatCycleController:
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 json.dump(full_run_data, f, indent=4, ensure_ascii=False)
-            logger.info(f"📦 Full run summary saved: {file_path}")
+            logger.info(f" Full run summary saved: {file_path}")
         except Exception as e:
-            logger.error(f"❌ Failed to save run summary {file_path}: {e}")
+            logger.error(f" Failed to save run summary {file_path}: {e}")
 
     # ---------------------------------------------------
     # SHUTDOWN
@@ -286,7 +286,7 @@ class ChatCycleController:
         """
         Shuts down services cleanly.
         """
-        logger.info("🛑 Shutting down ChatCycleController...")
+        logger.info(" Shutting down ChatCycleController...")
         self.scraper.shutdown()
         self.discord.shutdown()
 

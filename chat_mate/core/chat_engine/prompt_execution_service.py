@@ -30,7 +30,7 @@ class PromptExecutionService:
         """
         Retrieve a prompt text from the prompt manager.
         """
-        logger.info(f"🔍 Retrieving prompt: {prompt_name}")
+        logger.info(f" Retrieving prompt: {prompt_name}")
         return self.prompt_manager.get_prompt(prompt_name)
 
     # ----------------------------------------
@@ -42,7 +42,7 @@ class PromptExecutionService:
         Sends a prompt to an active chat, waits for a response, and returns the result.
         Adapts behavior depending on the model in use.
         """
-        logger.info(f"🚀 Executing prompt cycle using model '{self.model}'...")
+        logger.info(f" Executing prompt cycle using model '{self.model}'...")
 
         # Send the prompt
         self._send_prompt(prompt_text)
@@ -61,9 +61,9 @@ class PromptExecutionService:
 
         # Log and return
         if not response:
-            logger.warning("⚠️ No response detected after sending prompt.")
+            logger.warning("️ No response detected after sending prompt.")
         else:
-            logger.info(f"✅ Response received. Length: {len(response)} characters.")
+            logger.info(f" Response received. Length: {len(response)} characters.")
 
         # Direct feedback loop (optional)
         if self.feedback_engine:
@@ -78,13 +78,13 @@ class PromptExecutionService:
         Executes a list of prompts in sequence on a single chat.
         Returns a list of responses.
         """
-        logger.info(f"🔁 Starting sequential prompt execution on a single chat ({len(prompt_list)} prompts)...")
+        logger.info(f" Starting sequential prompt execution on a single chat ({len(prompt_list)} prompts)...")
         responses = []
 
         for prompt_name in prompt_list:
             prompt_text = self.get_prompt(prompt_name)
 
-            logger.info(f"📝 Sending prompt: {prompt_name}")
+            logger.info(f" Sending prompt: {prompt_name}")
             response = self.execute_prompt_cycle(prompt_text)
 
             responses.append({
@@ -94,14 +94,14 @@ class PromptExecutionService:
 
             time.sleep(self.cycle_speed)
 
-        logger.info("🎉 Sequential prompt cycle complete.")
+        logger.info(" Sequential prompt cycle complete.")
         return responses
 
     def execute_prompts_concurrently(self, chat_link, prompt_list):
         """
         Launch prompt execution threads for a single chat (one thread per prompt).
         """
-        logger.info(f"🚀 Executing {len(prompt_list)} prompts concurrently on chat: {chat_link}")
+        logger.info(f" Executing {len(prompt_list)} prompts concurrently on chat: {chat_link}")
 
         threads = []
 
@@ -121,7 +121,7 @@ class PromptExecutionService:
         for thread in threads:
             thread.join()
 
-        logger.info("✅ All prompt executions completed concurrently.")
+        logger.info(" All prompt executions completed concurrently.")
 
     # ----------------------------------------
     # THREAD EXECUTION FOR SINGLE PROMPT
@@ -131,13 +131,13 @@ class PromptExecutionService:
         """
         Executes a single prompt in its own thread.
         """
-        logger.info(f"📝 [Thread] Executing prompt '{prompt_name}' on chat {chat_link}")
+        logger.info(f" [Thread] Executing prompt '{prompt_name}' on chat {chat_link}")
 
         prompt_text = self.get_prompt(prompt_name)
         response = self.execute_prompt_cycle(prompt_text)
 
         if not response:
-            logger.warning(f"⚠️ [Thread] No response for prompt '{prompt_name}' on chat {chat_link}")
+            logger.warning(f"️ [Thread] No response for prompt '{prompt_name}' on chat {chat_link}")
             return
 
         # Feedback integration (if feedback engine provided)
@@ -146,7 +146,7 @@ class PromptExecutionService:
             if memory_update:
                 logger.info(f"🧠 [Thread] Memory updated: {memory_update}")
 
-        logger.info(f"✅ [Thread] Completed prompt '{prompt_name}' on chat {chat_link}")
+        logger.info(f" [Thread] Completed prompt '{prompt_name}' on chat {chat_link}")
 
     # ----------------------------------------
     # MODEL BEHAVIOR HANDLING
@@ -167,7 +167,7 @@ class PromptExecutionService:
         """
         Post-process Jawbone model responses if needed.
         """
-        logger.info("🔧 Post-processing Jawbone response...")
+        logger.info(" Post-processing Jawbone response...")
         cleaned_response = response.replace("[Start]", "").replace("[End]", "").strip()
         return cleaned_response
 
@@ -179,7 +179,7 @@ class PromptExecutionService:
         """
         Sends a prompt to the active chat input field.
         """
-        logger.info("💬 Locating input field to send prompt...")
+        logger.info(" Locating input field to send prompt...")
 
         try:
             # Locate the input text area
@@ -192,29 +192,29 @@ class PromptExecutionService:
             send_button = self.driver.find_element("xpath", "//button[@data-testid='send-button']")
             send_button.click()
 
-            logger.info("✅ Prompt sent successfully.")
+            logger.info(" Prompt sent successfully.")
         except Exception as e:
-            logger.error(f"❌ Failed to send prompt: {e}")
+            logger.error(f" Failed to send prompt: {e}")
 
     def _fetch_response(self) -> str:
         """
         Retrieves the latest assistant response from the chat window.
         """
-        logger.info("🔍 Fetching latest response from chat...")
+        logger.info(" Fetching latest response from chat...")
 
         try:
             # Find all message elements, select the last one
             messages = self.driver.find_elements("xpath", "//div[contains(@class, 'prose') and not(contains(@class, 'markdown'))]")
             if not messages:
-                logger.warning("⚠️ No messages found.")
+                logger.warning("️ No messages found.")
                 return ""
 
             latest_message = messages[-1]
             response_text = latest_message.text
 
-            logger.info(f"📝 Retrieved response: {response_text[:75]}...")
+            logger.info(f" Retrieved response: {response_text[:75]}...")
             return response_text
 
         except Exception as e:
-            logger.error(f"❌ Failed to fetch response: {e}")
+            logger.error(f" Failed to fetch response: {e}")
             return ""

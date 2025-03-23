@@ -26,13 +26,13 @@ class DiscordDispatcher:
 
         self.ready = False
 
-        logger.info("⚡ DiscordDispatcher initialized.")
+        logger.info(" DiscordDispatcher initialized.")
 
     def _setup_events(self):
         @self.bot.event
         async def on_ready():
             self.ready = True
-            logger.info(f"✅ Discord Bot connected as {self.bot.user}")
+            logger.info(f" Discord Bot connected as {self.bot.user}")
 
     # ---------------------------------------------------
     # PUBLIC SEND METHODS
@@ -46,7 +46,7 @@ class DiscordDispatcher:
         channel_id = channel_id or self.default_channel_id
 
         if not self.ready:
-            logger.warning("🚨 Discord bot not ready! Message not sent.")
+            logger.warning(" Discord bot not ready! Message not sent.")
             return
 
         asyncio.run_coroutine_threadsafe(self._send_message(channel_id, message), self.bot.loop)
@@ -58,12 +58,12 @@ class DiscordDispatcher:
         try:
             channel = self.bot.get_channel(channel_id)
             if not channel:
-                logger.error(f"❌ Channel {channel_id} not found.")
+                logger.error(f" Channel {channel_id} not found.")
                 return
             await channel.send(message)
-            logger.info(f"📤 Sent message to Discord channel {channel_id}")
+            logger.info(f" Sent message to Discord channel {channel_id}")
         except Exception as e:
-            logger.exception(f"❌ Failed to send Discord message: {e}")
+            logger.exception(f" Failed to send Discord message: {e}")
 
     # ---------------------------------------------------
     # DISPATCHERS / UTILITY METHODS
@@ -74,7 +74,7 @@ class DiscordDispatcher:
         Auto-format memory update notification.
         """
         if not updates:
-            logger.info("⚠️ No memory updates to dispatch.")
+            logger.info("️ No memory updates to dispatch.")
             return
 
         update_message = "**✅ Memory Update**\n"
@@ -117,19 +117,19 @@ class DiscordDispatcher:
         Blocking call—run in thread or separate process.
         """
         try:
-            logger.info("🚀 Launching Discord bot...")
+            logger.info(" Launching Discord bot...")
             self.bot.run(self.bot_token)
         except Exception as e:
-            logger.exception(f"❌ Discord bot encountered an error: {e}")
+            logger.exception(f" Discord bot encountered an error: {e}")
 
     def shutdown(self):
         """
         Optional: Method to handle bot shutdown cleanly.
         """
         try:
-            logger.info("🛑 Shutting down Discord bot...")
+            logger.info(" Shutting down Discord bot...")
             loop = self.bot.loop
             loop.call_soon_threadsafe(loop.stop)
         except Exception as e:
-            logger.exception(f"❌ Failed to shutdown Discord bot cleanly: {e}")
+            logger.exception(f" Failed to shutdown Discord bot cleanly: {e}")
 

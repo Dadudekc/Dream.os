@@ -26,7 +26,7 @@ class DriverManager:
         Lazy init the driver if it doesn't exist yet.
         """
         if self._driver is None:
-            logger.info("🚀 Initializing Chrome driver...")
+            logger.info(" Initializing Chrome driver...")
             self._driver = self._init_driver_lazy()
         return self._driver
 
@@ -46,10 +46,10 @@ class DriverManager:
 
         try:
             driver = webdriver.Chrome(options=options)
-            logger.info("✅ Chrome driver initialized successfully.")
+            logger.info(" Chrome driver initialized successfully.")
             return driver
         except WebDriverException as e:
-            logger.exception(f"❌ Failed to initialize Chrome driver: {e}")
+            logger.exception(f" Failed to initialize Chrome driver: {e}")
             raise
 
     def shutdown_driver(self):
@@ -58,11 +58,11 @@ class DriverManager:
         """
         if self._driver:
             try:
-                logger.info("🛑 Shutting down Chrome driver...")
+                logger.info(" Shutting down Chrome driver...")
                 self._driver.quit()
-                logger.info("✅ Chrome driver shut down successfully.")
+                logger.info(" Chrome driver shut down successfully.")
             except Exception as e:
-                logger.warning(f"⚠️ Error during driver shutdown: {e}")
+                logger.warning(f"️ Error during driver shutdown: {e}")
             finally:
                 self._driver = None
 
@@ -74,18 +74,18 @@ class DriverManager:
         driver = self.get_driver()
 
         try:
-            logger.info("🔎 Checking login status...")
+            logger.info(" Checking login status...")
             driver.get("https://chat.openai.com/")  # Or your target URL
             time.sleep(3)
 
             # Example: Look for user profile icon or another element
             if driver.find_elements("css selector", "div[data-testid='user-avatar']"):
-                logger.info("✅ Logged in.")
+                logger.info(" Logged in.")
                 return True
             else:
-                logger.warning("❌ Not logged in.")
+                logger.warning(" Not logged in.")
                 return False
 
         except Exception as e:
-            logger.exception(f"❌ Error checking login status: {e}")
+            logger.exception(f" Error checking login status: {e}")
             return False
