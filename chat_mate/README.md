@@ -146,3 +146,130 @@ DISCORD_GUILD_ID=your_guild_id
 2. Install dependencies
 3. Create a `.env` file with the required variables
 4. Run the application 
+
+# Chat Mate - Specialized Agents
+
+This module provides specialized agents for code refactoring, test generation, and documentation generation in the Chat Mate system.
+
+## Overview
+
+The specialized agents module includes three main agents:
+
+1. `RefactorAgent`: Handles code refactoring tasks
+2. `TestAgent`: Manages test generation and execution
+3. `DocAgent`: Generates documentation for code
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+### RefactorAgent
+
+The RefactorAgent handles code refactoring tasks:
+
+```python
+from core.Agents.specialized_agents import RefactorAgent
+
+# Create a refactor agent
+agent = RefactorAgent()
+
+# Define a refactoring task
+task = {
+    "file_path": "path/to/file.py",
+    "refactor_type": "extract_method",
+    "parameters": {
+        "method_name": "new_method"
+    }
+}
+
+# Execute the task
+result = agent.handle_task(task)
+```
+
+### TestAgent
+
+The TestAgent manages test generation and execution:
+
+```python
+from core.Agents.specialized_agents import TestAgent
+
+# Create a test agent
+agent = TestAgent()
+
+# Define a test generation task
+task = {
+    "file_path": "path/to/file.py",
+    "test_type": "unit",
+    "framework": "pytest",
+    "coverage_target": 95
+}
+
+# Execute the task
+result = agent.handle_task(task)
+```
+
+### DocAgent
+
+The DocAgent generates documentation:
+
+```python
+from core.Agents.specialized_agents import DocAgent
+
+# Create a documentation agent
+agent = DocAgent()
+
+# Define a documentation task
+task = {
+    "file_path": "path/to/file.py",
+    "doc_type": "api",
+    "format": "markdown",
+    "include_examples": True
+}
+
+# Execute the task
+result = agent.handle_task(task)
+```
+
+## Task Parameters
+
+### RefactorAgent Tasks
+
+- `file_path` (required): Path to the file to refactor
+- `refactor_type` (required): Type of refactoring to perform
+- `parameters` (optional): Additional parameters for the refactoring
+
+### TestAgent Tasks
+
+- `file_path` (required): Path to the file to test
+- `test_type` (required): Type of test to generate
+- `framework` (optional): Testing framework to use (default: "pytest")
+- `coverage_target` (optional): Minimum coverage percentage (default: 90)
+
+### DocAgent Tasks
+
+- `file_path` (required): Path to the file to document
+- `doc_type` (required): Type of documentation to generate
+- `format` (optional): Output format (default: "markdown")
+- `include_examples` (optional): Whether to include usage examples (default: True)
+
+## Running Tests
+
+```bash
+pytest tests/test_specialized_agents.py -v
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 

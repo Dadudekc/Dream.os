@@ -8,7 +8,6 @@ from collections import defaultdict
 from core.FileManager import FileManager
 from core.PathManager import PathManager
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from chat_mate_config import Config
 from core.ConfigManager import ConfigManager
 
 class FeedbackEntry:
@@ -96,10 +95,19 @@ class UnifiedFeedbackMemory:
         self.memory: Dict[str, List[FeedbackEntry]] = defaultdict(list)
         self.context_stats: Dict[str, Dict[str, Any]] = defaultdict(dict)
         
-        # Load configuration
-        self.max_entries = Config.get("ai.memory.max_entries", 10000)
-        self.min_score_threshold = Config.get("ai.memory.min_score", -0.5)
-        self.prune_threshold = Config.get("ai.memory.prune_threshold", 0.8)
+        # Load configuration with default values
+        self.max_entries = 10000  # Default value
+        self.min_score_threshold = -0.5  # Default value
+        self.prune_threshold = 0.8  # Default value
+        
+        try:
+            # Try to load from config if available
+            if self.config:
+                self.max_entries = self.config.get("memory.max_entries", self.max_entries)
+                self.min_score_threshold = self.config.get("memory.min_score", self.min_score_threshold)
+                self.prune_threshold = self.config.get("memory.prune_threshold", self.prune_threshold)
+        except Exception as e:
+            self.logger.log_error(e, {"context": "Failed to load memory configuration"})
         
         # Load existing memory
         self.load()

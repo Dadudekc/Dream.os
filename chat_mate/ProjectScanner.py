@@ -5,7 +5,7 @@ import hashlib
 import threading
 import queue
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Union, Optional, List
 
 # Try importing tree-sitter for Rust/JS/TS parsing
 try:
@@ -18,46 +18,28 @@ except ImportError:
 CACHE_FILE = "dependency_cache.json"
 
 
-class ProjectScanner:
-    """
-    A universal project scanner that:
-      - Identifies Python, Rust, JavaScript, and TypeScript files.
-      - Extracts functions, classes, and naive route definitions.
-      - Caches file hashes to skip unchanged files.
-      - Detects moved files by matching file hashes.
-      - Writes a single JSON report (project_analysis.json) at the end.
-      - Processes files asynchronously via background workers (BotWorker/MultibotManager).
-      - Auto-generates __init__.py files for Python packages using the project analysis context.
-      
-    Extend or refactor `_save_report()` for modular outputs (e.g., routes.json, summary.md, etc.).
-    """
-    def __init__(self, project_root: Union[str, Path] = "."):
-        """
-        :param project_root: The root directory of the project to scan.
-        """
-        self.project_root = Path(project_root).resolve()
-        self.analysis: Dict[str, Dict] = {}
-        self.cache = self.load_cache()
-        self.cache_lock = threading.Lock()  # Protect cache updates in a threaded context
-        # Additional ignore directories provided interactively by the user.
-        self.additional_ignore_dirs = set()
-
-        # Initialize tree-sitter parsers for Rust and JS (if available)
+class LanguageAnalyzer:
+    """Handles language-specific code analysis for different programming languages."""
+    
+    def __init__(self):
+        """Initialize language analyzers and parsers."""
         self.rust_parser = self._init_tree_sitter_language("rust")
         self.js_parser = self._init_tree_sitter_language("javascript")
 
-    def _init_tree_sitter_language(self, lang_name: str):
+    def _init_tree_sitter_language(self, lang_name: str) -> Optional[Parser]:
         """
-        Initializes and returns a Parser for the given language name (e.g. "rust", "javascript")
-        if we have a compiled tree-sitter grammar.
-
-        Adjust the grammar_paths to point to your actual .so/.dll/.dylib files.
+        Initializes and returns a Parser for the given language name.
+        
+        Args:
+            lang_name: Name of the language (e.g. "rust", "javascript")
+            
+        Returns:
+            Optional[Parser]: Configured parser instance or None if initialization fails
         """
         if not Language or not Parser:
             print(f"⚠️ tree-sitter not available. Skipping {lang_name} parser.")
             return None
 
-        # Example paths to compiled grammars - update these to match your environment
         grammar_paths = {
             "rust": "path/to/tree-sitter-rust.so",
             "javascript": "path/to/tree-sitter-javascript.so",
@@ -81,215 +63,42 @@ class ProjectScanner:
             print(f"⚠️ Failed to initialize tree-sitter {lang_name} parser: {e}")
             return None
 
-    def load_cache(self) -> Dict:
+    def analyze_file(self, file_path: Path, source_code: str) -> Dict:
         """
-        Loads a JSON cache from disk if present.
-        The cache stores file paths, hashes, etc. to skip re-analysis of unchanged files.
-        """
-        if Path(CACHE_FILE).exists():
-            try:
-                with open(CACHE_FILE, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except json.JSONDecodeError:
-                return {}
-        return {}
-
-    def save_cache(self):
-        """
-        Writes the updated cache to disk so subsequent runs can detect unchanged or moved files quickly.
-        """
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(self.cache, f, indent=4)
-
-    def hash_file(self, file_path: Path) -> str:
-        """
-        Calculates an MD5 hash of a file's content.
-        :param file_path: Path to the file to hash.
-        :return: Hex digest string, or "" if an error occurs.
-        """
-        try:
-            with file_path.open("rb") as f:
-                return hashlib.md5(f.read()).hexdigest()
-        except Exception:
-            return ""
-
-    def scan_project(self):
-        """
-        Orchestrates the project scan:
-        - Finds Python, Rust, JS, and TS files using os.walk().
-        - Excludes certain directories.
-        - Detects moved files by comparing cached hashes.
-        - Offloads file analysis to background workers.
-        - Saves a single JSON report 'project_analysis.json'.
-        """
-        print(f"🔍 Scanning project: {self.project_root} ...")
-
-        # Collect files using os.walk to capture all files (even in hidden directories)
-        file_extensions = {'.py', '.rs', '.js', '.ts'}
-        valid_files = []
-        for root, dirs, files in os.walk(self.project_root):
-            root_path = Path(root)
-            # Skip directories that should be excluded
-            if self._should_exclude(root_path):
-                continue
-            for file in files:
-                file_path = root_path / file
-                if file_path.suffix.lower() in file_extensions and not self._should_exclude(file_path):
-                    valid_files.append(file_path)
+        Analyzes source code based on file extension.
         
-        print(f"📝 Found {len(valid_files)} valid files for analysis.")
-
-        # Track old vs. new paths for cache update
-        previous_files = set(self.cache.keys())
-        current_files = {str(f.relative_to(self.project_root)) for f in valid_files}
-        moved_files = {}
-        missing_files = previous_files - current_files
-
-        # Detect moved files by matching file hashes
-        for old_path in previous_files:
-            old_hash = self.cache.get(old_path, {}).get("hash")
-            if not old_hash:
-                continue
-            for new_path in current_files:
-                new_file = self.project_root / new_path
-                if self.hash_file(new_file) == old_hash:
-                    moved_files[old_path] = new_path
-                    break
-
-        # Remove truly missing files from cache
-        for missing_file in missing_files:
-            if missing_file not in moved_files:
-                with self.cache_lock:
-                    if missing_file in self.cache:
-                        del self.cache[missing_file]
-
-        # Update cache for moved files
-        for old_path, new_path in moved_files.items():
-            with self.cache_lock:
-                self.cache[new_path] = self.cache.pop(old_path)
-
-        # --- Asynchronous processing with BotWorker/MultibotManager ---
-        print("⏱️  Processing files asynchronously...")
-        num_workers = os.cpu_count() or 4
-        manager = MultibotManager(scanner=self, num_workers=num_workers,
-                                status_callback=lambda fp, res: print(f"Processed: {fp}"))
-        for file_path in valid_files:
-            manager.add_task(file_path)
-        manager.wait_for_completion()
-        manager.stop_workers()
-        for result in manager.results_list:
-            if result is not None:
-                file_path, analysis_result = result
-                self.analysis[file_path] = analysis_result
-
-        # Write final report and cache
-        self._save_report()
-        self.save_cache()
-        print(f"✅ Scan complete. Results saved to {self.project_root / 'project_analysis.json'}")
-
-    def _should_exclude(self, file_path: Path) -> bool:
-        """
-        Excludes files that are located inside certain directories.
-        Combines a default list of excluded directory names with any additional
-        directories specified by the user. For additional directories, if the user
-        provides an absolute path, the file's absolute path is checked against it.
-        Otherwise, the path is assumed to be relative to the project root.
-        """
-        default_exclude_dirs = {"venv", "__pycache__", "node_modules", "migrations", "build", "target", ".git", "coverage", "chrome_profile"}
-        file_abs = file_path.resolve()
-        for ignore in self.additional_ignore_dirs:
-            ignore_path = Path(ignore)
-            if not ignore_path.is_absolute():
-                ignore_path = (self.project_root / ignore_path).resolve()
-            try:
-                file_abs.relative_to(ignore_path)
-                return True
-            except ValueError:
-                continue
-        if any(excluded in file_path.parts for excluded in default_exclude_dirs):
-            return True
-        return False
-
-    def _process_file(self, file_path: Path):
-        """
-        Handles analysis of a single file:
-          - Skips if the file is unchanged (hash match).
-          - Reads its source, dispatches to the appropriate parser.
-          - Updates the cache with the new hash.
-        Returns a tuple (relative_path, analysis_result) or None on error/skip.
-        """
-        file_hash = self.hash_file(file_path)
-        relative_path = str(file_path.relative_to(self.project_root))
-        with self.cache_lock:
-            if relative_path in self.cache and self.cache[relative_path]["hash"] == file_hash:
-                return None
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                source_code = f.read()
-            analysis_result = self._analyze_file_by_language(file_path, source_code)
-            with self.cache_lock:
-                self.cache[relative_path] = {"hash": file_hash}
-            return (relative_path, analysis_result)
-        except Exception as e:
-            print(f"❌ Error analyzing {file_path}: {e}")
-            return None
-
-    def _analyze_file_by_language(self, file_path: Path, source_code: str) -> Dict:
-        """
-        Dispatches analysis based on file extension and available parsers.
-        Returns a dictionary with keys like:
-          {
-            "language": "python"|"rust"|"javascript"|...,
-            "functions": [...],
-            "classes": {...},
-            "routes": [...],
-            "complexity": <int>
-          }
+        Args:
+            file_path: Path to the source file
+            source_code: Contents of the source file
+            
+        Returns:
+            Dict containing analysis results
         """
         suffix = file_path.suffix.lower()
         if suffix == ".py":
-            data = self._analyze_python(source_code)
-            complexity = len(data["functions"]) + sum(len(methods) for methods in data["classes"].values())
-            return {
-                "language": "python",
-                "functions": data["functions"],
-                "classes": data["classes"],
-                "routes": data.get("routes", []),
-                "complexity": complexity,
-            }
+            return self._analyze_python(source_code)
         elif suffix == ".rs" and self.rust_parser:
-            data = self._analyze_rust(source_code)
-            complexity = len(data["functions"]) + sum(len(methods) for methods in data["classes"].values())
-            return {
-                "language": "rust",
-                "functions": data["functions"],
-                "classes": data["classes"],
-                "complexity": complexity,
-            }
+            return self._analyze_rust(source_code)
         elif suffix in [".js", ".ts"] and self.js_parser:
-            data = self._analyze_javascript(source_code)
-            complexity = len(data["functions"]) + sum(len(methods) for methods in data["classes"].values())
-            return {
-                "language": "javascript",
-                "functions": data["functions"],
-                "classes": data["classes"],
-                "routes": data["routes"],
-                "complexity": complexity,
-            }
+            return self._analyze_javascript(source_code)
         else:
             return {"language": suffix, "functions": [], "classes": {}, "routes": [], "complexity": 0}
 
     def _analyze_python(self, source_code: str) -> Dict:
         """
-        Uses Python's ast to extract:
-          - function names
-          - class names and method names
-          - Naive route detection (Flask-like decorators)
+        Analyzes Python source code using AST.
+        
+        Args:
+            source_code: Python source code string
+            
+        Returns:
+            Dict containing extracted functions, classes, and routes
         """
         tree = ast.parse(source_code)
         functions = []
         classes = {}
         routes = []
+        
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 functions.append(node.name)
@@ -320,14 +129,22 @@ class ProjectScanner:
             elif isinstance(node, ast.ClassDef):
                 method_names = [m.name for m in node.body if isinstance(m, ast.FunctionDef)]
                 classes[node.name] = method_names
+                
         return {"functions": functions, "classes": classes, "routes": routes}
 
     def _analyze_rust(self, source_code: str) -> Dict:
         """
-        Uses tree-sitter to extract functions and struct methods from Rust code.
+        Analyzes Rust source code using tree-sitter.
+        
+        Args:
+            source_code: Rust source code string
+            
+        Returns:
+            Dict containing extracted functions and classes
         """
         if not self.rust_parser:
             return {"functions": [], "classes": {}}
+            
         tree = self.rust_parser.parse(bytes(source_code, "utf-8"))
         functions = []
         classes = {}
@@ -360,10 +177,17 @@ class ProjectScanner:
 
     def _analyze_javascript(self, source_code: str) -> Dict:
         """
-        Uses tree-sitter to extract functions, classes, and basic Express-style routes from JavaScript/TypeScript code.
+        Analyzes JavaScript/TypeScript source code using tree-sitter.
+        
+        Args:
+            source_code: JavaScript/TypeScript source code string
+            
+        Returns:
+            Dict containing extracted functions, classes, and routes
         """
         if not self.js_parser:
             return {"functions": [], "classes": {}, "routes": []}
+            
         tree = self.js_parser.parse(bytes(source_code, "utf-8"))
         root = tree.root_node
         functions = []
@@ -416,22 +240,129 @@ class ProjectScanner:
         _traverse(root)
         return {"functions": functions, "classes": classes, "routes": routes}
 
-    def _save_report(self):
+
+class FileProcessor:
+    """Handles file operations including hashing, caching, and exclusion checks."""
+    
+    def __init__(self, project_root: Path, cache: Dict, cache_lock: threading.Lock, additional_ignore_dirs: set):
         """
-        Writes the final analysis dictionary to a JSON file.
+        Initialize the file processor.
+        
+        Args:
+            project_root: Root directory of the project
+            cache: Cache dictionary for file hashes
+            cache_lock: Thread lock for cache operations
+            additional_ignore_dirs: Set of additional directories to ignore
         """
+        self.project_root = project_root
+        self.cache = cache
+        self.cache_lock = cache_lock
+        self.additional_ignore_dirs = additional_ignore_dirs
+
+    def hash_file(self, file_path: Path) -> str:
+        """
+        Calculates an MD5 hash of a file's content.
+        
+        Args:
+            file_path: Path to the file to hash
+            
+        Returns:
+            str: Hex digest string, or "" if an error occurs
+        """
+        try:
+            with file_path.open("rb") as f:
+                return hashlib.md5(f.read()).hexdigest()
+        except Exception:
+            return ""
+
+    def should_exclude(self, file_path: Path) -> bool:
+        """
+        Checks if a file should be excluded from processing.
+        
+        Args:
+            file_path: Path to check
+            
+        Returns:
+            bool: True if file should be excluded, False otherwise
+        """
+        default_exclude_dirs = {"venv", "__pycache__", "node_modules", "migrations", "build", "target", ".git", "coverage", "chrome_profile"}
+        file_abs = file_path.resolve()
+        
+        for ignore in self.additional_ignore_dirs:
+            ignore_path = Path(ignore)
+            if not ignore_path.is_absolute():
+                ignore_path = (self.project_root / ignore_path).resolve()
+            try:
+                file_abs.relative_to(ignore_path)
+                return True
+            except ValueError:
+                continue
+                
+        if any(excluded in file_path.parts for excluded in default_exclude_dirs):
+            return True
+        return False
+
+    def process_file(self, file_path: Path, language_analyzer: LanguageAnalyzer) -> Optional[tuple]:
+        """
+        Processes a single file for analysis.
+        
+        Args:
+            file_path: Path to the file to process
+            language_analyzer: Language analyzer instance
+            
+        Returns:
+            Optional[tuple]: Tuple of (relative_path, analysis_result) or None if file should be skipped
+        """
+        file_hash = self.hash_file(file_path)
+        relative_path = str(file_path.relative_to(self.project_root))
+        
+        with self.cache_lock:
+            if relative_path in self.cache and self.cache[relative_path]["hash"] == file_hash:
+                return None
+                
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                source_code = f.read()
+            analysis_result = language_analyzer.analyze_file(file_path, source_code)
+            
+            # Calculate complexity
+            complexity = len(analysis_result["functions"]) + sum(len(methods) for methods in analysis_result["classes"].values())
+            analysis_result["complexity"] = complexity
+            
+            with self.cache_lock:
+                self.cache[relative_path] = {"hash": file_hash}
+            return (relative_path, analysis_result)
+        except Exception as e:
+            print(f"❌ Error analyzing {file_path}: {e}")
+            return None
+
+
+class ReportGenerator:
+    """Handles report generation and file output operations."""
+    
+    def __init__(self, project_root: Path, analysis: Dict[str, Dict]):
+        """
+        Initialize the report generator.
+        
+        Args:
+            project_root: Root directory of the project
+            analysis: Analysis results dictionary
+        """
+        self.project_root = project_root
+        self.analysis = analysis
+
+    def save_report(self):
+        """Writes the final analysis dictionary to a JSON file."""
         report_path = self.project_root / "project_analysis.json"
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(self.analysis, f, indent=4)
 
     def generate_init_files(self, overwrite: bool = True):
         """
-        Automatically generates __init__.py files for all Python packages (directories containing .py files)
-        based on the project analysis context. Each generated __init__.py file will import all modules
-        in the package and expose them via an __all__ list.
-
+        Automatically generates __init__.py files for all Python packages.
+        
         Args:
-            overwrite (bool): Whether to overwrite an existing __init__.py file. Default is True.
+            overwrite: Whether to overwrite existing __init__.py files
         """
         from collections import defaultdict
 
@@ -476,12 +407,160 @@ class ProjectScanner:
             else:
                 print(f"ℹ️ Skipped {init_file} (already exists)")
 
+
+class ProjectScanner:
+    """
+    A universal project scanner that:
+      - Identifies Python, Rust, JavaScript, and TypeScript files.
+      - Extracts functions, classes, and naive route definitions.
+      - Caches file hashes to skip unchanged files.
+      - Detects moved files by matching file hashes.
+      - Writes a single JSON report (project_analysis.json) at the end.
+      - Processes files asynchronously via background workers (BotWorker/MultibotManager).
+      - Auto-generates __init__.py files for Python packages using the project analysis context.
+    """
+    def __init__(self, project_root: Union[str, Path] = "."):
+        """
+        Initialize the project scanner.
         
+        Args:
+            project_root: The root directory of the project to scan.
+        """
+        self.project_root = Path(project_root).resolve()
+        self.analysis: Dict[str, Dict] = {}
+        self.cache = self.load_cache()
+        self.cache_lock = threading.Lock()
+        self.additional_ignore_dirs = set()
+        self.language_analyzer = LanguageAnalyzer()
+        self.file_processor = FileProcessor(
+            self.project_root,
+            self.cache,
+            self.cache_lock,
+            self.additional_ignore_dirs
+        )
+        self.report_generator = ReportGenerator(self.project_root, self.analysis)
+
+    def load_cache(self) -> Dict:
+        """
+        Loads a JSON cache from disk if present.
+        
+        Returns:
+            Dict: Cache dictionary or empty dict if no cache exists
+        """
+        if Path(CACHE_FILE).exists():
+            try:
+                with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                return {}
+        return {}
+
+    def save_cache(self):
+        """Writes the updated cache to disk."""
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(self.cache, f, indent=4)
+
+    def scan_project(self):
+        """
+        Orchestrates the project scan:
+        - Finds Python, Rust, JS, and TS files using os.walk()
+        - Excludes certain directories
+        - Detects moved files by comparing cached hashes
+        - Offloads file analysis to background workers
+        - Saves a single JSON report 'project_analysis.json'
+        """
+        print(f"🔍 Scanning project: {self.project_root} ...")
+
+        # Collect files using os.walk to capture all files (even in hidden directories)
+        file_extensions = {'.py', '.rs', '.js', '.ts'}
+        valid_files = []
+        for root, dirs, files in os.walk(self.project_root):
+            root_path = Path(root)
+            # Skip directories that should be excluded
+            if self.file_processor.should_exclude(root_path):
+                continue
+            for file in files:
+                file_path = root_path / file
+                if file_path.suffix.lower() in file_extensions and not self.file_processor.should_exclude(file_path):
+                    valid_files.append(file_path)
+        
+        print(f"📝 Found {len(valid_files)} valid files for analysis.")
+
+        # Track old vs. new paths for cache update
+        previous_files = set(self.cache.keys())
+        current_files = {str(f.relative_to(self.project_root)) for f in valid_files}
+        moved_files = {}
+        missing_files = previous_files - current_files
+
+        # Detect moved files by matching file hashes
+        for old_path in previous_files:
+            old_hash = self.cache.get(old_path, {}).get("hash")
+            if not old_hash:
+                continue
+            for new_path in current_files:
+                new_file = self.project_root / new_path
+                if self.file_processor.hash_file(new_file) == old_hash:
+                    moved_files[old_path] = new_path
+                    break
+
+        # Remove truly missing files from cache
+        for missing_file in missing_files:
+            if missing_file not in moved_files:
+                with self.cache_lock:
+                    if missing_file in self.cache:
+                        del self.cache[missing_file]
+
+        # Update cache for moved files
+        for old_path, new_path in moved_files.items():
+            with self.cache_lock:
+                self.cache[new_path] = self.cache.pop(old_path)
+
+        # --- Asynchronous processing with BotWorker/MultibotManager ---
+        print("⏱️  Processing files asynchronously...")
+        num_workers = os.cpu_count() or 4
+        manager = MultibotManager(scanner=self, num_workers=num_workers,
+                                status_callback=lambda fp, res: print(f"Processed: {fp}"))
+        for file_path in valid_files:
+            manager.add_task(file_path)
+        manager.wait_for_completion()
+        manager.stop_workers()
+        for result in manager.results_list:
+            if result is not None:
+                file_path, analysis_result = result
+                self.analysis[file_path] = analysis_result
+
+        # Write final report and cache
+        self.report_generator.save_report()
+        self.save_cache()
+        print(f"✅ Scan complete. Results saved to {self.project_root / 'project_analysis.json'}")
+
+    def _process_file(self, file_path: Path):
+        """
+        Handles analysis of a single file.
+        
+        Args:
+            file_path: Path to the file to process
+            
+        Returns:
+            Optional[tuple]: Tuple of (relative_path, analysis_result) or None if file should be skipped
+        """
+        return self.file_processor.process_file(file_path, self.language_analyzer)
+
+    def generate_init_files(self, overwrite: bool = True):
+        """
+        Generates __init__.py files for Python packages.
+        
+        Args:
+            overwrite: Whether to overwrite existing __init__.py files
+        """
+        self.report_generator.generate_init_files(overwrite)
+
+
 # ----- Asynchronous Task Queue Components -----
 class BotWorker(threading.Thread):
     """
     A background worker that continuously pulls file tasks from a queue,
-    processes them using the scanner’s _process_file method, and stores results.
+    processes them using the scanner's _process_file method, and stores results.
     """
     def __init__(self, task_queue: queue.Queue, results_list: list, scanner: ProjectScanner, status_callback=None):
         threading.Thread.__init__(self)

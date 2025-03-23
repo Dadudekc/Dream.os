@@ -7,13 +7,16 @@ from . import AletheiaFeedbackLoopManager
 from . import AletheiaPromptManager
 from . import ChatManager
 from . import ConfigManager
+from . import ConsoleLogger
 from . import DiscordBatchDispatcher
+from . import DiscordLogger
 from . import DiscordManager
 from . import DiscordTemplateManager
 from . import DriverManager
 from . import DriverSessionManager
 from . import EngagementAgent
 from . import EventMessageBuilder
+from . import FileLogger
 from . import FileManager
 from . import MemoryManager
 from . import OpenAIPromptEngine
@@ -39,8 +42,8 @@ from . import UnifiedLoggingAgent
 from . import UnifiedPromptEngine
 from . import bootstrap
 from . import chat_engine_simple
-from . import config
 from . import feedback
+from . import logger_factory
 from . import reinforcement_tools
 
 __all__ = [
@@ -50,13 +53,16 @@ __all__ = [
     'AletheiaPromptManager',
     'ChatManager',
     'ConfigManager',
+    'ConsoleLogger',
     'DiscordBatchDispatcher',
+    'DiscordLogger',
     'DiscordManager',
     'DiscordTemplateManager',
     'DriverManager',
     'DriverSessionManager',
     'EngagementAgent',
     'EventMessageBuilder',
+    'FileLogger',
     'FileManager',
     'MemoryManager',
     'OpenAIPromptEngine',
@@ -82,7 +88,7 @@ __all__ = [
     'UnifiedPromptEngine',
     'bootstrap',
     'chat_engine_simple',
-    'config',
     'feedback',
+    'logger_factory',
     'reinforcement_tools',
 ]

@@ -66,6 +66,58 @@ class UnifiedLoggingAgent(ILoggingAgent):
         # Setup file handler
         self._setup_file_handler()
 
+    def log(self, message: str, domain: str = "system", level: str = "info", metadata: Optional[Dict[str, Any]] = None, tags: Optional[List[str]] = None) -> Optional[str]:
+        """
+        Log a message with optional metadata and tags.
+        
+        Args:
+            message: The message to log
+            domain: The logging domain (e.g., "system", "ai_output", "social")
+            level: Logging level (e.g., "info", "error", "debug")
+            metadata: Optional dictionary of metadata
+            tags: Optional list of tags
+            
+        Returns:
+            Optional[str]: Path to the log file if successful
+        """
+        if domain not in self.DOMAINS:
+            self.logger.warning(f"Unknown logging domain: {domain}. Using 'system' as default.")
+            domain = "system"
+
+        # Create log entry
+        timestamp = datetime.now(UTC).isoformat() + "Z"
+        entry = {
+            "timestamp": timestamp,
+            "level": level,
+            "message": message,
+            "metadata": metadata or {},
+            "tags": tags or []
+        }
+
+        # Determine log file path
+        log_dir = os.path.join(self.logs_dir, domain)
+        log_file = os.path.join(log_dir, f"{domain}_{datetime.now().strftime('%Y%m%d')}.log")
+
+        try:
+            with self.write_lock:
+                # Write to file based on format
+                if self.DOMAINS[domain] in ("json", "jsonl"):
+                    with open(log_file, "a", encoding="utf-8") as f:
+                        f.write(json.dumps(entry) + "\n")
+                else:
+                    # Text format
+                    with open(log_file, "a", encoding="utf-8") as f:
+                        f.write(f"[{timestamp}] [{level.upper()}] {message}\n")
+
+            # Also log to console if debug mode is enabled
+            if self.config_manager.get("debug_mode", False):
+                print(f"[{domain.upper()}] {message}")
+
+            return log_file
+        except Exception as e:
+            self.logger.error(f"Failed to write log entry: {str(e)}")
+            return None
+
     def _setup_log_directories(self) -> None:
         """Ensure all necessary log directories exist."""
         for domain in self.DOMAINS:
@@ -84,9 +136,6 @@ class UnifiedLoggingAgent(ILoggingAgent):
             self.logger.info(f"Logging initialized at {self.logs_dir}")
         except Exception as e:
             self.logger.error(f"Failed to setup file handler: {str(e)}")
-
-    def log(self, message: str):
-        print(f"[LOG]: {message}")
 
     def log_ai_output(
         self,
@@ -265,12 +314,14 @@ class UnifiedLoggingAgent(ILoggingAgent):
             print(f"Failed to save error log: {str(e)}")
 
     def log_debug(self, message: str):
-        # Optional debug flag logic
-        if self.config_manager and self.config_manager.get("debug_mode"):
-            print(f"[DEBUG]: {message}")
-        else:
-            print(f"[DEBUG]: {message}")
+        """Log a debug message."""
+        if self.config_manager.get("debug_mode", False):
+            self.log(message, domain="debug", level="debug")
 
     def log_event(self, event_name: str, payload: dict):
-        # Example structured event logging
-        print(f"[EVENT]: {event_name} - Payload: {payload}")
+        """Log a structured event."""
+        self.log(
+            message=f"Event: {event_name}",
+            domain="system",
+            metadata={"event_name": event_name, "payload": payload}
+        )

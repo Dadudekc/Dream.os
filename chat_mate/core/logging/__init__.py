@@ -1,8 +1,8 @@
 # AUTO-GENERATED __init__.py
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
-from . import ILoggingAgent
+from . import CompositeLogger
 
 __all__ = [
-    'ILoggingAgent',
+    'CompositeLogger',
 ]
