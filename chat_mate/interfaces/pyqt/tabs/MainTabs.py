@@ -6,6 +6,7 @@ from interfaces.pyqt.tabs.LogsTab import LogsTab
 from interfaces.pyqt.tabs.DebuggerTab import DebuggerTab
 from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
+from interfaces.pyqt.tabs.ChatAutomationDebuggerTab import ChatAutomationDebuggerTab
 
 class MainTabs(QTabWidget):
     """
@@ -104,6 +105,13 @@ class MainTabs(QTabWidget):
         )
         self.addTab(self.tabs["Debugger"], "Debugger")
 
+        # Chat Automation Debugger Tab (new)
+        self.tabs["ChatAutomation"] = ChatAutomationDebuggerTab(
+            dispatcher=self.dispatcher,
+            logger=self.logger
+        )
+        self.addTab(self.tabs["ChatAutomation"], "Chat Automation")
+
         # Logs Tab (Centralized logging)
         self.tabs["Logs"] = LogsTab(
             logger=self.logger
@@ -137,6 +145,10 @@ class MainTabs(QTabWidget):
             self.dispatcher.debug_completed.connect(self._on_debug_completed)
         if hasattr(self.dispatcher, "cursor_code_generated"):
             self.dispatcher.cursor_code_generated.connect(self._on_cursor_code_generated)
+            
+        # Connect automation-related signals if available
+        if hasattr(self.dispatcher, "automation_result"):
+            self.dispatcher.automation_result.connect(self._on_automation_result)
         
     def _on_prompt_executed(self, prompt_name, response_data):
         """Handle prompt_executed signal by notifying appropriate tabs."""
@@ -192,6 +204,16 @@ class MainTabs(QTabWidget):
         debugger_tab = self.tabs.get("Debugger")
         if debugger_tab and hasattr(debugger_tab, "handle_cursor_code_generated"):
             debugger_tab.handle_cursor_code_generated(code)
+            
+    def _on_automation_result(self, result):
+        """Handle automation_result signal by notifying appropriate tabs."""
+        # Log the event
+        self.append_output(f"[Automation] {result}")
+        
+        # Notify Chat Automation tab if needed
+        chat_automation_tab = self.tabs.get("ChatAutomation")
+        if chat_automation_tab and hasattr(chat_automation_tab, "on_automation_result"):
+            chat_automation_tab.on_automation_result(result)
 
     def append_output(self, message: str):
         """

@@ -20,6 +20,9 @@ class SignalDispatcher(QObject):
     status_update = pyqtSignal(str)  # status message
     append_output = pyqtSignal(str)  # output message
     discord_log = pyqtSignal(str)  # discord message
+    
+    # Chat automation signals
+    automation_result = pyqtSignal(str)  # automation result message
 
     def __init__(self):
         super().__init__()
@@ -35,7 +38,8 @@ class SignalDispatcher(QObject):
             'task_failed': [],
             'status_update': [],
             'append_output': [],
-            'discord_log': []
+            'discord_log': [],
+            'automation_result': []
         }
         
     def emit_log_output(self, message):
@@ -81,6 +85,10 @@ class SignalDispatcher(QObject):
     def emit_discord_log(self, message):
         """Emit discord_log signal with message."""
         self.discord_log.emit(message)
+        
+    def emit_automation_result(self, result):
+        """Emit automation_result signal with result."""
+        self.automation_result.emit(result)
         
     def register_listener(self, signal_name, callback):
         """
