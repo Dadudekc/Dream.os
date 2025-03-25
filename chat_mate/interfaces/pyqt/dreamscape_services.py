@@ -4,11 +4,34 @@ import time
 import logging
 import threading
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
+import inspect
 
-# Ensure the root folder is in the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from pathlib import Path
+
+def find_project_root(marker: str = ".git", start: Path = None) -> Path:
+    """
+    Recursively search for a directory containing the given marker (e.g., .git)
+    starting from 'start' or the current file's directory.
+    
+    :param marker: A file or directory name that indicates the project root.
+    :param start: Starting path for the search (defaults to current file's parent).
+    :return: The project root as a Path object.
+    """
+    start = start or Path(__file__).resolve().parent
+    for parent in [start] + list(start.parents):
+        if (parent / marker).exists():
+            return parent
+    return start  # Fallback to start if no marker found
+
+project_root = find_project_root()
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# For debugging: print the project root
+print("Project root detected at:", project_root)
+
 
 from core.ChatManager import ChatManager
 from core.AletheiaPromptManager import AletheiaPromptManager
@@ -32,65 +55,260 @@ class DreamscapeService:
     """
     Central service class that encapsulates all core business logic.
     This module has zero dependencies on any UI framework.
+    
+    Design rationale:
+    - Centralizes all business logic and service creation
+    - Provides robust error handling for all service initialization
+    - Implements fallback mechanisms with EmptyService implementations
+    - Supports runtime service creation and health checks
     """
 
     def __init__(self, config):
         """
         Initialize DreamscapeService with a configuration object.
         
-        :param config: A ConfigManager instance or configuration object that exposes settings.
+        Args:
+            config: A ConfigManager instance or configuration object that exposes settings.
         """
         self.config = config
-
-        # Default values if not in config
-        memory_file = config.get("memory_file", "memory/dreamscape_memory.json") if hasattr(config, "get") else getattr(config, "memory_file", "memory/dreamscape_memory.json")
-
-        # Configure logger
         self.logger = logging.getLogger("DreamscapeService")
         
-        # Initialize core components and managers
-        self.prompt_manager = AletheiaPromptManager(
-            memory_file=memory_file
-        )
-        self.chat_manager = None
-        self.discord = None
-        self.file_manager = FileManager()
-        
-        # Use PromptCycleOrchestrator instead of PromptCycleManager
-        self.cycle_manager = PromptCycleOrchestrator(config)
-        
-        # Initialize ReinforcementEngine with required parameters
-        self.reinforcement_engine = ReinforcementEngine(config, self.logger)
+        # Track initialization status for health checks and debugging
+        self._initialization_status = {}
+        self._service_dependencies = self._map_service_dependencies()
 
-        # Initialize response handler and other services with required parameters
-        self.prompt_handler = PromptResponseHandler(config, self.logger)
+        # Initialize service registry 
+        self._services = {}
         
-        # Initialize other services with appropriate parameters
-        self.cycle_service = CycleExecutionService(
-            config_manager=config,
-            logger=self.logger,
-            prompt_manager=self.prompt_manager,
-            chat_manager=self.chat_manager,
-            response_handler=self.prompt_handler,
-            memory_manager=None,
-            discord_manager=self.discord
-        )
-        self.discord_processor = DiscordQueueProcessor(config, self.logger)
-        self.task_orchestrator = TaskOrchestrator(self.logger)
-        # Set the cycle_service for the task_orchestrator
-        self.task_orchestrator.set_cycle_service(self.cycle_service)
+        # Bootstrap all services
+        self.bootstrap_services()
         
-        # Get output directory from config or use a default
-        output_dir = config.get("dreamscape_output_dir", "outputs/dreamscape") if hasattr(config, "get") else getattr(config, "dreamscape_output_dir", "outputs/dreamscape")
-        
-        self.dreamscape_generator = DreamscapeEpisodeGenerator(
-            chat_manager=self.chat_manager,
-            response_handler=self.prompt_handler,
-            output_dir=output_dir,
-            discord_manager=self.discord
-        )
-        
+        # Log initialization status
+        self._log_initialization_status()
         self.logger.info("DreamscapeService initialized.")
+
+    def _init_service(self, service_name, factory_func, dependencies=None):
+        """
+        Initialize a service using the provided factory function with error handling.
+        
+        Args:
+            service_name: Name of the service
+            factory_func: Function that creates the service
+            dependencies: List of service names this service depends on
+            
+        Returns:
+            The initialized service or an EmptyService if initialization fails
+        """
+        # Track start of initialization
+        self._initialization_status[service_name] = "initializing"
+        
+        # Check dependencies first
+        if dependencies:
+            for dep in dependencies:
+                dep_status = self._initialization_status.get(dep)
+                if dep_status == "failed":
+                    self.logger.warning(f"Dependency '{dep}' failed to initialize, {service_name} may not work correctly")
+                elif dep_status is None or dep_status == "initializing":
+                    self.logger.warning(f"Possible circular dependency detected: {service_name} depends on {dep}")
+        
+        try:
+            service = factory_func()
+            setattr(self, service_name, service)
+            self._initialization_status[service_name] = "success"
+            return service
+        except Exception as e:
+            self.logger.error(f"Failed to initialize {service_name}: {str(e)}")
+            empty_service = self._create_empty_service(service_name)
+            setattr(self, service_name, empty_service)
+            self._initialization_status[service_name] = "failed"
+            return empty_service
+
+    def _init_discord_service(self):
+        """
+        Initialize the Discord service with appropriate parameters
+        based on the constructor signature.
+        """
+        try:
+            # Check which parameters the constructor accepts
+            discord_params = inspect.signature(UnifiedDiscordService.__init__).parameters
+
+            # Get appropriate parameters from config
+            bot_token = self.config.get("discord_token", "") if hasattr(self.config, "get") else getattr(self.config, "discord_token", "")
+            channel_id = self.config.get("discord_channel_id", "") if hasattr(self.config, "get") else getattr(self.config, "discord_channel_id", "")
+            
+            # Track initialization status
+            self._initialization_status["discord"] = "initializing"
+            
+            # Initialize with the correct parameter set
+            if 'config' in discord_params and 'logger' in discord_params:
+                self.discord = UnifiedDiscordService(config=self.config, logger=self.logger)
+            elif 'bot_token' in discord_params and 'default_channel_id' in discord_params:
+                template_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "templates", "discord_templates")
+                self.discord = UnifiedDiscordService(
+                    bot_token=bot_token, 
+                    default_channel_id=channel_id,
+                    template_dir=template_dir
+                )
+            else:
+                # Fallback to default constructor
+                self.discord = UnifiedDiscordService()
+                
+            self._initialization_status["discord"] = "success"
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Discord service: {str(e)}")
+            self.discord = self._create_empty_service("discord")
+            self._initialization_status["discord"] = "failed"
+
+    def _init_task_orchestrator(self):
+        """
+        Initialize the task orchestrator and configure it with the cycle service.
+        """
+        orchestrator = TaskOrchestrator(self.logger)
+        orchestrator.set_cycle_service(self.cycle_service)
+        return orchestrator
+
+    def _create_empty_service(self, service_name):
+        """
+        Create an empty service object that can be safely used when a real service is unavailable.
+        This prevents NoneType errors by providing stub implementations of common methods.
+        
+        Args:
+            service_name: Name of the service to create an empty implementation for
+            
+        Returns:
+            An object with stub methods that logs warnings when called
+        """
+        class EmptyService:
+            def __init__(self, name):
+                self.service_name = name
+                self.logger = logging.getLogger(f"EmptyService.{name}")
+                
+            def __getattr__(self, name):
+                def method(*args, **kwargs):
+                    self.logger.warning(f"Call to unavailable service '{self.service_name}.{name}()'. Service not initialized.")
+                    return None
+                return method
+                
+            def is_empty_service(self):
+                """Method to identify this as an empty service stub."""
+                return True
+        
+        return EmptyService(service_name)
+        
+    def _map_service_dependencies(self):
+        """
+        Build a map of service dependencies for debugging and health checks.
+        
+        Returns:
+            dict: A mapping of service dependencies.
+        """
+        # Simple dependency map for core services
+        return {
+            "cycle_service": ["prompt_manager", "chat_manager", "prompt_handler", "discord"],
+            "task_orchestrator": ["cycle_service"],
+            "dreamscape_generator": ["prompt_handler", "discord"]
+        }
+        
+    def get_service(self, name):
+        """
+        Get a service by name from the service registry.
+        
+        Args:
+            name: Name of the service to retrieve
+            
+        Returns:
+            The requested service or None if not found
+        """
+        if not hasattr(self, "_services"):
+            self._services = {}
+        return self._services.get(name)
+    
+    def set_service(self, name, service):
+        """
+        Set a service in the service registry.
+        
+        Args:
+            name: Name to register the service under
+            service: The service instance to register
+        """
+        if not hasattr(self, "_services"):
+            self._services = {}
+        self._services[name] = service
+        
+    def _log_initialization_status(self):
+        """
+        Log the initialization status of all services for troubleshooting.
+        """
+        self.logger.info("Service initialization status:")
+        for service, status in self._initialization_status.items():
+            self.logger.info(f"  - {service}: {status}")
+            
+    def service_health_check(self):
+        """
+        Perform a health check on all services and return a status report.
+        
+        Returns:
+            Dictionary with service status information
+        """
+        health_report = {}
+        
+        for service_name in self._initialization_status.keys():
+            service = getattr(self, service_name, None)
+            
+            # Skip chat_manager if it's deferred
+            if service_name == "chat_manager" and self._initialization_status.get(service_name) == "deferred":
+                health_report[service_name] = {
+                    "status": "deferred",
+                    "message": "Will be initialized on demand"
+                }
+                continue
+                
+            if service is None:
+                health_report[service_name] = {
+                    "status": "not_found",
+                    "message": "Service reference is None"
+                }
+            elif hasattr(service, "is_empty_service") and service.is_empty_service():
+                health_report[service_name] = {
+                    "status": "empty_implementation",
+                    "message": "Using fallback implementation"
+                }
+            else:
+                health_report[service_name] = {
+                    "status": "available",
+                    "message": "Service is available"
+                }
+                
+        return health_report
+
+    def shutdown(self):
+        """
+        Shutdown all services in the correct order.
+        """
+        # Ordered list of services to shut down (reverse dependency order)
+        shutdown_order = [
+            "dreamscape_generator",
+            "task_orchestrator",
+            "cycle_service",
+            "chat_manager",
+            "discord",
+            "discord_processor"
+        ]
+        
+        for service_name in shutdown_order:
+            service = getattr(self, service_name, None)
+            if service is None:
+                continue
+                
+            # Try different shutdown method names
+            for method_name in ["shutdown", "stop", "close", "cleanup"]:
+                if hasattr(service, method_name) and callable(getattr(service, method_name)):
+                    try:
+                        self.logger.info(f"Shutting down {service_name}...")
+                        getattr(service, method_name)()
+                        break
+                    except Exception as e:
+                        self.logger.error(f"Error shutting down {service_name}: {str(e)}")
 
     # --- Chat Manager & Prompt Execution ---
 
@@ -375,6 +593,215 @@ class DreamscapeService:
         self.logger.info("Prompt tuning completed. Memory updated on %s", 
                          self.reinforcement_engine.memory_data.get('last_updated'))
 
+    # --- Dreamscape Generation ---
+    
+    def generate_dreamscape_content(self, headless: bool = None, excluded_chats: list = None) -> list:
+        """
+        Generate Dreamscape content by running the original Digital Dreamscape workflow.
+        This method visits each ChatGPT chat and generates a creative narrative episode.
+        
+        Args:
+            headless: Whether to run the browser in headless mode
+            excluded_chats: List of chat titles to exclude
+            
+        Returns:
+            List of generated dreamscape entries
+        """
+        # Ensure chat manager is initialized
+        if not self.chat_manager:
+            self.logger.info("Chat manager not initialized. Creating a new instance.")
+            self.create_chat_manager(headless=headless, excluded_chats=excluded_chats)
+            
+        # Ensure the chat manager is ready
+        if not self.chat_manager:
+            raise RuntimeError("Failed to initialize ChatManager for Dreamscape generation")
+            
+        # Get the output directory from config or use default
+        output_dir = self.config.get("dreamscape_output_dir", "outputs/dreamscape") if hasattr(self.config, "get") else getattr(self.config, "dreamscape_output_dir", "outputs/dreamscape")
+        
+        # Initialize the generator if needed
+        if not hasattr(self.dreamscape_generator, 'generate_dreamscape_episodes'):
+            self.logger.warning("Dreamscape generator doesn't support the original functionality. Re-initializing.")
+            from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
+            self.dreamscape_generator = DreamscapeEpisodeGenerator(
+                chat_manager=self.chat_manager,
+                response_handler=self.prompt_handler,
+                output_dir=output_dir,
+                discord_manager=self.discord
+            )
+            
+        # Run the generation process
+        self.logger.info("Starting Dreamscape content generation process...")
+        try:
+            entries = self.dreamscape_generator.generate_dreamscape_episodes()
+            self.logger.info(f"Dreamscape generation completed successfully with {len(entries) if entries else 0} entries.")
+            return entries
+        except Exception as e:
+            self.logger.error(f"Error during Dreamscape generation: {str(e)}")
+            raise
+            
+    def get_dreamscape_context(self) -> dict:
+        """
+        Get the current Dreamscape context memory.
+        
+        Returns:
+            Dictionary with context information including themes, episode count, etc.
+        """
+        if not hasattr(self.dreamscape_generator, 'get_context_summary'):
+            self.logger.warning("Dreamscape generator doesn't support context summary. Returning empty data.")
+            return {
+                "episode_count": 0,
+                "last_updated": None,
+                "active_themes": [],
+                "recent_episodes": []
+            }
+            
+        try:
+            return self.dreamscape_generator.get_context_summary()
+        except Exception as e:
+            self.logger.error(f"Error retrieving Dreamscape context: {str(e)}")
+            return {
+                "episode_count": 0,
+                "last_updated": None,
+                "active_themes": [],
+                "recent_episodes": [],
+                "error": str(e)
+            }
+            
+    def send_context_to_chatgpt(self, chat_name: str = None) -> bool:
+        """
+        Automatically send the current Dreamscape context to ChatGPT.
+        This ensures ChatGPT has the latest narrative context for future episode generation.
+        
+        Args:
+            chat_name: Optional specific chat to send context to. If None, uses "Dreamscape" or first available.
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        # Ensure chat manager exists
+        if not self.chat_manager:
+            try:
+                self.create_chat_manager()
+            except Exception as e:
+                self.logger.error(f"Failed to create chat manager for context update: {str(e)}")
+                return False
+                
+        if not self.chat_manager:
+            self.logger.error("Cannot send context to ChatGPT: Chat manager not available")
+            return False
+            
+        try:
+            # Get the formatted context prompt
+            if not hasattr(self.dreamscape_generator, 'get_chatgpt_context_prompt'):
+                self.logger.error("Dreamscape generator doesn't support context prompt generation")
+                return False
+                
+            context_prompt = self.dreamscape_generator.get_chatgpt_context_prompt()
+            if not context_prompt:
+                self.logger.warning("Empty context prompt generated, nothing to send")
+                return False
+                
+            # Get all available chats
+            all_chats = self.chat_manager.get_all_chat_titles()
+            if not all_chats:
+                self.logger.error("No chats available to send context to")
+                return False
+                
+            # Find the target chat - either by name or first available
+            target_chat = None
+            if chat_name:
+                # Try to find the specified chat
+                for chat in all_chats:
+                    if chat.get('title', '').lower() == chat_name.lower():
+                        target_chat = chat
+                        break
+            else:
+                # Look for a "Dreamscape" chat first
+                for chat in all_chats:
+                    if "dreamscape" in chat.get('title', '').lower():
+                        target_chat = chat
+                        break
+                        
+                # If no Dreamscape chat, use the first chat that's not excluded
+                if not target_chat:
+                    excluded = self.config.get("excluded_chats", []) if hasattr(self.config, "get") else getattr(self.config, "excluded_chats", [])
+                    for chat in all_chats:
+                        title = chat.get('title', '')
+                        if title and title not in excluded:
+                            target_chat = chat
+                            break
+                            
+            if not target_chat:
+                self.logger.error("No suitable chat found to send context to")
+                return False
+                
+            # Navigate to the chat
+            chat_url = target_chat.get('link')
+            if not chat_url:
+                self.logger.error(f"No link available for chat: {target_chat.get('title')}")
+                return False
+                
+            # Add model parameter if needed
+            if "model=gpt-4o" not in chat_url:
+                chat_url += ("&" if "?" in chat_url else "?") + "model=gpt-4o"
+                
+            # Get the driver and navigate to the chat
+            driver = self.chat_manager.driver_manager.get_driver()
+            driver.get(chat_url)
+            time.sleep(5)  # Wait for page to load
+            
+            # Send the context prompt
+            self.logger.info(f"Sending context update to chat: {target_chat.get('title')}")
+            result = self.chat_manager.prompt_engine.send_prompt(context_prompt)
+            
+            # Wait for response if needed
+            if result:
+                response = self.chat_manager.prompt_engine.wait_for_stable_response()
+                self.logger.info("Context update acknowledged by ChatGPT")
+                
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Error sending context to ChatGPT: {str(e)}")
+            return False
+            
+    def schedule_context_updates(self, interval_days: int = 7, chat_name: str = None) -> bool:
+        """
+        Schedule regular context updates to be sent to ChatGPT.
+        
+        Args:
+            interval_days: How often to send updates (in days)
+            chat_name: Specific chat to target for updates
+            
+        Returns:
+            bool: True if scheduled successfully
+        """
+        # This would be implemented with a scheduler like APScheduler
+        # For now, we'll simulate by creating a timestamp file
+        
+        try:
+            schedule_file = os.path.join(self.config.get("dreamscape_output_dir", "outputs/dreamscape"), 
+                                        "context_update_schedule.json")
+            
+            schedule_data = {
+                "enabled": True,
+                "interval_days": interval_days,
+                "target_chat": chat_name,
+                "last_update": datetime.now().isoformat(),
+                "next_update": (datetime.now() + timedelta(days=interval_days)).isoformat()
+            }
+            
+            with open(schedule_file, "w", encoding="utf-8") as f:
+                json.dump(schedule_data, f, indent=2)
+                
+            self.logger.info(f"Scheduled context updates every {interval_days} days")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Failed to schedule context updates: {str(e)}")
+            return False
+    
     # --- Execution Response Analysis ---
 
     def analyze_execution_response(self, response: str, prompt_text: str) -> dict:
@@ -388,3 +815,138 @@ class DreamscapeService:
         analysis = self.chat_manager.analyze_execution_response(response, prompt_text)
         self.logger.info("Response analysis completed.")
         return analysis
+
+    @property
+    def discord(self):
+        """
+        Returns the Discord manager service if available.
+        
+        Returns:
+            DiscordManager or None: The Discord manager service or None if not initialized.
+        """
+        return self.get_service("discord_manager")
+        
+    @discord.setter
+    def discord(self, manager):
+        """
+        Sets the Discord manager service.
+        
+        Args:
+            manager: The Discord manager instance to set.
+        """
+        self.set_service("discord_manager", manager)
+
+    def bootstrap_services(self):
+        """
+        Bootstrap all services with correct initialization order and proper dependency management.
+        This ensures services are available before they're needed by other services.
+        
+        Returns:
+            bool: True if all critical services were initialized successfully
+        """
+        self.logger.info("Bootstrapping services in correct dependency order...")
+        
+        # Initialize service registry if it doesn't exist
+        if not hasattr(self, "_services"):
+            self._services = {}
+            
+        # Step 1: Initialize core independent services first
+        from core.UnifiedDiscordService import UnifiedDiscordService
+        from core.AletheiaPromptManager import AletheiaPromptManager
+        from core.ChatManager import ChatManager
+        
+        try:
+            # Create Discord manager
+            bot_token = self.config.get("discord_token", "") if hasattr(self.config, "get") else getattr(self.config, "discord_token", "")
+            channel_id = self.config.get("discord_channel_id", "") if hasattr(self.config, "get") else getattr(self.config, "discord_channel_id", "")
+            
+            # Get template directory from config or use default
+            template_dir = self.config.get("discord_template_dir", "") if hasattr(self.config, "get") else getattr(self.config, "discord_template_dir", "")
+            if not template_dir:
+                template_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "templates", "discord_templates")
+                
+            # Initialize Discord service with proper error handling
+            discord_manager = UnifiedDiscordService(
+                bot_token=bot_token, 
+                default_channel_id=channel_id,
+                template_dir=template_dir,
+                logger=self.logger
+            )
+            self.set_service("discord_manager", discord_manager)
+            self.logger.info("Discord manager initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Discord manager: {str(e)}")
+            self.set_service("discord_manager", self._create_empty_service("discord_manager"))
+            
+        try:
+            # Create prompt manager
+            memory_file = self.config.get("memory_file", "memory/dreamscape_memory.json") if hasattr(self.config, "get") else getattr(self.config, "memory_file", "memory/dreamscape_memory.json")
+            prompt_manager = AletheiaPromptManager(memory_file=memory_file)
+            self.set_service("prompt_manager", prompt_manager)
+            self.logger.info("Prompt manager initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize prompt manager: {str(e)}")
+            self.set_service("prompt_manager", self._create_empty_service("prompt_manager"))
+            
+        try:
+            # Create chat manager
+            model = self.config.get("default_model", "gpt-4") if hasattr(self.config, "get") else getattr(self.config, "default_model", "gpt-4")
+            headless = self.config.get("headless", True) if hasattr(self.config, "get") else getattr(self.config, "headless", True)
+            excluded_chats = self.config.get("excluded_chats", []) if hasattr(self.config, "get") else getattr(self.config, "excluded_chats", [])
+            
+            chat_manager = ChatManager(
+                model=model,
+                headless=headless,
+                excluded_chats=excluded_chats
+            )
+            self.set_service("chat_manager", chat_manager)
+            self.logger.info("Chat manager initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize chat manager: {str(e)}")
+            self.set_service("chat_manager", self._create_empty_service("chat_manager"))
+            
+        # Step 2: Initialize dependent services
+        try:
+            # Create reinforcement engine
+            from core.ReinforcementEngine import ReinforcementEngine
+            reinforcement_engine = ReinforcementEngine(config=self.config, logger=self.logger)
+            self.set_service("reinforcement_engine", reinforcement_engine)
+            self.logger.info("Reinforcement engine initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize reinforcement engine: {str(e)}")
+            self.set_service("reinforcement_engine", self._create_empty_service("reinforcement_engine"))
+            
+        try:
+            # Create prompt handler
+            from core.PromptResponseHandler import PromptResponseHandler
+            prompt_handler = PromptResponseHandler(config=self.config, logger=self.logger)
+            self.set_service("prompt_handler", prompt_handler)
+            self.logger.info("Prompt handler initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize prompt handler: {str(e)}")
+            self.set_service("prompt_handler", self._create_empty_service("prompt_handler"))
+            
+        # Ensure critical services are registered for property access
+        if self.get_service("discord_manager") and not hasattr(self, "_services"):
+            self._services = {}
+            self._services["discord_manager"] = self.get_service("discord_manager")
+            
+        # Step 3: Initialize other services that depend on the core services
+        # Add more service initializations here as needed
+            
+        # Return success status based on critical services
+        critical_services = ["discord_manager", "prompt_manager", "chat_manager"]
+        all_critical_available = all(
+            self.get_service(svc) is not None and 
+            not (hasattr(self.get_service(svc), "is_empty_service") and 
+                self.get_service(svc).is_empty_service())
+            for svc in critical_services
+        )
+        
+        service_status = ", ".join([
+            f"{svc}: {'✓' if self.get_service(svc) is not None and not (hasattr(self.get_service(svc), 'is_empty_service') and self.get_service(svc).is_empty_service()) else '✗'}"
+            for svc in critical_services
+        ])
+        
+        self.logger.info(f"Service bootstrap complete. Status: {service_status}")
+        return all_critical_available

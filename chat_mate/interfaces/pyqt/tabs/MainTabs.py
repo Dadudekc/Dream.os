@@ -4,6 +4,8 @@ from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from interfaces.pyqt.components.discord_tab import DiscordTab
 from interfaces.pyqt.tabs.LogsTab import LogsTab
 from interfaces.pyqt.tabs.DebuggerTab import DebuggerTab
+from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
+from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
 
 class MainTabs(QTabWidget):
     """
@@ -52,6 +54,16 @@ class MainTabs(QTabWidget):
     def _init_ui(self):
         """Explicitly initialize and register tabs with dispatcher and services."""
 
+        # Configuration Tab
+        self.tabs["Configuration"] = ConfigurationTab(
+            config_manager=self.config_manager,
+            dispatcher=self.dispatcher,
+            service=self.extra_dependencies.get('service') if isinstance(self.extra_dependencies, dict) else None,
+            command_handler=self.extra_dependencies.get('command_handler') if isinstance(self.extra_dependencies, dict) else None,
+            logger=self.logger
+        )
+        self.addTab(self.tabs["Configuration"], "Configuration")
+
         # Dreamscape Generation Tab
         self.tabs["Dreamscape"] = DreamscapeGenerationTab(
             dispatcher=self.dispatcher,
@@ -62,7 +74,7 @@ class MainTabs(QTabWidget):
             chat_manager=self.chat_manager,
             memory_manager=self.memory_manager,
             discord_manager=self.discord_manager,
-            **self.extra_dependencies
+            response_handler=self.extra_dependencies.get('response_handler') if isinstance(self.extra_dependencies, dict) else None
         )
         self.addTab(self.tabs["Dreamscape"], "Dreamscape")
 
@@ -71,8 +83,7 @@ class MainTabs(QTabWidget):
             dispatcher=self.dispatcher,
             config=self.config_manager,
             logger=self.logger,
-            prompt_manager=self.prompt_manager,
-            **self.extra_dependencies
+            prompt_manager=self.prompt_manager
         )
         self.addTab(self.tabs["Prompt Execution"], "Prompt Execution")
 
@@ -81,8 +92,7 @@ class MainTabs(QTabWidget):
             dispatcher=self.dispatcher,
             config=self.config_manager,
             logger=self.logger,
-            discord_manager=self.discord_manager,
-            **self.extra_dependencies
+            discord_manager=self.discord_manager
         )
         self.addTab(self.tabs["Discord"], "Discord")
 
@@ -90,8 +100,7 @@ class MainTabs(QTabWidget):
         self.tabs["Debugger"] = DebuggerTab(
             dispatcher=self.dispatcher,
             logger=self.logger,
-            cursor_manager=self.cursor_manager,
-            **self.extra_dependencies
+            cursor_manager=self.cursor_manager
         )
         self.addTab(self.tabs["Debugger"], "Debugger")
 
@@ -100,6 +109,17 @@ class MainTabs(QTabWidget):
             logger=self.logger
         )
         self.addTab(self.tabs["Logs"], "Logs")
+
+        # Social Dashboard Tab
+        self.tabs["Social Dashboard"] = SocialDashboardTab(
+            dispatcher=self.dispatcher,
+            config_manager=self.config_manager,
+            discord_manager=self.discord_manager if self.discord_manager else 
+                           (self.extra_dependencies.get('service').discord if 
+                            self.extra_dependencies.get('service') else None),
+            logger=self.logger
+        )
+        self.addTab(self.tabs["Social Dashboard"], "Social Dashboard")
         
     def _connect_signals(self):
         """Connect signals between tabs via the dispatcher."""
