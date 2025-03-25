@@ -2,52 +2,32 @@ import os
 import json
 import time
 import logging
-from dotenv import load_dotenv
-from collections import defaultdict
 from datetime import datetime, timedelta, UTC
-from core.PathManager import PathManager  # Assuming this is where it's defined
+from collections import defaultdict
+from core.config_base import ConfigBase
+from utils.rate_limit_manager import rate_limit_manager
 
 logger = logging.getLogger(__name__)
 
-# ------------------------------
-# Bootstrap Env + Paths
-# ------------------------------
-# This should happen globally at bootstrap, but safe here if isolated
-dotenv_path = PathManager.get_env_path(".env")  # Ensures cross-platform consistency
-load_dotenv(dotenv_path)
-
-# ------------------------------
-# SocialConfig Class
-# ------------------------------
-class SocialConfig:
+class SocialConfig(ConfigBase):
     """
     FULL SYNC social_config with integrated rate limit and daily reset handling.
     """
 
     def __init__(self):
-        self.env = os.environ
-        self.path_manager = PathManager()  # Singleton assumed
+        super().__init__()
         self.platform_urls = self._default_platform_urls()
-        self.rate_limits = self._default_rate_limits()
         self.last_action_times = defaultdict(lambda: 0)
         self.action_counters = defaultdict(lambda: 0)
         self.last_reset_time = datetime.now(UTC)
-        self.rate_limit_state_path = self.path_manager.get_rate_limit_state_path()  # Cleaner
+        self.rate_limit_state_path = self.path_manager.get_rate_limit_state_path()
 
-        self._validate_required_keys()
+        self._validate_required_keys(["STOCKTWITS_USERNAME", "STOCKTWITS_PASSWORD"])
         self._load_rate_limit_state()
 
     # ------------------------------
-    # ENV AND PLATFORM MANAGEMENT
+    # PLATFORM MANAGEMENT
     # ------------------------------
-    def get_env(self, key: str, default=None) -> str:
-        return self.env.get(key, default)
-
-    def _validate_required_keys(self):
-        missing = ["STOCKTWITS_USERNAME", "STOCKTWITS_PASSWORD"]  # Placeholder
-        if missing:
-            logger.warning(f"Missing required env vars: {missing}")
-
     def _default_platform_urls(self):
         return {
             "linkedin": {"login": "https://www.linkedin.com/login", "post": "https://www.linkedin.com/feed/"},
@@ -68,20 +48,10 @@ class SocialConfig:
     # ------------------------------
     # RATE LIMIT MANAGEMENT
     # ------------------------------
-    def _default_rate_limits(self):
-        return {
-            "twitter": {"post": {"cooldown": 60, "daily_max": 300}, "follow": {"cooldown": 10, "daily_max": 1000}},
-            "linkedin": {"post": {"cooldown": 600, "daily_max": 20}, "message": {"cooldown": 30, "daily_max": 100}},
-            "facebook": {"post": {"cooldown": 300, "daily_max": 50}},
-            "instagram": {"post": {"cooldown": 3600, "daily_max": 10}, "follow": {"cooldown": 10, "daily_max": 200}},
-            "reddit": {"post": {"cooldown": 600, "daily_max": 25}},
-            "stocktwits": {"post": {"cooldown": 60, "daily_max": 200}}
-        }
-
     def within_rate_limit(self, platform: str, action: str) -> bool:
         self._check_daily_reset()
 
-        limits = self.rate_limits.get(platform, {}).get(action)
+        limits = rate_limit_manager.get_rate_limits().get(platform, {}).get(action)
         if not limits:
             logger.warning(f"No rate limits defined for {platform}:{action}")
             return True
@@ -138,22 +108,7 @@ class SocialConfig:
             logger.error(f" Failed to save rate limit state: {e}")
 
     def _load_rate_limit_state(self):
-        logger.info(f"No saved rate limit state found at self.rate_limit_state_path. Starting fresh.")
-
-    # ------------------------------
-    # DYNAMIC LIMIT MANAGEMENT
-    # ------------------------------
-    def register_rate_limit(self, platform: str, action: str, cooldown: int, daily_max: int):
-        if platform not in self.rate_limits:
-            self.rate_limits[platform] = {}
-
-        self.rate_limits[platform][action] = {
-            "cooldown": cooldown,
-            "daily_max": daily_max
-        }
-
-        logger.info(f" Registered new rate limit: {platform}:{action} - Cooldown: {cooldown}s, Daily Max: {daily_max}")
-
+        logger.info(f"No saved rate limit state found at {self.rate_limit_state_path}. Starting fresh.")
 
 # ✅ Singleton instance
 social_config = SocialConfig()

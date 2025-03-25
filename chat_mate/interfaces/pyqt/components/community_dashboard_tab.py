@@ -16,7 +16,7 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QSize
 from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis, QPieSeries
 
 # Import the community dashboard
-from core.social.UnifiedCommunityDashboard import UnifiedCommunityDashboard, CommunityMetrics
+from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard, CommunityMetrics
 from core.social.CommunityIntegrationManager import CommunityIntegrationManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
 
@@ -923,24 +923,28 @@ class CommunityDashboardTab(QWidget):
 
 # For testing the widget standalone
 if __name__ == "__main__":
-    import sys
-    from PyQt5.QtWidgets import QApplication
-    
-    app = QApplication(sys.argv)
-    
-    # Create a sample dashboard for testing
-    from core.social.UnifiedCommunityDashboard import UnifiedCommunityDashboard
-    
     dashboard = UnifiedCommunityDashboard()
-    
-    # Create test config for manager
-    from core.social.community_integration import CommunityIntegrationManager
-    manager = CommunityIntegrationManager(config)
-    manager.dashboard = dashboard
-    
-    # Create widget
-    widget = CommunityDashboardTab(community_manager=manager)
-    widget.setMinimumSize(900, 600)
-    widget.show()
-    
-    sys.exit(app.exec_()) 
+
+    print("Updating metrics...")
+    latest_metrics = dashboard.update_metrics()
+    print(f"Latest Metrics:\n{latest_metrics}")
+
+    print("\nUpdating top members...")
+    top_members = dashboard.update_top_members()
+    print(f"Top Members:\n{top_members[:3]}...")  # Display top 3 as sample
+
+    print("\nGenerating insights...")
+    insights = dashboard.generate_insights()
+    print(f"Insights:\n{insights}")
+
+    print("\nGenerating engagement chart...")
+    chart_path = dashboard.generate_metrics_chart(metric="engagement_rate", days=30)
+    print(f"Chart saved to: {chart_path}")
+
+    print("\nGetting platform status...")
+    status = dashboard.get_platform_status()
+    print(f"Platform Status:\n{status}")
+
+    print("\nCreating community building plan...")
+    plan = dashboard.get_community_building_plan()
+    print(f"30-Day Community Plan:\n{plan['days'][:3]}...")  # Show 3 days sample

@@ -1,275 +1,113 @@
-# ChatMate - AI-Powered Community Management
+# Digital Dreamscape System
 
-ChatMate is a comprehensive AI-powered social media management platform that helps you build, monitor, and grow thriving communities across multiple platforms.
-
-## 🌟 Key Features
-
-### Unified Community Dashboard
-- **Cross-platform analytics** - Track metrics from Twitter, Facebook, Reddit, LinkedIn, Instagram, and StockTwits in one place
-- **Community health monitoring** - Analyze engagement, sentiment, and growth trends
-- **Top member identification** - Identify and nurture influential community advocates
-
-### Advanced Community Building Tools
-- **Data-driven insights** - Get actionable recommendations tailored to your community
-- **Strategic planning** - Create and manage comprehensive community building plans
-- **Visualization tools** - Visual representation of community metrics for better decision making
-
-### Content & Engagement Management
-- **Prompt library** - Access a growing collection of effective prompts for community engagement
-- **Multi-platform posting** - Create and schedule content across all your platforms
-- **Sentiment analysis** - Monitor community sentiment and adapt your strategy accordingly
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Python 3.9+
-- PyQt5
-- NLTK (optional, for enhanced sentiment analysis)
-
-### Installation
-
-1. Clone the repository
-```bash
-git clone https://github.com/yourusername/chat_mate.git
-cd chat_mate
-```
-
-2. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-3. Set up environment variables for social media APIs
-```bash
-# Twitter
-export TWITTER_API_KEY="your_api_key"
-export TWITTER_API_SECRET="your_api_secret"
-export TWITTER_ACCESS_TOKEN="your_access_token"
-export TWITTER_ACCESS_SECRET="your_access_secret"
-
-# Facebook
-export FACEBOOK_PAGE_ID="your_page_id"
-export FACEBOOK_ACCESS_TOKEN="your_access_token"
-
-# Reddit
-export REDDIT_CLIENT_ID="your_client_id"
-export REDDIT_CLIENT_SECRET="your_client_secret"
-export REDDIT_USERNAME="your_username"
-export REDDIT_PASSWORD="your_password"
-
-# Add other platform credentials as needed
-```
-
-4. Run the application
-```bash
-python main.py
-```
-
-## 📊 Using the Community Dashboard
-
-The Community Dashboard provides real-time insights into your social media communities:
-
-1. **Overview Tab** - View community health score, strengths, weaknesses, and opportunities
-2. **Insights Tab** - Get actionable recommendations and content insights
-3. **Planning Tab** - Access your community building plan with daily activities
-
-### Filtering Data
-Use the platform selector at the top of the dashboard to filter data for specific platforms.
-
-### Generating Fresh Insights
-Click the "Generate Insights" button to create new recommendations based on the latest data.
-
-## 🧩 Creating Custom Prompts
-
-ChatMate includes a prompt manager for creating and using effective community engagement prompts:
-
-1. Navigate to the "Prompt Manager" tab
-2. Select the "Custom" category and click "Add New"
-3. Enter details for your custom prompt
-4. Click "Save Changes" to save your prompt
-5. Click "Use This Prompt" to send it to the execution tab
-
-## 📱 Social Media Integration
-
-ChatMate currently supports these platforms:
-- Twitter
-- Facebook
-- Reddit
-- LinkedIn
-- Instagram
-- StockTwits
-
-To add your social accounts:
-1. Set up the required environment variables
-2. Restart the application
-3. The platform will be automatically added to your dashboard
-
-## 🔧 Advanced Configuration
-
-### Custom Sentiment Analysis
-- Create a JSON lexicon file in `utils/lexicons/custom_lexicon.json`
-- Format: `{"word": score}` where score ranges from -1.0 to 1.0
-
-### Data Storage
-- Metrics are stored in `social/data/unified_community_metrics.json`
-- Community members data is in `social/data/unified_community_members.json`
-- Insights are saved in `social/data/community_insights.json`
-
-## 📈 Future Enhancements
-- AI-driven content generation
-- Competitive community analysis
-- Advanced member segmentation
-- Automated engagement workflows
-
-## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Environment Variables
-
-This project requires certain environment variables to be set in a `.env` file in the root directory:
-
-```
-DISCORD_BOT_TOKEN=your_discord_bot_token
-DISCORD_CLIENT_ID=your_client_id
-DISCORD_PUBLIC_KEY=your_public_key
-DISCORD_GUILD_ID=your_guild_id
-```
-
-**Important:** Never commit the `.env` file to the repository. It is already included in `.gitignore`.
-
-## Setup
-
-1. Clone the repository
-2. Install dependencies
-3. Create a `.env` file with the required variables
-4. Run the application 
-
-# Chat Mate - Specialized Agents
-
-This module provides specialized agents for code refactoring, test generation, and documentation generation in the Chat Mate system.
+Automated content generation and analysis system for personal knowledge management, devlogs, and strategy development.
 
 ## Overview
 
-The specialized agents module includes three main agents:
+The Digital Dreamscape System is a suite of tools for automating content workflows, including:
 
-1. `RefactorAgent`: Handles code refactoring tasks
-2. `TestAgent`: Manages test generation and execution
-3. `DocAgent`: Generates documentation for code
+- ChatGPT conversation processing with custom prompts
+- Automatic generation of devlogs from chat histories
+- Content idea extraction and strategy analysis
+- Persistent memory system for knowledge management
+- Flexible configuration system
+
+## Project Structure
+
+```
+project_root/
+├── core/                   # Core business logic
+│   ├── agents/             # Service and API agent implementations
+│   │   └── chat_agent.py   # ChatGPT automation agent
+│   ├── memory/             # Memory and storage
+│   │   └── memory_manager.py  # Episodic memory storage
+│   └── utils/              # Utility functions
+│       ├── config_manager.py  # Configuration management
+│       └── setup_environment.py  # Environment setup
+├── config/                 # Configuration files
+├── data/                   # Data storage
+│   └── memory/             # Memory storage
+├── logs/                   # Log files
+├── outputs/                # Generated outputs
+└── main.py                 # Main entry point
+```
 
 ## Installation
 
-```bash
-pip install -r requirements.txt
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/digital-dreamscape.git
+   cd digital-dreamscape
+   ```
+
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-### RefactorAgent
+The system can be run in several modes:
 
-The RefactorAgent handles code refactoring tasks:
+### Process ChatGPT Chats
 
-```python
-from core.Agents.specialized_agents import RefactorAgent
-
-# Create a refactor agent
-agent = RefactorAgent()
-
-# Define a refactoring task
-task = {
-    "file_path": "path/to/file.py",
-    "refactor_type": "extract_method",
-    "parameters": {
-        "method_name": "new_method"
-    }
-}
-
-# Execute the task
-result = agent.handle_task(task)
-```
-
-### TestAgent
-
-The TestAgent manages test generation and execution:
-
-```python
-from core.Agents.specialized_agents import TestAgent
-
-# Create a test agent
-agent = TestAgent()
-
-# Define a test generation task
-task = {
-    "file_path": "path/to/file.py",
-    "test_type": "unit",
-    "framework": "pytest",
-    "coverage_target": 95
-}
-
-# Execute the task
-result = agent.handle_task(task)
-```
-
-### DocAgent
-
-The DocAgent generates documentation:
-
-```python
-from core.Agents.specialized_agents import DocAgent
-
-# Create a documentation agent
-agent = DocAgent()
-
-# Define a documentation task
-task = {
-    "file_path": "path/to/file.py",
-    "doc_type": "api",
-    "format": "markdown",
-    "include_examples": True
-}
-
-# Execute the task
-result = agent.handle_task(task)
-```
-
-## Task Parameters
-
-### RefactorAgent Tasks
-
-- `file_path` (required): Path to the file to refactor
-- `refactor_type` (required): Type of refactoring to perform
-- `parameters` (optional): Additional parameters for the refactoring
-
-### TestAgent Tasks
-
-- `file_path` (required): Path to the file to test
-- `test_type` (required): Type of test to generate
-- `framework` (optional): Testing framework to use (default: "pytest")
-- `coverage_target` (optional): Minimum coverage percentage (default: 90)
-
-### DocAgent Tasks
-
-- `file_path` (required): Path to the file to document
-- `doc_type` (required): Type of documentation to generate
-- `format` (optional): Output format (default: "markdown")
-- `include_examples` (optional): Whether to include usage examples (default: True)
-
-## Running Tests
+Process your ChatGPT conversations with various prompt templates:
 
 ```bash
-pytest tests/test_specialized_agents.py -v
+python main.py --process-chats
 ```
 
-## Contributing
+Options:
+- `--max-chats N`: Process at most N chats
+- `--prompt-types devlog content_ideas market_analysis`: Process only specific prompt types
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+### View Memory
+
+View information from the persistent memory system:
+
+```bash
+python main.py --memory
+```
+
+Options:
+- `--recent`: Show recent episodes
+- `--recent-count N`: Show N recent episodes
+- `--show-content`: Show content previews
+- `--stats-only`: Show only statistics
+
+### Interactive Chat Interface
+
+Start an interactive chat interface (experimental):
+
+```bash
+python main.py --chat
+```
+
+## Development
+
+Development mode limits the number of chats processed for testing:
+
+```bash
+python main.py --process-chats --dev
+```
+
+Configuration:
+- Base configuration is in `config/base.yaml`
+- Environment-specific overrides in `config/dev.yaml`, `config/prod.yaml`, etc.
+
+## Requirements
+
+- Python 3.8+
+- Selenium with Chrome WebDriver
+- Discord.py (optional, for Discord integration)
+- PyYAML
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+MIT 

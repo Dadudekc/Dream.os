@@ -28,7 +28,7 @@ class CycleExecutionService:
         self.memory_manager = memory_manager
         self.discord_manager = discord_manager
 
-        self.discord_queue_processor = DiscordQueueProcessor()
+        self.discord_queue_processor = DiscordQueueProcessor(config_manager, logger)
 
     def run_cycle(self, payload: Dict[str, Any], cycle_type: str = "single") -> Dict[str, Any]:
         """

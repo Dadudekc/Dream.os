@@ -1,142 +1,171 @@
+#!/usr/bin/env python3
 import sys
 import os
 import logging
+import asyncio
 
-# Add the root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QApplication
+from PyQt5.QtCore import pyqtSlot
+from qasync import QEventLoop
 
-from PyQt5.QtWidgets import (
-    QMainWindow, QTabWidget, QAction, QMessageBox, QApplication, QWidget, QVBoxLayout,
-    QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QComboBox, QSpinBox,
-    QCheckBox, QGroupBox, QFormLayout
-)
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot, QTimer
-from PyQt5.QtGui import QFont, QIcon
-
+# Import our tab container and UI logic
 from interfaces.pyqt.tabs.MainTabs import MainTabs
-from interfaces.pyqt.components.dialogs.exclusions_dialog import ExclusionsDialog
-from interfaces.pyqt.components.dialogs.discord_settings import DiscordSettingsDialog
-from interfaces.pyqt.components.dialogs.reinforcement_dialog import ReinforcementToolsDialog
 from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
+
+# Import our centralized signal dispatcher
+from utils.signal_dispatcher import SignalDispatcher
+
+# Import configuration and service loader
+from core.ConfigManager import ConfigManager
+from interfaces.pyqt.dreamscape_services import DreamscapeService
 
 
 class DreamscapeMainWindow(QMainWindow):
     """
     Main window for the Dreamscape application.
-    Provides a modern, user-friendly interface for interacting with the application.
-    Integrates all components including prompt management, social media
-    interfaces, and community management dashboard.
+    Provides a modern, decoupled interface with signal dispatching and async task support.
     """
 
-    # Define signals for UI updates
-    append_output_signal = pyqtSignal(str)
-    append_discord_log_signal = pyqtSignal(str)
-    status_update_signal = pyqtSignal(str)
-
-    def __init__(self, ui_logic: DreamscapeUILogic, services=None, community_manager=None):
-        """
-        Initialize the main window.
-        
-        :param ui_logic: The UI logic instance that handles backend interactions
-        :param services: Dictionary of available services
-        :param community_manager: Optional community integration manager
-        """
+    def __init__(self, ui_logic: DreamscapeUILogic, dispatcher: SignalDispatcher, services=None):
         super().__init__()
         self.ui_logic = ui_logic
+        self.dispatcher = dispatcher
         self.services = services or {}
-        self.community_manager = community_manager
-        self.logger = logging.getLogger(__name__)
-        
-        # Initialize UI
+        self.logger = logging.getLogger("DreamscapeMainWindow")
+
         self.setup_ui()
-        self.setup_connections()
-        
+        self.setup_signals()
+
         self.logger.info("DreamscapeMainWindow initialized")
 
     def setup_ui(self):
-        """Set up the user interface components."""
         self.setWindowTitle("Dreamscape - AI-Powered Community Management")
         self.setMinimumSize(1200, 800)
 
-        # Create central widget and main layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        main_layout = QVBoxLayout(central_widget)
+        layout = QVBoxLayout(central_widget)
 
-        # Create main tab container
+        # Instantiate MainTabs with injected services and dispatcher
         self.tabs = MainTabs(
+            dispatcher=self.dispatcher,
             ui_logic=self.ui_logic,
-            prompt_manager=self.services.get('prompt_manager'),
             config_manager=self.services.get('config_manager'),
-            logger=self.logger,
-            discord_manager=self.services.get('discord_service'),
+            logger=self.services.get('logger'),
+            prompt_manager=self.services.get('prompt_manager'),
+            chat_manager=self.services.get('chat_manager'),
             memory_manager=self.services.get('memory_manager'),
-            chat_manager=self.services.get('chat_manager')
+            discord_manager=self.services.get('discord_manager'),
+            cursor_manager=self.services.get('cursor_manager'),
+            **self.services.get('extra_dependencies', {})
         )
-        
-        main_layout.addWidget(self.tabs)
-        
-        # Create status bar
+        layout.addWidget(self.tabs)
         self.statusBar().showMessage("Ready")
 
-    def setup_connections(self):
-        """Set up signal connections for UI elements."""
-        # Connect UI logic callbacks
-        self.ui_logic.set_output_signal(self.append_output)
-        self.ui_logic.set_status_update_signal(self.update_status)
-        self.ui_logic.set_discord_log_signal(self.append_discord_log)
+    def setup_signals(self):
+        # Connect dispatcher signals to local slots for centralized handling
+        self.dispatcher.append_output.connect(self.on_append_output)
+        self.dispatcher.status_update.connect(self.on_status_update)
+        self.dispatcher.discord_log.connect(self.on_discord_log)
 
-    def append_output(self, message):
-        """Append a message to the output display."""
+        # Connect task-related signals for async operation feedback
+        self.dispatcher.task_started.connect(self.on_task_started)
+        self.dispatcher.task_progress.connect(self.on_task_progress)
+        self.dispatcher.task_completed.connect(self.on_task_completed)
+        self.dispatcher.task_failed.connect(self.on_task_failed)
+
+        # Let UI logic emit signals via the dispatcher
+        self.ui_logic.set_output_signal(self.dispatcher.emit_append_output)
+        self.ui_logic.set_status_update_signal(self.dispatcher.emit_status_update)
+        self.ui_logic.set_discord_log_signal(self.dispatcher.emit_discord_log)
+
+    @pyqtSlot(str)
+    def on_append_output(self, message):
         self.tabs.append_output(message)
 
-    def update_status(self, message=None):
-        """Update the status display."""
-        if message:
-            self.statusBar().showMessage(message)
-            self.tabs.append_output(f"[Status] {message}")
+    @pyqtSlot(str)
+    def on_status_update(self, message):
+        self.statusBar().showMessage(message)
+        self.tabs.append_output(f"[Status] {message}")
 
-    def append_discord_log(self, message):
-        """Append a Discord log message to the output display."""
-        self.append_output(f"[Discord] {message}")
-        
+    @pyqtSlot(str)
+    def on_discord_log(self, message):
+        self.tabs.append_output(f"[Discord] {message}")
+
+    @pyqtSlot(str)
+    def on_task_started(self, task_id):
+        self.statusBar().showMessage(f"Task {task_id} started")
+        self.tabs.append_output(f"[Task] {task_id} started")
+
+    @pyqtSlot(str, int, str)
+    def on_task_progress(self, task_id, progress, message):
+        self.statusBar().showMessage(f"Task {task_id}: {progress}% - {message}")
+        self.tabs.append_output(f"[Task] {task_id}: {progress}% - {message}")
+
+    @pyqtSlot(str, dict)
+    def on_task_completed(self, task_id, result):
+        self.statusBar().showMessage(f"Task {task_id} completed")
+        self.tabs.append_output(f"[Task] {task_id} completed successfully")
+
+    @pyqtSlot(str, str)
+    def on_task_failed(self, task_id, error):
+        error_msg = f"Task {task_id} failed: {error}"
+        self.statusBar().showMessage(error_msg)
+        self.tabs.append_output(f"[Error] {error_msg}")
+
     def closeEvent(self, event):
-        """Handle window close event."""
-        # Perform cleanup tasks
-        for tab_name, tab in self.tabs.tabs.items():
-            if hasattr(tab, 'refresh_timer') and tab.refresh_timer:
-                tab.refresh_timer.stop()
-        
-        # Clean up services
-        if self.services:
-            if 'chat_manager' in self.services:
-                self.services['chat_manager'].shutdown_driver()
-            if 'discord_service' in self.services:
-                self.services['discord_service'].stop()
-                
-        # Call UI logic shutdown
+        # Stop any refresh timers in tabs
+        for tab in getattr(self.tabs, 'tabs', {}).values():
+            timer = getattr(tab, 'refresh_timer', None)
+            if timer:
+                timer.stop()
+
+        # Shutdown services gracefully
+        chat_manager = self.services.get('chat_manager')
+        discord_service = self.services.get('discord_service')
+        if chat_manager:
+            chat_manager.shutdown_driver()
+        if discord_service:
+            discord_service.stop()
         if self.ui_logic:
             self.ui_logic.shutdown()
-        
+
         event.accept()
 
 
 # -------------------------------------------------------------------------
-# Entry point for testing standalone run
+# Unified Entry Point using QAsyncEventLoopManager for async/await support
 # -------------------------------------------------------------------------
-if __name__ == "__main__":
-    from dreamscape_services import DreamscapeService
+def main():
+    # Set up logging early
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     app = QApplication(sys.argv)
 
-    def ui_output(msg):
-        print(f"[UI OUTPUT]: {msg}")
+    # Initialize the qasync event loop manager
+    from utils.qasync_event_loop_manager import QAsyncEventLoopManager
+    event_loop_manager = QAsyncEventLoopManager(app, logger=logging.getLogger("QAsyncEventLoop"))
 
-    service = DreamscapeService()
-    ui_logic = DreamscapeUILogic(output_callback=ui_output)
-    ui_logic.service = service
+    # Initialize dispatcher, configuration, and services
+    dispatcher = SignalDispatcher()
+    config = ConfigManager(config_name="dreamscape_config.yaml")
+    service = DreamscapeService(config=config)
 
-    window = DreamscapeMainWindow(ui_logic)
+    # Pass explicit services to DreamscapeUILogic for maximum modularity
+    ui_logic = DreamscapeUILogic()
+
+    # Remove config_manager from the services dict because it's passed separately.
+    services = {
+        'prompt_manager': service.prompt_manager,
+        'chat_manager': service.chat_manager,
+    }
+
+    window = DreamscapeMainWindow(ui_logic, dispatcher, services=services)
     window.show()
 
-    sys.exit(app.exec_())
+    # (Optional) Schedule additional background tasks (e.g., Cursor tasks)
+    event_loop_manager.start()
+
+
+if __name__ == "__main__":
+    main()

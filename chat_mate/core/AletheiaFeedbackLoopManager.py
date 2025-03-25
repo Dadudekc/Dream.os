@@ -3,7 +3,7 @@ import os
 import logging
 from datetime import datetime
 from core.AIOutputLogAnalyzer import AIOutputLogAnalyzer # Your class
-from social.social_config import social_config   # Singleton config w/ rate limits
+from utils.rate_limit_manager import rate_limit_manager
 from social.log_writer import write_json_log     # Logger
 
 logger = logging.getLogger(__name__)
@@ -82,19 +82,9 @@ class AletheiaFeedbackLoopManager:
 
     def _auto_adjust_rate_limits(self, top_failed_tags):
         """
-        Example: If too many failures on 'linkedin_post', back off.
+        Adjust rate limits based on failure patterns.
         """
-        for tag, count in top_failed_tags:
-            if "linkedin" in tag:
-                platform = "linkedin"
-                action = "post"
-
-                # Increase cooldown dynamically (example)
-                current_cooldown = social_config.rate_limits[platform][action]["cooldown"]
-                new_cooldown = min(current_cooldown * 1.5, 3600)
-
-                social_config.rate_limits[platform][action]["cooldown"] = new_cooldown
-                logger.warning(f" Increased cooldown for {platform}:{action}  {new_cooldown} sec")
+        rate_limit_manager.adjust_from_failures(top_failed_tags)
 
     # Optional Export for Dashboard or Discord
     def export_feedback_report(self, output_file="feedback_report.json"):

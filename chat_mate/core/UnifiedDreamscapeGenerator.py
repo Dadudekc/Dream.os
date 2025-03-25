@@ -12,6 +12,7 @@ import logging
 
 from social.strategies.config_loader import get_env_or_config
 from core.AletheiaPromptManager import AletheiaPromptManager
+from utils.json_paths import JsonPaths
 
 logger = logging.getLogger("UnifiedDreamscapeGenerator")
 logger.setLevel(logging.INFO)
@@ -64,13 +65,13 @@ class DreamscapeEpisodeGenerator:
         self.episode_lock = threading.Lock()
         self.memory_lock = threading.Lock()
 
-        self.episode_file = os.path.join(output_dir, "dreamscape_episodes.json")
-        self.memory_update_file = os.path.join(output_dir, "memory_updates.json")
-        self.index_file = os.path.join(output_dir, "episode_index.json")
+        self.episode_file = JsonPaths.get_path("dreamscape_episodes")
+        self.memory_update_file = JsonPaths.get_path("memory_updates")
+        self.episode_index = JsonPaths.get_path("episode_index")
 
         self.episodes = self._load_file(self.episode_file)
         self.memory_updates = self._load_file(self.memory_update_file)
-        self.episode_index = self._load_file(self.index_file)
+        self.episode_index = self._load_file(self.episode_index)
 
     def _load_file(self, path):
         if os.path.exists(path):
@@ -183,7 +184,7 @@ class DreamscapeEpisodeGenerator:
                 "timestamp": episode["timestamp"]
             })
             self._save_file(self.episode_file, self.episodes)
-            self._save_file(self.index_file, self.episode_index)
+            self._save_file(self.episode_index, self.episode_index)
             logger.info(f"️ Episode data saved: {filepath}")
 
     def _save_memory_update(self, episode_number, update, title, timestamp):

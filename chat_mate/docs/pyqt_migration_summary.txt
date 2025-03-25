@@ -1,0 +1,9 @@
+# PyQT5 Migration Summary
+
+The PyQT5 interfaces have been moved from 'gui/' to 'interfaces/pyqt/'
+
+## Files copied:
+- Main PyQT5 files: gui/*.py -> interfaces/pyqt/
+- Tab files: gui/tabs/*.py -> interfaces/pyqt/tabs/
+- Component files: gui/components/*.py -> interfaces/pyqt/components/
+- Dialog files: gui/components/dialogs/*.py -> interfaces/pyqt/components/dialogs/

@@ -17,7 +17,7 @@ import undetected_chromedriver as uc
 from webdriver_manager.chrome import ChromeDriverManager
 
 from jinja2 import Template  # Jinja2 integrated for templated output
-from utils.ai_output_logger import log_ai_output  # Hook into our logger
+from core.logging.services.ai_output_service import log_ai_output  # Use the core logging service
 
 # ---------------------------
 # Logging Setup
@@ -218,10 +218,12 @@ class ResponseHandler:
             elif stable_start and (time.time() - stable_start) >= self.stable_period:
                 logger.info("Response stabilized.")
                 stable_response = self.clean_response(last_response)
+                log_file_path = os.path.join(os.getcwd(), "outputs", "reinforcement_logs")
                 log_ai_output(
                     context="ResponseHandler",
                     input_prompt="Sent prompt",
                     ai_output=stable_response,
+                    base_log_dir=log_file_path,
                     tags=["stable_response"],
                     result="success"
                 )
@@ -229,10 +231,12 @@ class ResponseHandler:
 
         logger.warning("Response stabilization timeout reached; returning partial response.")
         stable_response = self.clean_response(last_response)
+        log_file_path = os.path.join(os.getcwd(), "outputs", "reinforcement_logs")
         log_ai_output(
             context="ResponseHandler",
             input_prompt="Sent prompt",
             ai_output=stable_response,
+            base_log_dir=log_file_path,
             tags=["stable_response", "timeout"],
             result="partial"
         )
@@ -364,7 +368,7 @@ if __name__ == "__main__":
 
     # Example single prompt usage
     single_prompt = (
-        "You are my devlog assistant. Summarize the recent development work with a focus on challenges overcome and what’s next."
+        "You are my devlog assistant. Summarize the recent development work with a focus on challenges overcome and what's next."
     )
     single_response = handler.execute_prompt_cycle(single_prompt, rate_limit=2)
     if single_response:

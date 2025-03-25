@@ -28,7 +28,7 @@ def install_package():
         subprocess.check_call(pip_cmd)
         print("\n✅ Installation successful!")
         print("\nYou can now import from chat_mate using absolute imports:")
-        print("    from core.social.UnifiedCommunityDashboard import UnifiedCommunityDashboard")
+        print("    from core.social.CommunityDashboard import CommunityDashboard")
         print("    from interfaces.pyqt.DreamscapeMainWindow import DreamscapeMainWindow")
     except subprocess.CalledProcessError as e:
         print(f"\n❌ Installation failed with error: {e}")

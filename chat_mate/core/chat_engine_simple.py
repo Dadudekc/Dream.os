@@ -1,6 +1,13 @@
 import os
+import json
 import logging
-from typing import Optional, Dict, Any
+import time
+import threading
+from datetime import datetime
+from typing import Dict, Any, Optional, List
+from collections import defaultdict
+
+from utils.path_manager import PathManager
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +35,6 @@ class SimpleDriverManager:
             from selenium.webdriver.chrome.service import Service
             import os
             from webdriver_manager.chrome import ChromeDriverManager
-            from core.PathManager import PathManager
 
             options = Options()
             if self.headless:

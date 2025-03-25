@@ -4,7 +4,7 @@ import logging
 from typing import Dict, Optional
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
-from core.PathManager import PathManager
+from utils.path_manager import PathManager
 from social.log_writer import write_json_log
 
 logger = logging.getLogger("TemplateManager")

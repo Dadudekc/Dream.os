@@ -3,9 +3,6 @@ import os
 import logging
 from typing import Optional, Dict
 
-# Add the root directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
 from PyQt5.QtWidgets import QApplication
 
 from core.ChatManager import ChatManager
@@ -26,9 +23,9 @@ from services.discord_service import DiscordService
 from core.social.community_integration import CommunityIntegrationManager
 
 # Import the main window from DreamscapeMainWindow.py
-from DreamscapeMainWindow import DreamscapeMainWindow
-from dreamscape_ui_logic import DreamscapeUILogic
-from dreamscape_services import DreamscapeService
+from interfaces.pyqt.DreamscapeMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
+from interfaces.pyqt.dreamscape_services import DreamscapeService
 
 # Set up logging
 logger = logging.getLogger(__name__)

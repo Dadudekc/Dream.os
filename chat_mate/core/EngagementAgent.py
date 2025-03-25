@@ -112,7 +112,7 @@ class EngagementAgent:
     def _process_mention(self, platform: str, mention: Dict[str, Any]):
         sentiment_data = self.sentiment_analyzer.analyze(mention["text"])
         sentiment = sentiment_data["sentiment"]
-        confidence = sentiment_result["confidence"]
+        confidence = sentiment_data["confidence"]
 
         user_history = self.memory_manager.get_user_history(platform, mention['user'])
 

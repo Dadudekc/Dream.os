@@ -1,10 +1,17 @@
 import os
 import json
 import logging
+import time
+import threading
+from typing import Dict, List, Any, Optional
+from collections import defaultdict
 from datetime import datetime, timedelta
 import random
-from typing import Dict, List, Optional, Any, Union
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
+from utils.path_manager import PathManager
+from social.log_writer import logger, write_json_log
 from social.strategies.twitter_strategy import TwitterStrategy
 from social.strategies.facebook_strategy import FacebookStrategy
 from social.strategies.reddit_strategy import RedditStrategy
@@ -13,8 +20,7 @@ from social.strategies.linkedin_strategy import LinkedinStrategy
 from social.strategies.instagram_strategy import InstagramStrategy
 from social.strategies.tiktok_strategy import TikTokStrategy
 from social.strategies.youtube_strategy import YouTubeStrategy
-from core.PathManager import PathManager
-from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard
+from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
 from social.social_post_manager import SocialPostManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
 from core.ConfigManager import ConfigManager
@@ -79,7 +85,7 @@ class CommunityIntegrationManager:
         self.config = config or self.config_manager.get_config("community_integration")
         
         # Initialize dashboard
-        self.dashboard = UnifiedCommunityDashboard()
+        self.dashboard = CommunityDashboard()
         
         # Initialize post manager
         self.post_manager = UnifiedPostManager()

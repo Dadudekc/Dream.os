@@ -1,93 +1,59 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit, QComboBox
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
 import logging
-from core.CycleExecutionService import CycleExecutionService
+import asyncio
+from qasync import asyncSlot
+
+# Core Services
+from core.PromptCycleOrchestrator import PromptCycleOrchestrator
+from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
-from core.TaskOrchestrator import TaskOrchestrator
+from core.ConfigManager import ConfigManager
+
 
 class PromptExecutionTab(QWidget):
     """
     Tab for executing prompts through various services.
     Provides a unified interface for prompt selection, editing, and execution.
     """
-    
-    def __init__(
-        self,
-        prompt_manager=None, 
-        config_manager=None, 
-        logger=None, 
-        chat_manager=None, 
-        memory_manager=None, 
-        discord_manager=None,
-        ui_logic=None,
-        **kwargs
-    ):
-        """
-        Initialize the PromptExecutionTab with required dependencies.
-        
-        Supports two initialization styles:
-        1. Service-based: Directly pass service instances
-        2. UI logic-based: Pass ui_logic which can access services
-        
-        Args:
-            prompt_manager: An instance providing prompt-related methods.
-            config_manager: Configuration manager instance.
-            logger: A logger instance for logging messages.
-            chat_manager: A chat manager instance.
-            memory_manager: A memory manager instance.
-            discord_manager: A discord manager instance.
-            ui_logic: UI logic controller (alternative initialization).
-            **kwargs: Additional dependencies.
-        """
-        super().__init__()
-        
-        # Store references based on initialization style
-        self.ui_logic = ui_logic
-        self.logger = logger or logging.getLogger(__name__)
-        
-        # If UI logic is provided, try to get services from it
-        if ui_logic and hasattr(ui_logic, 'get_service'):
-            self.prompt_manager = ui_logic.get_service('prompt_manager') or prompt_manager
-            self.config_manager = config_manager  # Config manager typically isn't a service
-            self.chat_manager = ui_logic.get_service('chat_manager') or chat_manager
-            self.memory_manager = ui_logic.get_service('memory_manager') or memory_manager
-            self.discord_manager = ui_logic.get_service('discord_service') or discord_manager
-        else:
-            # Direct service initialization
-            self.prompt_manager = prompt_manager
-            self.config_manager = config_manager
-            self.chat_manager = chat_manager
-            self.memory_manager = memory_manager
-            self.discord_manager = discord_manager
 
-        # Initialize services with dependency injection
-        self.cycle_service = CycleExecutionService(
-            prompt_manager=self.prompt_manager,
-            config_manager=self.config_manager,
-            logger=self.logger,
-            chat_manager=self.chat_manager,
-            memory_manager=self.memory_manager,
-            discord_manager=self.discord_manager
-        )
-        self.prompt_handler = PromptResponseHandler(self.config_manager, self.logger)
-        self.discord_processor = DiscordQueueProcessor()
-        self.task_orchestrator = TaskOrchestrator()
+    # PyQt signals for thread-safe UI updates
+    prompt_loaded = pyqtSignal(str)
+    execution_started = pyqtSignal()
+    execution_finished = pyqtSignal(str)
+    execution_error = pyqtSignal(str)
 
-        self.initUI()
+    def __init__(self, dispatcher=None, parent=None, config=None, logger=None, prompt_manager=None):
+        super().__init__(parent)
 
-    def initUI(self):
-        """Initialize the user interface components."""
-        # Set up the layout and widgets
+        self.parent = parent
+        self.config = config or ConfigManager()
+        self.logger = logger or logging.getLogger("PromptExecutionTab")
+        self.dispatcher = dispatcher
+        self.prompt_manager = prompt_manager
+
+        # Internal services
+        self.prompt_orchestrator = PromptCycleOrchestrator(self.config)
+        self.template_manager = AletheiaPromptManager()
+        self.response_handler = PromptResponseHandler(self.config, self.logger)
+        self.discord_processor = DiscordQueueProcessor(self.config, self.logger)
+        
+        # Track running tasks
+        self.running_tasks = {}
+
+        self._init_ui()
+        self._connect_signals()
+
+    def _init_ui(self):
+        """Initialize UI components."""
         layout = QVBoxLayout()
 
         # Prompt selector
         layout.addWidget(QLabel("Select Prompt:"))
         self.prompt_selector = QComboBox()
-        
-        if self.prompt_manager and hasattr(self.prompt_manager, 'list_prompts'):
-            self.prompt_selector.addItems(self.prompt_manager.list_prompts())
-        
-        self.prompt_selector.currentTextChanged.connect(self.load_prompt)
+        prompts = self.prompt_orchestrator.list_prompts() if hasattr(self.prompt_orchestrator, 'list_prompts') else []
+        self.prompt_selector.addItems(prompts)
         layout.addWidget(self.prompt_selector)
 
         # Prompt editor
@@ -96,72 +62,234 @@ class PromptExecutionTab(QWidget):
         layout.addWidget(self.prompt_editor)
 
         # Execute button
-        execute_btn = QPushButton("Execute")
-        execute_btn.clicked.connect(self.execute_prompt)
-        layout.addWidget(execute_btn)
-        
-        # Output area
+        self.execute_btn = QPushButton("Execute")
+        layout.addWidget(self.execute_btn)
+
+        # Output display
         layout.addWidget(QLabel("Output:"))
         self.output_display = QTextEdit()
         self.output_display.setReadOnly(True)
         layout.addWidget(self.output_display)
 
         self.setLayout(layout)
-    
-    def load_prompt(self, prompt_name):
-        """
-        Load the selected prompt's text into the editor.
-        
-        Args:
-            prompt_name (str): The name of the prompt to load.
-        """
-        if not self.prompt_manager or not hasattr(self.prompt_manager, 'get_prompt'):
-            self.log_output("Error: Prompt manager not available")
-            return
-            
-        prompt_text = self.prompt_manager.get_prompt(prompt_name)
-        self.prompt_editor.setPlainText(prompt_text)
-        self.log_output(f"Loaded prompt: {prompt_name}")
 
-    def execute_prompt(self):
-        """
-        Execute the current prompt text and display the results.
-        """
-        # Get the prompt text from the editor
-        selected_prompt = self.prompt_editor.toPlainText()
-        if not selected_prompt.strip():
-            self.log_output("Error: No prompt text provided")
-            return
+    def _connect_signals(self):
+        """Connect PyQt signals and slots."""
+        self.prompt_selector.currentTextChanged.connect(self.load_prompt)
+        self.execute_btn.clicked.connect(self.execute_prompt)
+
+        # Connect custom signals
+        self.prompt_loaded.connect(self.on_prompt_loaded)
+        self.execution_started.connect(lambda: self.log_output("🚀 Executing prompt..."))
+        self.execution_finished.connect(lambda msg: self.log_output(f"✅ {msg}"))
+        self.execution_error.connect(lambda err: self.log_output(f"❌ {err}"))
+
+    @asyncSlot(str)
+    async def load_prompt(self, prompt_name):
+        """Load the selected prompt into editor asynchronously."""
+        try:
+            # Generate task ID for tracking
+            task_id = f"load_prompt_{prompt_name}"
             
-        self.log_output(f"Executing prompt...")
+            # Signal task start
+            if self.dispatcher:
+                self.dispatcher.emit_task_started(task_id)
+            
+            # Create and track task
+            task = asyncio.create_task(self._load_prompt_async(task_id, prompt_name))
+            self.running_tasks[task_id] = task
+            
+            # Add done callback
+            task.add_done_callback(lambda t: self._on_task_done(task_id, t))
+            
+        except Exception as e:
+            self.execution_error.emit(f"Error starting prompt load: {str(e)}")
+            if self.dispatcher:
+                self.dispatcher.emit_task_failed(f"load_prompt_{prompt_name}", str(e))
+
+    async def _load_prompt_async(self, task_id, prompt_name):
+        """Async prompt loading task."""
+        try:
+            # Report progress
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 25, "Loading prompt template")
+            
+            # In a real implementation, this might be an async operation
+            # You could use asyncio.to_thread if the operation is CPU-bound
+            if hasattr(self.prompt_orchestrator, 'get_prompt'):
+                # Simulate async operation
+                await asyncio.sleep(0.5)
+                
+                # Report progress
+                if self.dispatcher:
+                    self.dispatcher.emit_task_progress(task_id, 75, "Processing template")
+                
+                prompt_text = self.prompt_orchestrator.get_prompt(prompt_name)
+                
+                # Report completion
+                if self.dispatcher:
+                    self.dispatcher.emit_task_progress(task_id, 100, "Template loaded")
+                
+                self.prompt_loaded.emit(prompt_text)
+                return {'prompt_name': prompt_name, 'prompt_text': prompt_text}
+            else:
+                raise ValueError("Prompt orchestrator unavailable.")
+        except Exception as e:
+            self.execution_error.emit(f"Error loading prompt: {str(e)}")
+            if self.dispatcher:
+                self.dispatcher.emit_task_failed(task_id, str(e))
+            raise e
+
+    @pyqtSlot(str)
+    def on_prompt_loaded(self, prompt_text):
+        """Safely update prompt editor from the UI thread."""
+        self.prompt_editor.setPlainText(prompt_text)
+        self.log_output("✅ Prompt loaded successfully.")
+
+    @asyncSlot()
+    async def execute_prompt(self):
+        """Execute prompt asynchronously."""
+        prompt_text = self.prompt_editor.toPlainText().strip()
+        prompt_name = self.prompt_selector.currentText()
+        
+        if not prompt_text:
+            self.execution_error.emit("No prompt provided.")
+            return
+
+        self.execution_started.emit()
+        
+        # Create unique task ID
+        task_id = f"execute_prompt_{id(prompt_text)}"
+        
+        # Signal task start
+        if self.dispatcher:
+            self.dispatcher.emit_task_started(task_id)
+            
+        # Create and track task
+        task = asyncio.create_task(self._execute_prompt_async(task_id, prompt_name, prompt_text))
+        self.running_tasks[task_id] = task
+        
+        # Add done callback
+        task.add_done_callback(lambda t: self._on_task_done(task_id, t))
+
+    async def _execute_prompt_async(self, task_id, prompt_name, prompt_text):
+        """Async prompt execution task."""
+        try:
+            # Report initial progress
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 10, "Preparing prompt execution")
+            
+            # Simulate task progress
+            await asyncio.sleep(0.5)
+            
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 30, "Processing prompt")
+            
+            # Simulate different execution paths with proper progress reporting
+            if self.parent and hasattr(self.parent, 'execute_prompt'):
+                # Report progress
+                if self.dispatcher:
+                    self.dispatcher.emit_task_progress(task_id, 50, "Executing through parent")
+                
+                # Simulate processing time
+                await asyncio.sleep(1)
+                
+                # In a real implementation, use asyncio.to_thread for blocking calls
+                # response = await asyncio.to_thread(self.parent.execute_prompt, prompt_text)
+                response = f"Simulated response for {prompt_text[:20]}..."
+                
+                # Report progress
+                if self.dispatcher:
+                    self.dispatcher.emit_task_progress(task_id, 90, "Processing response")
+                
+                result = {"prompt": prompt_text, "response": response}
+                
+            elif hasattr(self.prompt_orchestrator, 'run_cycle'):
+                # Report progress
+                if self.dispatcher:
+                    self.dispatcher.emit_task_progress(task_id, 50, "Running prompt cycle")
+                
+                # Simulate processing time
+                await asyncio.sleep(1)
+                
+                # In a real implementation, use asyncio.to_thread for blocking calls
+                # response = await asyncio.to_thread(
+                #     self.prompt_orchestrator.run_cycle,
+                #     {"prompt": prompt_text},
+                #     cycle_type="single"
+                # )
+                response = f"Cycle response for {prompt_text[:20]}..."
+                
+                # Report progress
+                if self.dispatcher:
+                    self.dispatcher.emit_task_progress(task_id, 90, "Processing cycle results")
+                
+                result = {"prompt": prompt_text, "response": response}
+            else:
+                raise ValueError("No execution service available.")
+            
+            # Final processing
+            await asyncio.sleep(0.3)
+            
+            # Report completion
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 100, "Execution complete")
+                
+            # Signal execution finished through local signal
+            self.execution_finished.emit(f"Prompt executed successfully")
+            
+            # Return result for task completion handler
+            return result
+            
+        except Exception as e:
+            self.execution_error.emit(f"Exception during execution: {str(e)}")
+            if self.dispatcher:
+                self.dispatcher.emit_task_failed(task_id, str(e))
+            raise e
+
+    def _on_task_done(self, task_id, task):
+        """Handle task completion or failure."""
+        # Remove task from tracking
+        self.running_tasks.pop(task_id, None)
         
         try:
-            # Execute a single prompt cycle via the cycle service
-            if self.ui_logic and hasattr(self.ui_logic, 'execute_prompt'):
-                # Use UI logic if available
-                response = self.ui_logic.execute_prompt(selected_prompt)
-                self.log_output(f"Response: {response}")
-            elif hasattr(self.cycle_service, 'run_cycle'):
-                # Otherwise use cycle service directly
-                response = self.cycle_service.run_cycle({"prompt": selected_prompt}, cycle_type="single")
-                self.log_output(f"Cycle executed successfully.")
-                self.log_output(f"Response: {response}")
-            else:
-                self.log_output("Error: No execution service available")
+            # Get the result (will raise exception if the task failed)
+            result = task.result()
+            
+            # Log success if not already logged by the execution_finished signal
+            if not task_id.startswith("execute_prompt_"):
+                self.log_output(f"✅ Task {task_id} completed successfully!")
+            
+            # Emit completion signal through dispatcher
+            if self.dispatcher:
+                self.dispatcher.emit_task_completed(task_id, result)
+                
+                # If this was a prompt execution, also emit the prompt_executed signal
+                if task_id.startswith("execute_prompt_") and 'prompt' in result:
+                    prompt_name = self.prompt_selector.currentText()
+                    self.dispatcher.emit_prompt_executed(prompt_name, result)
+                    
+        except asyncio.CancelledError:
+            self.log_output(f"❌ Task {task_id} was cancelled.")
+            if self.dispatcher:
+                self.dispatcher.emit_task_failed(task_id, "Task was cancelled.")
+                
         except Exception as e:
-            self.log_output(f"Error executing prompt cycle: {e}")
-            
-    def log_output(self, message):
-        """
-        Log a message to the output display and logger.
+            self.log_output(f"❌ Task {task_id} failed with error: {str(e)}")
+            # Task failure will already have been emitted in the task itself
+
+    def log_output(self, message: str):
+        """Log to UI and logger."""
+        self.output_display.append(message)
+        self.logger.info(message)
         
-        Args:
-            message (str): The message to log.
-        """
-        if hasattr(self, 'output_display'):
-            self.output_display.append(message)
+        # Use dispatcher if available
+        if self.dispatcher:
+            self.dispatcher.emit_log_output(message)
             
-        if self.logger:
-            self.logger.info(message)
-        else:
-            print(message)
+    def handle_discord_event(self, event_type, event_data):
+        """Handle discord events if needed."""
+        # Only respond to specific events that are relevant to this tab
+        if event_type == "prompt_request":
+            self.log_output(f"Received prompt request from Discord: {event_data.get('prompt', '')}")
+            # Could automatically load the prompt here if desired

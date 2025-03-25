@@ -1,27 +1,30 @@
-import os
-import json
-import threading
-from datetime import datetime, UTC
-import logging
-from utils.reinforcement_trainer import process_feedback
-from core.FileManager import FileManager
-from core.PathManager import PathManager
-from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from core.ConfigManager import ConfigManager
-from typing import Optional, List
+"""
+AI Output Logger Wrapper
 
-# Initialize the unified logger with ConfigManager
-config_manager = ConfigManager()
-_unified_logger = UnifiedLoggingAgent(config_manager)
+This module provides a wrapper around the core.logging.services.ai_output_service
+to maintain backward compatibility while avoiding circular dependencies.
+"""
+
+import logging
+from typing import Optional, List, Dict, Any
+from utils.path_manager import PathManager
+# Import reinforcement trainer only if needed
+from utils.reinforcement_trainer import process_feedback
+
+# Import the core service
+from core.logging.services.ai_output_service import log_ai_output as core_log_ai_output
+from core.logging.services.ai_output_service import sanitize_filename
+
+# Initialize the logger
 logger = logging.getLogger("ai_output_logger")
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s: %(message)s"
 )
 
-# Module-level lock for thread-safe file access
-write_lock = threading.Lock()
-file_manager = FileManager()
+# Get base log directory from PathManager
+path_manager = PathManager()
+BASE_LOG_DIR = path_manager.get_path('reinforcement_logs')
 
 def log_ai_output(
     context: str,
@@ -29,11 +32,11 @@ def log_ai_output(
     ai_output: str,
     tags: Optional[List[str]] = None,
     result: Optional[str] = None,
-    enable_reinforcement: bool = True
+    enable_reinforcement: bool = True,
+    metadata: Optional[Dict[str, Any]] = None
 ) -> Optional[str]:
     """
-    Log AI output using the UnifiedLoggingAgent.
-    Maintains backward compatibility with existing code.
+    Wrapper function to maintain backward compatibility with existing code.
     
     Args:
         context: String indicating which system or module generated the output
@@ -42,15 +45,27 @@ def log_ai_output(
         tags: Optional list of tags for categorizing this log entry
         result: Optional result (e.g., "executed", "failed") for additional context
         enable_reinforcement: If True, triggers post-processing reinforcement logic
+        metadata: Optional dictionary with additional metadata
         
     Returns:
         Optional[str]: Path to the saved log file if successful
     """
-    return _unified_logger.log_ai_output(
+    log_file_path = core_log_ai_output(
         context=context,
         input_prompt=input_prompt,
         ai_output=ai_output,
+        base_log_dir=BASE_LOG_DIR,
         tags=tags,
         result=result,
-        enable_reinforcement=enable_reinforcement
+        enable_reinforcement=enable_reinforcement,
+        metadata=metadata
     )
+    
+    # Handle reinforcement processing if needed
+    if log_file_path and enable_reinforcement:
+        try:
+            process_feedback(log_file_path)
+        except Exception as e:
+            logger.error(f"Error in reinforcement processing: {e}")
+    
+    return log_file_path

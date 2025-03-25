@@ -13,19 +13,23 @@ from core.DriverManager import DriverManager
 from core.logging.factories.LoggerFactory import LoggerFactory
 
 # GUI and Web imports
-from gui.DreamscapeMainWindow import DreamscapeMainWindow
-from gui.dreamscape_ui_logic import DreamscapeUILogic
-from gui.IntegratedMainWindow import IntegratedMainWindow
-from gui.components.prompt_panel import PromptPanel
-from gui.components.logs_panel import LogsPanel
-from gui.tabs.MainTabs import MainTabs
-from gui.tabs.PromptExecutionTab import PromptExecutionTab
-from gui.tabs.LogsTab import LogsTab
-from gui.tabs.ConfigurationTab import ConfigurationTab
-from gui.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
+from interfaces.pyqt.DreamscapeMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
+from interfaces.pyqt.IntegratedMainWindow import IntegratedMainWindow
+from interfaces.pyqt.components.prompt_panel import PromptPanel
+from interfaces.pyqt.components.logs_panel import LogsPanel
+from interfaces.pyqt.tabs.MainTabs import MainTabs
+from interfaces.pyqt.tabs.PromptExecutionTab import PromptExecutionTab
+from interfaces.pyqt.tabs.LogsTab import LogsTab
+from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
+from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from web.app import start_flask_app
 from services.config_service import ConfigService
 from services.prompt_service import PromptService
+from utils.signal_dispatcher import SignalDispatcher
+from services.fix_service import FixService
+from services.debug_service import DebugService
+from services.rollback_service import RollbackService
 
 
 def setup_logging():
@@ -47,6 +51,28 @@ def initialize_services():
     # Initialize prompt service
     prompt_service = PromptService(config_service)
     services['prompt'] = prompt_service
+
+    # Initialize fix service
+    fix_service = FixService(config_service)
+    services['fix_service'] = fix_service
+
+    # Initialize debug service
+    debug_service = DebugService(config_service)
+    services['debug_service'] = debug_service
+
+    # Initialize rollback service
+    rollback_service = RollbackService(config_service)
+    services['rollback_service'] = rollback_service
+
+    # Try to initialize CursorSessionManager (for debugging)
+    try:
+        from core.CursorSessionManager import CursorSessionManager
+        cursor_manager = CursorSessionManager(config_service, {})  # Empty dict as memory_manager placeholder
+        services['cursor_manager'] = cursor_manager
+        logging.info("CursorSessionManager initialized successfully.")
+    except Exception as e:
+        logging.warning(f"Failed to initialize CursorSessionManager: {e}")
+        services['cursor_manager'] = None
 
     return services
 
@@ -92,18 +118,28 @@ def run_pyqt_gui(app, services):
     discord_manager = services.get('discord_manager')  # Optional, if available
     memory_manager = services.get('memory_manager')      # Optional, if available
 
+    # Initialize the dispatcher
+    dispatcher = SignalDispatcher()
+    
+    # Add dispatcher to services
+    services['dispatcher'] = dispatcher
+
     # Now pass all dependencies to MainTabs
     main_tabs = MainTabs(
+        dispatcher=dispatcher,
         ui_logic=ui_logic,
-        prompt_manager=prompt_manager,
         config_manager=config_manager,
         logger=logger,
+        prompt_manager=prompt_manager,
+        chat_manager=services.get('chat_manager'),
+        memory_manager=memory_manager,
         discord_manager=discord_manager,
-        memory_manager=memory_manager
+        cursor_manager=services.get('cursor_manager'),
+        **services.get('extra_dependencies', {})
     )
 
     # Create your main window and set its central widget
-    main_window = DreamscapeMainWindow(ui_logic)
+    main_window = DreamscapeMainWindow(ui_logic, dispatcher, services)
     main_window.setCentralWidget(main_tabs)
     main_window.show()
     

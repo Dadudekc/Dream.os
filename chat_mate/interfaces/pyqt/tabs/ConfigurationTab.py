@@ -2,9 +2,9 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout
 )
 
-from components.dialogs.exclusions_dialog import ExclusionsDialog
-from components.dialogs.discord_settings import DiscordSettingsDialog
-from components.dialogs.reinforcement_dialog import ReinforcementToolsDialog
+from interfaces.pyqt.components.dialogs.exclusions_dialog import ExclusionsDialog
+from interfaces.pyqt.components.dialogs.discord_settings import DiscordSettingsDialog
+from interfaces.pyqt.components.dialogs.reinforcement_dialog import ReinforcementToolsDialog
 
 class ConfigurationTab(QWidget):
     """

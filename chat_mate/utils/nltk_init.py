@@ -1,7 +1,9 @@
 import os
 import nltk
 import logging
+import ssl
 from pathlib import Path
+import time
 
 def ensure_nltk_data():
     """
@@ -24,20 +26,36 @@ def ensure_nltk_data():
         except LookupError:
             logging.info("VADER lexicon not found, attempting to download...")
             
-            # Try to download with timeout
+            # Create an SSL context that doesn't verify certificates
             try:
-                nltk.download('vader_lexicon', quiet=True)
-                return True
-            except Exception as e:
-                logging.error(f"Failed to download VADER lexicon: {str(e)}")
-                
-                # Check if we have a local copy in our data directory
-                local_vader = data_path / 'sentiment' / 'vader_lexicon.zip'
-                if local_vader.exists():
-                    logging.info("Found local VADER lexicon, using that instead")
+                _create_unverified_https_context = ssl._create_unverified_context
+            except AttributeError:
+                pass
+            else:
+                ssl._create_default_https_context = _create_unverified_https_context
+            
+            # Try to download with retries
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    nltk.download('vader_lexicon', quiet=True)
+                    logging.info("Successfully downloaded VADER lexicon")
                     return True
-                
-                return False
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        wait_time = (attempt + 1) * 2
+                        logging.warning(f"Download attempt {attempt + 1} failed: {str(e)}. Retrying in {wait_time} seconds...")
+                        time.sleep(wait_time)
+                    else:
+                        logging.error(f"Failed to download VADER lexicon after {max_retries} attempts: {str(e)}")
+                        
+                        # Check if we have a local copy in our data directory
+                        local_vader = data_path / 'sentiment' / 'vader_lexicon.zip'
+                        if local_vader.exists():
+                            logging.info("Found local VADER lexicon, using that instead")
+                            return True
+                        
+                        return False
                 
     except Exception as e:
         logging.error(f"Error initializing NLTK data: {str(e)}")

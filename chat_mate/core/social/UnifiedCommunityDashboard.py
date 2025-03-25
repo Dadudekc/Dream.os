@@ -9,6 +9,11 @@ from typing import Dict, List, Any, Optional
 from collections import defaultdict
 import random
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
+from core.PathManager import PathManager
+from utils.SentimentAnalyzer import SentimentAnalyzer
+
 # Update imports to use core.social
 from core.social.strategies.twitter_strategy import TwitterStrategy
 from core.social.strategies.facebook_strategy import FacebookStrategy
@@ -16,7 +21,6 @@ from core.social.strategies.instagram_strategy import InstagramStrategy
 from core.social.strategies.reddit_strategy import RedditStrategy
 from core.social.strategies.stocktwits_strategy import StocktwitsStrategy
 from core.social.strategies.linkedin_strategy import LinkedinStrategy
-import utils.message_templates as templates
 
 # Set up logging
 from core.social.log_writer import logger, write_json_log
@@ -53,7 +57,7 @@ class CommunityMetrics:
         }
 
 
-class UnifiedCommunityDashboard(QObject):
+class CommunityDashboard(QObject):
     """
     Provides a centralized dashboard for cross-platform community analytics and insights
     """
@@ -797,7 +801,7 @@ class UnifiedCommunityDashboard(QObject):
 
 # Example usage
 if __name__ == "__main__":
-    dashboard = UnifiedCommunityDashboard()
+    dashboard = CommunityDashboard()
     metrics = dashboard.collect_all_platforms_metrics()
     health_report = dashboard.analyze_community_health()
     insights = dashboard.generate_community_insights()

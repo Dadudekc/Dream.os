@@ -12,7 +12,7 @@ from social.strategies.linkedin_strategy import LinkedinStrategy
 from social.strategies.instagram_strategy import InstagramStrategy
 
 # Import the unified dashboard
-from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard
+from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
 from social.social_post_manager import SocialPostManager
 from social.log_writer import logger
 
@@ -117,7 +117,7 @@ class CommunityIntegrationManager:
     def _initialize_dashboard(self) -> None:
         """Initialize the unified community dashboard."""
         try:
-            self.dashboard = UnifiedCommunityDashboard(platform_strategies=self.platform_strategies)
+            self.dashboard = CommunityDashboard(platform_strategies=self.platform_strategies)
             logger.info(" Unified Community Dashboard initialized")
         except Exception as e:
             logger.error(f" Failed to initialize Unified Community Dashboard: {e}")

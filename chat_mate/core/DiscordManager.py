@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QListWidget, QListWidgetItem, QMessageBox, QComboBox
 )
 from core.EventMessageBuilder import EventMessageBuilder  # Adjust path if necessary
+from utils.json_paths import JsonPaths
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -80,23 +81,26 @@ class DiscordManager:
     # CONFIG MANAGEMENT
     # ------------------------------------------------------
     def load_config(self) -> None:
-        """Load configuration from file if it exists."""
-        if os.path.exists(self.CONFIG_FILE):
+        """Load configuration from file."""
+        config_path = JsonPaths.get_path("discord_config")
+        if os.path.exists(config_path):
             try:
-                with open(self.CONFIG_FILE, "r", encoding="utf-8") as file:
-                    self.config = json.load(file)
-                self._log(f"✅ Loaded DiscordManager config from {self.CONFIG_FILE}")
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    self.config.update(json.load(f))
+                logger.info(f"Loaded Discord configuration from {config_path}")
             except Exception as e:
-                self._log(f"❌ Failed to load config: {e}", level=logging.ERROR)
+                logger.error(f"Error loading Discord configuration: {e}")
 
     def save_config(self) -> None:
-        """Save current configuration to file."""
+        """Save configuration to file."""
+        config_path = JsonPaths.get_path("discord_config")
         try:
-            with open(self.CONFIG_FILE, "w", encoding="utf-8") as file:
-                json.dump(self.config, file, indent=4, ensure_ascii=False)
-            self._log(f"💾 Saved DiscordManager config to {self.CONFIG_FILE}")
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(self.config, f, indent=4)
+            logger.info(f"Saved Discord configuration to {config_path}")
         except Exception as e:
-            self._log(f"❌ Failed to save config: {e}", level=logging.ERROR)
+            logger.error(f"Error saving Discord configuration: {e}")
 
     def update_credentials(self, bot_token: str, default_channel_id: int) -> None:
         """Update bot token and default channel ID in the configuration."""

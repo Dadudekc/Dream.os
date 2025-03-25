@@ -15,13 +15,15 @@ from core.AletheiaPromptManager import AletheiaPromptManager
 from core.FileManager import FileManager
 from core.UnifiedDiscordService import UnifiedDiscordService
 from core.ReinforcementEngine import ReinforcementEngine
-from utils.run_summary import sanitize_filename, generate_full_run_json
+from utils.filesystem import sanitize_filename
+from utils.run_summary import generate_full_run_json
 from core.DriverManager import DriverManager
 from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
 from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
+from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -36,39 +38,59 @@ class DreamscapeService:
         """
         Initialize DreamscapeService with a configuration object.
         
-        :param config: A configuration object that exposes settings (e.g., headless, default_model, excluded_chats, archive_enabled, memory_file).
+        :param config: A ConfigManager instance or configuration object that exposes settings.
         """
         self.config = config
 
+        # Default values if not in config
+        memory_file = config.get("memory_file", "memory/dreamscape_memory.json") if hasattr(config, "get") else getattr(config, "memory_file", "memory/dreamscape_memory.json")
+
+        # Configure logger
+        self.logger = logging.getLogger("DreamscapeService")
+        
         # Initialize core components and managers
         self.prompt_manager = AletheiaPromptManager(
-            prompt_file="chat_mate/prompts.json",
-            memory_file=self.config.memory_file
+            memory_file=memory_file
         )
         self.chat_manager = None
         self.discord = None
         self.file_manager = FileManager()
-        self.cycle_manager = PromptCycleManager(
-            prompt_manager=self.prompt_manager,
-            append_output=lambda msg: logger.info(msg)  # Logging callback
-        )
-        self.reinforcement_engine = ReinforcementEngine()
+        
+        # Use PromptCycleOrchestrator instead of PromptCycleManager
+        self.cycle_manager = PromptCycleOrchestrator(config)
+        
+        # Initialize ReinforcementEngine with required parameters
+        self.reinforcement_engine = ReinforcementEngine(config, self.logger)
 
-        self.logger = self.config.get_logger("DreamscapeService")
-        self.logger.info("DreamscapeService initialized.")
-
-        # Initialize new services
+        # Initialize response handler and other services with required parameters
+        self.prompt_handler = PromptResponseHandler(config, self.logger)
+        
+        # Initialize other services with appropriate parameters
         self.cycle_service = CycleExecutionService(
+            config_manager=config,
+            logger=self.logger,
             prompt_manager=self.prompt_manager,
             chat_manager=self.chat_manager,
-            response_handler=PromptResponseHandler(),
+            response_handler=self.prompt_handler,
             memory_manager=None,
             discord_manager=self.discord
         )
-        self.prompt_handler = PromptResponseHandler()
-        self.discord_processor = DiscordQueueProcessor()
-        self.task_orchestrator = TaskOrchestrator()
-        self.dreamscape_generator = DreamscapeEpisodeGenerator()
+        self.discord_processor = DiscordQueueProcessor(config, self.logger)
+        self.task_orchestrator = TaskOrchestrator(self.logger)
+        # Set the cycle_service for the task_orchestrator
+        self.task_orchestrator.set_cycle_service(self.cycle_service)
+        
+        # Get output directory from config or use a default
+        output_dir = config.get("dreamscape_output_dir", "outputs/dreamscape") if hasattr(config, "get") else getattr(config, "dreamscape_output_dir", "outputs/dreamscape")
+        
+        self.dreamscape_generator = DreamscapeEpisodeGenerator(
+            chat_manager=self.chat_manager,
+            response_handler=self.prompt_handler,
+            output_dir=output_dir,
+            discord_manager=self.discord
+        )
+        
+        self.logger.info("DreamscapeService initialized.")
 
     # --- Chat Manager & Prompt Execution ---
 

@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional, List, Union
 from pathlib import Path
 from datetime import datetime
 
-from core.PathManager import PathManager
+from utils.path_manager import PathManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
 
 # Do not import UnifiedLoggingAgent here to avoid circular imports.

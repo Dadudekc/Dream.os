@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Any, Generator
 
 # ✅ Correct imports for package structure (adjust as needed)
-from core.PathManager import PathManager
+from utils.path_manager import PathManager
 from core.DiscordTemplateManager import DiscordTemplateManager
 from core.FileManager import FileManager
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent

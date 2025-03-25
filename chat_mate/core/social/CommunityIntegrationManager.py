@@ -14,7 +14,7 @@ from social.strategies.instagram_strategy import InstagramStrategy
 from social.strategies.tiktok_strategy import TikTokStrategy
 from social.strategies.youtube_strategy import YouTubeStrategy
 from core.PathManager import PathManager
-from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard
+from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
 from social.social_post_manager import SocialPostManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
 from core.ConfigManager import ConfigManager
@@ -79,7 +79,7 @@ class CommunityIntegrationManager:
         self.config = config or self.config_manager.get_config("community_integration")
         
         # Initialize dashboard
-        self.dashboard = UnifiedCommunityDashboard()
+        self.dashboard = CommunityDashboard()
         
         # Initialize post manager
         self.post_manager = UnifiedPostManager()
