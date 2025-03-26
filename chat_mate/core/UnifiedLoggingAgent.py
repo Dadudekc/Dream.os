@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any, List, Union
 from pathlib import Path
 
 from core.FileManager import FileManager
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
 
 class UnifiedLoggingAgent(ILoggingAgent):

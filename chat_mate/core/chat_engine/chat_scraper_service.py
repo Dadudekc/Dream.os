@@ -13,9 +13,16 @@ class ChatScraperService:
 
     def __init__(self, driver_manager, exclusions=None, reverse_order=False):
         self.driver_manager = driver_manager
-        self.driver = self.driver_manager.driver
         self.exclusions = exclusions if exclusions else []
         self.reverse_order = reverse_order
+
+    def get_driver(self):
+        """Get the driver instance, initializing it if needed."""
+        if hasattr(self.driver_manager, 'get_driver'):
+            return self.driver_manager.get_driver()
+        else:
+            # Fallback to direct driver property for the other implementation
+            return self.driver_manager.driver
 
     def get_all_chats(self) -> list:
         """
@@ -24,8 +31,13 @@ class ChatScraperService:
         """
         logger.info(" Scraping all chats from sidebar...")
         try:
+            driver = self.get_driver()
+            if not driver:
+                logger.error("Driver not initialized")
+                return []
+
             time.sleep(2)  # Give time for elements to load
-            chat_elements = self.driver.find_elements("xpath", "//a[contains(@class, 'group') and contains(@href, '/c/')]")
+            chat_elements = driver.find_elements("xpath", "//a[contains(@class, 'group') and contains(@href, '/c/')]")
             
             if not chat_elements:
                 logger.warning("️ No chats found in the sidebar.")
@@ -74,7 +86,12 @@ class ChatScraperService:
         """
         logger.info(" Validating OpenAI chat login status...")
         try:
-            sidebar = self.driver.find_element("xpath", "//nav[contains(@class, 'flex h-full')]")
+            driver = self.get_driver()
+            if not driver:
+                logger.error("Driver not initialized")
+                return False
+                
+            sidebar = driver.find_element("xpath", "//nav[contains(@class, 'flex h-full')]")
             if sidebar:
                 logger.info(" User is logged in.")
                 return True
@@ -87,7 +104,12 @@ class ChatScraperService:
         Prompts the user to manually log in via the browser.
         """
         logger.info(" Manual login flow initiated. Waiting for user login...")
-        self.driver.get("https://chat.openai.com/auth/login")
+        driver = self.get_driver()
+        if not driver:
+            logger.error("Driver not initialized")
+            return
+            
+        driver.get("https://chat.openai.com/auth/login")
 
         while not self.validate_login():
             time.sleep(5)

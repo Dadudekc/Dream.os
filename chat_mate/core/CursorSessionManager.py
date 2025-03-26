@@ -1,153 +1,110 @@
 import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
+import platform
+import pyautogui
+import pygetwindow as gw
+import pyperclip
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class CursorSessionManager:
-    """
-    Manages a Cursor IDE session using Selenium WebDriver.
-    Handles interactions like executing prompts and retrieving generated code.
-    """
-    
     VALID_MODES = ["full_sync", "tdd", "async", "repl"]
-    
-    def __init__(self, config, memory_manager):
-        """
-        Initialize the Cursor Session Manager.
-        
-        Args:
-            config (dict): Configuration settings
-            memory_manager: Memory manager for storing and retrieving context
-        """
-        self.config = config
-        self.memory_manager = memory_manager
+
+    DEFAULT_HOTKEYS = {
+        "open_prompt": ['ctrl', 'shift', 'p'],
+        "paste": ['ctrl', 'v'],
+        "select_all": ['ctrl', 'a'],
+        "copy": ['ctrl', 'c']
+    }
+
+    def __init__(self, config, memory_manager=None):
         self.execution_mode = config.get("execution_mode", "full_sync")
-        
-        # Initialize Chrome driver with headless options if specified
-        chrome_options = Options()
-        if config.get("headless", False):
-            chrome_options.add_argument("--headless")
-        
-        try:
-            self.driver = webdriver.Chrome(options=chrome_options)
-            # Open Cursor IDE URL if provided in config
-            cursor_url = config.get("cursor_url", "https://cursor.sh")
-            self.driver.get(cursor_url)
-            print("[CursorSessionManager] Successfully initialized Chrome WebDriver.")
-        except Exception as e:
-            print(f"[CursorSessionManager] Failed to initialize Chrome WebDriver: {e}")
-            self.driver = None
-    
-    def switch_mode(self, mode):
-        """
-        Switch the execution mode.
-        
-        Args:
-            mode (str): The mode to switch to (full_sync, tdd, async, repl)
-        """
-        if mode in self.VALID_MODES:
-            self.execution_mode = mode
-        else:
-            print("[CursorSessionManager] Invalid mode.")
-    
-    def generate_prompt(self, task, ltm_context=None, scraper_insights=None):
-        """
-        Generate a prompt based on the current execution mode.
-        
-        Args:
-            task (str): The task to be executed
-            ltm_context (list): Context from long-term memory
-            scraper_insights (list): Insights from code scraper
-            
-        Returns:
-            str: The generated prompt
-        """
-        if ltm_context is None:
-            ltm_context = []
-        if scraper_insights is None:
-            scraper_insights = []
-        
-        # Base prompt structure
-        prompt = f"# TASK: {task}\n\n"
-        
-        # Add context if available
-        if ltm_context:
-            prompt += "## CONTEXT\n"
-            for context_item in ltm_context:
-                prompt += f"{context_item}\n"
-            prompt += "\n"
-        
-        # Add code insights if available
-        if scraper_insights:
-            prompt += "## CODE INSIGHTS\n"
-            for insight in scraper_insights:
-                prompt += f"- {insight.get('summary', '')}\n"
-                if 'code' in insight:
-                    prompt += f"```\n{insight['code']}\n```\n"
-            prompt += "\n"
-        
-        # Mode-specific instructions
-        prompt += "## MODE-SPECIFIC INSTRUCTIONS\n"
-        
-        if self.execution_mode == "full_sync":
-            prompt += "- Prioritize rapid development\n"
-            prompt += "- Implement comprehensive solution\n"
-            prompt += "- Include error handling\n"
-        elif self.execution_mode == "tdd":
-            prompt += "- Follow Red-Green-Refactor cycle\n"
-            prompt += "- Write test cases first\n"
-            prompt += "- Focus on test coverage\n"
-        elif self.execution_mode == "async":
-            prompt += "- Implement asynchronous patterns\n"
-            prompt += "- Use async/await when appropriate\n"
-            prompt += "- Handle concurrency carefully\n"
-        elif self.execution_mode == "repl":
-            prompt += "- Generate code that can be executed in a REPL\n"
-            prompt += "- Focus on immediate feedback\n"
-            prompt += "- Include examples and expected output\n"
-        
+        self.cursor_window_title = config.get("cursor_window_title", "Cursor")
+        self.prompt_delay = config.get("prompt_delay", 5)
+        self.hotkeys = config.get("hotkeys", self.DEFAULT_HOTKEYS)
+        self.logger = logging.getLogger(__name__)
+        self.memory_manager = memory_manager
+
+    def focus_cursor_window(self):
+        windows = gw.getWindowsWithTitle(self.cursor_window_title)
+        if not windows:
+            self.logger.error(f"No window found with title '{self.cursor_window_title}'")
+            raise RuntimeError("Cursor window not found.")
+
+        cursor_window = windows[0]
+        cursor_window.activate()
+        self.logger.info(f"Focused Cursor window: '{cursor_window.title}'")
+        time.sleep(1)
+
+    def generate_prompt(self, task, context=None):
+        prompt_parts = [f"# TASK: {task}\n"]
+
+        if context:
+            prompt_parts.append("## CONTEXT\n" + "\n".join(context))
+
+        instructions = {
+            "full_sync": "- Rapid, comprehensive solution with error handling.",
+            "tdd": "- Write tests first, follow Red-Green-Refactor.",
+            "async": "- Asynchronous implementation (async/await).",
+            "repl": "- REPL-friendly immediate execution."
+        }
+
+        prompt_parts.append(
+            f"## MODE: {self.execution_mode.upper()}\n{instructions[self.execution_mode]}"
+        )
+
+        prompt = "\n\n".join(prompt_parts)
+        self.logger.debug(f"Generated prompt:\n{prompt}")
         return prompt
-    
+
+    def safe_copy_to_clipboard(self, text, retries=3, delay=0.5):
+        for attempt in range(retries):
+            try:
+                pyperclip.copy(text)
+                if pyperclip.paste() == text:
+                    return True
+            except pyperclip.PyperclipException as e:
+                self.logger.warning(f"Clipboard copy attempt {attempt+1} failed: {e}")
+                time.sleep(delay)
+        raise RuntimeError("Failed to copy text to clipboard after retries.")
+
     def execute_prompt(self, prompt):
-        """
-        Execute a prompt in Cursor IDE and return the generated code.
-        
-        Args:
-            prompt (str): The prompt to execute
-            
-        Returns:
-            str: The generated code or None if execution failed
-        """
-        if not self.driver:
-            print("[CursorSessionManager] WebDriver not initialized.")
-            return None
-        
+        self.focus_cursor_window()
+
+        self.safe_copy_to_clipboard(prompt)
+        time.sleep(0.5)
+
+        pyautogui.hotkey(*self.hotkeys["open_prompt"])
+        time.sleep(1)
+
+        pyautogui.hotkey(*self.hotkeys["paste"])
+        time.sleep(0.5)
+
+        pyautogui.press('enter')
+        self.logger.info("Prompt submitted to Cursor IDE.")
+
+        self.logger.info(f"Waiting {self.prompt_delay} seconds for response...")
+        time.sleep(self.prompt_delay)
+
+        pyautogui.hotkey(*self.hotkeys["select_all"])
+        time.sleep(0.5)
+        pyautogui.hotkey(*self.hotkeys["copy"])
+        time.sleep(0.5)
+
         try:
-            # Find the prompt input element
-            prompt_input = self.driver.find_element(By.CSS_SELECTOR, "textarea.ai-input")
-            
-            # Clear existing content and enter new prompt
-            prompt_input.clear()
-            prompt_input.send_keys(prompt)
-            prompt_input.send_keys(Keys.CONTROL + Keys.ENTER)
-            
-            # Wait for the response to be generated
-            time.sleep(self.config.get("response_timeout", 10))
-            
-            # Extract generated code
-            code_elements = self.driver.find_elements(By.CSS_SELECTOR, ".generated-code pre")
-            generated_code = "\n".join([element.text for element in code_elements])
-            
-            return generated_code
-        except Exception as e:
-            print(f"[CursorSessionManager] Failed to execute prompt: {e}")
-            return None
-    
-    def close(self):
-        """
-        Close the WebDriver session.
-        """
-        if self.driver:
-            self.driver.quit()
-            print("[CursorSessionManager] WebDriver session closed.") 
+            generated_code = pyperclip.paste()
+            if not generated_code.strip():
+                raise ValueError("Retrieved empty content from Clipboard.")
+        except pyperclip.PyperclipException as e:
+            self.logger.error(f"Failed to retrieve generated code from Clipboard: {e}")
+            raise RuntimeError("Clipboard paste failed.")
+
+        self.logger.info("Generated code successfully retrieved.")
+        return generated_code
+
+    def switch_mode(self, mode):
+        if mode not in self.VALID_MODES:
+            self.logger.error(f"Invalid mode '{mode}'. Valid modes: {self.VALID_MODES}")
+            raise ValueError(f"Invalid mode '{mode}'.")
+        self.execution_mode = mode
+        self.logger.info(f"Switched execution mode to: {mode}")

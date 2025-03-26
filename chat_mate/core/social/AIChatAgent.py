@@ -3,7 +3,7 @@ import requests
 import openai
 from typing import Optional, Dict, Any
 from datetime import datetime
-from social.social_config import social_config
+from social.social_config_wrapper import get_social_config
 from social.log_writer import logger, write_json_log
 from core.MemoryManager import MemoryManager
 from core.PromptEngine import PromptEngine
@@ -11,6 +11,8 @@ from core.PromptEngine import PromptEngine
 
 # Constants
 PLATFORM = "AIChatAgent"
+# Use the wrapper to get social_config
+social_config = get_social_config()
 OLLAMA_HOST = social_config.get_env("OLLAMA_HOST") or "http://127.0.0.1:11434"
 
 logger = logging.getLogger(__name__)

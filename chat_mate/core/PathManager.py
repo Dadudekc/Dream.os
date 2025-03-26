@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import Dict
+from typing import Dict, Optional
 from core.bootstrap import get_bootstrap_paths
 
 logger = logging.getLogger(__name__)
@@ -13,6 +13,7 @@ class PathManagerMeta(type):
         # Initialize internal storage and flag
         cls._paths = {}
         cls._initialized = False
+        cls._instance = None
         return cls
 
     @classmethod
@@ -37,18 +38,13 @@ class PathManagerMeta(type):
                     setattr(cls, compat_name, make_getter(key))
 
 class PathManager(metaclass=PathManagerMeta):
-    """
-    Centralized path management system with dynamic property generation.
+    """Unified PathManager for core functionalities."""
     
-    Once initialized (via bootstrap), all registered paths become available as
-    class properties. For example, if 'logs' is registered, you can access it as:
-    
-        PathManager.logs_dir  # Backward-compatible alias
-        PathManager.logs      # Direct key access
-    
-    Also provides methods to register paths, ensure directories exist, and to
-    describe available paths.
-    """
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(PathManager, cls).__new__(cls)
+            cls._ensure_initialized()
+        return cls._instance
     
     @classmethod
     def _ensure_initialized(cls) -> None:

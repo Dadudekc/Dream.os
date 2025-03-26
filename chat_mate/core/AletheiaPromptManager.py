@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from typing import Dict, Any
 from jinja2 import Environment, FileSystemLoader
 from utils.json_paths import JsonPaths
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 
 # Setup Logging First
 logger = logging.getLogger("Aletheia_PromptManager")

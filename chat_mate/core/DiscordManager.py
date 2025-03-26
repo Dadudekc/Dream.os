@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
 )
 from core.EventMessageBuilder import EventMessageBuilder  # Adjust path if necessary
 from utils.json_paths import JsonPaths
+import requests
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -359,6 +360,67 @@ class DiscordManager:
             self._log(f"⚠️ Unknown status key: {key}", level=logging.WARNING)
         self.status_data[key] = value
         logger.debug(f" Updated status_data[{key}] = {value}")
+
+    def test_connection(self, token=None, channel_id=None, webhook_url=None):
+        """
+        Test the Discord connection with provided credentials.
+        
+        Args:
+            token (str, optional): The Discord bot token to test.
+            channel_id (str, optional): The Discord channel ID to test.
+            webhook_url (str, optional): The Discord webhook URL to test.
+            
+        Returns:
+            bool: True if the connection test was successful, False otherwise.
+        """
+        self._log("Testing Discord connection...")
+        
+        try:
+            # Test using webhook if provided
+            if webhook_url:
+                self._log("Testing Discord webhook...")
+                webhook_data = {
+                    "content": "🔄 **Test Message:** Discord webhook connection test successful!",
+                    "username": "Dreamscape Bot"
+                }
+                response = requests.post(webhook_url, json=webhook_data)
+                if response.status_code == 204:
+                    self._log("Discord webhook test successful!")
+                    return True
+                else:
+                    self._log(f"Discord webhook test failed: {response.status_code} - {response.text}")
+                    return False
+                    
+            # Test using token and channel ID if provided
+            elif token and channel_id:
+                self._log("Testing Discord bot token and channel ID...")
+                headers = {
+                    "Authorization": f"Bot {token}",
+                    "Content-Type": "application/json"
+                }
+                
+                # First check if we can access the bot's information
+                bot_response = requests.get("https://discord.com/api/v10/users/@me", headers=headers)
+                if bot_response.status_code != 200:
+                    self._log(f"Discord bot token test failed: {bot_response.status_code} - {bot_response.text}")
+                    return False
+                    
+                # Then check if we can access the channel
+                channel_response = requests.get(f"https://discord.com/api/v10/channels/{channel_id}", headers=headers)
+                if channel_response.status_code != 200:
+                    self._log(f"Discord channel test failed: {channel_response.status_code} - {channel_response.text}")
+                    return False
+                
+                self._log("Discord bot token and channel ID test successful!")
+                return True
+                
+            else:
+                self._log("Discord test failed: No webhook URL, token, or channel ID provided")
+                return False
+                
+        except Exception as e:
+            self._log(f"Error testing Discord connection: {str(e)}")
+            return False
 
 
 class DiscordSettingsDialog(QDialog):

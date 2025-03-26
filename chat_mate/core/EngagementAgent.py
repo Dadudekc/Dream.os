@@ -5,7 +5,8 @@ from jinja2 import Environment
 import requests
 import openai
 
-from social.social_config import social_config
+# Replace direct import with wrapper
+from social.social_config_wrapper import get_social_config
 from social.log_writer import logger, write_json_log
 from social.TaskQueueManager import TaskQueueManager
 from utils.SentimentAnalyzer import SentimentAnalyzer

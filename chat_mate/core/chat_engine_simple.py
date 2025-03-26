@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional, List
 from collections import defaultdict
 
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 
 logger = logging.getLogger(__name__)
 

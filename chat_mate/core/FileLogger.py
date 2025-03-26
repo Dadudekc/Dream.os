@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 from core.ConfigManager import ConfigManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 
 class FileLogger(ILoggingAgent):
     """Logger implementation for file output with rotation."""

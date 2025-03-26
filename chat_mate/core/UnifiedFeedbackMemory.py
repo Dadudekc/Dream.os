@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Optional, Union
 from collections import defaultdict
 
 from core.FileManager import FileManager
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
 from core.ConfigManager import ConfigManager
 

@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, UTC
 from collections import defaultdict
 from dotenv import load_dotenv
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ import logging
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
 from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory
 from chat_mate_config import Config
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 from core.ConfigManager import ConfigManager
 
 class TaskPriority(Enum):
