@@ -13,17 +13,17 @@ from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
-from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
+from core.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 
 # Import services
-from services.prompt_service import PromptService
-from services.discord_service import DiscordService
+from core.services.prompt_service import PromptService
+from core.services.discord_service import DiscordService
 
 # Import community components
 from core.social.community_integration import CommunityIntegrationManager
 
 # Import the main window from DreamscapeMainWindow.py
-from interfaces.pyqt.DreamscapeMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
 from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 

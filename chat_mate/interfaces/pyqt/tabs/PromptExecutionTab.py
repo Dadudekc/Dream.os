@@ -1,8 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit, QComboBox
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
+import os
+import re
+import json
 import logging
 import asyncio
+import torch
+
 from qasync import asyncSlot
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit, QComboBox,
+    QCheckBox
+)
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
 
 # Core Services
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
@@ -11,11 +19,36 @@ from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 from core.ConfigManager import ConfigManager
 
+# Example: HuggingFace Transformers-based local wrapper
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+class LocalLLMWrapper:
+    """
+    Example local LLM wrapper for demonstration purposes.
+    Replace 'EleutherAI/gpt-neo-1.3B' or adapt for llama.cpp, etc.
+    """
+    def __init__(self, model_name="EleutherAI/gpt-neo-1.3B"):
+        self.model_name = model_name
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        self.model.eval()
+        
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model.to(device)
+        logging.getLogger(__name__).info(f"LocalLLMWrapper loaded {model_name} on {device}")
+
+    def generate(self, prompt, max_new_tokens=64):
+        """Synchronous local inference."""
+        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+        outputs = self.model.generate(**inputs, max_new_tokens=max_new_tokens)
+        return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
 
 class PromptExecutionTab(QWidget):
     """
     Tab for executing prompts through various services.
     Provides a unified interface for prompt selection, editing, and execution.
+    Now includes an 'Offline Mode' to use a local LLM wrapper in a background thread.
     """
 
     # PyQt signals for thread-safe UI updates
@@ -42,6 +75,9 @@ class PromptExecutionTab(QWidget):
         # Track running tasks
         self.running_tasks = {}
 
+        # Local LLM wrapper (only loaded if offline mode is enabled)
+        self.local_llm = None
+
         self._init_ui()
         self._connect_signals()
 
@@ -55,6 +91,11 @@ class PromptExecutionTab(QWidget):
         prompts = self.prompt_orchestrator.list_prompts() if hasattr(self.prompt_orchestrator, 'list_prompts') else []
         self.prompt_selector.addItems(prompts)
         layout.addWidget(self.prompt_selector)
+
+        # OFFLINE MODE CHECKBOX
+        self.offline_mode_checkbox = QCheckBox("Offline Mode (Local LLM)")
+        self.offline_mode_checkbox.setToolTip("Use a local model instead of remote API calls.")
+        layout.addWidget(self.offline_mode_checkbox)
 
         # Prompt editor
         layout.addWidget(QLabel("Edit Prompt:"))
@@ -84,6 +125,14 @@ class PromptExecutionTab(QWidget):
         self.execution_finished.connect(lambda msg: self.log_output(f"✅ {msg}"))
         self.execution_error.connect(lambda err: self.log_output(f"❌ {err}"))
 
+    ### --- Local LLM Support --- ###
+    def ensure_local_llm_loaded(self):
+        """Load the local LLM (lazy-init) if not already loaded."""
+        if self.local_llm is None:
+            self.local_llm = LocalLLMWrapper(model_name="EleutherAI/gpt-neo-1.3B")
+            self.log_output("Loaded local LLM model.")
+
+    ### --- Prompt Loading --- ###
     @asyncSlot(str)
     async def load_prompt(self, prompt_name):
         """Load the selected prompt into editor asynchronously."""
@@ -114,26 +163,25 @@ class PromptExecutionTab(QWidget):
             if self.dispatcher:
                 self.dispatcher.emit_task_progress(task_id, 25, "Loading prompt template")
             
-            # In a real implementation, this might be an async operation
-            # You could use asyncio.to_thread if the operation is CPU-bound
-            if hasattr(self.prompt_orchestrator, 'get_prompt'):
-                # Simulate async operation
-                await asyncio.sleep(0.5)
-                
-                # Report progress
-                if self.dispatcher:
-                    self.dispatcher.emit_task_progress(task_id, 75, "Processing template")
-                
-                prompt_text = self.prompt_orchestrator.get_prompt(prompt_name)
-                
-                # Report completion
-                if self.dispatcher:
-                    self.dispatcher.emit_task_progress(task_id, 100, "Template loaded")
-                
-                self.prompt_loaded.emit(prompt_text)
-                return {'prompt_name': prompt_name, 'prompt_text': prompt_text}
-            else:
+            # Simulate async operation
+            await asyncio.sleep(0.5)
+            
+            if not hasattr(self.prompt_orchestrator, 'get_prompt'):
                 raise ValueError("Prompt orchestrator unavailable.")
+            
+            # Report progress
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 75, "Processing template")
+            
+            prompt_text = self.prompt_orchestrator.get_prompt(prompt_name)
+            
+            # Report completion
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 100, "Template loaded")
+            
+            self.prompt_loaded.emit(prompt_text)
+            return {'prompt_name': prompt_name, 'prompt_text': prompt_text}
+
         except Exception as e:
             self.execution_error.emit(f"Error loading prompt: {str(e)}")
             if self.dispatcher:
@@ -146,9 +194,10 @@ class PromptExecutionTab(QWidget):
         self.prompt_editor.setPlainText(prompt_text)
         self.log_output("✅ Prompt loaded successfully.")
 
+    ### --- Prompt Execution --- ###
     @asyncSlot()
     async def execute_prompt(self):
-        """Execute prompt asynchronously."""
+        """Execute prompt asynchronously without blocking the GUI."""
         prompt_text = self.prompt_editor.toPlainText().strip()
         prompt_name = self.prompt_selector.currentText()
         
@@ -178,67 +227,73 @@ class PromptExecutionTab(QWidget):
             # Report initial progress
             if self.dispatcher:
                 self.dispatcher.emit_task_progress(task_id, 10, "Preparing prompt execution")
-            
-            # Simulate task progress
+
+            # Decide if we're in offline or online mode
+            offline_mode = self.offline_mode_checkbox.isChecked()
+
+            # Simulate minimal progress
             await asyncio.sleep(0.5)
             
             if self.dispatcher:
                 self.dispatcher.emit_task_progress(task_id, 30, "Processing prompt")
-            
-            # Simulate different execution paths with proper progress reporting
-            if self.parent and hasattr(self.parent, 'execute_prompt'):
-                # Report progress
+
+            # ---- OFFLINE MODE ----
+            if offline_mode:
                 if self.dispatcher:
-                    self.dispatcher.emit_task_progress(task_id, 50, "Executing through parent")
+                    self.dispatcher.emit_task_progress(task_id, 40, "Local LLM mode detected")
+
+                # Make sure local model is loaded
+                self.ensure_local_llm_loaded()
                 
-                # Simulate processing time
-                await asyncio.sleep(1)
-                
-                # In a real implementation, use asyncio.to_thread for blocking calls
-                # response = await asyncio.to_thread(self.parent.execute_prompt, prompt_text)
-                response = f"Simulated response for {prompt_text[:20]}..."
-                
-                # Report progress
+                # Run local inference in background thread
                 if self.dispatcher:
-                    self.dispatcher.emit_task_progress(task_id, 90, "Processing response")
-                
-                result = {"prompt": prompt_text, "response": response}
-                
-            elif hasattr(self.prompt_orchestrator, 'run_cycle'):
-                # Report progress
-                if self.dispatcher:
-                    self.dispatcher.emit_task_progress(task_id, 50, "Running prompt cycle")
-                
-                # Simulate processing time
-                await asyncio.sleep(1)
-                
-                # In a real implementation, use asyncio.to_thread for blocking calls
-                # response = await asyncio.to_thread(
-                #     self.prompt_orchestrator.run_cycle,
-                #     {"prompt": prompt_text},
-                #     cycle_type="single"
-                # )
-                response = f"Cycle response for {prompt_text[:20]}..."
-                
-                # Report progress
-                if self.dispatcher:
-                    self.dispatcher.emit_task_progress(task_id, 90, "Processing cycle results")
-                
-                result = {"prompt": prompt_text, "response": response}
+                    self.dispatcher.emit_task_progress(task_id, 50, "Generating locally...")
+
+                response = await asyncio.to_thread(
+                    self.local_llm.generate, 
+                    prompt_text, 
+                    128  # example max tokens
+                )
+
+            # ---- ONLINE / REMOTE MODE ----
             else:
-                raise ValueError("No execution service available.")
-            
-            # Final processing
-            await asyncio.sleep(0.3)
-            
+                # If parent has an 'execute_prompt', use it
+                if self.parent and hasattr(self.parent, 'execute_prompt'):
+                    if self.dispatcher:
+                        self.dispatcher.emit_task_progress(task_id, 50, "Executing through parent")
+
+                    await asyncio.sleep(1)  # simulate network
+                    # response = await asyncio.to_thread(self.parent.execute_prompt, prompt_text)
+                    response = f"[Simulated remote API response] for: {prompt_text[:20]}..."
+                
+                # Otherwise fallback to orchestrator (example)
+                elif hasattr(self.prompt_orchestrator, 'run_cycle'):
+                    if self.dispatcher:
+                        self.dispatcher.emit_task_progress(task_id, 50, "Running prompt cycle")
+
+                    await asyncio.sleep(1)  # simulate network
+                    # response = await asyncio.to_thread(
+                    #     self.prompt_orchestrator.run_cycle,
+                    #     {"prompt": prompt_text},
+                    #     cycle_type="single"
+                    # )
+                    response = f"[Cycle response for {prompt_text[:20]}...]"
+                else:
+                    raise ValueError("No remote execution service available.")
+
+            # Wrap up
+            if self.dispatcher:
+                self.dispatcher.emit_task_progress(task_id, 90, "Processing response")
+
+            result = {"prompt": prompt_text, "response": response}
+
+            await asyncio.sleep(0.3)  # final small delay
+
             # Report completion
             if self.dispatcher:
                 self.dispatcher.emit_task_progress(task_id, 100, "Execution complete")
-                
-            # Signal execution finished through local signal
-            self.execution_finished.emit(f"Prompt executed successfully")
             
-            # Return result for task completion handler
+            self.execution_finished.emit("Prompt executed successfully.")
             return result
             
         except Exception as e:
@@ -256,7 +311,7 @@ class PromptExecutionTab(QWidget):
             # Get the result (will raise exception if the task failed)
             result = task.result()
             
-            # Log success if not already logged by the execution_finished signal
+            # Log success if not already logged
             if not task_id.startswith("execute_prompt_"):
                 self.log_output(f"✅ Task {task_id} completed successfully!")
             
@@ -268,7 +323,11 @@ class PromptExecutionTab(QWidget):
                 if task_id.startswith("execute_prompt_") and 'prompt' in result:
                     prompt_name = self.prompt_selector.currentText()
                     self.dispatcher.emit_prompt_executed(prompt_name, result)
-                    
+            
+            # Append the result to the UI output (for demonstration)
+            if 'response' in result:
+                self.log_output(f"Response:\n{result['response']}")
+
         except asyncio.CancelledError:
             self.log_output(f"❌ Task {task_id} was cancelled.")
             if self.dispatcher:
@@ -276,20 +335,17 @@ class PromptExecutionTab(QWidget):
                 
         except Exception as e:
             self.log_output(f"❌ Task {task_id} failed with error: {str(e)}")
-            # Task failure will already have been emitted in the task itself
+            # Already handled in the except block above
 
     def log_output(self, message: str):
         """Log to UI and logger."""
         self.output_display.append(message)
         self.logger.info(message)
         
-        # Use dispatcher if available
         if self.dispatcher:
             self.dispatcher.emit_log_output(message)
             
     def handle_discord_event(self, event_type, event_data):
-        """Handle discord events if needed."""
-        # Only respond to specific events that are relevant to this tab
+        """Handle Discord events if needed."""
         if event_type == "prompt_request":
             self.log_output(f"Received prompt request from Discord: {event_data.get('prompt', '')}")
-            # Could automatically load the prompt here if desired

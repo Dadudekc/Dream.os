@@ -292,7 +292,13 @@ class DreamscapeUILogic:
         Gracefully shut down services and clean resources.
         """
         try:
-            self.service.shutdown_all()
+            if hasattr(self.service, 'shutdown_all'):
+                self.service.shutdown_all()
+            elif hasattr(self.service, 'shutdown'):
+                self.service.shutdown()
+            else:
+                # No shutdown method available on service
+                pass
             self._output("All services shut down cleanly.")
             self._update_status("Dreamscape system shutdown complete.")
         except Exception as e:

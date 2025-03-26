@@ -3,10 +3,9 @@ from interfaces.pyqt.tabs.PromptExecutionTab import PromptExecutionTab
 from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from interfaces.pyqt.components.discord_tab import DiscordTab
 from interfaces.pyqt.tabs.LogsTab import LogsTab
-from interfaces.pyqt.tabs.DebuggerTab import DebuggerTab
 from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
-from interfaces.pyqt.tabs.ChatAutomationDebuggerTab import ChatAutomationDebuggerTab
+from interfaces.pyqt.tabs.AIDE import AIDE
 
 class MainTabs(QTabWidget):
     """
@@ -46,47 +45,36 @@ class MainTabs(QTabWidget):
         self.cursor_manager = cursor_manager
         self.extra_dependencies = extra_dependencies
 
-        # Scalable tab management
+        # Initialize tabs dictionary
         self.tabs = {}
 
-        self._init_ui()
+        # Initialize UI
+        self._init_tabs()
         self._connect_signals()
 
-    def _init_ui(self):
-        """Explicitly initialize and register tabs with dispatcher and services."""
-
-        # Configuration Tab
-        self.tabs["Configuration"] = ConfigurationTab(
-            config_manager=self.config_manager,
-            dispatcher=self.dispatcher,
-            service=self.extra_dependencies.get('service') if isinstance(self.extra_dependencies, dict) else None,
-            command_handler=self.extra_dependencies.get('command_handler') if isinstance(self.extra_dependencies, dict) else None,
-            logger=self.logger
-        )
-        self.addTab(self.tabs["Configuration"], "Configuration")
-
-        # Dreamscape Generation Tab
-        self.tabs["Dreamscape"] = DreamscapeGenerationTab(
-            dispatcher=self.dispatcher,
-            ui_logic=self.ui_logic,
-            config_manager=self.config_manager,
-            logger=self.logger,
-            prompt_manager=self.prompt_manager,
-            chat_manager=self.chat_manager,
-            memory_manager=self.memory_manager,
-            discord_manager=self.discord_manager,
-            response_handler=self.extra_dependencies.get('response_handler') if isinstance(self.extra_dependencies, dict) else None
-        )
-        self.addTab(self.tabs["Dreamscape"], "Dreamscape")
-
+    def _init_tabs(self):
+        """Initialize and add all tabs."""
         # Prompt Execution Tab
-        self.tabs["Prompt Execution"] = PromptExecutionTab(
+        self.tabs["Prompt"] = PromptExecutionTab(
             dispatcher=self.dispatcher,
             config=self.config_manager,
             logger=self.logger,
             prompt_manager=self.prompt_manager
         )
-        self.addTab(self.tabs["Prompt Execution"], "Prompt Execution")
+        self.addTab(self.tabs["Prompt"], "Prompt Execution")
+
+        # Dreamscape Generation Tab
+        self.tabs["Dreamscape"] = DreamscapeGenerationTab(
+            dispatcher=self.dispatcher,
+            prompt_manager=self.prompt_manager,
+            chat_manager=self.chat_manager,
+            memory_manager=self.memory_manager,
+            discord_manager=self.discord_manager,
+            ui_logic=self.ui_logic,
+            config_manager=self.config_manager,
+            logger=self.logger
+        )
+        self.addTab(self.tabs["Dreamscape"], "Dreamscape")
 
         # Discord Tab
         self.tabs["Discord"] = DiscordTab(
@@ -97,20 +85,16 @@ class MainTabs(QTabWidget):
         )
         self.addTab(self.tabs["Discord"], "Discord")
 
-        # Debugger Tab
-        self.tabs["Debugger"] = DebuggerTab(
+        # AIDE Tab
+        self.tabs["AIDE"] = AIDE(
             dispatcher=self.dispatcher,
             logger=self.logger,
+            debug_service=self.extra_dependencies.get('debug_service'),
+            fix_service=self.extra_dependencies.get('fix_service'),
+            rollback_service=self.extra_dependencies.get('rollback_service'),
             cursor_manager=self.cursor_manager
         )
-        self.addTab(self.tabs["Debugger"], "Debugger")
-
-        # Chat Automation Debugger Tab (new)
-        self.tabs["ChatAutomation"] = ChatAutomationDebuggerTab(
-            dispatcher=self.dispatcher,
-            logger=self.logger
-        )
-        self.addTab(self.tabs["ChatAutomation"], "Chat Automation")
+        self.addTab(self.tabs["AIDE"], "AIDE")
 
         # Logs Tab (Centralized logging)
         self.tabs["Logs"] = LogsTab(
@@ -190,30 +174,30 @@ class MainTabs(QTabWidget):
         # Log the event
         self.append_output(f"[Debug] Completed with result: {result}")
         
-        # Notify Debugger tab if needed
-        debugger_tab = self.tabs.get("Debugger")
-        if debugger_tab and hasattr(debugger_tab, "handle_debug_completed"):
-            debugger_tab.handle_debug_completed(result)
+        # Notify AIDE tab if needed
+        aide_tab = self.tabs.get("AIDE")
+        if aide_tab and hasattr(aide_tab, "handle_debug_completed"):
+            aide_tab.handle_debug_completed(result)
 
     def _on_cursor_code_generated(self, code):
         """Handle cursor_code_generated signal by notifying appropriate tabs."""
         # Log the event
         self.append_output(f"[Cursor] Generated new code")
         
-        # Notify Debugger tab if needed
-        debugger_tab = self.tabs.get("Debugger")
-        if debugger_tab and hasattr(debugger_tab, "handle_cursor_code_generated"):
-            debugger_tab.handle_cursor_code_generated(code)
+        # Notify AIDE tab if needed
+        aide_tab = self.tabs.get("AIDE")
+        if aide_tab and hasattr(aide_tab, "handle_cursor_code_generated"):
+            aide_tab.handle_cursor_code_generated(code)
             
     def _on_automation_result(self, result):
         """Handle automation_result signal by notifying appropriate tabs."""
         # Log the event
         self.append_output(f"[Automation] {result}")
         
-        # Notify Chat Automation tab if needed
-        chat_automation_tab = self.tabs.get("ChatAutomation")
-        if chat_automation_tab and hasattr(chat_automation_tab, "on_automation_result"):
-            chat_automation_tab.on_automation_result(result)
+        # Notify AIDE tab if needed
+        aide_tab = self.tabs.get("AIDE")
+        if aide_tab and hasattr(aide_tab, "on_automation_result"):
+            aide_tab.on_automation_result(result)
 
     def append_output(self, message: str):
         """

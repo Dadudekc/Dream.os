@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QHBoxLayout
 )
+import logging
 
 from interfaces.pyqt.components.dialogs.exclusions_dialog import ExclusionsDialog
 from interfaces.pyqt.components.dialogs.discord_settings import DiscordSettingsDialog
@@ -11,8 +12,21 @@ class ConfigurationTab(QWidget):
     Configuration & Discord Settings tab.
     Manages dialogs for exclusions, Discord setup, and reinforcement tools.
     """
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        config_manager=None,
+        dispatcher=None,
+        service=None,
+        command_handler=None,
+        logger=None,
+        parent=None
+    ):
         super().__init__(parent)
+        self.config_manager = config_manager
+        self.dispatcher = dispatcher
+        self.service = service
+        self.command_handler = command_handler
+        self.logger = logger or logging.getLogger(__name__)
         self.parent = parent  # This should be DreamscapeGUI (has append_output_signal)
 
         self.initUI()

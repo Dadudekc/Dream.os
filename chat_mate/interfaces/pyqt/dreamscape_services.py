@@ -45,7 +45,7 @@ from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
-from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
+from core.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
 logger = logging.getLogger(__name__)
@@ -622,7 +622,7 @@ class DreamscapeService:
         # Initialize the generator if needed
         if not hasattr(self.dreamscape_generator, 'generate_dreamscape_episodes'):
             self.logger.warning("Dreamscape generator doesn't support the original functionality. Re-initializing.")
-            from core.UnifiedDreamscapeGenerator import DreamscapeEpisodeGenerator
+            from core.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
             self.dreamscape_generator = DreamscapeEpisodeGenerator(
                 chat_manager=self.chat_manager,
                 response_handler=self.prompt_handler,
@@ -869,8 +869,7 @@ class DreamscapeService:
             discord_manager = UnifiedDiscordService(
                 bot_token=bot_token, 
                 default_channel_id=channel_id,
-                template_dir=template_dir,
-                logger=self.logger
+                template_dir=template_dir
             )
             self.set_service("discord_manager", discord_manager)
             self.logger.info("Discord manager initialized successfully")
@@ -895,9 +894,8 @@ class DreamscapeService:
             excluded_chats = self.config.get("excluded_chats", []) if hasattr(self.config, "get") else getattr(self.config, "excluded_chats", [])
             
             chat_manager = ChatManager(
-                model=model,
-                headless=headless,
-                excluded_chats=excluded_chats
+                config=self.config,
+                logger=self.logger
             )
             self.set_service("chat_manager", chat_manager)
             self.logger.info("Chat manager initialized successfully")
@@ -909,7 +907,10 @@ class DreamscapeService:
         try:
             # Create reinforcement engine
             from core.ReinforcementEngine import ReinforcementEngine
-            reinforcement_engine = ReinforcementEngine(config=self.config, logger=self.logger)
+            reinforcement_engine = ReinforcementEngine(
+                config_manager=self.config,
+                logger=self.logger
+            )
             self.set_service("reinforcement_engine", reinforcement_engine)
             self.logger.info("Reinforcement engine initialized successfully")
         except Exception as e:
@@ -919,7 +920,10 @@ class DreamscapeService:
         try:
             # Create prompt handler
             from core.PromptResponseHandler import PromptResponseHandler
-            prompt_handler = PromptResponseHandler(config=self.config, logger=self.logger)
+            prompt_handler = PromptResponseHandler(
+                config_manager=self.config,
+                logger=self.logger
+            )
             self.set_service("prompt_handler", prompt_handler)
             self.logger.info("Prompt handler initialized successfully")
         except Exception as e:
@@ -950,3 +954,32 @@ class DreamscapeService:
         
         self.logger.info(f"Service bootstrap complete. Status: {service_status}")
         return all_critical_available
+
+    def shutdown_all(self):
+        """
+        Gracefully shuts down all services.
+        Called when the application is closing.
+        """
+        self.logger.info("Shutting down all services...")
+        
+        # List of service methods to call on shutdown
+        shutdown_methods = {
+            "chat_manager": "shutdown",
+            "discord_manager": "shutdown",
+            "prompt_manager": "save_state",
+            "memory_manager": "save",
+        }
+        
+        for service_name, method_name in shutdown_methods.items():
+            service = getattr(self, service_name, None)
+            if service is not None and hasattr(service, method_name):
+                try:
+                    self.logger.info(f"Shutting down {service_name}...")
+                    method = getattr(service, method_name)
+                    method()
+                except Exception as e:
+                    self.logger.error(f"Error shutting down {service_name}: {e}")
+            else:
+                self.logger.debug(f"Service {service_name} not available or doesn't have method {method_name}")
+        
+        self.logger.info("All services shut down successfully")

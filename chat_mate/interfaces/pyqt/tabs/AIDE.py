@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """
-ChatAutomationDebuggerTab.py
+AIDE.py (AI Development Environment)
 
-A tab that integrates the chat_automations functionality into the Dreamscape interface.
-This tab provides file browsing, prompt execution, and other automation features from 
-the chatgpt_automation module.
+A unified development environment that combines chat automation and debugging functionality.
+This tab provides:
+- File browsing and editing
+- Prompt execution
+- Debug session management
+- Code generation and testing
+- Self-healing capabilities
 """
 
 import sys
@@ -15,24 +19,24 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTe
                             QFileDialog)
 from PyQt5.QtCore import Qt, pyqtSlot
 
-from chatgpt_automation.views.file_browser_widget import FileBrowserWidget
-from chatgpt_automation.GUI.GuiHelpers import GuiHelpers
-from chatgpt_automation.automation_engine import AutomationEngine
+from core.chatgpt_automation.views.file_browser_widget import FileBrowserWidget
+from core.chatgpt_automation.GUI.GuiHelpers import GuiHelpers
+from core.chatgpt_automation.automation_engine import AutomationEngine
 
 # Define the folder for updated files
 UPDATED_FOLDER = Path("updated")
 UPDATED_FOLDER.mkdir(exist_ok=True)
 
 
-class ChatAutomationDebuggerTab(QWidget):
+class AIDE(QWidget):
     def __init__(self, dispatcher=None, logger=None, **services):
         """
-        Initializes the ChatAutomationDebuggerTab.
+        Initializes the AIDE (AI Development Environment).
         
         Args:
             dispatcher: Centralized signal dispatcher.
             logger: Logger instance.
-            services: Additional services.
+            services: Additional services including debug_service, fix_service, rollback_service, cursor_manager.
         """
         super().__init__()
         self.dispatcher = dispatcher
@@ -44,9 +48,15 @@ class ChatAutomationDebuggerTab(QWidget):
         self.helpers = GuiHelpers()
         self.engine = AutomationEngine(use_local_llm=False, model_name='mistral')
         
+        # Get debug-related services
+        self.debug_service = services.get("debug_service")
+        self.fix_service = services.get("fix_service")
+        self.rollback_service = services.get("rollback_service")
+        self.cursor_manager = services.get("cursor_manager")
+        
         self._init_ui()
         self._connect_signals()
-        self.logger.info("ChatAutomationDebuggerTab initialized")
+        self.logger.info("AIDE initialized")
 
     def _init_ui(self):
         """
@@ -56,7 +66,7 @@ class ChatAutomationDebuggerTab(QWidget):
         main_layout = QVBoxLayout(self)
         
         # Title label
-        title_label = QLabel("Chat Automation Debugger - File Processing & Prompt Execution")
+        title_label = QLabel("AIDE - AI Development Environment")
         main_layout.addWidget(title_label)
         
         # Horizontal splitter for left/right panels
@@ -68,7 +78,7 @@ class ChatAutomationDebuggerTab(QWidget):
         main_splitter.addWidget(self.file_browser)
         main_splitter.setStretchFactor(0, 1)
         
-        # RIGHT PANEL: QTabWidget with "Preview" and "Prompt" tabs
+        # RIGHT PANEL: QTabWidget with multiple tabs
         right_tab = QTabWidget()
         
         # --- Tab 1: Preview with Action Buttons ---
@@ -81,7 +91,10 @@ class ChatAutomationDebuggerTab(QWidget):
         )
         preview_layout.addWidget(self.file_preview)
         
+        # Action buttons
         button_layout = QHBoxLayout()
+        
+        # File processing buttons
         self.process_button = QPushButton("Process File")
         self.process_button.clicked.connect(self.process_file)
         button_layout.addWidget(self.process_button)
@@ -93,6 +106,24 @@ class ChatAutomationDebuggerTab(QWidget):
         self.run_tests_button = QPushButton("Run Tests")
         self.run_tests_button.clicked.connect(self.run_tests)
         button_layout.addWidget(self.run_tests_button)
+        
+        # Debug buttons
+        self.run_debug_btn = QPushButton("Run Debug")
+        self.run_debug_btn.clicked.connect(self.on_run_debug)
+        button_layout.addWidget(self.run_debug_btn)
+        
+        self.apply_fix_btn = QPushButton("Apply Fix")
+        self.apply_fix_btn.clicked.connect(self.on_apply_fix)
+        button_layout.addWidget(self.apply_fix_btn)
+        
+        self.rollback_btn = QPushButton("Rollback Fix")
+        self.rollback_btn.clicked.connect(self.on_rollback_fix)
+        button_layout.addWidget(self.rollback_btn)
+        
+        self.cursor_exec_btn = QPushButton("Execute via Cursor")
+        self.cursor_exec_btn.clicked.connect(self.on_cursor_execute)
+        button_layout.addWidget(self.cursor_exec_btn)
+        
         preview_layout.addLayout(button_layout)
         
         self.progress_bar = QProgressBar()
@@ -134,17 +165,18 @@ class ChatAutomationDebuggerTab(QWidget):
         """
         Connect signals between components
         """
-        # If the dispatcher has relevant signals, connect them here
-        if self.dispatcher and hasattr(self.dispatcher, "automation_result"):
-            self.dispatcher.automation_result.connect(self.on_automation_result)
+        if self.dispatcher:
+            if hasattr(self.dispatcher, "automation_result"):
+                self.dispatcher.automation_result.connect(self.on_automation_result)
+            if hasattr(self.dispatcher, "debug_output"):
+                self.dispatcher.debug_output.connect(self.append_output)
+            if hasattr(self.dispatcher, "cursor_code_generated"):
+                self.dispatcher.cursor_code_generated.connect(self.on_cursor_code_generated)
 
+    # --- File Operations ---
+    
     def load_file_into_preview(self, file_path):
-        """
-        Load a file into the preview pane
-        
-        Args:
-            file_path: Path to the file to load
-        """
+        """Load a file into the preview pane."""
         content = self.helpers.read_file(file_path)
         if content:
             self.file_preview.setPlainText(content)
@@ -154,10 +186,8 @@ class ChatAutomationDebuggerTab(QWidget):
             self.helpers.show_error("Could not load file.", "Error")
 
     def process_file(self):
-        """
-        Process the current file using the automation engine
-        """
-        if not hasattr(self, "current_file_path") or not self.current_file_path:
+        """Process the current file using the automation engine."""
+        if not self.current_file_path:
             self.helpers.show_warning("No file loaded.", "Warning")
             return
         
@@ -168,7 +198,6 @@ class ChatAutomationDebuggerTab(QWidget):
         
         response = self.engine.get_chatgpt_response(combined_prompt)
         if response:
-            # Save to the updated folder, preserving the original filename.
             updated_file = UPDATED_FOLDER / Path(self.current_file_path).name
             saved = self.helpers.save_file(str(updated_file), response)
             if saved:
@@ -179,10 +208,8 @@ class ChatAutomationDebuggerTab(QWidget):
             self.append_output("❌ No response from ChatGPT.")
 
     def self_heal(self):
-        """
-        Run self-healing on the current file
-        """
-        if not hasattr(self, "current_file_path") or not self.current_file_path:
+        """Run self-healing on the current file."""
+        if not self.current_file_path:
             self.helpers.show_warning("No file loaded.", "Warning")
             return
         
@@ -199,10 +226,8 @@ class ChatAutomationDebuggerTab(QWidget):
             self.append_output("❌ Self-Heal did not produce a response.")
 
     def run_tests(self):
-        """
-        Run tests on the current file
-        """
-        if not hasattr(self, "current_file_path") or not self.current_file_path:
+        """Run tests on the current file."""
+        if not self.current_file_path:
             self.helpers.show_warning("No file loaded.", "Warning")
             return
         
@@ -210,10 +235,10 @@ class ChatAutomationDebuggerTab(QWidget):
         results = self.engine.run_tests(self.current_file_path)
         self.append_output("Test run complete.")
 
+    # --- Prompt Operations ---
+
     def send_prompt(self):
-        """
-        Send a prompt to ChatGPT
-        """
+        """Send a prompt to ChatGPT."""
         prompt = self.prompt_input.toPlainText().strip()
         if not prompt:
             self.append_output("Please enter a prompt.")
@@ -229,9 +254,7 @@ class ChatAutomationDebuggerTab(QWidget):
             self.append_output("❌ No response received.")
 
     def process_batch_files(self):
-        """
-        Process multiple files with the same prompt
-        """
+        """Process multiple files with the same prompt."""
         file_list = self.engine.prioritize_files()
         if not file_list:
             self.append_output("No files found for batch processing.")
@@ -271,23 +294,100 @@ class ChatAutomationDebuggerTab(QWidget):
         self.prompt_response.setPlainText("\n".join(batch_results))
         self.append_output("Batch processing complete.")
 
+    # --- Debug Operations ---
+
+    @pyqtSlot()
+    def on_run_debug(self):
+        """Run a debug session."""
+        self.append_output("Starting debug session...")
+        if self.debug_service:
+            try:
+                result = self.debug_service.run_debug_cycle()
+                self.append_output(f"Debug session completed: {result}")
+                if self.dispatcher:
+                    self.dispatcher.emit_debug_completed(result)
+            except Exception as e:
+                error_msg = f"Error running debug session: {e}"
+                self.append_output(error_msg)
+                if self.dispatcher:
+                    self.dispatcher.emit_debug_error(str(e))
+        else:
+            self.append_output("Debug service not available.")
+
+    @pyqtSlot()
+    def on_apply_fix(self):
+        """Apply a fix."""
+        self.append_output("Applying fix...")
+        if self.fix_service:
+            try:
+                result = self.fix_service.apply_fix()
+                self.append_output(f"Fix applied: {result}")
+                if self.dispatcher:
+                    self.dispatcher.emit_fix_applied(result)
+            except Exception as e:
+                error_msg = f"Error applying fix: {e}"
+                self.append_output(error_msg)
+                if self.dispatcher:
+                    self.dispatcher.emit_fix_error(str(e))
+        else:
+            self.append_output("Fix service not available.")
+
+    @pyqtSlot()
+    def on_rollback_fix(self):
+        """Roll back a fix."""
+        self.append_output("Rolling back fix...")
+        if self.rollback_service:
+            try:
+                result = self.rollback_service.rollback_fix()
+                self.append_output(f"Rollback successful: {result}")
+                if self.dispatcher:
+                    self.dispatcher.emit_rollback_completed(result)
+            except Exception as e:
+                error_msg = f"Error during rollback: {e}"
+                self.append_output(error_msg)
+                if self.dispatcher:
+                    self.dispatcher.emit_rollback_error(str(e))
+        else:
+            self.append_output("Rollback service not available.")
+
+    @pyqtSlot()
+    def on_cursor_execute(self):
+        """Execute a prompt via the Cursor integration."""
+        self.append_output("Executing debug prompt via Cursor...")
+        if self.cursor_manager:
+            try:
+                prompt = "## DEBUG PROMPT\nPlease analyze the current error state and generate a suggested fix."
+                generated_code = self.cursor_manager.execute_prompt(prompt)
+                if generated_code:
+                    self.append_output("Cursor generated code:")
+                    self.append_output(generated_code)
+                    if self.dispatcher:
+                        self.dispatcher.emit_cursor_code_generated(generated_code)
+                else:
+                    self.append_output("Cursor did not generate any code.")
+            except Exception as e:
+                error_msg = f"Error executing prompt via Cursor: {e}"
+                self.append_output(error_msg)
+                if self.dispatcher:
+                    self.dispatcher.emit_cursor_error(str(e))
+        else:
+            self.append_output("Cursor manager not available. Ensure it is added as a service.")
+
+    # --- Signal Handlers ---
+
     @pyqtSlot(str)
     def on_automation_result(self, result):
-        """
-        Handle automation result from the dispatcher
-        
-        Args:
-            result: Result message
-        """
+        """Handle automation result from the dispatcher."""
         self.append_output(result)
 
+    @pyqtSlot(str)
+    def on_cursor_code_generated(self, code):
+        """Handle generated code from Cursor."""
+        self.append_output("Cursor generated code:")
+        self.append_output(code)
+
     def append_output(self, message: str):
-        """
-        Append a message to the output and log it
-        
-        Args:
-            message: Message to append
-        """
+        """Append a message to the output and log it."""
         # Log message to the central log system via dispatcher if available
         if self.dispatcher and hasattr(self.dispatcher, "emit_append_output"):
             self.dispatcher.emit_append_output(message)
@@ -301,4 +401,4 @@ class ChatAutomationDebuggerTab(QWidget):
             
         # Log using the logger if available
         if self.logger:
-            self.logger.info(f"[ChatAutomation] {message}") 
+            self.logger.info(f"[AIDE] {message}") 
