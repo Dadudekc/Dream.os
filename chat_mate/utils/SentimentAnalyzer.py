@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 SentimentAnalyzer: Scalable sentiment analysis for social media content.
-This module uses NLTK’s VADER when available and supports a custom lexicon.
+This module uses NLTK's VADER when available and supports a custom lexicon.
 """
 
 import re
@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Local imports
-from utils.path_manager import PathManager
 from .nltk_init import ensure_nltk_data  # This function should return True if required NLTK data is present
 
 # Try to import NLTK and its VADER analyzer
@@ -66,7 +65,7 @@ class SentimentAnalyzer:
         'negative': [':(', ':-(', ':c', ':C', ':-<', ':/', ':-/', ':\\', ':-\\', ':<', '>:(']
     }
     
-    def __init__(self, custom_lexicon: Optional[str] = None):
+    def __init__(self, custom_lexicon: Optional[str] = None, utils_path: Optional[str] = None):
         self.logger = logging.getLogger(__name__)
         self.sia: Optional[SentimentIntensityAnalyzer] = None
 
@@ -91,9 +90,9 @@ class SentimentAnalyzer:
         # If a custom lexicon is provided (or exists by default), load it
         if custom_lexicon:
             self.load_lexicon(custom_lexicon)
-        else:
-            # Attempt to load default custom lexicon from a known path
-            default_lexicon_path = os.path.join(PathManager.get_path('utils'), 'lexicons', 'custom_lexicon.json')
+        elif utils_path:
+            # Use provided utils path instead of importing PathManager
+            default_lexicon_path = os.path.join(utils_path, 'lexicons', 'custom_lexicon.json')
             if os.path.exists(default_lexicon_path):
                 self.load_lexicon(default_lexicon_path)
     

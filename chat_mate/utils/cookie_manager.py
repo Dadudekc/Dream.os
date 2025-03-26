@@ -1,6 +1,6 @@
 import os
 import pickle
-from social.log_writer import logger, write_json_log
+from .logging_utils import logger, write_json_log
 
 class CookieManager:
     """

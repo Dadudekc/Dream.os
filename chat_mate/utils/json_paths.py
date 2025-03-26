@@ -1,4 +1,4 @@
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 import os
 
 class JsonPaths:

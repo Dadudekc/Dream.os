@@ -74,9 +74,44 @@ class QAsyncEventLoopManager:
         """Stop the event loop and cancel all running tasks."""
         self.logger.info("Shutting down event loop...")
 
-        for task in self.tasks:
-            if not task.done():
-                task.cancel()
+        # Cancel all running tasks
+        try:
+            for task in self.tasks:
+                if not task.done() and not task.cancelled():
+                    self.logger.info(f"Cancelling task: {task}")
+                    task.cancel()
+        except Exception as e:
+            self.logger.error(f"Error cancelling tasks: {e}")
 
-        self.loop.stop()
-        self.logger.info("Event loop stopped.")
+        # Stop the loop
+        try:
+            # Check if loop is running and stop it
+            if self.loop.is_running():
+                self.loop.call_soon_threadsafe(self.loop.stop)
+                self.logger.info("Called stop on running event loop")
+            else:
+                self.logger.info("Event loop was not running")
+        except Exception as e:
+            self.logger.error(f"Error stopping event loop: {e}")
+
+        # Cleanup the loop
+        try:
+            if hasattr(self.loop, 'close'):
+                self.loop.close()
+                self.logger.info("Event loop closed")
+        except Exception as e:
+            self.logger.error(f"Error closing event loop: {e}")
+        
+        # Clean up asyncio tasks
+        try:
+            # Get all remaining tasks
+            remaining_tasks = asyncio.all_tasks(self.loop)
+            if remaining_tasks:
+                self.logger.info(f"Found {len(remaining_tasks)} remaining asyncio tasks to cancel")
+                for task in remaining_tasks:
+                    if not task.done() and not task.cancelled():
+                        task.cancel()
+        except Exception as e:
+            self.logger.error(f"Error cancelling remaining tasks: {e}")
+            
+        self.logger.info("Event loop shutdown complete")

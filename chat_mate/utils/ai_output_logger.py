@@ -7,7 +7,7 @@ to maintain backward compatibility while avoiding circular dependencies.
 
 import logging
 from typing import Optional, List, Dict, Any
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 # Import reinforcement trainer only if needed
 from utils.reinforcement_trainer import process_feedback
 
