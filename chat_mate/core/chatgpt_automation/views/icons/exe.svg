@@ -1,0 +1,5 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="64" height="64" rx="12" fill="black"/>
+  <text x="32" y="38" font-size="16" text-anchor="middle" fill="gold" font-family="Arial, sans-serif">EXE</text>
+  <circle cx="32" cy="32" r="28" stroke="gold" stroke-width="2"/>
+</svg>
