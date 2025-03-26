@@ -2,9 +2,10 @@ from battlesimulator.CharacterLoader import load_all_characters
 from battlesimulator.core.engine import SimulationStageEngine
 from typing import Dict, Any, List
 import itertools
+import json
 
 
-def run_tournament_stage_only() -> Dict[str, Any]:
+def run_tournament(full_battle: bool = False) -> Dict[str, Any]:
     characters = load_all_characters()
     names = list(characters.keys())
     results = {name: {"wins": 0, "losses": 0, "total_chakra": 0} for name in names}
@@ -14,9 +15,13 @@ def run_tournament_stage_only() -> Dict[str, Any]:
         char_b = characters[b]
         chakra = {a: 200, b: 200}
         sim = SimulationStageEngine(char_a, char_b, chakra, [])
-        sim.run_stage()
 
-        # Determine winner based on chakra remaining
+        if full_battle:
+            for _ in range(3):
+                sim.run_stage()
+        else:
+            sim.run_stage()
+
         chakra_a = sim.chakra[a]
         chakra_b = sim.chakra[b]
         results[a]["total_chakra"] += chakra_a
@@ -28,9 +33,6 @@ def run_tournament_stage_only() -> Dict[str, Any]:
         elif chakra_b > chakra_a:
             results[b]["wins"] += 1
             results[a]["losses"] += 1
-        else:
-            # Draw logic can be expanded
-            pass
 
     return results
 
@@ -43,7 +45,19 @@ def format_leaderboard(results: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def save_tournament_results(results: Dict[str, Any], filepath: str = "battlesimulator/main.json"):
+    try:
+        with open(filepath, "r") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = {}
+
+    data["tournament_results"] = results
+    with open(filepath, "w") as f:
+        json.dump(data, f, indent=2)
+
+
 if __name__ == "__main__":
-    results = run_tournament_stage_only()
-    leaderboard = format_leaderboard(results)
-    print(leaderboard) 
+    results = run_tournament(full_battle=False)
+    save_tournament_results(results)
+    print(format_leaderboard(results)) 

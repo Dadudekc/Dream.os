@@ -3,6 +3,7 @@ import json
 from battlesimulator.CharacterParser import CharacterParser
 from battlesimulator.CharacterLoader import load_all_characters, load_character, list_character_names
 from battlesimulator.core.engine import SimulationStageEngine
+from battlesimulator.tournament_runner import run_tournament, format_leaderboard, save_tournament_results
 
 CHARACTER_DIR = os.path.join(os.path.dirname(__file__), "characters")
 MAIN_CONFIG = os.path.join(os.path.dirname(__file__), "main.json")
@@ -130,5 +131,10 @@ def handle_command(command: str, user_id: str = "default") -> str:
             return "No simulation in progress."
         dashboard = sim.run_stage()
         return f"Stage {dashboard['stage']} complete.\nPrompt: {dashboard['prompt']}"
+
+    elif command.startswith("!tournament"):
+        results = run_tournament(full_battle=False)  # Default to single stage
+        save_tournament_results(results)
+        return format_leaderboard(results)
 
     return "Unknown command. Use `!characters`, `!simulate A vs B`, `!status`, `!narration`, `!next`"
