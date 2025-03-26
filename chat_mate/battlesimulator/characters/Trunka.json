@@ -1,0 +1,165 @@
+{
+    "overview_identity": {
+      "name": "Trunka Inuzuka",
+      "clan_affiliation": "Inuzuka Clan, Konohagakure (Hidden Leaf)",
+      "titles_epithets": [
+        "The Crimson Fang of Konoha",
+        "Alpha of the Wild Hunt",
+        "Sage of the Scarlet Wilds"
+      ],
+      "status_role": "Elite operative for special missions (Siegebreaker, high-risk tracking) and renowned Pack Alpha among the Inuzuka",
+      "relative_power_standing": "Widely hailed among the top echelon of shinobi in the modern era; combines advanced Feral Sage powers and unrivaled synergy with wolf summons. While seldom matched in raw ferocity, he maintains balance in line with other formidable figures (e.g., Kage-level powerhouses, legendary shinobi like Solomon Uchiha)"
+    },
+    "personality_philosophy": {
+      "core_traits": [
+        "Relentless Will – radiates raw, predatory confidence with an unwavering need to protect his allies",
+        "Alpha Mindset – sees teammates and summons as part of his 'pack' and leads from the front",
+        "Controlled Wildness – feral in nature yet capable of swift strategizing under pressure",
+        "Pack-Bond Focus – places extraordinary value on loyalty, considering betrayal or abandonment as the gravest of sins"
+      ],
+      "personal_creed": "“If you hear my howl, there’s still time—but not much.” It signifies his commitment to ensuring no comrade is left behind and no threat endangers those he protects."
+    },
+    "physical_appearance": {
+      "height": "~6’1”",
+      "build": "Tall with lean muscle",
+      "hair": "Dark brown, ragged, typically tied back in a loose war knot during battle",
+      "eyes": "Amber-gold with a predatory gleam (slit-pupil characteristic)",
+      "facial_traits": "Prominent Inuzuka fang markings or clan facial tattoos; scar along his left cheek",
+      "chakra_aura": "Faint red-gold shimmer akin to simmering feral energy when riled",
+      "attire": "Practical shinobi gear in dark earth tones, reinforced for close-quarters brutality; leather harness containing scrolls, scent bombs, and supplies for extended hunts; often accompanied by at least one ninken"
+    },
+    "backstory_snapshot": {
+      "inuzuka_heritage": "Born into a prestigious Inuzuka lineage known for forging exceptional 'alpha' leaders. His potential was evident in his heightened senses and natural bond with wolves from childhood.",
+      "harsh_upbringing": "Trained under an elderly Packmaster, learning survival outside the village and forging an unbreakable link to nature and primal instincts.",
+      "loss_motivation": "Early tragedy—his uncle’s death on a mission he led—ignited a vow to protect others at any cost, pushing him to extend Inuzuka techniques beyond their usual limits.",
+      "crimson_wilds_discovery": "Traveled to the Scarlet Wilds in search of an ancient Sage art rumored to fuse primal energies with the user's spirit, forging pacts with dire wolves older than many known summoning clans.",
+      "return_as_alpha": "Emerged as a Feral Sage, recognized in Konoha for transforming clan-based tracking and infiltration tactics into unstoppable siege and battlefield domination."
+    },
+    "clan_role_status": {
+      "alpha_hunter": "Leads specialized strike teams and high-risk hunts, famously deployed against rogue ninja or dangerous beasts.",
+      "siegebreaker_specialist": "Expert at dismantling fortified defenses from within, aided by large wolf summons.",
+      "sage_of_the_scarlet_wilds": "One of the rare Inuzuka to master an advanced, beast-centric Sage Mode, granting heightened senses and potent transformations.",
+      "operational_scope": "Though loyal to Konoha, he often operates on the village’s fringes where his primal approach is most effective."
+    },
+    "relative_power_combat_philosophy": {
+      "primary_edge": "Seamless blend of Feral Sage Mode, summoning synergy, and overwhelming close-range assault.",
+      "battlefield_presence": "Gains momentum as the fight prolongs with unrelenting flurries of attacks keeping enemies off-balance.",
+      "speed_ferocity": "Faster and stronger than most shinobi in toe-to-toe engagements, especially when Sage transformations are active.",
+      "key_behavioral_points": [
+        "Instinct-Driven Finesse: Leverages heightened senses to read subtle cues (heartbeats, muscle tension)",
+        "Pack Coordination: Fights in tandem with smaller ninken even without large summons, forming multi-angle assaults",
+        "Territorial Control: Uses specialized jutsu and summons to corral foes, collapse defensive lines, and sow chaos"
+      ]
+    },
+    "core_abilities_sage_modes": {
+      "feral_sage_mode": {
+        "description": "Base Sage State achieved through deep communion with wild chakra sources (dire wolves, wilderness itself)",
+        "physical_boost": "Enhanced agility, reflexes, and muscle density; capable of short-range bursts near top-tier lightning-cloak speeds",
+        "sensory_awareness": "Tracks even the subtlest scent or aura, effectively countering stealth or camouflage jutsu",
+        "chakra_aura": "Emits a soft red-gold glow, intensifying around his forearms and fangs",
+        "combat_traits": [
+          "Rapid regeneration of minor wounds",
+          "Sharpened claws, fangs, and increased durability",
+          "Incorporates spinning attacks (Fang Over Fang variants) with swift directional changes"
+        ]
+      },
+      "sage_mode_v2": {
+        "name": "Crimson Apex Form",
+        "further_evolved_state": "Achieved by harmonizing with ancient wolf spirits from the Crimson Wilds",
+        "chakra_output": "Surges to levels that can challenge most Kage-level opponents, particularly in close-range bursts",
+        "enhanced_teleportation": "Folds short distances mid-spin, appearing to 'blink' behind an enemy’s guard",
+        "scorch_release_access": "Some attacks gain superheated wind-fire synergy, slicing or burning through defenses",
+        "signature_trait": "Crimson Howl – a short-range, concussive shockwave generated by a roar to knock back or stun foes"
+      }
+    },
+    "summoning_pact_wolf_arsenal": {
+      "crimson_wilds_contract": {
+        "description": "Trunka’s summons are ancient dire wolves known for their intelligence and brutal efficiency. They coordinate telepathically with him under a 'pack bond'.",
+        "principal_summons": [
+          {
+            "name": "Fenrir – The Crimson Howl",
+            "size": "~50 feet at the shoulder when fully manifested",
+            "specialty": "Fire Release illusions and physical flame-infused attacks",
+            "notable_technique": "Howl of Despair – a psychic roar that disorients weaker foes, sowing fear and confusion"
+          },
+          {
+            "name": "Siegebreakers",
+            "variants": [
+              {
+                "variant": "Ravager",
+                "description": "Excels at Earth Release for subterranean assault, caving in enemy fortifications from below"
+              },
+              {
+                "variant": "Inferno",
+                "description": "Breathes scorching flame capable of clearing swathes of opposition"
+              },
+              {
+                "variant": "Warden",
+                "description": "Projects defensive barriers, shielding the pack from large-scale jutsu"
+              }
+            ]
+          }
+        ]
+      },
+      "pack_fusion": {
+        "divine_wolf_avatar": {
+          "description": "Trunka may fuse with Fenrir (or occasionally multiple dire wolves) into a towering bipedal wolf-warrior form",
+          "physical_power": "Rivals advanced jinchūriki forms in raw might and speed",
+          "signature_move": "Alpha Rend – channels giant chakra claws to tear through durable defenses such as ribcage-level Susanoo or high-grade barrier ninjutsu"
+        }
+      }
+    },
+    "signature_techniques": {
+      "techniques": [
+        {
+          "name": "Fang Over Fang (Teleporting Variant)",
+          "description": "A classic Inuzuka spinning attack augmented to higher rotational velocity with spatial flicker in Sage Mode V2, enabling unpredictable vanish-and-reappear maneuvers and defensive penetration against advanced fortifications."
+        },
+        {
+          "name": "Scorching Fang Barrage",
+          "description": "A wind-fire combined jutsu where each strike or thrown fang construct slices and burns, creating disorienting heat waves that limit enemy visibility and interfere with sensory jutsu."
+        },
+        {
+          "name": "Crimson Howl — Area Disruption",
+          "description": "A thunderous roar that releases compressed sage chakra in a frontal cone, producing a blunt force wave to knock back or stagger enemies and briefly disrupt morale or concentration."
+        },
+        {
+          "name": "Primal Siege Technique",
+          "description": "Rapidly summons multiple dire wolves behind enemy lines to overrun and shatter formations from within, coordinated with Trunka’s teleportation for a decisive final blow."
+        },
+        {
+          "name": "Divine Wolf Avatar – Howl of Apex",
+          "description": "A massive attack exclusive to the fusion form that channels Trunka’s and Fenrir’s combined chakra into a single wave of sonic and flame energy; extremely powerful but demanding in chakra expenditure."
+        }
+      ]
+    },
+    "combat_behavior_scaling_guidelines": {
+      "combat_behavior": {
+        "pack_mentality": "Always factors in allied wolves (or ninken) for anchoring; rarely fights entirely solo.",
+        "escalation_curve": "Begins in base Feral Sage Mode and escalates to Sage Mode V2 or summons large dire wolves when facing advanced or multiple high-tier foes.",
+        "territorial_tactics": "Seeks to dominate the field by forcing enemies into crossfire from summons and controlling vantage points via Earth Release sabotage or suppressive flame attacks.",
+        "close_combat_focus": "Excels in direct engagements using Fang Over Fang variants and clawed attacks to break enemy defenses.",
+        "chakra_stamina_management": "Relies on monstrous stamina in Sage Modes, using heavy forms like Divine Wolf Avatar judiciously to prevent indefinite usage."
+      }
+    },
+    "personal_quotes_themes": {
+      "quotes": [
+        "“We are not prey—we are the hunt.”",
+        "“If you won’t give me your back, I’ll take it.”",
+        "“The pack stands, the pack fights, and the pack endures.”"
+      ],
+      "themes": "Embodies unwavering, forward-charging spirit and loyalty-first mentality."
+    },
+    "battle_simulator_key_points": {
+      "tiered_forms_usage": "Trunka gradually escalates; ultimate forms like Divine Wolf Avatar or large multi-summons are reserved for truly formidable threats or large-scale battles.",
+      "teamwork_and_summons": "Summons are integral to his style; expect pack-based tactics rather than purely individual feats.",
+      "feral_sage_advantages": "High-level reflexes and advanced tracking counter stealth and illusions, though specialized illusions tuned against primal instincts can still pose a challenge.",
+      "chakra_economy": "Large reserves allow for powerful moves, but repeated ultimate-scale techniques require careful usage.",
+      "intent_driven_aggression": "His lethal approach is reserved for dire threats; otherwise, he employs intimidation and pack synergy to efficiently subdue foes."
+    },
+    "final_remark": {
+      "statement": "Trunka Inuzuka, known as the Crimson Fang, stands among the mightiest of modern shinobi. By mastering a rare Feral Sage Mode and forging a deep bond with ancient dire wolves, he merges lethal instincts with advanced ninjutsu. His unstoppable rushes, savage coordination with summons, and explosive synergy in Sage Mode exemplify his high-tier strength, making him the lethal Alpha—fearless, cunning, and devoted to protecting his own at any cost.",
+      "quote": "“The hunt ends when my pack is safe…and all threats lie broken.”"
+    }
+  }
+  

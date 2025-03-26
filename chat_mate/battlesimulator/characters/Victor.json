@@ -1,0 +1,124 @@
+{
+    "name": "Victor Shinkan",
+    "titles": [
+        "The Skybound Pillar",
+        "The Architect of Weight and Will",
+        "The Hawk Sage of Tenkyūzan"
+    ],
+    "village": "Iwagakure (Hidden Stone)",
+    "clan": "Shinkan Clan",
+    "rank": "Elite Jōnin",
+    "role_status": "Battlefield Architect, Aerial Specialist, Gravity Strategist",
+    "jinchuriki": "Perfect Jinchūriki of Kokuō (Five-Tails)",
+    "affiliations": [
+        "Iwagakure Shinobi Forces",
+        "Tenkyūzan Sage Disciples",
+        "Kōtengū Summoning"
+    ],
+    "appearance": {
+        "height": "6'4\"",
+        "eyes": "Slate gray (glow hawk-like in Sage Mode)",
+        "hair": "Black with silver strands",
+        "build": "Tall, athletic",
+        "attire": [
+            "Stone-gray shinobi gear with gravity seal plates",
+            "Wind-patterned high-collared cloak",
+            "Forearm and shin wrappings"
+        ]
+    },
+    "philosophy": {
+        "core_beliefs": [
+            "Bearing the weight of responsibility",
+            "Protecting others through grounded power",
+            "Discipline as the foundation of strength"
+        ],
+        "guiding_quote": "One of the most formidable forces in the Hidden Stone, yet ever grounded in purpose."
+    },
+    "backstory": {
+        "clan_history": "Inherited gravity control from the Shinkan Clan, survivors of a political purge.",
+        "sage_training": "Trained with hawks in Tenkyūzan, mastering aerial and wind-based tactics.",
+        "jinchuriki_bond": "Earned Kokuō's respect, becoming a Perfect Jinchūriki without subjugation."
+    },
+    "abilities": {
+        "gravity_control": {
+            "techniques": [
+                "Localized gravity fields",
+                "Variable body density",
+                "Defensive shaping"
+            ]
+        },
+        "hawk_sage_mode": {
+            "enhancements": [
+                "Flight",
+                "Wind-infused precision strikes",
+                "Battlefield awareness"
+            ]
+        },
+        "tailed_beast_synergy": {
+            "boil_release": [
+                "Steam-boosted strikes",
+                "Rapid healing and stamina",
+                "Controlled cloak forms"
+            ]
+        },
+        "battlefield_control": [
+            "Preemptive fortification",
+            "Terrain manipulation",
+            "Aerial formation drops"
+        ]
+    },
+    "signature_techniques": [
+        {
+            "name": "Chōjūgan: Hakai no Kōhan",
+            "effect": "Increases ground weight to immobilize enemies without affecting allies."
+        },
+        {
+            "name": "Sennin Chōjūgan: Kōryū Kyūshū",
+            "effect": "Hawk-shaped aerial gravity field that locks airborne foes."
+        },
+        {
+            "name": "Boil Release: Hekireki Giga",
+            "effect": "Spikes target’s weight, followed by a steam-charged finishing blow."
+        },
+        {
+            "name": "Gravity Well Prison (Shūen no Seki)",
+            "effect": "Confines foes within a high-pressure column of gravity."
+        },
+        {
+            "name": "Sky Hammer Formation",
+            "effect": "Drops an augmented hawk summon like a meteor into enemy lines."
+        }
+    ],
+    "summoning_contract": {
+        "main_summon": "Kōtengū (Crimson Celestial Hawk)",
+        "capabilities": [
+            "Aerial dominance",
+            "Wind-based bombardments",
+            "Mass manipulation in air drops"
+        ],
+        "support_summons": "Lesser hawks for recon and positioning"
+    },
+    "combat_behavior": {
+        "strategy": [
+            "Pre-fight terrain control",
+            "Aerial advantage through hawk synergy",
+            "Selective large-scale gravity use"
+        ],
+        "supportive_tactics": [
+            "Lightens allies",
+            "Constructs walls",
+            "Acts as mobile fortress"
+        ]
+    },
+    "legacy": {
+        "status": "Tsuchikage candidate",
+        "public_image": "A stabilizing force and a mentor figure to younger shinobi",
+        "quote": "Strength is not shown in spectacle, but in the weight one chooses to bear."
+    },
+    "simulator_notes": {
+        "scaling": "Kage-level combatant, balances power with restraint",
+        "escalation": "Begins with localized control and ascends only against major threats",
+        "ultimate_moves": "Used sparingly and tactically",
+        "respect_factor": "Carries the gravity of leadership, even when avoiding the spotlight"
+    }
+}

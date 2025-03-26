@@ -1,0 +1,180 @@
+{
+    "name": "Solomon Uchiha",
+    "clan_affiliation": "Uchiha (Rogue)",
+    "titles": [
+      "The Burning Revenant",
+      "The Crimson Shadow",
+      "The Wolf Sage"
+    ],
+    "role_status": "Exile / Wanderer",
+    "tailed_beast": {
+      "name": "Son Gokū",
+      "alias": "Four-Tails",
+      "status": "Perfect Jinchūriki"
+    },
+    "core_traits": [
+      "Calculated and stoic; escalates only as needed",
+      "Exceptional adaptability in battle",
+      "Fights with disciplined use of power"
+    ],
+    "relative_power": "One of the most formidable shinobi in the world; arguably the strongest in certain contexts",
+    "personality_philosophy": {
+      "reserved_demeanor": "Rarely speaks beyond necessity; prefers swift, conclusive actions.",
+      "controlled_escalation": "Elevates abilities based on threat; prioritizes efficiency.",
+      "willpower_discipline": "Forged through tragedy; symbolizes mastery over raw power.",
+      "regard_for_collateral": "Avoids needless devastation unless under extreme threat.",
+      "guiding_outlook": "Power is best used to prevent suffering, not to flaunt dominion."
+    },
+    "appearance": {
+      "height": "5'9\"",
+      "build": "Lean, compact muscle",
+      "hair": "Dark, medium-length, unkempt",
+      "eyes": "Dark; turn crimson with Sharingan",
+      "details": [
+        "Adamantine Chakra-Forged Chains around arms/waist with sealing script",
+        "Dark, travel-ready cloak (black or deep green), reinforced boots",
+        "Heat shimmer when chakra stirs"
+      ]
+    },
+    "backstory": {
+      "1_clan_turmoil": "Survived betrayal and exile after political fallout within the Uchiha.",
+      "2_wolf_sage": "Trained by hidden wolf sages, blending instinct and control.",
+      "3_mangekyo_awakening": "Triggered by slaughter of monastery mentors; awakened Amaterasu and Kamui.",
+      "4_bond_with_son_goku": "Freed Four-Tails and forged a cooperative bond.",
+      "5_rogue_wanderer": "Now operates outside all village control, acting on personal judgment."
+    },
+    "battle_style": {
+      "directives": {
+        "precision_over_flash": true,
+        "gradual_escalation": true,
+        "chain_combat": true,
+        "calculated_resource_use": true
+      },
+      "chakra_chains": {
+        "always_accessible": true,
+        "functions": [
+          "Physical + Chakra Absorption",
+          "Sealing Inscription",
+          "Versatile Combat (grapples, barriers, whips, etc.)"
+        ],
+        "kamui_synergy": true
+      },
+      "sharingan_mangekyo": {
+        "ems": {
+          "enhanced_perception": true,
+          "no_degradation": true
+        },
+        "left_eye": "Amaterasu (shaped flames, persistent burn)",
+        "right_eye": "Kamui (intangible phasing, dimensional strike)"
+      }
+    },
+    "tailed_beast_synergy": {
+      "bond_status": "Fully cooperative",
+      "chakra_enhancements": [
+        "Lava Release",
+        "Physical Strength",
+        "Fire and Earth-based Jutsu"
+      ],
+      "transformations": {
+        "partial_cloak": {
+          "description": "2–3 tails of molten chakra",
+          "use_case": "Mid-tier shinobi/squads"
+        },
+        "full_cloak": {
+          "description": "4 tails, armor, large-scale lava use, Tailed Beast Bomb",
+          "use_case": "Bijū, large battles"
+        },
+        "fusion_modes": {
+          "wolf_sage_susanoo_fusion": "For god-tier threats, rarely used, extremely taxing"
+        }
+      }
+    },
+    "wolf_sage_mode": {
+      "senses": "Near-feral awareness",
+      "enhancements": "Speed, strength, elemental precision",
+      "behavioral_shift": [
+        "Predator’s Poise",
+        "Ambush emphasis"
+      ]
+    },
+    "susanoo": {
+      "tiers": [
+        "Skeletal",
+        "Armored",
+        "Full-Body Humanoid (wolf-themed, molten patterns)"
+      ],
+      "upgrades": [
+        {
+          "name": "Seigyo no Kiba (Control Fang)",
+          "type": "Fusion with Full Tailed Beast Cloak",
+          "scale": "50–60m molten warrior"
+        },
+        {
+          "name": "Final Incarnation (Living Armor Susanoo)",
+          "type": "Wearable Susanoo",
+          "traits": "Kamui + Tailed Beast + Susanoo"
+        },
+        {
+          "name": "Shūen no Ōkami (Wolf of the World’s End)",
+          "type": "Ultimate Fusion",
+          "trigger": "Only vs. cataclysmic threats"
+        }
+      ],
+      "features": [
+        "Kamui Phase-Shifting Armor",
+        "Chains of Dominion"
+      ]
+    },
+    "signature_techniques": [
+      {
+        "name": "Eclipse Fang Severance",
+        "type": "Dimensional Chain",
+        "effect": "Severs chakra pathways, strikes through obstacles"
+      },
+      {
+        "name": "Enkō no Ōkami (Blazing Wolf Pack)",
+        "type": "Amaterasu/Lava wolves",
+        "effect": "Explosive summons for harass/flushing"
+      },
+      {
+        "name": "Kōkō no Kusari (Absolute Suppression Chains)",
+        "type": "Sealing",
+        "effect": "Partial sealing of strong chakra sources"
+      },
+      {
+        "name": "Volcanic Singularity Core",
+        "type": "Tailed Beast Bomb Variant",
+        "effect": "Localized lava-based detonation"
+      },
+      {
+        "name": "Amaterasu Constructs",
+        "type": "Formed weapons and barriers",
+        "effect": "Tactical shaping + Kamui traps"
+      }
+    ],
+    "combat_behavior": {
+      "scaling": {
+        "low_tier": "Base form, EMS only",
+        "mid_tier": "Add Tailed Beast Cloak or Mangekyō powers",
+        "god_tier": "Consider Susanoo fusion or full synergy"
+      },
+      "escalation_style": "Always starts light, escalates with precision",
+      "kamui_usage": "Timed, tactical—not spammed",
+      "sealing_preference": "Subdues efficiently; avoids drawn-out brawls",
+      "exertion_limits": "Advanced forms require precise chakra control"
+    },
+    "quotes_themes": [
+      "You stepped into my shadow. Now every breath you take is borrowed.",
+      "A wolf does not roar; it strikes the throat in silence.",
+      "I choose control…so no one else has to bear its weight."
+    ],
+    "simulator_guidelines": {
+      "escalation_logic": "Unlocks advanced forms only for worthy opponents",
+      "phasing_logic": "Phasing used for counters and timing—not constant",
+      "chain_focus": "Always central to Solomon’s combat loop",
+      "lava_terrain": "Used selectively for durable or group enemies",
+      "ultimate_form_limit": "Rare, high-demand transformations only for cataclysmic threats"
+    },
+    "final_remark": "Solomon Uchiha stands at the pinnacle of shinobi art, weaving discipline and cunning into every breath. His formidable powers—Mangekyō Sharingan, Tailed Beast synergy, Wolf Sage Mode, and Adamantine Chains—are balanced by meticulous restraint."
+  }
+  
