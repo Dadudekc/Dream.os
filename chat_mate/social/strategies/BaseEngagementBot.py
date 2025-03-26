@@ -2,9 +2,11 @@ import os
 import random
 import json
 import time
+import logging
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
+from typing import Dict, List, Any, Optional, Tuple, Union
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -13,11 +15,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from utils.cookie_manager import CookieManager
-from social.social_config import social_config
+from social.social_config_wrapper import get_social_config
 from social.log_writer import logger, write_json_log
 from social.AIChatAgent import AIChatAgent
+from core.DriverManager import DriverManager
 
 DEFAULT_WAIT = 10
 MAX_RETRIES = 3
@@ -55,11 +59,11 @@ class BaseEngagementBot(ABC):
         self.driver = driver or self.get_driver()
         self.wait_min, self.wait_max = wait_range
         self.cookie_manager = CookieManager()
-        self.email = social_config.get_env(f"{self.platform.upper()}_EMAIL")
-        self.password = social_config.get_env(f"{self.platform.upper()}_PASSWORD")
-        self.login_url = social_config.get_platform_url(self.platform, "login")
-        self.settings_url = social_config.get_platform_url(self.platform, "settings")
-        self.trending_url = social_config.get_platform_url(self.platform, "trending")
+        self.email = get_social_config().get_env(f"{self.platform.upper()}_EMAIL")
+        self.password = get_social_config().get_env(f"{self.platform.upper()}_PASSWORD")
+        self.login_url = get_social_config().get_platform_url(self.platform, "login")
+        self.settings_url = get_social_config().get_platform_url(self.platform, "settings")
+        self.trending_url = get_social_config().get_platform_url(self.platform, "trending")
         self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
         self.follow_db = follow_db_path or f"social/data/{self.platform}_follow_tracker.json"
 
@@ -70,7 +74,7 @@ class BaseEngagementBot(ABC):
         This helper is made static so that it can be imported and reused across strategy modules.
         """
         options = webdriver.ChromeOptions()
-        profile_path = social_config.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
+        profile_path = get_social_config().get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
         options.add_argument(f"--user-data-dir={profile_path}")
         options.add_argument("--start-maximized")
         user_agent = BaseEngagementBot.get_random_user_agent()

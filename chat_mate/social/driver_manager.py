@@ -3,13 +3,18 @@ import sys
 import random
 import shutil
 import logging
+import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
-from social.social_config import social_config
+# Use the wrapper to avoid circular imports
+from social.social_config_wrapper import get_social_config
 from social.log_writer import logger
 from utils.proxy_utils import get_random_proxy
 from utils.ua_utils import get_random_user_agent
@@ -121,7 +126,7 @@ class DriverSession:
         return self.initialize_driver()
 
     def _get_profile_dir(self):
-        base_profile_dir = social_config.get_env(
+        base_profile_dir = get_social_config().get_env(
             "CHROME_PROFILE_PATH",
             os.path.join(os.getcwd(), "chrome_profiles")
         )

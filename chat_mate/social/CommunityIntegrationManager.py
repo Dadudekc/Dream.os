@@ -10,7 +10,7 @@ import random
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 from social.log_writer import logger, write_json_log
 from social.strategies.twitter_strategy import TwitterStrategy
 from social.strategies.facebook_strategy import FacebookStrategy

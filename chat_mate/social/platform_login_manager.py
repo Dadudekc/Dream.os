@@ -7,15 +7,25 @@ import os
 import time
 import pickle
 import threading
-from typing import List
+import json
+import logging
+from typing import List, Dict, Optional, Any
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import (
+    TimeoutException, NoSuchElementException, ElementNotInteractableException
+)
 
 # ✅ Fixed Imports
-from social.social_config import social_config
-from social.log_writer import write_json_log, logger
+from utils.cookie_manager import CookieManager
+from social.social_config_wrapper import get_social_config
+from social.log_writer import write_json_log
 from social.strategies import (
     twitter_strategy,
     facebook_strategy,
@@ -24,9 +34,9 @@ from social.strategies import (
     stocktwits_strategy,
     linkedin_strategy
 )
-from social.driver_manager import get_multi_driver_sessions
+from core.DriverManager import DriverManager
 
-# Everything else stays the same...
+logger = logging.getLogger(__name__)
 
 COOKIES_DIR = os.path.join(os.getcwd(), "social", "cookies")
 os.makedirs(COOKIES_DIR, exist_ok=True)

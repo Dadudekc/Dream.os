@@ -1,24 +1,39 @@
 #!/usr/bin/env python3
-import sys
+"""
+Social Media Automation System
+------------------------------
+Unified CLI for managing social platform engagement across multiple services.
+"""
 import os
-import logging
+import sys
 import json
+import logging
+import argparse
 from datetime import datetime
 from pathlib import Path
 
-# Add the root directory to the Python path
-root_dir = Path(__file__).parent.absolute()
-sys.path.append(str(root_dir))
-
-# Configure logging
+# Setup logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.StreamHandler()
+        logging.FileHandler("social/logs/social_main.log"),
+        logging.StreamHandler(sys.stdout)
     ]
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("social_main")
+
+# Get the root directory path
+file_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(file_dir) if os.path.basename(file_dir) == "social" else file_dir
+
+# Ensure project root is in path
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+# Use the wrapper to get social_config
+from social.social_config_wrapper import get_social_config
+social_config = get_social_config()
 
 # Create logs directory if it doesn't exist
 logs_dir = os.path.join(root_dir, 'social', 'logs')
@@ -31,7 +46,6 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(mes
 logging.getLogger().addHandler(file_handler)
 
 # Import configurations
-from social.social_config import social_config
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager

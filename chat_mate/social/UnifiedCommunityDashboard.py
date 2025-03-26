@@ -22,7 +22,7 @@ from social.strategies.linkedin_strategy import LinkedinStrategy
 from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory
 from utils.SentimentAnalyzer import SentimentAnalyzer
 from social.log_writer import logger, write_json_log
-from utils.path_manager import PathManager
+from core.PathManager import PathManager
 
 @dataclass
 class CommunityMetrics:

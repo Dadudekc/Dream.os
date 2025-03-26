@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 
 from social.AIChatAgent import AIChatAgent
-from utils.SentimentAnalyzer import SentimentAnalyzer
 from utils.cookie_manager import CookieManager
 
 class BasePlatformStrategy(ABC):
@@ -35,7 +34,10 @@ class BasePlatformStrategy(ABC):
         
         # Initialize common components
         self.cookie_manager = CookieManager()
-        self.sentiment_analyzer = SentimentAnalyzer()
+        # Initialize SentimentAnalyzer with utils path from PathManager
+        from core.PathManager import PathManager
+        from utils.SentimentAnalyzer import SentimentAnalyzer
+        self.sentiment_analyzer = SentimentAnalyzer(utils_path=PathManager.get_path('utils'))
         self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
         
         # Set up data paths
