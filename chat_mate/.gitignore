@@ -38,3 +38,4 @@ logs/
 Thumbs.db
 venv/
 ../clean_venv/
+/../clean_venv/
