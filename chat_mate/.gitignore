@@ -36,3 +36,5 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+venv/
+../clean_venv/
