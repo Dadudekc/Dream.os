@@ -101,6 +101,63 @@ Configuration:
 - Base configuration is in `config/base.yaml`
 - Environment-specific overrides in `config/dev.yaml`, `config/prod.yaml`, etc.
 
+## Dreamscape Content Generation
+
+The Dreamscape module generates creative narrative episodes from your ChatGPT conversations:
+
+```bash
+python scripts/run_dreamscape.py
+```
+
+Options:
+- `--headless`: Run in headless browser mode (no UI)
+- `--skip-discord`: Skip posting results to Discord
+- `--config FILE`: Specify a custom config file
+
+Each episode is saved to the `outputs/dreamscape` directory with timestamp and chat title. The system will:
+1. Navigate to all your ChatGPT chats
+2. Skip excluded chats (configurable)
+3. Send the Dreamscape prompt to each chat
+4. Capture the response and save it as an episode
+5. Optionally post to Discord if configured
+
+The episodes reimagine technical work as mythic narrative, perfect for creative content or social media.
+
+### Dreamscape Context Automation
+
+The system now includes context memory that carries narrative themes between episodes:
+
+```bash
+python scripts/update_dreamscape_context.py
+```
+
+This feature allows:
+- **Automatic context sharing**: Send current narrative context to ChatGPT
+- **Episode continuity tracking**: Automatically numbers episodes sequentially
+- **Last episode summaries**: New chats receive summaries of previous episodes
+- **Scheduled updates**: Configure regular updates (daily, weekly, etc.)
+- **Theme extraction**: The system analyzes episodes and extracts key themes
+- **Memory system**: Previously generated episodes influence future ones
+
+You can schedule context updates to run automatically:
+
+```bash
+# Add to crontab (Linux/Mac)
+0 9 * * * cd /path/to/project && ./scripts/update_dreamscape_context.sh
+
+# Add to Task Scheduler (Windows)
+# - Program: C:\Windows\System32\cmd.exe
+# - Arguments: /c "D:\path\to\project\scripts\update_dreamscape_context.bat"
+```
+
+The enhanced context system now:
+1. Tracks episode numbers automatically
+2. Sends previous episode summaries at the start of each new chat
+3. Intelligently shares the narrative context across all chats
+4. Maintains the evolution of characters, themes, and realms
+
+The context memory system ensures a cohesive narrative across all dreamscape episodes, creating a rich, evolving mythology for your technical work.
+
 ## Requirements
 
 - Python 3.8+

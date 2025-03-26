@@ -6,6 +6,9 @@ import threading
 import queue
 from pathlib import Path
 from typing import Dict, Union, Optional, List
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Try importing tree-sitter for Rust/JS/TS parsing
 try:
@@ -13,7 +16,7 @@ try:
 except ImportError:
     Language = None
     Parser = None
-    print("⚠️ tree-sitter not installed. Rust/JS/TS AST parsing will be partially disabled.")
+    logger.warning("⚠️ tree-sitter not installed. Rust/JS/TS AST parsing will be partially disabled.")
 
 CACHE_FILE = "dependency_cache.json"
 
@@ -37,7 +40,7 @@ class LanguageAnalyzer:
             Optional[Parser]: Configured parser instance or None if initialization fails
         """
         if not Language or not Parser:
-            print(f"⚠️ tree-sitter not available. Skipping {lang_name} parser.")
+            logger.warning("⚠️ tree-sitter not installed. Rust/JS/TS AST parsing will be partially disabled.")
             return None
 
         grammar_paths = {
@@ -46,12 +49,12 @@ class LanguageAnalyzer:
         }
 
         if lang_name not in grammar_paths:
-            print(f"⚠️ No grammar path for {lang_name}. Skipping.")
+            logger.warning(f"⚠️ No grammar path for {lang_name}. Skipping.")
             return None
 
         grammar_path = grammar_paths[lang_name]
         if not Path(grammar_path).exists():
-            print(f"⚠️ {lang_name} grammar not found at {grammar_path}")
+            logger.warning(f"⚠️ {lang_name} grammar not found at {grammar_path}")
             return None
 
         try:
@@ -60,7 +63,7 @@ class LanguageAnalyzer:
             parser.set_language(lang_lib)
             return parser
         except Exception as e:
-            print(f"⚠️ Failed to initialize tree-sitter {lang_name} parser: {e}")
+            logger.error(f"⚠️ Failed to initialize tree-sitter {lang_name} parser: {e}")
             return None
 
     def analyze_file(self, file_path: Path, source_code: str) -> Dict:
@@ -333,7 +336,7 @@ class FileProcessor:
                 self.cache[relative_path] = {"hash": file_hash}
             return (relative_path, analysis_result)
         except Exception as e:
-            print(f"❌ Error analyzing {file_path}: {e}")
+            logger.error(f"❌ Error analyzing {file_path}: {e}")
             return None
 
 
@@ -403,9 +406,9 @@ class ReportGenerator:
             if overwrite or not init_file.exists():
                 with open(init_file, "w", encoding="utf-8") as f:
                     f.write(content)
-                print(f"✅ Generated __init__.py in {package_path}")
+                logger.info(f"✅ Generated __init__.py in {package_path}")
             else:
-                print(f"ℹ️ Skipped {init_file} (already exists)")
+                logger.info(f"ℹ️ Skipped {init_file} (already exists)")
 
 
 class ProjectScanner:
@@ -469,14 +472,13 @@ class ProjectScanner:
         - Offloads file analysis to background workers
         - Saves a single JSON report 'project_analysis.json'
         """
-        print(f"🔍 Scanning project: {self.project_root} ...")
+        logger.info(f"🔍 Scanning project: {self.project_root} ...")
 
         # Collect files using os.walk to capture all files (even in hidden directories)
         file_extensions = {'.py', '.rs', '.js', '.ts'}
         valid_files = []
         for root, dirs, files in os.walk(self.project_root):
             root_path = Path(root)
-            # Skip directories that should be excluded
             if self.file_processor.should_exclude(root_path):
                 continue
             for file in files:
@@ -484,7 +486,7 @@ class ProjectScanner:
                 if file_path.suffix.lower() in file_extensions and not self.file_processor.should_exclude(file_path):
                     valid_files.append(file_path)
         
-        print(f"📝 Found {len(valid_files)} valid files for analysis.")
+        logger.info(f"📝 Found {len(valid_files)} valid files for analysis.")
 
         # Track old vs. new paths for cache update
         previous_files = set(self.cache.keys())
@@ -515,15 +517,16 @@ class ProjectScanner:
             with self.cache_lock:
                 self.cache[new_path] = self.cache.pop(old_path)
 
-        # --- Asynchronous processing with BotWorker/MultibotManager ---
-        print("⏱️  Processing files asynchronously...")
+        # Asynchronous processing
+        logger.info("⏱️  Processing files asynchronously...")
         num_workers = os.cpu_count() or 4
         manager = MultibotManager(scanner=self, num_workers=num_workers,
-                                status_callback=lambda fp, res: print(f"Processed: {fp}"))
+                                  status_callback=lambda fp, res: logger.info(f"Processed: {fp}"))
         for file_path in valid_files:
             manager.add_task(file_path)
         manager.wait_for_completion()
         manager.stop_workers()
+
         for result in manager.results_list:
             if result is not None:
                 file_path, analysis_result = result
@@ -542,7 +545,7 @@ class ProjectScanner:
             file_path: Path to the file to process
             
         Returns:
-            Optional[tuple]: Tuple of (relative_path, analysis_result) or None if file should be skipped
+            Optional[tuple]: Tuple of (relative_path, analysis_result) or None
         """
         return self.file_processor.process_file(file_path, self.language_analyzer)
 
@@ -555,8 +558,64 @@ class ProjectScanner:
         """
         self.report_generator.generate_init_files(overwrite)
 
+    def export_chatgpt_context(self, template_path: Optional[str] = None, output_path: Optional[str] = None):
+        """
+        Exports the analysis results into a structured format suitable for ChatGPT or any AI assistant.
+        
+        Args:
+            template_path: Optional path to a Jinja template for a narrative or structured output.
+            output_path: Optional file path to write the final context. Defaults to JSON if no template, or .md if template.
+        
+        Usage:
+            # JSON only:
+            self.export_chatgpt_context()
+            
+            # With Jinja:
+            self.export_chatgpt_context(
+                template_path="prompts/chatgpt_context_template.md.jinja",
+                output_path="chatgpt_project_context.md"
+            )
+        """
+        if not output_path:
+            output_path = "chatgpt_project_context.md" if template_path else "chatgpt_project_context.json"
 
-# ----- Asynchronous Task Queue Components -----
+        if not template_path:
+            # JSON export
+            payload = {
+                "project_root": str(self.project_root),
+                "num_files_analyzed": len(self.analysis),
+                "analysis_details": self.analysis
+            }
+            try:
+                with open(output_path, "w", encoding="utf-8") as f:
+                    json.dump(payload, f, indent=4)
+                print(f"✅ Exported project context (JSON) to: {output_path}")
+            except Exception as e:
+                logger.error(f"❌ Error writing JSON context: {e}")
+            return
+
+        # Otherwise, Jinja-based rendering
+        try:
+            from jinja2 import Template
+            with open(template_path, "r", encoding="utf-8") as tf:
+                template_content = tf.read()
+            t = Template(template_content)
+
+            context_dict = {
+                "project_root": str(self.project_root),
+                "analysis": self.analysis,
+                "num_files_analyzed": len(self.analysis),
+            }
+            rendered = t.render(context=context_dict)
+            with open(output_path, "w", encoding="utf-8") as outf:
+                outf.write(rendered)
+            print(f"✅ Exported project context (Jinja) to: {output_path}")
+        except ImportError:
+            print("⚠️ Jinja2 not installed. Run `pip install jinja2` and re-try.")
+        except Exception as e:
+            logger.error(f"❌ Error rendering Jinja template: {e}")
+
+
 class BotWorker(threading.Thread):
     """
     A background worker that continuously pulls file tasks from a queue,
@@ -605,11 +664,13 @@ class MultibotManager:
         self.task_queue.join()
 
     def stop_workers(self):
-        for _ in self.workers:
+        for _ in range(len(self.workers)):
             self.task_queue.put(None)
 
 
-# ----- Interactive Entry Point -----
+# ------------------------------
+# Entry Point (for CLI testing)
+# ------------------------------
 if __name__ == "__main__":
     project_root = input("Enter the project root directory to scan (default '.'): ").strip() or "."
     ignore_input = input("Enter additional directories to ignore (comma separated, or leave empty): ").strip()
@@ -618,5 +679,14 @@ if __name__ == "__main__":
     scanner = ProjectScanner(project_root=project_root)
     scanner.additional_ignore_dirs = additional_ignore_dirs
     scanner.scan_project()
-    # Auto-generate __init__.py files after scanning
     scanner.generate_init_files(overwrite=True)
+
+    # Prompt user to optionally export context for ChatGPT
+    export_answer = input("Export ChatGPT context? (y/n) ").lower()
+    if export_answer.startswith("y"):
+        jinja_path = input("Jinja template path (leave blank for JSON export): ").strip()
+        output_file = input("Output file path (leave blank for default): ").strip()
+        scanner.export_chatgpt_context(
+            template_path=jinja_path if jinja_path else None,
+            output_path=output_file if output_file else None
+        )
