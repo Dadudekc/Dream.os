@@ -1,0 +1,162 @@
+{
+    "identity": {
+      "name": "<Full Name or Character Name>",
+      "clan_or_race": "<Clan or Race>",
+      "affiliation": "<Village/Organization or Independent>",
+      "titles": [
+        "<Title or Epithet 1>",
+        "<Title or Epithet 2>",
+        "<Additional Titles…>"
+      ],
+      "tailed_beast": "<Tailed Beast Info, if applicable>",
+      "role_or_status": "Description of the character's role (e.g., elite shinobi, guardian, etc.)",
+      "relative_power_standing": "Short summary of power level compared to peers",
+      "personality": {
+        "core_traits": [
+          "<Trait 1: e.g., Resolute Protector>",
+          "<Trait 2: e.g., Calculated & Patient>",
+          "<Trait 3: e.g., Stoic & Self-Controlled>"
+        ],
+        "philosophy": "<Brief guiding statement or quote>",
+        "temperament": "<Behavioral nuances, e.g., calm, methodical>",
+        "behavioral_notes": "Any further details on mindset (e.g., emotional restraint, tactical approach)"
+      }
+    },
+    "appearance": {
+      "height_and_build": "<Height and Build Description (e.g., 6'4\", muscular)>",
+      "hair": "<Hair Color/Style>",
+      "eyes": "<Eye Color/Traits (e.g., glowing under certain conditions)>",
+      "attire": "<Typical clothing, armor, or accessories>",
+      "distinctive_features": [
+        "<Unique markings, scars, or accessories>",
+        "<Additional features…>"
+      ],
+      "aura": "<Any special visual or energetic effect (e.g., mist, glow)>"
+    },
+    "backstory": {
+      "upbringing": "<Summary of childhood and clan background>",
+      "training": "<Key training events or institutions>",
+      "training_and_trauma": "<Notable hardships or shaping experiences>",
+      "turning_point": "<Catalyst event or crisis>",
+      "pivotal_events": "<Incidents (e.g., battles, betrayals) that defined path>",
+      "current_role": "<Current responsibilities, reputation, or status>",
+      "legacy": "<Any inherited legacy or lineage importance>"
+    },
+    "abilities_and_combat_tools": {
+      "primary_weapon": {
+        "name": "<Weapon Name>",
+        "description": "<Material, properties, or special abilities>",
+        "properties": [
+          "<Property 1: e.g., Extension & Compression>",
+          "<Property 2: e.g., Elemental Conduction>"
+        ]
+      },
+      "elemental_affinities": {
+        "primary": "<Primary Element or Release>",
+        "secondary": "<Secondary Element, if any>",
+        "tertiary": "<Tertiary Element, if any>",
+        "advanced_techniques": "<Special techniques or kekkei genkai, if applicable>"
+      },
+      "special_abilities": {
+        "description": "<Overview of unique abilities (e.g., illusions, telepathy)>",
+        "techniques": [
+          {
+            "name": "<Signature Technique 1>",
+            "type": "<Type (e.g., genjutsu, ninjutsu)>",
+            "effect": "<Detailed description of effect, cost, and limitations>"
+          },
+          {
+            "name": "<Signature Technique 2>",
+            "type": "<Type>",
+            "effect": "<Effect description>"
+          }
+        ]
+      },
+      "special_techniques": [
+        {
+          "name": "Technique Name",
+          "description": "Detailed description of how it works and its effects"
+        }
+      ],
+      "summoning_contract": {
+        "entities": [
+          {
+            "name": "<Summoned Entity Name>",
+            "role": "<Role in battle (e.g., recon, offense, defense)>"
+          }
+        ],
+        "limitations": "<Any limitations or chakra cost details>"
+      },
+      "summons_and_synergies": "Details on any creatures, spirits, or alliances that empower abilities",
+      "combat_styles": {
+        "general_approach": "Brief description (e.g., prefers stealth and controlled engagements)",
+        "stages_or_transformations": [
+          {
+            "stage": "Stage 1",
+            "name": "Base Form",
+            "description": "Key abilities or traits of this stage"
+          },
+          {
+            "stage": "Stage 2",
+            "name": "Advanced Form",
+            "description": "Enhanced or changed abilities at this stage"
+          }
+        ]
+      }
+    },
+    "combat_form_progression": {
+      "stages": [
+        {
+          "stage": 1,
+          "name": "<Stage 1 Name (e.g., Base Form)>",
+          "description": "<Abilities and traits active at this stage>"
+        },
+        {
+          "stage": 2,
+          "name": "<Stage 2 Name (e.g., Sage Mode)>",
+          "description": "<Enhancements, boosts, or drawbacks at this stage>"
+        }
+      ],
+      "optional_hybrids": "<Description of any hybrid forms combining elements from different stages>"
+    },
+    "battle_behavior": {
+      "combat_philosophy": "<Overall combat style or approach>",
+      "tactical_guidelines": [
+        "<Tactic 1: e.g., Prioritizes defense and attrition>",
+        "<Tactic 2: e.g., Uses illusions to confuse opponents>"
+      ],
+      "resource_management": "<How they manage chakra, stamina, and advanced forms>",
+      "defensive_and_offensive_strategies": "<Key methods used to control the battlefield>",
+      "directives": "Key combat directives (e.g., subtlety over brute force)",
+      "tactics": "How they adapt, use terrain, manage resources in real time"
+    },
+    "additional_details": {
+      "quotes": [
+        "<Quote 1>",
+        "<Quote 2>"
+      ],
+      "relationships": {
+        "allies": "<List or description of important allies/mentors>",
+        "enemies": "<List or description of known adversaries or rival factions>"
+      },
+      "miscellaneous": "<Any additional notes or unique profile elements>",
+      "signature_techniques": [
+        {
+          "name": "Signature Technique 1",
+          "description": "Detailed description, including effects and limitations"
+        },
+        {
+          "name": "Signature Technique 2",
+          "description": "Detailed description, including effects and limitations"
+        }
+      ],
+      "quotes_and_personal_dialogue": [
+        "Quote 1",
+        "Quote 2"
+      ],
+      "final_remarks": "Summary statement or thematic final notes on the character",
+      "special_notes": "Any additional details such as environmental affinities or special equipment",
+      "combat_flow": "A typical step-by-step scenario of how this character conducts battle"
+    }
+  }
+  
