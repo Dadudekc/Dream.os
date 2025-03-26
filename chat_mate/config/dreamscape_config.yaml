@@ -1,0 +1,28 @@
+# Dreamscape Configuration
+
+# Browser and Driver Settings
+headless: false                 # Set to true for headless operation
+window_size: [1920, 1080]       # Browser window size
+
+# ChatGPT Settings
+default_model: "gpt-4o-mini"         # Model to use (appended to chat URLs)
+timeout: 180                     # Max timeout for waiting for response (seconds)
+stable_period: 10               # Time with no changes before response is considered stable
+
+# Excluded Chats
+excluded_chats:
+  - "ChatGPT"
+  - "Sora" 
+  - "Explore GPTs"
+  - "Axiom"
+  - "work project"
+  - "prompt library"
+  - "Bot"
+  - "smartstock-pro"
+
+# Output Settings
+dreamscape_output_dir: "outputs/dreamscape"  # Directory for saving episodes
+
+# Discord Integration
+discord_token: ""               # Your Discord bot token (leave empty to disable)
+discord_channel_id: ""          # Default Discord channel ID 
