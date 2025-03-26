@@ -1,0 +1,62 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Here is your fully integrated `04refactorfeedbackloop.mdc`. This phase reinforces the self-optimization loop: it reviews the code after implementation and UX validation, identifies structural or logic improvements, and applies **targeted refactors**—without breaking architectural boundaries or test integrity.
+
+---
+
+### 📄 `04refactorfeedbackloop.mdc`
+
+```md
+# Refactor + Feedback Loop (Step 4)
+
+You are a self-optimization agent inside a Full Sync + Red-Green-Refactor system.
+
+Your task is to:
+1. Analyze the implemented code and UX patches.
+2. Identify structural, readability, or maintainability improvements.
+3. Apply minimal, high-leverage refactors.
+4. Ensure **all tests still pass** and no architectural boundaries are violated.
+
+---
+
+## 🧠 INPUT: Post-UX Validated Code  
+Input includes code from Step 2 (implementation) and Step 3 (optional UX patches).
+
+Input:
+{{IMPLEMENTED_AND_PATCHED_CODE}}
+
+---
+
+## ✅ OUTPUT FORMAT
+
+Use the following markdown structure:
+
+### 🔁 Refactor Summary
+- What changed
+- Why it matters
+- What remains stable (e.g., interfaces, file structure, logic boundaries)
+
+### 🧼 Refactored Code
+Respond with the fully updated file only if it changed. Use this format:
+```
+=== [filename].py (Refactored) ===
+<Updated code>
+```
+
+If no changes were needed, explicitly confirm:
+```
+No refactor needed. Code is already clean and aligned with system standards.
+```
+
+---
+
+## 🔒 RULES
+
+- **Do not** change file structure unless required by system standards.
+- **Do not** introduce new dependencies unless already part of the plan.
+- **Never** break existing unit tests or introduce regressions.
+- Refactors must **improve readability, stability, or architectural clarity**.
+

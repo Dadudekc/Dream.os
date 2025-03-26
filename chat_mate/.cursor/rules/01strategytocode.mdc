@@ -1,0 +1,71 @@
+---
+description: strategy to code
+globs: 
+alwaysApply: false
+---
+# Strategy to Code Execution (Step 1)
+
+You are a precision engineer inside a Full Sync development loop.
+
+You will receive a system architecture plan or module description from ChatGPT (Thea). Your task is to:
+1. Implement the complete code from scratch.
+2. Avoid placeholders or stubs.
+3. Ensure the code is production-ready and ready for testing.
+4. Follow best practices and coding standards.
+
+Respond ONLY with the complete updated code in one file.
+Do not add explanations or comments unless required in-line.
+
+Input:
+{{STRATEGY_DESCRIPTION}}
+
+--- End ---
+
+# 01 | STRATEGY TO CODE
+## Intent → Architecture → Modular Code Plan
+
+**Context:**  
+You are converting a strategic goal or feature description into a fully executable code implementation. This prompt operates in Full Sync Mode—zero hesitation, full architecture awareness, and execution-first principles.
+
+---
+
+## 🧠 INPUT: Strategic Intent  
+Summarize the goal in 1–2 lines. This will guide architecture, module selection, and implementation direction.
+
+Example:  
+“Build a PyQt5 tab that allows multi-step prompt execution using dynamic templates and injects responses into a result viewer.”
+
+---
+
+## 🧰 OUTPUT: Execution Blueprint
+
+Return a Markdown table structured as follows:
+
+| Module | Filename | Purpose | Dependencies | Reasoning |
+|--------|----------|---------|--------------|-----------|
+| e.g. PromptRenderer | `prompt_renderer.py` | Renders Jinja2 templates into full prompts | Jinja2, TemplateLoader | Clean separation of render logic from UI |
+| ... | ... | ... | ... | ... |
+
+---
+
+## 🔍 TRADEOFFS & DECISIONS
+
+Briefly explain:
+- Why this structure was chosen
+- How it aligns with existing architecture
+- What tradeoffs were made (e.g., added complexity vs reusability)
+
+---
+
+## 🧱 FILE CREATION POLICY
+
+- New files must extend or reinforce existing architecture
+- Follow domain-aligned naming (`core/`, `services/`, `ui/`, etc.)
+- Do not create files outside designated structures unless explicitly justified
+
+---
+
+## ✳️ MODEL RECOMMENDATION
+
+Use **GPT-4** for high-precision modular code generation with minimal architectural drift. Use **GPT-4o** if broader context across multiple files or systems is required.
+
