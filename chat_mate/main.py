@@ -13,7 +13,7 @@ from core.DriverManager import DriverManager
 from core.logging.factories.LoggerFactory import LoggerFactory
 
 # GUI and Web imports
-from interfaces.pyqt.DreamscapeMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
 from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
 from interfaces.pyqt.IntegratedMainWindow import IntegratedMainWindow
 from interfaces.pyqt.components.prompt_panel import PromptPanel
@@ -24,13 +24,12 @@ from interfaces.pyqt.tabs.LogsTab import LogsTab
 from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from web.app import start_flask_app
-from services.config_service import ConfigService
-from services.prompt_service import PromptService
+from core.services.config_service import ConfigService
+from core.services.prompt_service import PromptService
 from utils.signal_dispatcher import SignalDispatcher
-from services.fix_service import FixService
-from services.debug_service import DebugService
-from services.rollback_service import RollbackService
-
+from core.services.fix_service import FixService
+from core.services.debug_service import DebugService
+from core.services.rollback_service import RollbackService
 
 def setup_logging():
     """Set up logging configuration."""
