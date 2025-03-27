@@ -1,0 +1,45 @@
+{
+    "version": 1,
+    "last_updated": "2025-03-27T16:26:58.989Z",
+    "conversations": [],
+    "memory": {
+        "chat": {
+            "history": [],
+            "context": {},
+            "metadata": {
+                "total_conversations": 0,
+                "last_conversation_id": 0
+            }
+        },
+        "dreamscape": {
+            "episodes": [],
+            "themes": [],
+            "characters": [],
+            "realms": [],
+            "quests": [],
+            "skill_levels": []
+        },
+        "system": {
+            "startup_time": "2025-03-27T16:26:58.989Z",
+            "last_sync": null,
+            "services": {
+                "chat_manager": {
+                    "status": "initialized",
+                    "error": null
+                },
+                "cycle_service": {
+                    "status": "initialized",
+                    "error": null
+                },
+                "task_orchestrator": {
+                    "status": "initialized",
+                    "error": null
+                },
+                "dreamscape_generator": {
+                    "status": "initialized",
+                    "error": null
+                }
+            }
+        }
+    }
+} 

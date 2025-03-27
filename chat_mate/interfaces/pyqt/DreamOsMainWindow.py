@@ -3,6 +3,7 @@ import sys
 import os
 import logging
 import asyncio
+import warnings
 
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QApplication, QLabel, QHBoxLayout,
@@ -25,7 +26,12 @@ from interfaces.pyqt.dreamscape_services import DreamscapeService
 from core.chatgpt_automation.automation_engine import AutomationEngine
 from core.chatgpt_automation.controllers.assistant_mode_controller import AssistantModeController
 from core.chatgpt_automation.OpenAIClient import OpenAIClient
+from core.system.startup_validator import StartupValidator
+from core.PathManager import PathManager
+from interfaces.pyqt.tabs.full_sync_tab import FullSyncTab
 
+# Suppress SIP deprecation warning
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class DreamscapeMainWindow(QMainWindow):
     """
@@ -43,14 +49,11 @@ class DreamscapeMainWindow(QMainWindow):
         self.services = services or {}
         self.logger = self.services.get('logger', logging.getLogger("DreamscapeMainWindow"))
         self.openai_client = None
-
-        # Initialize engine and assistant controller
-        try:
-            self.engine = AutomationEngine(use_local_llm=True, model_name='mistral')
-            self.assistant_controller = AssistantModeController(self.engine)
-        except Exception as e:
-            self.logger.error(f"Failed to initialize automation engine or assistant controller: {str(e)}")
-
+        self.path_manager = PathManager()
+        
+        # Run startup validation
+        self._run_startup_validation()
+        
         self.verify_services()
         self.setup_ui()
         self.setup_signals()
@@ -360,6 +363,58 @@ class DreamscapeMainWindow(QMainWindow):
             except Exception as e:
                 self.logger.error(f"Error shutting down OpenAI client: {str(e)}")
         event.accept()
+
+    def _run_startup_validation(self):
+        """Run startup validation and handle results."""
+        validator = StartupValidator(self.path_manager, logger=self.logger)
+        startup_report = validator.run_all_checks()
+
+        if startup_report["errors"]:
+            self.logger.error("❌ Critical startup validation errors occurred:")
+            for error in startup_report["errors"]:
+                self.logger.error(f"  - {error}")
+        else:
+            self.logger.info("✅ Dream.OS validated and ready.")
+
+        # Store warnings for display in status area
+        self.startup_warnings = startup_report.get("warnings", [])
+
+    def _init_ui(self):
+        """Initialize the main UI components."""
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        layout = QVBoxLayout(central_widget)
+        
+        # Add status bar for startup warnings
+        if self.startup_warnings:
+            warning_label = QLabel("⚠️ Startup Warnings Present")
+            warning_label.setStyleSheet("color: orange;")
+            layout.addWidget(warning_label)
+        
+        # Initialize tab widget
+        self.tabs = QTabWidget()
+        layout.addWidget(self.tabs)
+
+    def _init_tabs(self):
+        """Initialize and add all tab widgets."""
+        # Add Full Sync tab
+        self.full_sync_tab = FullSyncTab(self)
+        self.tabs.addTab(self.full_sync_tab, "Full Sync")
+        
+        # TODO: Add other tabs here
+        
+    def log_message(self, message: str, level: str = "info"):
+        """Log a message to both logger and relevant UI components."""
+        if level == "error":
+            self.logger.error(message)
+        elif level == "warning":
+            self.logger.warning(message)
+        else:
+            self.logger.info(message)
+            
+        # Update status bar or relevant UI component
+        self.statusBar().showMessage(message, 5000)  # Show for 5 seconds
 
 
 class EmptyService:
