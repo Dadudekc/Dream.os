@@ -1,0 +1,142 @@
+app:
+  name: "ChatMate"
+  version: "1.0.0"
+  description: "Digital Dreamscape Devlog & Strategy Automation"
+  headless: false
+  archive_enabled: true
+  debug: false
+  log_level: INFO
+  max_retries: 3
+  reverse_order: false
+  timeout: 30.0
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+
+paths:
+  data_dir: "data"
+  output_dir: "outputs"
+  log_dir: "logs"
+
+chat_agent:
+  chatgpt_url: "https://chat.openai.com/"
+  profile_dir: "chrome_profile/openai"
+  cookie_file: "cookies/openai.pkl"
+  archive_file: "archived_chats.txt"
+  excluded_chats:
+    - "ChatGPT"
+    - "Sora"
+    - "Freeride Investor"
+    - "Tbow Tactic Generator"
+    - "Explore GPTs"
+    - "Axiom"
+    - "work project"
+    - "prompt library"
+    - "Bot"
+    - "smartstock-pro"
+  default_model: "gpt-4o-mini"
+
+memory:
+  vector_store_path: "data/vector_store"
+  max_episodes: 1000
+  chunk_size: 500
+  chunk_overlap: 50
+
+discord:
+  enabled: false
+  channel_id: ""
+  guild_id: ""
+
+ai:
+  agent_mode: ''
+  agent_name: ''
+  chatgpt_url: ''
+  custom_gpt_url: ''
+  excluded_chats: []
+  frequency_penalty: 0.0
+  max_tokens: 2000
+  memory:
+    contexts:
+      dreamscape:
+        max_entries: 5000
+        min_score: -0.3
+      social:
+        max_entries: 2000
+        min_score: -0.5
+      workflow:
+        max_entries: 3000
+        min_score: -0.4
+    max_entries: 10000
+    min_score: -0.5
+    prune_threshold: 0.8
+  model: gpt-4
+  presence_penalty: 0.0
+  prompt_cycle: []
+  prompt_input_selector: ''
+  reinforcement:
+    decay_factor: 0.95
+    enabled: true
+    feedback_types:
+      - user
+      - automated
+      - metric
+    learning_rate: 0.01
+    min_samples: 100
+    score_weights:
+      automated: 0.8
+      metric: 0.6
+      user: 1.0
+    update_interval: 3600
+  response_container_selector: ''
+  retry_attempts: 3
+  retry_delay_seconds: 5
+  stop_button_xpath: ''
+  stop_sequences: []
+  temperature: 0.7
+
+driver:
+  additional_arguments: []
+  cache_path: ''
+  executable_path: ''
+  headless: false
+  user_agent: ''
+  window_size:
+    - 1280
+    - 720
+
+security:
+  allowed_ips:
+    - 127.0.0.1
+  api_keys: {}
+  rate_limits:
+    api: 100
+    default: 60
+
+social:
+  discord:
+    allowed_roles: []
+    channel_id: 0
+    channels: []
+    enabled: false
+    prefix: '!'
+    token: ''
+  twitter:
+    access_secret: ''
+    access_token: ''
+    api_key: ''
+    api_secret: ''
+
+storage:
+  backup_count: 5
+  base_path: "D:\\overnight_scripts\\chat_mate\\data"
+  compression: true
+  max_log_size: 10485760
+  paths:
+    cookies: ''
+    driver: ''
+    logs: ''
+    memory: ''
+    output: ''
+    profile: ''
