@@ -263,7 +263,6 @@ class PromptExecutionTab(QWidget):
                         self.dispatcher.emit_task_progress(task_id, 50, "Executing through parent")
 
                     await asyncio.sleep(1)  # simulate network
-                    # response = await asyncio.to_thread(self.parent.execute_prompt, prompt_text)
                     response = f"[Simulated remote API response] for: {prompt_text[:20]}..."
                 
                 # Otherwise fallback to orchestrator (example)
@@ -272,11 +271,6 @@ class PromptExecutionTab(QWidget):
                         self.dispatcher.emit_task_progress(task_id, 50, "Running prompt cycle")
 
                     await asyncio.sleep(1)  # simulate network
-                    # response = await asyncio.to_thread(
-                    #     self.prompt_orchestrator.run_cycle,
-                    #     {"prompt": prompt_text},
-                    #     cycle_type="single"
-                    # )
                     response = f"[Cycle response for {prompt_text[:20]}...]"
                 else:
                     raise ValueError("No remote execution service available.")
