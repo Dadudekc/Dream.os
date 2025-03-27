@@ -5,12 +5,19 @@ import re
 
 logger = logging.getLogger(__name__)
 
-# Load command configuration
+import os
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+
 def _load_command_config():
     try:
-        config_path = os.path.join(
-            os.path.dirname(__file__), "config", "command_config.json"
-        )
+        # Anchor to project root
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(root_dir, "chat_mate"))
+
+        config_path = os.path.join(project_root, "config", "command_config.json")
         with open(config_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         logger.info(f"Loaded {len(data.get('commands', []))} assistant commands.")
@@ -20,6 +27,7 @@ def _load_command_config():
         return []
 
 COMMAND_CONFIG = _load_command_config()
+
 
 def parse_input(transcript):
     """

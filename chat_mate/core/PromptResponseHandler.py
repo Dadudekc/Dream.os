@@ -23,10 +23,11 @@ class PromptResponseHandler:
         """
         self.logger.log("Processing prompt response...", domain="PromptResponseHandler")
 
-        # Reinforcement Learning Feedback Loop
+        # Reinforcement Learning Feedback Loop:
+        # Apply feedback to optimize and refine the response continuously.
         reinforced_response = self.reinforcement_engine.apply_feedback(responses)
 
-        # Structured response formatting (optional)
+        # Structured response formatting (optional):
         processed = {
             "status": "processed",
             "reinforced_response": reinforced_response

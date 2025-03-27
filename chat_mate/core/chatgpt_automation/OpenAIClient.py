@@ -28,11 +28,14 @@ class OpenAIClient:
         Args:
             profile_dir (str): Path to the Chrome user data directory.
             headless (bool): Whether to run Chrome in headless mode.
-            driver_path (str): Optional custom path to a ChromeDriver binary.
+            driver_path (str): Optional custom path to a ChromeDriver binary 
+                               (no longer recommended due to reliability issues).
         """
         self.profile_dir = str(Path(profile_dir))
         self.headless = headless
         self.driver_path = driver_path
+        self.driver = None
+        self.driver_ready = False
 
         # Configuration
         self.CHATGPT_URL = "https://chat.openai.com/"
@@ -40,13 +43,10 @@ class OpenAIClient:
         self.COOKIE_FILE = str(Path(self.COOKIE_DIR) / "openai.pkl")
 
         # Go up 3 directories from the current file (assuming you're inside core/chatgpt_automation/controllers)
-        self.CONFIG_FILE = str(Path(__file__).resolve().parents[3] / "config" / "command_config.json")
+        self.CONFIG_FILE = str(Path(__file__).resolve().parents[2] / "config" / "command_config.json")
 
         # Load configuration
         self.config = self._load_config()
-
-        # Initialize driver
-        self.driver = self.get_openai_driver()
 
     def _load_config(self):
         """Load configuration from command_config.json"""
@@ -73,28 +73,30 @@ class OpenAIClient:
         """
         Returns a stealth Chrome driver using undetected_chromedriver.
         Cross-platform compatible implementation.
+        Simplified to rely solely on undetected_chromedriver's internal manager.
         """
         logger.info("🔧 Initializing undetected_chromedriver for OpenAIClient...")
 
         try:
             options = uc.ChromeOptions()
+            
+            # Recommended for resource-limited or containerized environments
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--no-sandbox")
+
+            # Start with a normal or maximized window
             options.add_argument("--start-maximized")
+
             if self.profile_dir:
                 options.add_argument(f"--user-data-dir={self.profile_dir}")
             if self.headless:
+                # The new headless mode in Chrome 109+ is more reliable
                 options.add_argument("--headless=new")
 
-            # Custom driver path handling
-            if self.driver_path and os.path.exists(self.driver_path):
-                logger.info(f"🔎 Using custom ChromeDriver: {self.driver_path}")
-                driver = uc.Chrome(
-                    options=options,
-                    driver_executable_path=self.driver_path
-                )
-            else:
-                # Let undetected_chromedriver handle driver management
-                logger.info("🔄 Using undetected_chromedriver's internal driver manager.")
-                driver = uc.Chrome(options=options)
+            # Force undetected_chromedriver to manage driver automatically
+            # We recommend not overriding driver_executable_path
+            logger.info("🔄 Letting undetected_chromedriver automatically manage driver version.")
+            driver = uc.Chrome(options=options, use_subprocess=True)
 
             logger.info("✅ Undetected Chrome driver initialized for OpenAI.")
             return driver
@@ -102,26 +104,7 @@ class OpenAIClient:
         except Exception as e:
             error_msg = f"❌ Failed to initialize Chrome driver: {e}"
             logger.error(error_msg)
-            
-            # Attempt fallback paths from config
-            if self.config.get("chrome_driver", {}).get("fallback_paths"):
-                for path in self.config["chrome_driver"]["fallback_paths"]:
-                    try:
-                        fallback_path = str(Path(path))
-                        if platform.system() == "Windows":
-                            fallback_path += ".exe"
-                        
-                        if os.path.exists(fallback_path):
-                            logger.info(f"🔄 Attempting fallback ChromeDriver: {fallback_path}")
-                            return uc.Chrome(
-                                options=options,
-                                driver_executable_path=fallback_path
-                            )
-                    except Exception as fallback_e:
-                        logger.warning(f"⚠️ Fallback path failed: {fallback_e}")
-                        continue
-            
-            raise Exception(f"Failed to initialize Chrome driver: {e}")
+            raise Exception(error_msg)
 
     def save_openai_cookies(self):
         """
@@ -163,7 +146,7 @@ class OpenAIClient:
 
     def is_logged_in(self):
         """
-        Checks if the user is logged in to ChatGPT by navigating to a tactic generator URL.
+        Checks if the user is logged in to ChatGPT by navigating to a known private path.
         """
         TARGET_URL = "https://chatgpt.com/g/g-67a4c53f01648191bdf31ab8591e84e7-tbow-tactic-generator"
         self.driver.get(TARGET_URL)
@@ -179,11 +162,26 @@ class OpenAIClient:
             logger.warning("⚠️ Unable to reach tactic generator page; login may be required.")
             return False
 
+    def boot(self):
+        """Initialize the OpenAI driver."""
+        if not self.driver_ready:
+            self.driver = self.get_openai_driver()
+            self.driver_ready = True
+            logger.info("🚀 OpenAIClient boot complete.")
+        else:
+            logger.info("⚠️ OpenAIClient already booted.")
+
+    def _assert_ready(self):
+        """Check if the driver is ready for use."""
+        if not self.driver_ready:
+            raise RuntimeError("❌ OpenAIClient not booted. Call `.boot()` first.")
+
     def login_openai(self):
         """
         Login handler for OpenAI/ChatGPT.
         Checks if session is active; if not, tries to load cookies or falls back to manual login.
         """
+        self._assert_ready()
         logger.info("🔐 Starting OpenAI login process...")
 
         if self.is_logged_in():
@@ -212,6 +210,7 @@ class OpenAIClient:
         """
         Sends the prompt text one character at a time for a more human-like interaction.
         """
+        self._assert_ready()
         for char in prompt:
             element.send_keys(char)
             time.sleep(delay)
@@ -220,6 +219,7 @@ class OpenAIClient:
         """
         Sends a prompt to ChatGPT and retrieves the full response by interacting with the ProseMirror element.
         """
+        self._assert_ready()
         logger.info("✉️ Sending prompt to ChatGPT...")
 
         try:
@@ -230,8 +230,8 @@ class OpenAIClient:
 
             # Wait for the ProseMirror contenteditable div to be present and clickable.
             input_div = wait.until(EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, "div.ProseMirror[contenteditable='true']")
-            ))
+                (By.CSS_SELECTOR, "div.ProseMirror[contenteditable='true']"))
+            )
             logger.info("✅ Found ProseMirror input.")
 
             input_div.click()
@@ -253,6 +253,7 @@ class OpenAIClient:
         """
         Waits for the full response from ChatGPT, clicking "Continue generating" if necessary.
         """
+        self._assert_ready()
         logger.info("🔄 Waiting for full response...")
         start_time = time.time()
         full_response = ""
@@ -273,7 +274,9 @@ class OpenAIClient:
                         logger.info("✅ Response appears complete.")
                         break
 
-                continue_buttons = self.driver.find_elements(By.XPATH, "//button[contains(text(), 'Continue generating')]")
+                continue_buttons = self.driver.find_elements(
+                    By.XPATH, "//button[contains(text(), 'Continue generating')]"
+                )
                 if continue_buttons:
                     logger.info("🔘 Clicking 'Continue generating'...")
                     continue_buttons[0].click()
@@ -306,6 +309,7 @@ class OpenAIClient:
         """
         Shut down the driver gracefully and clean up resources.
         """
+        self._assert_ready()
         logger.info("🛑 Shutting down OpenAIClient driver...")
         try:
             if hasattr(self, 'driver') and self.driver:
@@ -330,6 +334,7 @@ class OpenAIClient:
                     self._force_kill_chromedriver()
                 
                 self.driver = None
+                self.driver_ready = False
                 logger.info("✅ Driver shut down successfully.")
         except Exception as e:
             logger.error(f"❌ Error during shutdown: {e}")
@@ -358,13 +363,8 @@ class OpenAIClient:
         """
         try:
             import subprocess
-            import platform
-            
             logger.info("🔄 Attempting to force kill ChromeDriver processes...")
-            
-            # Platform-specific commands to list and kill processes
             if platform.system() == "Windows":
-                # Find chromedriver processes
                 subprocess.run("taskkill /f /im chromedriver.exe", shell=True, capture_output=True)
                 subprocess.run("taskkill /f /im chrome.exe", shell=True, capture_output=True)
             elif platform.system() == "Linux":
@@ -373,18 +373,29 @@ class OpenAIClient:
             elif platform.system() == "Darwin":  # macOS
                 subprocess.run("pkill -f chromedriver", shell=True, capture_output=True)
                 subprocess.run("pkill -f Chrome", shell=True, capture_output=True)
-            
+
             logger.info("✅ Forced termination of ChromeDriver processes completed.")
         except Exception as e:
             logger.error(f"❌ Error during force kill: {e}")
 
+    def closeEvent(self, event):
+        """
+        Handle application close event.
+        Ensure proper cleanup of resources.
+        """
+        if self.driver:
+            try:
+                self.shutdown()
+            except Exception as e:
+                logger.error(f"Error shutting down OpenAI client: {str(e)}")
+        event.accept()
 
 # --------------------
 # Test Run (Optional)
 # --------------------
 if __name__ == "__main__":
     PROFILE_DIR = os.path.join(os.getcwd(), "chrome_profile", "openai")
-    client = OpenAIClient(profile_dir=PROFILE_DIR, headless=False, driver_path=None)
+    client = OpenAIClient(profile_dir=PROFILE_DIR, headless=False)
 
     if client.login_openai():
         logger.info("🎉 OpenAI Login Complete!")

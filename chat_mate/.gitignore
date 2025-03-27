@@ -40,3 +40,13 @@ venv/
 ../clean_venv/
 /../clean_venv/
 clean_venv/
+../clean_venv/
+# .gitignore
+venv*/
+test_venv*/
+test_env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log

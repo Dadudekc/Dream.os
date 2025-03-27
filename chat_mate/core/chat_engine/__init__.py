@@ -5,7 +5,7 @@ from . import chat_cycle_controller
 from . import chat_engine_manager
 from . import chat_scraper_service
 from . import discord_dispatcher
-from . import driver_manager
+from .. import DriverManager
 from . import feedback_engine
 from . import gui_event_handler
 from . import prompt_execution_service
@@ -15,7 +15,7 @@ __all__ = [
     'chat_engine_manager',
     'chat_scraper_service',
     'discord_dispatcher',
-    'driver_manager',
+    'DriverManager',
     'feedback_engine',
     'gui_event_handler',
     'prompt_execution_service',

@@ -24,6 +24,7 @@ from core.ConfigManager import ConfigManager
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 from core.chatgpt_automation.automation_engine import AutomationEngine
 from core.chatgpt_automation.controllers.assistant_mode_controller import AssistantModeController
+from core.chatgpt_automation.OpenAIClient import OpenAIClient
 
 
 class DreamscapeMainWindow(QMainWindow):
@@ -41,6 +42,7 @@ class DreamscapeMainWindow(QMainWindow):
         self.dispatcher = dispatcher
         self.services = services or {}
         self.logger = self.services.get('logger', logging.getLogger("DreamscapeMainWindow"))
+        self.openai_client = None
 
         # Initialize engine and assistant controller
         try:
@@ -117,6 +119,11 @@ class DreamscapeMainWindow(QMainWindow):
             self.fallback_output = fallback_text
 
         self.button_layout = QHBoxLayout()
+
+        # Add OpenAI Login Button
+        self.openai_login_button = QPushButton("🔓 Check OpenAI Login")
+        self.openai_login_button.clicked.connect(self.handle_openai_login)
+        self.button_layout.addWidget(self.openai_login_button)
 
         self.scan_button = QPushButton("Scan Project")
         self.scan_button.clicked.connect(self.handle_scan)
@@ -257,6 +264,54 @@ class DreamscapeMainWindow(QMainWindow):
             self.chat_display.append(output_text)
         self.logger.error(output_text)
 
+    def handle_openai_login(self):
+        """
+        Handle OpenAI login button click.
+        Initializes OpenAIClient and attempts login.
+        """
+        try:
+            config = self.services.get('config_manager')
+            profile_dir = config.get("chat_agent", {}).get("profile_dir", "chrome_profile/openai")
+            
+            # Initialize OpenAI client in non-headless mode for manual login if needed
+            self.openai_client = OpenAIClient(profile_dir=profile_dir, headless=False)
+            self.logger.info("OpenAI client initialized")
+            
+            # Attempt login
+            if self.openai_client.login_openai():
+                # Save cookies for future use
+                self.openai_client.save_openai_cookies()
+                
+                # Store chat URL in memory for voice assistant
+                chat_url = self.openai_client.CHATGPT_URL
+                if self.services.get('memory_manager'):
+                    self.services['memory_manager'].set('openai_chat_url', chat_url)
+                    self.logger.info(f"Stored OpenAI chat URL: {chat_url}")
+                    
+                    # TODO: Integrate with voice assistant chat transcription
+                    # This is where we'll hook into the voice assistant later
+                    # self.services['memory_manager'].set('voice_assistant_ready', True)
+                
+                # Show success message
+                QMessageBox.information(self, "Login Success", 
+                    "Successfully logged in to OpenAI and saved session.\nYou can now use the assistant features.")
+                
+                # Shutdown browser
+                self.openai_client.shutdown()
+                self.openai_client = None
+                
+            else:
+                QMessageBox.warning(self, "Login Required",
+                    "Please complete the login process in the browser.\nClick OK once you've logged in.")
+                
+        except Exception as e:
+            self.logger.error(f"Failed to initialize OpenAI client: {str(e)}")
+            QMessageBox.critical(self, "Error", 
+                f"Failed to initialize OpenAI client:\n{str(e)}\n\nCheck logs for details.")
+            if self.openai_client:
+                self.openai_client.shutdown()
+                self.openai_client = None
+
     def handle_scan(self):
         """Handle the scan project button click."""
         success, message = self.engine.scan_project_gui()
@@ -296,107 +351,14 @@ class DreamscapeMainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """
-        Handle window close event.
-        Ensures proper shutdown of services and resources.
+        Handle application close event.
+        Ensure proper cleanup of resources.
         """
-        self.logger.info("Shutting down application and cleaning up services...")
-        try:
-            if hasattr(self, 'assistant_controller'):
-                self.logger.info("Stopping assistant controller...")
-                self.assistant_controller.stop()
-            if hasattr(self, 'engine') and self.engine and hasattr(self.engine, 'shutdown'):
-                self.logger.info("Shutting down automation engine...")
-                self.engine.shutdown()
-        except Exception as e:
-            self.logger.error(f"Error shutting down automation components: {str(e)}")
-        try:
-            if self.tabs and hasattr(self.tabs, 'tabs'):
-                for tab_name, tab in self.tabs.tabs.items():
-                    if hasattr(tab, 'refresh_timer') and tab.refresh_timer:
-                        self.logger.info(f"Stopping refresh timer for {tab_name} tab...")
-                        tab.refresh_timer.stop()
-                    if hasattr(tab, 'running_tasks'):
-                        task_count = len(tab.running_tasks)
-                        if task_count > 0:
-                            self.logger.info(f"Canceling {task_count} running tasks in {tab_name} tab...")
-                            for task in list(tab.running_tasks.values()):
-                                try:
-                                    task.cancel()
-                                except Exception:
-                                    pass
-                    if hasattr(tab, 'shutdown'):
-                        self.logger.info(f"Shutting down {tab_name} tab...")
-                        try:
-                            tab.shutdown()
-                        except Exception as tab_e:
-                            self.logger.error(f"Error shutting down {tab_name} tab: {tab_e}")
-        except Exception as e:
-            self.logger.error(f"Error stopping timers and tasks: {str(e)}")
-        services_to_shutdown = [
-            ('chat_manager', 'shutdown_driver'),
-            ('discord_service', 'stop'),
-            ('cursor_manager', 'shutdown_all'),
-            ('task_orchestrator', 'stop'),
-            ('cycle_service', 'stop'),
-            ('dreamscape_generator', 'shutdown')
-        ]
-        for service_name, method_name in services_to_shutdown:
+        if self.openai_client:
             try:
-                service = self.services.get(service_name)
-                if service and hasattr(service, method_name):
-                    self.logger.info(f"Shutting down {service_name}...")
-                    getattr(service, method_name)()
-                else:
-                    self.logger.debug(f"Service '{service_name}.{method_name}()' not available for shutdown.")
+                self.openai_client.shutdown()
             except Exception as e:
-                self.logger.error(f"Error shutting down {service_name}: {str(e)}")
-        try:
-            if self.ui_logic and hasattr(self.ui_logic, 'shutdown'):
-                self.logger.info("Shutting down UI logic...")
-                self.ui_logic.shutdown()
-        except Exception as e:
-            self.logger.error(f"Error shutting down UI logic: {str(e)}")
-        try:
-            if 'chat_manager' in self.services:
-                chat_manager = self.services['chat_manager']
-                if hasattr(chat_manager, 'driver') and chat_manager.driver:
-                    self.logger.info("Forcing browser shutdown...")
-                    try:
-                        chat_manager.driver.quit()
-                    except Exception:
-                        pass
-        except Exception as e:
-            self.logger.error(f"Error forcing browser shutdown: {str(e)}")
-        try:
-            app = QApplication.instance()
-            event_loop_manager = None
-            if hasattr(app, 'eventLoop'):
-                event_loop_manager = app.eventLoop
-            elif 'event_loop_manager' in self.services:
-                event_loop_manager = self.services['event_loop_manager']
-            if event_loop_manager and hasattr(event_loop_manager, 'shutdown'):
-                self.logger.info("Stopping event loop manager...")
-                event_loop_manager.shutdown()
-            else:
-                self.logger.info("No event loop manager found, trying direct asyncio shutdown...")
-                try:
-                    loop = asyncio.get_event_loop()
-                    if loop and loop.is_running():
-                        for task in asyncio.all_tasks(loop):
-                            if not task.done():
-                                task.cancel()
-                        loop.call_soon_threadsafe(loop.stop)
-                except Exception as loop_e:
-                    self.logger.error(f"Error in direct asyncio shutdown: {str(loop_e)}")
-        except Exception as e:
-            self.logger.error(f"Error stopping event loop: {str(e)}")
-        try:
-            import threading
-            threading.Timer(3.0, lambda: os._exit(0)).start()
-            self.logger.info("Force exit timer set for 3 seconds as fallback")
-        except Exception as timer_e:
-            self.logger.error(f"Error setting force exit timer: {str(timer_e)}")
-        self.logger.info("All services shutdown completed. Application closing.")
+                self.logger.error(f"Error shutting down OpenAI client: {str(e)}")
         event.accept()
 
 
@@ -430,6 +392,7 @@ def main():
 
     app = QApplication(sys.argv)
 
+    # Create and configure event loop
     from utils.qasync_event_loop_manager import QAsyncEventLoopManager
     event_loop_manager = QAsyncEventLoopManager(app, logger=logging.getLogger("QAsyncEventLoop"))
     logger.info("Async event loop initialized")
@@ -437,7 +400,7 @@ def main():
     dispatcher = SignalDispatcher()
 
     try:
-        config = ConfigManager(config_name="dreamscape_config.yaml")
+        config = ConfigManager(config_name="base.yaml")
         logger.info("Configuration loaded successfully")
     except Exception as e:
         logger.error(f"Failed to load configuration: {str(e)}")
@@ -506,15 +469,22 @@ def main():
             logger.info(f"Service '{service_name}' is {status}")
 
     try:
+        # Create and show main window
         window = DreamscapeMainWindow(ui_logic, dispatcher, services=services)
-        window.show()
+        window.show()  # Make window visible
+        window.raise_()  # Bring window to front
+        window.activateWindow()  # Give window focus
         logger.info("Main window initialized and displayed")
+        
+        # Start event loop
         event_loop_manager.start()
         logger.info("Application event loop started")
-        sys.exit(app.exec_())
+        
+        # Run main loop
+        return app.exec_()
     except Exception as e:
         logger.critical(f"Failed to start application: {str(e)}")
-        sys.exit(1)
+        return 1
 
 
 def _ensure_service(service, service_name, logger):
@@ -529,4 +499,4 @@ def _create_empty_service(service_name, logger):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

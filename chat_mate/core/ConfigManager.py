@@ -36,7 +36,10 @@ class ConfigManager:
             "debug": bool,
             "log_level": str,
             "max_retries": int,
-            "timeout": float
+            "timeout": float,
+            "headless": bool,
+            "reverse_order": bool,
+            "archive_enabled": bool
         },
         "ai": {
             "model": str,
@@ -45,6 +48,17 @@ class ConfigManager:
             "stop_sequences": list,
             "presence_penalty": float,
             "frequency_penalty": float,
+            "chatgpt_url": str,
+            "custom_gpt_url": str,
+            "prompt_input_selector": str,
+            "response_container_selector": str,
+            "stop_button_xpath": str,
+            "retry_attempts": int,
+            "retry_delay_seconds": int,
+            "excluded_chats": list,
+            "prompt_cycle": list,
+            "agent_name": str,
+            "agent_mode": str,
             "memory": {
                 "max_entries": int,
                 "min_score": float,
@@ -76,7 +90,9 @@ class ConfigManager:
         },
         "social": {
             "discord": {
+                "enabled": bool,
                 "token": str,
+                "channel_id": int,
                 "prefix": str,
                 "channels": list,
                 "allowed_roles": list
@@ -92,18 +108,34 @@ class ConfigManager:
             "base_path": str,
             "max_log_size": int,
             "backup_count": int,
-            "compression": bool
+            "compression": bool,
+            "paths": {
+                "logs": str,
+                "output": str,
+                "memory": str,
+                "cookies": str,
+                "profile": str,
+                "driver": str
+            }
         },
         "security": {
             "api_keys": dict,
             "allowed_ips": list,
             "rate_limits": dict
+        },
+        "driver": {
+            "headless": bool,
+            "window_size": list,
+            "user_agent": str,
+            "additional_arguments": list,
+            "executable_path": str,
+            "cache_path": str
         }
     }
 
     def __init__(
         self,
-        config_name: str = "unified_config.yaml",
+        config_name: str = "base.yaml",
         env_prefix: str = "CHATMATE_",
         auto_reload: bool = True,
         logger: Optional[ILoggingAgent] = None
@@ -112,7 +144,7 @@ class ConfigManager:
         Initialize the ConfigManager.
         
         Args:
-            config_name: Name of the main config file
+            config_name: Name of the main config file (defaults to base.yaml)
             env_prefix: Prefix for environment variables
             auto_reload: Whether to watch for config file changes
             logger: Optional ILoggingAgent instance for logging
@@ -128,7 +160,7 @@ class ConfigManager:
         self._config_cache: Dict[str, Any] = {}
 
         # Set up config paths using PathManager
-        self.config_dir = PathManager.get_path('configs')
+        self.config_dir = PathManager.get_path('config')
         self.config_path = os.path.join(self.config_dir, config_name)
         os.makedirs(self.config_dir, exist_ok=True)
 
@@ -220,7 +252,10 @@ class ConfigManager:
                 "debug": False,
                 "log_level": "INFO",
                 "max_retries": 3,
-                "timeout": 30.0
+                "timeout": 30.0,
+                "headless": False,
+                "reverse_order": False,
+                "archive_enabled": True
             },
             "ai": {
                 "model": "gpt-4",
@@ -229,6 +264,17 @@ class ConfigManager:
                 "stop_sequences": [],
                 "presence_penalty": 0.0,
                 "frequency_penalty": 0.0,
+                "chatgpt_url": "",
+                "custom_gpt_url": "",
+                "prompt_input_selector": "",
+                "response_container_selector": "",
+                "stop_button_xpath": "",
+                "retry_attempts": 3,
+                "retry_delay_seconds": 5,
+                "excluded_chats": [],
+                "prompt_cycle": [],
+                "agent_name": "",
+                "agent_mode": "",
                 "memory": {
                     "max_entries": 10000,
                     "min_score": -0.5,
@@ -264,7 +310,9 @@ class ConfigManager:
             },
             "social": {
                 "discord": {
+                    "enabled": False,
                     "token": "",
+                    "channel_id": 0,
                     "prefix": "!",
                     "channels": [],
                     "allowed_roles": []
@@ -280,7 +328,15 @@ class ConfigManager:
                 "base_path": str(PathManager.get_path('data')),
                 "max_log_size": 10485760,
                 "backup_count": 5,
-                "compression": True
+                "compression": True,
+                "paths": {
+                    "logs": "",
+                    "output": "",
+                    "memory": "",
+                    "cookies": "",
+                    "profile": "",
+                    "driver": ""
+                }
             },
             "security": {
                 "api_keys": {},
@@ -289,6 +345,14 @@ class ConfigManager:
                     "default": 60,
                     "api": 100
                 }
+            },
+            "driver": {
+                "headless": False,
+                "window_size": [1280, 720],
+                "user_agent": "",
+                "additional_arguments": [],
+                "executable_path": "",
+                "cache_path": ""
             }
         }
 
@@ -476,6 +540,98 @@ class ConfigManager:
                 message="Configuration merged successfully",
                 metadata=config
             )
+
+    def create_driver(self) -> 'webdriver.Chrome':
+        """Initialize ChromeDriver with UC (undetected_chromedriver)."""
+        try:
+            import undetected_chromedriver as uc
+            from selenium.webdriver.chrome.options import Options
+        except ImportError:
+            self.logger.log_system_event(
+                event_type="driver_error",
+                message="Failed to import required driver packages. Please install undetected_chromedriver.",
+                level="error"
+            )
+            raise
+
+        options = uc.ChromeOptions()
+
+        # Apply driver configuration
+        driver_config = self.get("driver", {})
+        
+        if driver_config.get("headless", False):
+            options.add_argument("--headless=new")
+            options.add_argument("--disable-gpu")
+            window_size = driver_config.get("window_size", [1920, 1080])
+            options.add_argument(f"--window-size={window_size[0]},{window_size[1]}")
+            self.logger.log_system_event(
+                event_type="driver_config",
+                message="Headless mode enabled"
+            )
+
+        options.add_argument("--start-maximized")
+        profile_dir = self.get("storage.paths.profile")
+        if profile_dir:
+            options.add_argument(f"--user-data-dir={profile_dir}")
+
+        # Add any additional arguments
+        for arg in driver_config.get("additional_arguments", []):
+            options.add_argument(arg)
+
+        driver_path = self._get_cached_driver()
+
+        try:
+            driver = uc.Chrome(options=options, driver_executable_path=driver_path)
+            self.logger.log_system_event(
+                event_type="driver_init",
+                message="ChromeDriver initialized successfully"
+            )
+            return driver
+        except Exception as e:
+            self.logger.log_system_event(
+                event_type="driver_error",
+                message=f"Failed to initialize ChromeDriver: {str(e)}",
+                level="error"
+            )
+            raise
+
+    def _get_cached_driver(self) -> str:
+        """Retrieve existing ChromeDriver or download/cache a fresh one."""
+        from webdriver_manager.chrome import ChromeDriverManager
+        import shutil
+
+        driver_path = self.get("driver.executable_path")
+        if not driver_path:
+            driver_path = os.path.join(self.get("storage.paths.driver"), "chromedriver.exe")
+
+        if os.path.exists(driver_path):
+            self.logger.log_system_event(
+                event_type="driver_cache",
+                message=f"Using cached ChromeDriver at {driver_path}"
+            )
+            return driver_path
+
+        self.logger.log_system_event(
+            event_type="driver_cache",
+            message="Cached ChromeDriver missing. Downloading latest..."
+        )
+
+        try:
+            latest_driver = ChromeDriverManager().install()
+            os.makedirs(os.path.dirname(driver_path), exist_ok=True)
+            shutil.copy(latest_driver, driver_path)
+            self.logger.log_system_event(
+                event_type="driver_cache",
+                message=f"ChromeDriver cached at {driver_path}"
+            )
+            return driver_path
+        except Exception as e:
+            self.logger.log_system_event(
+                event_type="driver_error",
+                message=f"Failed to download/cache ChromeDriver: {str(e)}",
+                level="error"
+            )
+            raise
 
 # Singleton wrapper
 

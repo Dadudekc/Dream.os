@@ -1,110 +1,73 @@
 import time
-import platform
 import pyautogui
-import pygetwindow as gw
-import pyperclip
+import subprocess
+import os
 import logging
-
-logging.basicConfig(level=logging.INFO)
+import psutil
 
 class CursorSessionManager:
-    VALID_MODES = ["full_sync", "tdd", "async", "repl"]
+    def __init__(self, project_root, cursor_exe="cursor"):
+        self.project_root = project_root
+        self.cursor_exe = cursor_exe
+        self.logger = logging.getLogger("CursorSessionManager")
 
-    DEFAULT_HOTKEYS = {
-        "open_prompt": ['ctrl', 'shift', 'p'],
-        "paste": ['ctrl', 'v'],
-        "select_all": ['ctrl', 'a'],
-        "copy": ['ctrl', 'c']
-    }
-
-    def __init__(self, config, memory_manager=None):
-        self.execution_mode = config.get("execution_mode", "full_sync")
-        self.cursor_window_title = config.get("cursor_window_title", "Cursor")
-        self.prompt_delay = config.get("prompt_delay", 5)
-        self.hotkeys = config.get("hotkeys", self.DEFAULT_HOTKEYS)
-        self.logger = logging.getLogger(__name__)
-        self.memory_manager = memory_manager
+    def launch_cursor(self):
+        """Launch Cursor IDE with the project directory"""
+        try:
+            self.logger.info("🚀 Launching Cursor IDE...")
+            subprocess.Popen([self.cursor_exe, self.project_root])
+            time.sleep(3)
+        except Exception as e:
+            self.logger.error(f"❌ Failed to launch Cursor: {e}")
 
     def focus_cursor_window(self):
-        windows = gw.getWindowsWithTitle(self.cursor_window_title)
-        if not windows:
-            self.logger.error(f"No window found with title '{self.cursor_window_title}'")
-            raise RuntimeError("Cursor window not found.")
-
-        cursor_window = windows[0]
-        cursor_window.activate()
-        self.logger.info(f"Focused Cursor window: '{cursor_window.title}'")
-        time.sleep(1)
-
-    def generate_prompt(self, task, context=None):
-        prompt_parts = [f"# TASK: {task}\n"]
-
-        if context:
-            prompt_parts.append("## CONTEXT\n" + "\n".join(context))
-
-        instructions = {
-            "full_sync": "- Rapid, comprehensive solution with error handling.",
-            "tdd": "- Write tests first, follow Red-Green-Refactor.",
-            "async": "- Asynchronous implementation (async/await).",
-            "repl": "- REPL-friendly immediate execution."
-        }
-
-        prompt_parts.append(
-            f"## MODE: {self.execution_mode.upper()}\n{instructions[self.execution_mode]}"
-        )
-
-        prompt = "\n\n".join(prompt_parts)
-        self.logger.debug(f"Generated prompt:\n{prompt}")
-        return prompt
-
-    def safe_copy_to_clipboard(self, text, retries=3, delay=0.5):
-        for attempt in range(retries):
-            try:
-                pyperclip.copy(text)
-                if pyperclip.paste() == text:
-                    return True
-            except pyperclip.PyperclipException as e:
-                self.logger.warning(f"Clipboard copy attempt {attempt+1} failed: {e}")
-                time.sleep(delay)
-        raise RuntimeError("Failed to copy text to clipboard after retries.")
-
-    def execute_prompt(self, prompt):
-        self.focus_cursor_window()
-
-        self.safe_copy_to_clipboard(prompt)
-        time.sleep(0.5)
-
-        pyautogui.hotkey(*self.hotkeys["open_prompt"])
-        time.sleep(1)
-
-        pyautogui.hotkey(*self.hotkeys["paste"])
-        time.sleep(0.5)
-
-        pyautogui.press('enter')
-        self.logger.info("Prompt submitted to Cursor IDE.")
-
-        self.logger.info(f"Waiting {self.prompt_delay} seconds for response...")
-        time.sleep(self.prompt_delay)
-
-        pyautogui.hotkey(*self.hotkeys["select_all"])
-        time.sleep(0.5)
-        pyautogui.hotkey(*self.hotkeys["copy"])
-        time.sleep(0.5)
-
+        """Bring Cursor window into focus (platform-dependent)"""
         try:
-            generated_code = pyperclip.paste()
-            if not generated_code.strip():
-                raise ValueError("Retrieved empty content from Clipboard.")
-        except pyperclip.PyperclipException as e:
-            self.logger.error(f"Failed to retrieve generated code from Clipboard: {e}")
-            raise RuntimeError("Clipboard paste failed.")
+            win = pyautogui.getWindowsWithTitle("Cursor")[0]
+            win.activate()
+            self.logger.info("🪟 Cursor window activated.")
+        except Exception as e:
+            self.logger.warning(f"⚠️ Could not activate Cursor window: {e}")
 
-        self.logger.info("Generated code successfully retrieved.")
-        return generated_code
+    def trigger_prompt_execution(self):
+        """Simulate Ctrl+Enter to execute prompt in Cursor"""
+        try:
+            self.logger.info("⌨️ Simulating Ctrl+Enter...")
+            pyautogui.hotkey('ctrl', 'enter')
+            time.sleep(2)
+        except Exception as e:
+            self.logger.error(f"❌ Failed to simulate execution: {e}")
 
-    def switch_mode(self, mode):
-        if mode not in self.VALID_MODES:
-            self.logger.error(f"Invalid mode '{mode}'. Valid modes: {self.VALID_MODES}")
-            raise ValueError(f"Invalid mode '{mode}'.")
-        self.execution_mode = mode
-        self.logger.info(f"Switched execution mode to: {mode}")
+    def wait_for_cursor_response(self, timeout=60):
+        """Poll output directory or screen region for signal of completion"""
+        self.logger.info("⏳ Waiting for response (basic delay)...")
+        time.sleep(timeout)
+
+    def is_cursor_running(self):
+        return any("cursor" in p.name().lower() for p in psutil.process_iter())
+
+    def shutdown_cursor(self):
+        for proc in psutil.process_iter():
+            if "cursor" in proc.name().lower():
+                proc.terminate()
+                self.logger.info("🛑 Cursor IDE shut down.")
+
+# === EXAMPLE USAGE ===
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    PROJECT_PATH = os.path.abspath(".")
+
+    manager = CursorSessionManager(project_root=PROJECT_PATH)
+
+    # Full Sync Simulation Flow
+    if not manager.is_cursor_running():
+        manager.launch_cursor()
+
+    manager.focus_cursor_window()
+    manager.trigger_prompt_execution()
+    manager.wait_for_cursor_response(timeout=10)
+
+    # Optionally shut down Cursor after test
+    # manager.shutdown_cursor()
+
+    print("✅ Example usage complete. Check logs for simulated trigger.")

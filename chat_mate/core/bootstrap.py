@@ -46,7 +46,6 @@ _PathRegistry.register('data', './data')
 _PathRegistry.register('logs', './outputs/logs')
 _PathRegistry.register('outputs', './outputs')
 _PathRegistry.register('config', './config')
-_PathRegistry.register('configs', './configs')  # Both 'config' and 'configs' for backwards compatibility
 _PathRegistry.register('cache', './cache')
 
 # Additional paths from old PathManager

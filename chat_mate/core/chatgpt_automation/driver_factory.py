@@ -22,14 +22,12 @@ class DriverFactory:
         else:
             self.logger.info("Creating OpenAIClient driver")
             try:
+                # Create client without auto-login
                 openai_client = OpenAIClient(
                     profile_dir=PROFILE_DIR,
                     headless=CHATGPT_HEADLESS,
                     driver_path=CHROMEDRIVER_PATH
                 )
-                if not openai_client.login_openai():
-                    self.logger.error("❌ OpenAI Login Failed.")
-                    raise Exception("OpenAI Login Failed - Please ensure valid cookies/credentials.")
                 self.logger.info("✅ OpenAIClient driver created successfully.")
                 return openai_client.driver
             except Exception as e:

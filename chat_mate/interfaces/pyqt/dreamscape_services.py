@@ -45,7 +45,7 @@ from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
-from core.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
 logger = logging.getLogger(__name__)
@@ -585,7 +585,7 @@ class DreamscapeService:
 
     # --- Reinforcement Tools ---
 
-    def run_prompt_tuning(self) -> None:
+    async def run_prompt_tuning(self) -> None:
         """
         Execute prompt tuning using the reinforcement engine.
         """
@@ -595,7 +595,7 @@ class DreamscapeService:
 
     # --- Dreamscape Generation ---
     
-    def generate_dreamscape_content(self, headless: bool = None, excluded_chats: list = None) -> list:
+    async def generate_dreamscape_content(self, headless: bool = None, excluded_chats: list = None) -> list:
         """
         Generate Dreamscape content by running the original Digital Dreamscape workflow.
         This method visits each ChatGPT chat and generates a creative narrative episode.
@@ -622,7 +622,7 @@ class DreamscapeService:
         # Initialize the generator if needed
         if not hasattr(self.dreamscape_generator, 'generate_dreamscape_episodes'):
             self.logger.warning("Dreamscape generator doesn't support the original functionality. Re-initializing.")
-            from core.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+            from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
             self.dreamscape_generator = DreamscapeEpisodeGenerator(
                 chat_manager=self.chat_manager,
                 response_handler=self.prompt_handler,
@@ -633,7 +633,7 @@ class DreamscapeService:
         # Run the generation process
         self.logger.info("Starting Dreamscape content generation process...")
         try:
-            entries = self.dreamscape_generator.generate_dreamscape_episodes()
+            entries = await self.dreamscape_generator.generate_dreamscape_episodes()
             self.logger.info(f"Dreamscape generation completed successfully with {len(entries) if entries else 0} entries.")
             return entries
         except Exception as e:

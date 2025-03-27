@@ -1,4 +1,4 @@
-from core.chat_engine.driver_manager import DriverManager
+from core.DriverManager import DriverManager
 from core.chat_engine.chat_scraper_service import ChatScraperService
 from core.chat_engine.prompt_execution_service import PromptExecutionService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher

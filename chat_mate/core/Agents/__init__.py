@@ -9,7 +9,7 @@ from . import ReinforcementEvaluator
 from . import TestAgent
 from . import base_agent
 from . import chat_scraper_agent
-from . import driver_manager
+from .. import DriverManager
 from . import main
 from . import refactoring_utils
 from . import specialized_agents
@@ -23,7 +23,7 @@ __all__ = [
     'TestAgent',
     'base_agent',
     'chat_scraper_agent',
-    'driver_manager',
+    'DriverManager',
     'main',
     'refactoring_utils',
     'specialized_agents',

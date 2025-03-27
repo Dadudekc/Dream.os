@@ -2,17 +2,15 @@ import os
 import json
 import zlib
 import logging
-import threading
+import shutil
 import sqlite3
+import threading
+from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, List, Any, Optional
-
 from cachetools import LRUCache
 from jinja2 import Environment, FileSystemLoader
-
-# Configure module-level logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from .memory_utils import load_memory_file
 
 ###############################################################################
 # Database Manager for Long-Term Storage
@@ -23,9 +21,21 @@ class DatabaseManager:
     long-term retention using SQLite.
     """
 
-    def __init__(self, db_file: str = "memory/engagement_memory.db"):
+    def __init__(self, db_file: str = "memory/engagement_memory.db", wal_mode: bool = True):
+        """
+        Args:
+            db_file: Path to the SQLite database file.
+            wal_mode: If True, enable Write-Ahead Logging for better concurrency.
+        """
         self.db_file = db_file
         self.conn = sqlite3.connect(self.db_file, check_same_thread=False)
+        
+        if wal_mode:
+            # Enable WAL mode for better concurrent reads/writes
+            cursor = self.conn.cursor()
+            cursor.execute("PRAGMA journal_mode = WAL;")
+            cursor.close()
+        
         self._initialize_db()
 
     def _initialize_db(self):
@@ -55,6 +65,9 @@ class DatabaseManager:
         self.conn.commit()
 
     def record_interaction(self, record: Dict[str, Any]):
+        """
+        Insert a single interaction record into the database.
+        """
         c = self.conn.cursor()
         c.execute("""
             INSERT INTO interactions (
@@ -73,6 +86,9 @@ class DatabaseManager:
         self.conn.commit()
 
     def initialize_conversation(self, interaction_id: str, metadata: Dict[str, Any]):
+        """
+        Store conversation metadata if it does not already exist.
+        """
         c = self.conn.cursor()
         timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         c.execute("""
@@ -82,9 +98,13 @@ class DatabaseManager:
         self.conn.commit()
 
     def get_conversation(self, interaction_id: str) -> List[Dict[str, Any]]:
+        """
+        Return all interactions with a given interaction_id from earliest to latest.
+        """
         c = self.conn.cursor()
         c.execute("""
-            SELECT platform, username, interaction_id, timestamp, response, sentiment, success, chatgpt_url 
+            SELECT 
+                platform, username, interaction_id, timestamp, response, sentiment, success, chatgpt_url
             FROM interactions
             WHERE interaction_id = ?
             ORDER BY timestamp ASC
@@ -94,22 +114,23 @@ class DatabaseManager:
         return [dict(zip(columns, row)) for row in rows]
 
     def close(self):
+        """
+        Close the database connection.
+        """
         self.conn.close()
 
 
 ###############################################################################
-# Unified Memory Manager (In-Memory + DB + Narrative)
+# Unified Memory Manager
 ###############################################################################
 class MemoryManager:
     """
-    MemoryManager combines features from an optimized memory manager with:
-      - LRU caching and data compression (for fast short-term storage)
-      - JSON file storage for ephemeral memory
+    MemoryManager combines:
+      - LRU caching + zlib compression for short-term memory
+      - JSON-based loading/saving with schema validation + backup on corruption
       - SQLite-based long-term storage of interactions
-      - Conversation and interaction management
+      - Conversation/interaction management
       - Narrative generation via Jinja2 templates
-
-    Memory is segmented by context (e.g. "system", "prompts", "interactions").
     """
 
     def __init__(self,
@@ -117,68 +138,143 @@ class MemoryManager:
                  memory_dir: Optional[str] = None,
                  memory_file: str = "memory/engagement_memory.json",
                  db_file: str = "memory/engagement_memory.db",
-                 template_dir: str = "templates"):
-        # Setup cache and lock
-        self.cache = LRUCache(maxsize=max_cache_size)
-        self._lock = threading.Lock()
-        self.logger = logger  # Using module logger; can be replaced with a more advanced logging agent
+                 template_dir: str = "templates",
+                 logger: Optional[logging.Logger] = None,
+                 enable_wal: bool = True):
+        """
+        Initialize the MemoryManager.
 
-        # Memory segments for JSON storage (with compression)
+        Args:
+            max_cache_size: Maximum size of the LRU cache.
+            memory_dir: Directory for saving memory segments.
+            memory_file: Path to the main JSON memory file.
+            db_file: Path to the SQLite database file.
+            template_dir: Directory containing Jinja2 templates.
+            logger: Optional logger instance. If None, creates a default.
+            enable_wal: If True, enable WAL mode in SQLite for concurrency.
+        """
+        self.logger = logger or logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
+        # Setup memory directory
+        self.memory_dir = memory_dir or os.path.join(os.getcwd(), "memory")
+        os.makedirs(self.memory_dir, exist_ok=True)
+        self.memory_file = memory_file
+
+        # Setup concurrency lock and LRU cache
+        self._lock = threading.Lock()
+        self.cache = LRUCache(maxsize=max_cache_size)
+
+        # Memory segments for in-memory JSON (with compression)
         self.memory_segments: Dict[str, Dict[str, bytes]] = {
             "prompts": {},
             "feedback": {},
             "context": {},
             "system": {},
-            "interactions": {}  # Holds interaction records and conversation indexes
+            "interactions": {}
         }
 
-        # Setup memory directory and file
-        self.memory_dir = memory_dir or os.path.join(os.getcwd(), "memory")
-        os.makedirs(self.memory_dir, exist_ok=True)
-        self.memory_file = memory_file
-
-        # Load existing JSON memory from file (if available)
+        # Initialize data dict (high-level structure from memory_file)
         self.data = {}
         self._load_memory()
 
-        # Initialize database manager for long-term storage
-        self.db_manager = DatabaseManager(db_file)
+        # Initialize database manager
+        self.db_manager = DatabaseManager(db_file=db_file, wal_mode=enable_wal)
 
-        # Initialize Jinja2 environment for narrative generation
-        self.jinja_env = Environment(loader=FileSystemLoader(template_dir),
-                                     trim_blocks=True,
-                                     lstrip_blocks=True)
+        # Initialize Jinja2 environment for narratives
+        self.jinja_env = Environment(
+            loader=FileSystemLoader(template_dir),
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
 
-    # -----------------------------
-    # JSON Memory Operations (with Compression)
-    # -----------------------------
+    ############################################################################
+    # JSON Memory: Load, Save, Validation, Backup
+    ############################################################################
     def _load_memory(self):
-        """Load memory data from JSON file and ensure integrity."""
-        if os.path.exists(self.memory_file):
-            try:
-                with open(self.memory_file, 'r', encoding='utf-8') as f:
-                    self.data = json.load(f)
-            except Exception as e:
-                self.logger.error(f"Error loading memory file: {e}")
-                self.data = {}
-        else:
-            self.data = {}
-        # Ensure basic keys exist
-        self.data.setdefault("platforms", {})
-        self.data.setdefault("conversations", {})
+        """Load memory from file or initialize if not present/invalid."""
+        default_memory = self._create_initial_memory()
+        self.data = load_memory_file(self.memory_file, default_memory)
+        return self.data
+
+    def _backup_corrupted_file(self, file_path: str) -> None:
+        """Create a backup of a corrupted file with timestamp."""
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_path = f"{file_path}.{timestamp}.bak"
+            shutil.copy2(file_path, backup_path)
+            self.logger.info(f"Created backup of corrupted file at: {backup_path}")
+        except Exception as e:
+            self.logger.error(f"Failed to create backup of corrupted file: {str(e)}")
+
+    def _create_initial_memory(self) -> Dict[str, Any]:
+        """Create initial memory structure."""
+        return {
+            "last_updated": datetime.now().isoformat(),
+            "episode_count": 0,
+            "themes": [],
+            "characters": ["Victor the Architect"],
+            "realms": ["The Dreamscape", "The Forge of Automation"],
+            "artifacts": [],
+            "recent_episodes": [],
+            "skill_levels": {
+                "System Convergence": 1,
+                "Execution Velocity": 1,
+                "Memory Integration": 1,
+                "Protocol Design": 1,
+                "Automation Engineering": 1
+            },
+            "architect_tier": {
+                "current_tier": "Initiate Architect",
+                "progress": "0%",
+                "tier_history": []
+            },
+            "quests": {
+                "completed": [],
+                "active": ["Establish the Dreamscape"]
+            },
+            "protocols": [],
+            "stabilized_domains": []
+        }
 
     def _save_memory(self):
-        """Save memory data to JSON file."""
-        os.makedirs(os.path.dirname(self.memory_file), exist_ok=True)
+        """
+        Internal method to save the top-level memory dictionary to JSON,
+        with validation and backup of any existing file.
+        """
+        file_path = Path(self.memory_file)
         try:
-            with open(self.memory_file, 'w', encoding='utf-8') as f:
-                json.dump(self.data, f, indent=4)
-        except Exception as e:
-            self.logger.error(f"Error saving memory file: {e}")
+            self._validate_memory(self.data)  # Validate before saving
+            if file_path.exists():
+                self._backup_file(file_path)
 
-    # -----------------------------
-    # Optimized Storage Methods (Caching & Compression for segments)
-    # -----------------------------
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(self.data, f, indent=2)
+        except Exception as e:
+            self.logger.error(f"Error saving memory to {file_path}: {str(e)}")
+
+    def _validate_memory(self, memory_data: Dict[str, Any]) -> None:
+        """
+        Validate the memory structure; raise ValueError if invalid.
+        Extend this method with schema checks as needed.
+        """
+        if not isinstance(memory_data, dict):
+            raise ValueError("Memory must be a dictionary.")
+
+    def _backup_file(self, file_path: Path):
+        """
+        Backup the specified file by copying it to <filename>.bak
+        """
+        try:
+            backup_path = file_path.with_suffix('.bak')
+            shutil.copy(file_path, backup_path)
+            self.logger.info(f"Backup created for {file_path} at {backup_path}")
+        except Exception as e:
+            self.logger.error(f"Error backing up file {file_path}: {str(e)}")
+
+    ############################################################################
+    # Compressed Segment Storage
+    ############################################################################
     def set(self, key: str, data: Any, segment: str = "system") -> None:
         """
         Store JSON-serializable data with compression in a memory segment.
@@ -188,26 +284,32 @@ class MemoryManager:
                 json_str = json.dumps(data)
                 compressed = zlib.compress(json_str.encode('utf-8'))
                 cache_key = f"{segment}:{key}"
+
+                # Update in-memory segment
                 self.cache[cache_key] = compressed
                 self.memory_segments.setdefault(segment, {})[key] = compressed
+
+                # Persist segment to disk
                 self._save_segment(segment)
+
                 self.logger.info(f"Stored data in {segment}:{key}")
             except Exception as e:
                 self.logger.error(f"Error storing data in {segment}:{key} - {e}")
 
     def get(self, key: str, segment: str = "system") -> Optional[Any]:
         """
-        Retrieve data from cache or memory segment storage.
+        Retrieve data from a memory segment (cache or fallback to disk).
         """
         cache_key = f"{segment}:{key}"
         try:
             if cache_key in self.cache:
                 compressed = self.cache[cache_key]
-            elif key in self.memory_segments.get(segment, {}):
-                compressed = self.memory_segments[segment][key]
-                self.cache[cache_key] = compressed
             else:
-                return None
+                compressed = self.memory_segments.get(segment, {}).get(key, None)
+                if compressed:
+                    self.cache[cache_key] = compressed
+                else:
+                    return None
 
             json_str = zlib.decompress(compressed).decode('utf-8')
             return json.loads(json_str)
@@ -217,7 +319,7 @@ class MemoryManager:
 
     def delete(self, key: str, segment: str = "system") -> bool:
         """
-        Delete a key from both cache and memory segment storage.
+        Delete a key from both cache and segment storage.
         """
         with self._lock:
             try:
@@ -234,7 +336,7 @@ class MemoryManager:
 
     def clear_segment(self, segment: str) -> None:
         """
-        Clear all keys in a memory segment.
+        Clear all items in a memory segment.
         """
         with self._lock:
             self.memory_segments.setdefault(segment, {}).clear()
@@ -257,8 +359,7 @@ class MemoryManager:
 
     def _save_segment(self, segment: str) -> None:
         """
-        Save a specific memory segment to a file.
-        Each segment is stored in a separate JSON file.
+        Save a single memory segment to a file (JSON) in uncompressed form.
         """
         segment_file = os.path.join(self.memory_dir, f"{segment}_memory.json")
         try:
@@ -271,25 +372,9 @@ class MemoryManager:
         except Exception as e:
             self.logger.error(f"Error saving segment {segment} - {e}")
 
-    def get_stats(self) -> Dict[str, Any]:
-        """
-        Return statistics about the memory manager.
-        """
-        stats = {
-            "cache_size": len(self.cache),
-            "cache_maxsize": self.cache.maxsize,
-            "segments": {}
-        }
-        for segment, data in self.memory_segments.items():
-            stats["segments"][segment] = {
-                "items": len(data),
-                "compressed_size": sum(len(v) for v in data.values())
-            }
-        return stats
-
     def optimize(self) -> None:
         """
-        Optimize memory usage by clearing the cache and recompressing data.
+        Recompress all segments at max compression and clear the cache.
         """
         with self._lock:
             self.cache.clear()
@@ -305,9 +390,54 @@ class MemoryManager:
                 self._save_segment(segment)
             self.logger.info("Memory optimization completed. Stats: " + json.dumps(self.get_stats()))
 
-    # -----------------------------
-    # Interaction Recording and Conversation Management
-    # -----------------------------
+    def get_stats(self) -> Dict[str, Any]:
+        """
+        Return statistics on cache usage and memory segment sizes.
+        """
+        stats = {
+            "cache_size": len(self.cache),
+            "cache_maxsize": self.cache.maxsize,
+            "segments": {}
+        }
+        for segment, data in self.memory_segments.items():
+            stats["segments"][segment] = {
+                "items": len(data),
+                "compressed_size": sum(len(v) for v in data.values())
+            }
+        return stats
+
+    ############################################################################
+    # JSON Memory: Higher-level platform/user manipulation
+    ############################################################################
+    def get_user_history(self, platform: str, username: str, limit: int = 5) -> List[Dict[str, Any]]:
+        """
+        Retrieve the latest interactions for a given user on a given platform
+        from the in-memory JSON data.
+        """
+        platform_data = self.data.get("platforms", {})
+        user_history = platform_data.get(platform, {}).get(username, [])
+        return user_history[-limit:]
+
+    def clear_user_history(self, platform: str, username: str):
+        """
+        Clear a specific user's history from the top-level JSON memory.
+        """
+        platform_users = self.data.get("platforms", {}).get(platform, {})
+        if username in platform_users:
+            del platform_users[username]
+            self._save_memory()
+
+    def clear_platform_history(self, platform: str):
+        """
+        Clear all user history for a given platform in the top-level JSON memory.
+        """
+        if platform in self.data.get("platforms", {}):
+            del self.data["platforms"][platform]
+            self._save_memory()
+
+    ############################################################################
+    # Interaction & Conversation Recording
+    ############################################################################
     def record_interaction(self,
                            platform: str,
                            username: str,
@@ -317,8 +447,7 @@ class MemoryManager:
                            interaction_id: Optional[str] = None,
                            chatgpt_url: Optional[str] = None):
         """
-        Record an interaction in both short-term JSON memory and long-term DB.
-        Also indexes conversation if interaction_id is provided.
+        Record an interaction in short-term segments AND long-term DB.
         """
         timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         interaction_record = {
@@ -331,24 +460,27 @@ class MemoryManager:
             "success": success,
             "chatgpt_url": chatgpt_url
         }
-        # Generate a unique key (using username and timestamp)
-        key = f"{username}_{timestamp}"
-        self.set(key, interaction_record, segment="interactions")
 
-        # If this interaction is part of a conversation, index it.
+        # Insert into LRU + segment
+        unique_key = f"{username}_{timestamp}"
+        self.set(unique_key, interaction_record, segment="interactions")
+
+        # If part of a conversation, update the conversation segment
         if interaction_id:
             conv_key = f"conversation_{interaction_id}"
             conversation = self.get(conv_key, segment="interactions") or []
             conversation.append(interaction_record)
             self.set(conv_key, conversation, segment="interactions")
 
-        # Record in database for long-term storage.
+        # Also write to DB
         self.db_manager.record_interaction(interaction_record)
+
+        # Optionally track user interactions in top-level JSON
+        self._track_user_interaction(platform, username, interaction_record)
 
     def initialize_conversation(self, interaction_id: str, metadata: Dict[str, Any]):
         """
-        Initialize a conversation with metadata.
-        Stores data in JSON memory and the database.
+        Initialize a conversation with metadata, stored both in segments and DB.
         """
         conv_meta_key = f"conversation_{interaction_id}_metadata"
         if self.get(conv_meta_key, segment="interactions") is None:
@@ -357,19 +489,18 @@ class MemoryManager:
                 "metadata": metadata
             }
             self.set(conv_meta_key, conversation_metadata, segment="interactions")
+        # DB record
         self.db_manager.initialize_conversation(interaction_id, metadata)
 
     def retrieve_conversation(self, interaction_id: str) -> List[Dict[str, Any]]:
         """
-        Retrieve a conversation by its interaction_id.
-        Prefers the long-term DB data.
+        Retrieve a conversation by its interaction_id from the DB.
         """
         return self.db_manager.get_conversation(interaction_id)
 
     def export_conversation_for_finetuning(self, interaction_id: str, export_path: str) -> bool:
         """
-        Export conversation data for fine-tuning.
-        Each interaction is transformed into a message pair.
+        Export a conversation to a file in a structure suitable for fine-tuning.
         """
         conversation = self.retrieve_conversation(interaction_id)
         if not conversation:
@@ -394,17 +525,9 @@ class MemoryManager:
             self.logger.error(f"Error exporting conversation {interaction_id} - {e}")
             return False
 
-    def get_user_history(self, platform: str, username: str, limit: int = 5) -> List[Dict[str, Any]]:
-        """
-        Retrieve the latest interactions for a given user on a platform.
-        This uses the in-memory JSON data.
-        """
-        user_history = self.data.get("platforms", {}).get(platform, {}).get(username, [])
-        return user_history[-limit:]
-
     def user_sentiment_summary(self, platform: str, username: str) -> Dict[str, Any]:
         """
-        Summarize sentiment and success statistics for a user.
+        Summarize sentiment distribution and success rate for a user.
         """
         history = self.get_user_history(platform, username, limit=50)
         sentiment_counts = {"positive": 0, "neutral": 0, "negative": 0}
@@ -412,12 +535,14 @@ class MemoryManager:
 
         for interaction in history:
             sentiment = interaction.get("sentiment", "neutral")
+            if sentiment not in sentiment_counts:
+                sentiment_counts[sentiment] = 0
             sentiment_counts[sentiment] += 1
             if interaction.get("success"):
                 success_count += 1
 
         total_interactions = len(history)
-        success_rate = (success_count / total_interactions) * 100 if total_interactions else 0
+        success_rate = (success_count / total_interactions * 100) if total_interactions else 0.0
 
         return {
             "total_interactions": total_interactions,
@@ -425,30 +550,25 @@ class MemoryManager:
             "success_rate_percent": round(success_rate, 2)
         }
 
-    def clear_user_history(self, platform: str, username: str):
+    ############################################################################
+    # Low-level user interaction tracking in the top-level JSON data
+    ############################################################################
+    def _track_user_interaction(self, platform: str, username: str, record: Dict[str, Any]) -> None:
         """
-        Clear a specific user's history from JSON memory.
+        Insert the record into the top-level JSON memory for the user.
         """
-        platform_users = self.data.get("platforms", {}).get(platform, {})
-        if username in platform_users:
-            del platform_users[username]
-            self._save_memory()
+        platforms = self.data.setdefault("platforms", {})
+        platform_data = platforms.setdefault(platform, {})
+        user_history = platform_data.setdefault(username, [])
+        user_history.append(record)
+        self._save_memory()
 
-    def clear_platform_history(self, platform: str):
-        """
-        Clear all history for a given platform from JSON memory.
-        """
-        if platform in self.data.get("platforms", {}):
-            del self.data["platforms"][platform]
-            self._save_memory()
-
-    # -----------------------------
-    # Narrative Generation via Jinja2
-    # -----------------------------
+    ############################################################################
+    # Jinja2 Narrative Generation
+    ############################################################################
     def generate_narrative(self, template_name: str, context: Dict[str, Any]) -> str:
         """
-        Render a narrative using a Jinja template.
-        Example: 'dreamscape_template.txt' in the templates directory.
+        Render a narrative using the specified Jinja2 template and context.
         """
         try:
             template = self.jinja_env.get_template(template_name)
@@ -457,57 +577,30 @@ class MemoryManager:
             self.logger.error(f"Error generating narrative with template {template_name} - {e}")
             return ""
 
-    # -----------------------------
+    ############################################################################
+    # Optional: Update Arbitrary Keys in the JSON Memory
+    ############################################################################
+    def update_context(self, key_path: str, value: Any) -> bool:
+        """
+        Update a nested key in the top-level 'self.data' using dot-notation.
+        E.g., "system.config.value".
+        """
+        keys = key_path.split('.')
+        current = self.data
+        for key in keys[:-1]:
+            if key not in current:
+                self.logger.warning(f"Key '{key}' not found in memory. Cannot update.")
+                return False
+            current = current[key]
+        current[keys[-1]] = value
+        self._save_memory()
+        return True
+
+    ############################################################################
     # Close Resources
-    # -----------------------------
+    ############################################################################
     def close(self):
         """
-        Close any resources held by the memory manager.
+        Close any resources (e.g., database connection).
         """
         self.db_manager.close()
-
-
-###############################################################################
-# Example Usage
-###############################################################################
-if __name__ == "__main__":
-    # Create an instance of the unified memory manager.
-    mm = MemoryManager()
-
-    # Record an interaction.
-    mm.record_interaction(
-        platform="Discord",
-        username="Victor",
-        response="System audit complete. All systems are online.",
-        sentiment="positive",
-        success=True,
-        interaction_id="audit_001",
-        chatgpt_url="http://chat.openai.com/audit_001"
-    )
-
-    # Initialize a conversation.
-    mm.initialize_conversation("audit_001", {"topic": "System Audit", "priority": "High"})
-
-    # Generate a narrative using a Jinja template.
-    context = {
-        "audit_title": "SYSTEM AUDIT: Victor’s Current Workflow & Execution Model",
-        "objective": "Generate $1M within 12 months",
-        "system_state": "Detailed breakdown of trading, automation, and content pipelines.",
-        "systemic_root_causes": "Fragmentation, isolation, and lack of feedback loops.",
-        "surgical_optimizations": "Implement automated funnels, code modularity, and outreach strategies.",
-        "priority_actions": "Define core offer, build free lead magnet, and automate distribution.",
-        "conclusion": "Time to let the machines speak. FULL SYNC MODE ENGAGED.",
-        "architect_tier_progression": 2
-    }
-    narrative = mm.generate_narrative("dreamscape_template.txt", context)
-    print("Generated Narrative:")
-    print(narrative)
-
-    # Export the conversation for fine-tuning.
-    if mm.export_conversation_for_finetuning("audit_001", "exports/audit_001.txt"):
-        print("Conversation exported successfully.")
-    else:
-        print("Failed to export conversation.")
-
-    # Close resources.
-    mm.close()

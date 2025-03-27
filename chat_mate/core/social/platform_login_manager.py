@@ -24,7 +24,7 @@ from social.strategies import (
     stocktwits_strategy,
     linkedin_strategy
 )
-from social.driver_manager import get_multi_driver_sessions
+from social.DriverSession import get_multi_driver_sessions
 
 # Everything else stays the same...
 

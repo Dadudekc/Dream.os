@@ -65,7 +65,7 @@ def get_env_or_config(key: str, default=None):
     env_value = os.getenv(key.upper())
     if env_value is not None:
         return env_value
-
+ 
     # Priority 2: cached config file data
     if not _cached_config:
         load_configs()

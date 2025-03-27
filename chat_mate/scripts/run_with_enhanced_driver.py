@@ -36,7 +36,7 @@ def main():
     
     try:
         # Import DriverManager to ensure it can be loaded
-        from core.chat_engine.driver_manager import DriverManager
+        from core.DriverManager import DriverManager
         logger.info("Successfully imported enhanced DriverManager")
         
         # Initialize the DriverManager

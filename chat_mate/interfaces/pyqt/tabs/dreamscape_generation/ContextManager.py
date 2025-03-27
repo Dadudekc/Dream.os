@@ -1,30 +1,24 @@
 import logging
 import os
-import json
-from datetime import datetime
 from typing import Dict, Any, Optional
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QMessageBox
 
+from core.dreamscape.ContextMemoryManager import ContextMemoryManager
 from core.TemplateManager import TemplateManager
 from core.ChatManager import ChatManager
 
 
 class ContextManager:
     """
-    Manages the context passing between conversations for the Dreamscape generator.
-    
-    This class handles:
-    1. Loading, updating, and saving context data
-    2. Rendering context into templates
-    3. Sending context to ChatGPT conversations
-    4. Displaying context in the UI
+    UI adapter for the core ContextMemoryManager.
+    Handles UI-specific context operations and display.
     """
     
     def __init__(self, parent_widget, logger=None, chat_manager=None,
                  dreamscape_generator=None, template_manager=None):
         """
-        Initialize the ContextManager.
+        Initialize the UI Context Manager.
         
         Args:
             parent_widget: The parent widget for displaying dialogs
@@ -39,6 +33,12 @@ class ContextManager:
         self.dreamscape_generator = dreamscape_generator
         self.template_manager = template_manager
         self.output_dir = self._get_output_directory()
+        
+        # Initialize the core context manager
+        self.context_manager = ContextMemoryManager(
+            output_dir=self.output_dir,
+            logger=self.logger
+        )
         
     def _get_output_directory(self) -> str:
         """
@@ -58,12 +58,8 @@ class ContextManager:
         Returns:
             Dict[str, Any]: A dictionary containing context data
         """
-        if not self.dreamscape_generator:
-            self.logger.warning("Dreamscape generator not initialized.")
-            return {}
-            
         try:
-            return self.dreamscape_generator.get_context_summary()
+            return self.context_manager.get_context_summary()
         except Exception as e:
             self.logger.error(f"Error getting context summary: {str(e)}")
             return {}
@@ -77,10 +73,6 @@ class ContextManager:
             filter_text: Optional text to filter the displayed items
         """
         try:
-            if not self.dreamscape_generator:
-                self.logger.warning("Dreamscape generator not initialized.")
-                return
-                
             context = self.get_context_summary()
             filter_text = filter_text.strip().lower()
             
@@ -188,61 +180,42 @@ class ContextManager:
                                    "Please select a target chat to send context to.")
                 return False
                 
-            if not self.dreamscape_generator or not self.template_manager:
+            if not self.template_manager:
                 QMessageBox.warning(self.parent, "Services Not Available", 
-                                   "Required services are not initialized.")
+                                   "Template manager is not initialized.")
                 return False
             
-            # Get context data
-            context = self.get_context_summary()
+            # Get context data from core manager
+            context = self.context_manager.get_context_summary()
             
             # Render context using template
             if not self.template_manager.active_template:
-                QMessageBox.warning(self.parent, "No Template Selected", 
-                                   "Please select an active template first.")
+                QMessageBox.warning(self.parent, "No Template Selected",
+                                   "Please select a template for context rendering.")
                 return False
                 
             rendered_context = self.template_manager.render_template(context)
-            
             if not rendered_context:
-                QMessageBox.warning(self.parent, "Context Rendering Failed", 
-                                   "Failed to render context with the selected template.")
-                return False
-            
-            # Ensure ChatManager is available
-            if not self.chat_manager:
-                self.logger.error("ChatManager not available. Cannot send context.")
-                QMessageBox.warning(self.parent, "Service Unavailable", 
-                                   "Chat service is not available.")
-                return False
-            
-            # Use ChatManager to navigate to the URL and send the context
-            driver = self.chat_manager.driver_manager.get_driver()
-            driver.get(chat_url)
-            
-            # Wait for the page to load
-            import time
-            time.sleep(3)
-            
-            # Find text area and send context
-            try:
-                textarea = driver.find_element("tag name", "textarea")
-                textarea.send_keys(rendered_context)
-                textarea.send_keys("\n")  # Simulate "Enter" to submit
-                self.logger.info("Context sent to ChatGPT successfully.")
-                QMessageBox.information(self.parent, "Success", 
-                                       "Context sent to ChatGPT successfully.")
-                return True
-            except Exception as e:
-                self.logger.error(f"Error sending context to textarea: {str(e)}")
-                QMessageBox.critical(self.parent, "Error", 
-                                    f"Failed to send context: {str(e)}")
+                QMessageBox.warning(self.parent, "Rendering Failed",
+                                   "Failed to render context with template.")
                 return False
                 
+            # Send to chat
+            if not self.chat_manager:
+                QMessageBox.warning(self.parent, "Chat Manager Not Available",
+                                   "Chat manager is not initialized.")
+                return False
+                
+            success = self.chat_manager.send_message(chat_url, rendered_context)
+            if success:
+                QMessageBox.information(self.parent, "Context Sent",
+                                       "Context was successfully sent to the chat.")
+            return success
+            
         except Exception as e:
             self.logger.error(f"Error sending context to chat: {str(e)}")
-            QMessageBox.critical(self.parent, "Error", 
-                               f"Failed to send context: {str(e)}")
+            QMessageBox.critical(self.parent, "Error",
+                                f"Failed to send context: {str(e)}")
             return False
     
     def get_preview_context(self) -> Dict[str, Any]:

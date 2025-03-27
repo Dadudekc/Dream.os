@@ -122,3 +122,14 @@ class FileManager:
     def sanitize_filename(name: str) -> str:
         """Create a safe filename from the given string."""
         return "".join(c for c in name if c.isalnum() or c in (" ", "-", "_")).strip().replace(" ", "_").lower()
+
+    @staticmethod
+    def list_episode_files(output_dir):
+        """List all episode files in the specified directory."""
+        return [f for f in os.listdir(output_dir) if f.endswith('.txt')]
+
+    @staticmethod
+    def read_file(filepath):
+        """Read the contents of a file."""
+        with open(filepath, 'r') as file:
+            return file.read()

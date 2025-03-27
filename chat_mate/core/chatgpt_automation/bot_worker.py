@@ -36,13 +36,7 @@ class BotWorker(threading.Thread):
 
         logger.info(f"[{self.name}] 🚀 Instantiating OpenAIClient (Profile: {self.profile_dir})")
         self.openai_client = OpenAIClient(profile_dir=self.profile_dir, headless=False)
-
-        if not self._login_with_retries():
-            logger.error(f"[{self.name}] ❌ Failed login after retries. Worker shutting down.")
-            self.shutdown()
-            raise Exception(f"{self.name}: Login failed!")
-
-        logger.info(f"[{self.name}] ✅ Login successful. Ready to process tasks!")
+        logger.info(f"[{self.name}] ✅ OpenAI client initialized. Ready to process tasks!")
         self.start()
 
     def _login_with_retries(self):
@@ -77,6 +71,13 @@ class BotWorker(threading.Thread):
                 continue
 
             logger.info(f"[{self.name}] 📝 Fetched task #{self.task_counter + 1}: {task}")
+
+            # Ensure we're logged in before processing task
+            if not self._login_with_retries():
+                logger.error(f"[{self.name}] ❌ Failed to login before task. Skipping task.")
+                self.results_queue.put((task, {"error": "Login failed"}))
+                self.task_queue.task_done()
+                continue
 
             try:
                 success, result = self.process_task(task)

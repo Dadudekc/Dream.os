@@ -13,7 +13,7 @@ from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
-from core.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 
 # Import services
 from core.services.prompt_service import PromptService
