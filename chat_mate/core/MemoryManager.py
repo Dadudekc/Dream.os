@@ -604,3 +604,7 @@ class MemoryManager:
         Close any resources (e.g., database connection).
         """
         self.db_manager.close()
+
+
+# Shared singleton instance
+memory = MemoryManager()
