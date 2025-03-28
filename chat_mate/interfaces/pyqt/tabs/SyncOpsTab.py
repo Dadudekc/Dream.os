@@ -1,4 +1,4 @@
-# /tabs/SyncOpsTab.py
+# tabs/SyncOpsTab.py
 
 import os
 import json
@@ -6,25 +6,30 @@ from datetime import datetime, timedelta
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTextEdit,
-    QLineEdit, QGroupBox, QMessageBox
+    QGroupBox, QMessageBox
 )
 from PyQt5.QtCore import QTimer, Qt
 
-SYNCOPS_LOG_FILE = "syncops_sessions.json"
+# Import PathManager for unified log paths
+from core.path_manager import PathManager
+# Get the unified log file path for SyncOps sessions
+SYNCOPS_LOG_FILE = str(PathManager().get_path("logs") / "syncops_sessions.json")
+
+# Import the backend SyncOpsService for session and pomodoro management
+from sync_ops.services.sync_ops_service import SyncOpsService
 
 class SyncOpsTab(QWidget):
     def __init__(self, user_name="Victor", logger=None):
         super().__init__()
         self.user_name = user_name
         self.logger = logger
-        self.is_clocked_in = False
-        self.current_session_start = None
-        self.pomodoro_running = False
+        # Delegate session logic to the backend service
+        self.service = SyncOpsService(user_name=self.user_name, logger=self.logger)
+        
         self.pomodoro_timer = QTimer()
-        self.pomodoro_time_left = 25 * 60  # 25 minutes
-
-        self._init_ui()
         self.pomodoro_timer.timeout.connect(self.update_pomodoro_timer)
+        
+        self._init_ui()
 
     def _init_ui(self):
         layout = QVBoxLayout()
@@ -44,7 +49,7 @@ class SyncOpsTab(QWidget):
         clock_box.setLayout(clock_layout)
         layout.addWidget(clock_box)
 
-        # Pomodoro Group
+        # Pomodoro Timer Group
         pomo_box = QGroupBox("🍅 Pomodoro Timer")
         pomo_layout = QHBoxLayout()
 
@@ -60,7 +65,7 @@ class SyncOpsTab(QWidget):
         pomo_box.setLayout(pomo_layout)
         layout.addWidget(pomo_box)
 
-        # Log Feed
+        # Log Feed Group
         log_box = QGroupBox("📜 Session Log")
         log_layout = QVBoxLayout()
 
@@ -74,49 +79,48 @@ class SyncOpsTab(QWidget):
         self.setLayout(layout)
 
     def toggle_clock(self):
-        if self.is_clocked_in:
-            end_time = datetime.now()
-            duration = end_time - self.current_session_start
-            self.is_clocked_in = False
-            self.clock_btn.setText("Clock In")
-            self.clock_status.setText("Not clocked in")
-            self.clock_status.setStyleSheet("color: gray")
-            self._log_event("Clocked out", duration)
-            self.save_session("clock_out", end_time.isoformat(), str(duration))
-        else:
-            self.current_session_start = datetime.now()
-            self.is_clocked_in = True
-            self.clock_btn.setText("Clock Out")
-            self.clock_status.setText("Clocked in")
-            self.clock_status.setStyleSheet("color: green")
-            self._log_event("Clocked in")
-            self.save_session("clock_in", self.current_session_start.isoformat())
+        try:
+            if self.service.is_clocked_in:
+                msg = self.service.clock_out()
+                self.clock_btn.setText("Clock In")
+                self.clock_status.setText("Not clocked in")
+                self.clock_status.setStyleSheet("color: gray")
+            else:
+                msg = self.service.clock_in()
+                self.clock_btn.setText("Clock Out")
+                self.clock_status.setText("Clocked in")
+                self.clock_status.setStyleSheet("color: green")
+            self._log_event(msg)
+        except Exception as e:
+            self._log_event(f"Error: {str(e)}")
 
     def toggle_pomodoro(self):
-        if self.pomodoro_running:
-            self.pomodoro_timer.stop()
-            self.pomodoro_running = False
-            self.pomo_start_btn.setText("Start Pomodoro")
-            self._log_event("Pomodoro stopped")
-        else:
-            self.pomodoro_time_left = 25 * 60
-            self.pomodoro_timer.start(1000)
-            self.pomodoro_running = True
-            self.pomo_start_btn.setText("Stop Pomodoro")
-            self._log_event("Pomodoro started")
+        try:
+            if self.service.pomodoro_running:
+                msg = self.service.stop_pomodoro()
+                self.pomodoro_timer.stop()
+                self.pomo_start_btn.setText("Start Pomodoro")
+            else:
+                msg = self.service.start_pomodoro()
+                self.pomodoro_timer.start(1000)
+                self.pomo_start_btn.setText("Stop Pomodoro")
+            self._log_event(msg)
+        except Exception as e:
+            self._log_event(f"Error: {str(e)}")
 
     def update_pomodoro_timer(self):
-        if self.pomodoro_time_left > 0:
-            self.pomodoro_time_left -= 1
-            minutes = self.pomodoro_time_left // 60
-            seconds = self.pomodoro_time_left % 60
-            self.pomo_label.setText(f"{minutes:02d}:{seconds:02d}")
-        else:
-            self.pomodoro_timer.stop()
-            self.pomodoro_running = False
-            self.pomo_start_btn.setText("Start Pomodoro")
-            self._log_event("Pomodoro complete ✅")
-            self.save_session("pomodoro_complete", datetime.now().isoformat())
+        try:
+            seconds_left = self.service.update_pomodoro()
+            if seconds_left > 0:
+                minutes = seconds_left // 60
+                seconds = seconds_left % 60
+                self.pomo_label.setText(f"{minutes:02d}:{seconds:02d}")
+            else:
+                # Timer completed: reset display and button
+                self.pomo_start_btn.setText("Start Pomodoro")
+                self.pomo_label.setText("25:00")
+        except Exception as e:
+            self._log_event(f"Error: {str(e)}")
 
     def _log_event(self, message, duration=None):
         now = datetime.now().strftime("%H:%M:%S")
@@ -137,7 +141,10 @@ class SyncOpsTab(QWidget):
         existing = []
         if os.path.exists(SYNCOPS_LOG_FILE):
             with open(SYNCOPS_LOG_FILE, "r", encoding="utf-8") as f:
-                existing = json.load(f)
+                try:
+                    existing = json.load(f)
+                except Exception:
+                    existing = []
         existing.append(record)
         with open(SYNCOPS_LOG_FILE, "w", encoding="utf-8") as f:
             json.dump(existing, f, indent=2)
