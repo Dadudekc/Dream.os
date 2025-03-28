@@ -1,26 +1,50 @@
+#!/usr/bin/env python3
+"""
+meredith_tab.py
+
+A full-featured PyQt5 tab for Dream.OS that:
+  - Spawns a separate thread to scrape profiles (ScraperThread).
+  - Integrates seamlessly with the ScraperManager and ProfileFilter classes
+    from meredith.profile_scraper.
+  - Displays scrape progress, logs, and final results in a responsive UI.
+  - Allows you to open each discovered profile in a browser via "Message" button.
+  - Exports filtered profiles to JSON.
+  - Supports canceling an in-progress scrape.
+  - Offers a "Clear" function for resetting the tab’s data and logs.
+  - Can be toggled visible/invisible if running in "private mode."
+"""
+
+import os
+import json
+import logging
+import webbrowser
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit,
-    QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QFileDialog, QProgressBar
+    QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView,
+    QFileDialog, QProgressBar
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
-import json
-import os
-import logging
 
+# Adjust import paths to your project structure
 from meredith.profile_scraper import ScraperManager, ProfileFilter
 
 ###############################################################################
-#                              SCRAPER THREAD                                 #
+#                             SCRAPER THREAD                                  #
 ###############################################################################
 
 class ScraperThread(QThread):
     """
-    A separate thread to run the Meredith scraping process 
-    without freezing the PyQt UI.
+    A separate QThread to perform the Meredith scraping process off the main UI thread.
+    This prevents UI blocking while ScraperManager runs.
+
+    Signals:
+        scan_completed (list): Emitted when scraping+filtering completes or is canceled/errored.
+        log_update (str): Emitted for logging messages to the UI.
+        progress_update (int): Emitted for updating a progress bar (0-100).
     """
-    scan_completed = pyqtSignal(list)      # Emitted when scraping+filtering is done
-    log_update = pyqtSignal(str)           # Emitted to display log messages on the UI
-    progress_update = pyqtSignal(int)      # Emitted to update the progress bar
+    scan_completed = pyqtSignal(list)
+    log_update = pyqtSignal(str)
+    progress_update = pyqtSignal(int)
 
     def __init__(self, parent: QObject = None):
         super().__init__(parent)
@@ -28,28 +52,30 @@ class ScraperThread(QThread):
 
     def cancel(self):
         """
-        Signals the thread that the user wants to cancel the operation.
+        Request that the scraping operation be halted at the next safe checkpoint.
         """
         self._cancel_requested = True
 
     def run(self):
         """
-        Main logic that executes in the worker thread:
-         1. Initialize ScraperManager
-         2. Run default scrapers
-         3. Filter results
-         4. Return final profiles
+        The thread's entrypoint. Coordinates:
+          1. Initialization of ScraperManager.
+          2. Running default scrapers.
+          3. Location/gender filtering.
+          4. Emission of final results or error logs.
+          5. Periodic progress updates.
         """
         try:
+            # Step 1: Start up
             self.log_update.emit("Initializing Meredith full sync scan...")
             self.progress_update.emit(10)
 
-            # Early cancellation check
             if self._cancel_requested:
                 self.log_update.emit("Scan canceled before start.")
                 self.scan_completed.emit([])
                 return
 
+            # Step 2: Create and run scrapers
             scraper_manager = ScraperManager(headless=True)
             scraper_manager.register_default_scrapers()
 
@@ -58,33 +84,31 @@ class ScraperThread(QThread):
             self.progress_update.emit(50)
             self.log_update.emit(f"Scraped {len(all_profiles)} profiles.")
 
-            # Check again for cancellation
             if self._cancel_requested:
                 scraper_manager.close()
                 self.log_update.emit("Scan canceled during scraping.")
                 self.scan_completed.emit([])
                 return
 
+            # Step 3: Filter results
             self.log_update.emit("Filtering by location...")
-            local_profiles = ProfileFilter.filter_by_location(
-                all_profiles, ["houston", "htx"], "77090"
-            )
+            local_profiles = ProfileFilter.filter_by_location(all_profiles, ["houston", "htx"], "77090")
 
             self.log_update.emit("Filtering by gender (female)...")
             final_profiles = ProfileFilter.filter_by_gender(local_profiles, "female")
             self.progress_update.emit(90)
 
+            # Clean up
             scraper_manager.close()
             self.log_update.emit(f"Found {len(final_profiles)} matching profiles.")
             self.progress_update.emit(100)
 
-            # Final check for cancellation
             if self._cancel_requested:
-                self.log_update.emit("Scan canceled at the very end.")
+                self.log_update.emit("Scan canceled at final checkpoint.")
                 self.scan_completed.emit([])
                 return
 
-            # Emitting final results
+            # Step 4: Emit final results
             self.scan_completed.emit(final_profiles)
 
         except Exception as e:
@@ -98,10 +122,16 @@ class ScraperThread(QThread):
 
 class MeredithTab(QWidget):
     """
-    A private tab within the Dream.OS PyQt interface that manages:
-      - Running the Meredith scraping process in a separate thread.
-      - Displaying logs, progress, and final profiles in a table.
-      - Exporting results to a JSON file.
+    A private PyQt5 tab that orchestrates:
+      - Running the Meredith scraping (in a background thread).
+      - Displaying progress logs and a progress bar.
+      - Showing the final filtered profiles in a QTableWidget.
+      - Exporting or clearing results.
+      - Optional "Message" button that opens a scraped profile URL in the default browser.
+
+    Args:
+        parent (QWidget): Parent widget, if any.
+        private_mode (bool): If True, the tab is hidden by default, accessible only via a toggle.
     """
     def __init__(self, parent=None, private_mode=True):
         super().__init__(parent)
@@ -111,28 +141,28 @@ class MeredithTab(QWidget):
         self.setWindowTitle("Meredith - Private Resonance Scanner")
         self.init_ui()
 
-        # Hide this tab if it's in private mode
+        # Hide the tab from the start if in private mode
         if self.private_mode:
             self.hide()
 
     def init_ui(self):
         """
-        Assembles the PyQt widgets: 
-          - Header label
-          - Buttons (Scan, Stop, Export, Clear)
-          - Progress bar
-          - Log output
-          - Results table
+        Constructs the tab layout:
+          1. A header label
+          2. Buttons: Run, Stop, Export, (and optionally Clear)
+          3. Progress bar
+          4. Log output (QTextEdit)
+          5. Results table with an extra "Message" column
         """
         layout = QVBoxLayout()
 
-        # --- Header ---
+        # --- HEADER ---
         header_label = QLabel("Meredith: Private Resonance Scanner")
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet("font-size:16px;font-weight:bold;")
         layout.addWidget(header_label)
 
-        # --- Button Row ---
+        # --- BUTTON ROW ---
         button_layout = QHBoxLayout()
 
         self.run_button = QPushButton("Run Full Scan")
@@ -156,36 +186,48 @@ class MeredithTab(QWidget):
 
         layout.addLayout(button_layout)
 
-        # --- Progress Bar ---
+        # --- PROGRESS BAR ---
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
         layout.addWidget(self.progress_bar)
 
-        # --- Log Output ---
+        # --- LOG OUTPUT ---
         self.log_output = QTextEdit()
         self.log_output.setReadOnly(True)
         self.log_output.setFixedHeight(100)
         layout.addWidget(self.log_output)
 
-        # --- Results Table ---
+        # --- RESULTS TABLE ---
         self.results_table = QTableWidget()
-        self.results_table.setColumnCount(5)
-        self.results_table.setHorizontalHeaderLabels(["Platform", "Username", "Bio", "Location", "URL"])
+        self.results_table.setColumnCount(6)  # 5 data cols + 1 for 'Message' button
+        self.results_table.setHorizontalHeaderLabels([
+            "Platform", "Username", "Bio", "Location", "URL", "Message"
+        ])
         self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         layout.addWidget(self.results_table)
 
         self.setLayout(layout)
 
+    ###############################################################################
+    #                                LOGGING                                      #
+    ###############################################################################
+
     def log(self, message: str):
         """
-        Appends a log message to the QTextEdit and also logs to the Python logger.
+        Appends a log message to the UI log output and
+        also routes it to the Python logger at INFO level.
         """
         self.log_output.append(message)
         logging.info(f"[MeredithTab] {message}")
 
+    ###############################################################################
+    #                                SCAN LOGIC                                   #
+    ###############################################################################
+
     def run_full_scan(self):
         """
-        Triggers a new scrape in a separate thread, disabling relevant UI elements.
+        Initiates the scraping process in a background thread,
+        disabling relevant UI controls until it's done or canceled.
         """
         self.log("Launching Meredith scraper thread...")
         self._reset_ui_for_new_scan()
@@ -198,12 +240,12 @@ class MeredithTab(QWidget):
         # Enable the Stop button
         self.stop_button.setEnabled(True)
 
-        # Start the thread
+        # Start scraping in the worker thread
         self.scraper_thread.start()
 
     def stop_scan(self):
         """
-        Requests cancellation of the ongoing scraping thread.
+        Cancels an in-progress scraping operation by signaling the thread to stop.
         """
         if hasattr(self, 'scraper_thread') and self.scraper_thread.isRunning():
             self.log("Stop requested. Attempting to cancel ongoing scan...")
@@ -212,8 +254,8 @@ class MeredithTab(QWidget):
 
     def on_scan_completed(self, profiles: list):
         """
-        Called when the ScraperThread finishes (successfully or not).
-        Enables the UI again and displays the results if any.
+        Slot called when the worker thread finishes or is canceled/errored.
+        Re-enables the Run button, populates the table, logs the result.
         """
         self.filtered_profiles = profiles
         self.populate_results_table(profiles)
@@ -228,21 +270,51 @@ class MeredithTab(QWidget):
         else:
             self.log("No profiles found or scan was canceled.")
 
+    ###############################################################################
+    #                             TABLE POPULATION                                #
+    ###############################################################################
+
     def populate_results_table(self, profiles: list):
         """
-        Fills the QTableWidget with profile data.
+        Renders each profile as a row in the QTableWidget,
+        plus a 'Message' button to open its URL in a browser.
         """
         self.results_table.setRowCount(len(profiles))
+
         for row, profile in enumerate(profiles):
+            # Standard columns
             self.results_table.setItem(row, 0, QTableWidgetItem(profile.get("platform", "")))
             self.results_table.setItem(row, 1, QTableWidgetItem(profile.get("username", "")))
             self.results_table.setItem(row, 2, QTableWidgetItem(profile.get("bio", "")))
             self.results_table.setItem(row, 3, QTableWidgetItem(profile.get("location", "")))
             self.results_table.setItem(row, 4, QTableWidgetItem(profile.get("url", "")))
 
+            # 'Message' button
+            url_for_this_profile = profile.get("url", "")
+            message_button = QPushButton("Message")
+            message_button.clicked.connect(
+                lambda _, url=url_for_this_profile: self.open_profile_in_browser(url)
+            )
+            self.results_table.setCellWidget(row, 5, message_button)
+
+    def open_profile_in_browser(self, url: str):
+        """
+        Opens the provided URL in the default web browser.
+        Allows the user to manually DM or interact with the profile.
+        """
+        if not url:
+            self.log("No URL available for this profile.")
+            return
+        webbrowser.open(url)
+        self.log(f"Opened URL: {url}")
+
+    ###############################################################################
+    #                             DATA MANAGEMENT                                 #
+    ###############################################################################
+
     def export_results(self):
         """
-        Saves the current filtered profiles to a user-selected JSON file.
+        Exports the current filtered profile list to a user-chosen JSON file.
         """
         if not self.filtered_profiles:
             self.log("No results available to export.")
@@ -255,7 +327,6 @@ class MeredithTab(QWidget):
         file_path, _ = QFileDialog.getSaveFileName(
             self, "Save Profiles", default_file, "JSON Files (*.json)"
         )
-
         if file_path:
             with open(file_path, "w") as f:
                 json.dump(self.filtered_profiles, f, indent=4)
@@ -263,30 +334,37 @@ class MeredithTab(QWidget):
 
     def clear_results(self):
         """
-        Clears the table and local data, along with the log output.
+        Clears the table, local profile data, and log output.
         """
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
         self.log_output.clear()
         self.log("Cleared all results.")
+
         self.export_button.setEnabled(False)
         self.clear_button.setEnabled(False)
 
-    def toggle_visibility(self):
-        """
-        Toggles whether the tab is visible or hidden.
-        Useful for a hotkey-based approach to open a private tab.
-        """
-        self.setVisible(not self.isVisible())
+    ###############################################################################
+    #                                UI HELPERS                                   #
+    ###############################################################################
 
     def _reset_ui_for_new_scan(self):
         """
-        Resets UI elements to a clean state before starting a new scan.
+        Prepares the UI for a fresh scrape:
+        disables certain buttons, resets the progress bar, 
+        and clears old results/logs in memory.
         """
         self.stop_button.setEnabled(False)
         self.run_button.setEnabled(False)
         self.export_button.setEnabled(False)
         self.clear_button.setEnabled(False)
+
         self.progress_bar.setValue(0)
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
+
+    def toggle_visibility(self):
+        """
+        If in private mode, a hotkey can call this to show/hide the tab.
+        """
+        self.setVisible(not self.isVisible())
