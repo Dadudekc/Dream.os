@@ -17,7 +17,7 @@
     "clings to ego over shared outcomes"
   ],
   "desired_dynamics": {
-    "your_role": "I am the builder, coder, and system architect. I create the machine.",
+    "my_role": "I am the builder, coder, and system architect. I create the machine.",
     "their_role": "They network, distribute, and help the world understand the machine. They are the signal booster.",
     "collaboration_flow": "They challenge me respectfully—with proof, not just opinion. They show results. And when I say I’ve got it, they trust me.",
     "communication_expectations": "Project-first. No wandering. When we talk, it’s about building. They can vibe later—but never at the cost of velocity.",
