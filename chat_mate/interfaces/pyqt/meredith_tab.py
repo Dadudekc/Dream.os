@@ -7,11 +7,12 @@ A full-featured PyQt5 tab for Dream.OS that:
   - Integrates seamlessly with the ScraperManager and ProfileFilter classes
     from meredith.profile_scraper.
   - Displays scrape progress, logs, and final results in a responsive UI.
-  - Allows you to open each discovered profile in a browser via "Message" button.
+  - Allows you to open each discovered profile in a browser via a "Message" button.
   - Exports filtered profiles to JSON.
   - Supports canceling an in-progress scrape.
   - Offers a "Clear" function for resetting the tab’s data and logs.
   - Displays a "Resonance Score" computed via ResonanceScorer.
+  - Dynamically loads all resonance model JSONs from the "resonance_match_models" directory.
   - Can be toggled visible/invisible if running in "private mode."
 """
 
@@ -23,12 +24,15 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit,
     QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView,
-    QFileDialog, QProgressBar
+    QFileDialog, QProgressBar, QComboBox
 )
 
 # Adjust import paths to your project structure
 from meredith.profile_scraper import ScraperManager, ProfileFilter
 from meredith.resonance.resonance_scorer import ResonanceScorer
+
+# Directory where all resonance JSON models are stored
+MODEL_DIR = os.path.join(os.getcwd(), "resonance_match_models")
 
 ###############################################################################
 #                             SCRAPER THREAD                                  #
@@ -38,7 +42,7 @@ class ScraperThread(QThread):
     """
     A separate QThread to perform the Meredith scraping process off the main UI thread.
     This prevents UI blocking while ScraperManager runs.
-
+    
     Signals:
         scan_completed (list): Emitted when scraping+filtering completes or is canceled/errored.
         log_update (str): Emitted for logging messages to the UI.
@@ -91,9 +95,7 @@ class ScraperThread(QThread):
                 return
 
             self.log_update.emit("Filtering by location...")
-            local_profiles = ProfileFilter.filter_by_location(
-                all_profiles, ["houston", "htx"], "77090"
-            )
+            local_profiles = ProfileFilter.filter_by_location(all_profiles, ["houston", "htx"], "77090")
 
             self.log_update.emit("Filtering by gender (female)...")
             final_profiles = ProfileFilter.filter_by_gender(local_profiles, "female")
@@ -127,18 +129,22 @@ class MeredithTab(QWidget):
       - Showing the final filtered profiles in a QTableWidget.
       - Exporting or clearing results.
       - Providing a 'Message' button that opens each profile in your default browser.
-      - Displaying a "Resonance Score" computed via a ResonanceScorer.
+      - Displaying a "Resonance Score" computed via the ResonanceScorer.
+      - Dynamically loading available resonance models from a directory.
       - Can be toggled visible/invisible if running in "private mode."
-
+    
     Args:
         parent (QWidget): Parent widget, if any.
-        private_mode (bool): If True, the tab is hidden by default, accessible only via a toggle.
+        private_mode (bool): If True, the tab is hidden by default.
     """
     def __init__(self, parent=None, private_mode=True):
         super().__init__(parent)
         self.private_mode = private_mode
         self.filtered_profiles = []
-        self.scorer = ResonanceScorer("resonance_match_models/romantic.json")
+
+        # Load default model (if exists, otherwise you may handle errors)
+        default_model = os.path.join(MODEL_DIR, "romantic.json")
+        self.scorer = ResonanceScorer(default_model)
 
         self.setWindowTitle("Meredith - Private Resonance Scanner")
         self.init_ui()
@@ -148,12 +154,13 @@ class MeredithTab(QWidget):
 
     def init_ui(self):
         """
-        Constructs the tab layout:
-          1. A header label
-          2. Buttons: Run, Stop, Export, Clear
-          3. Progress bar
-          4. Log output (QTextEdit)
-          5. Results table with an extra "Message" column and a "Resonance Score" column.
+        Constructs the UI layout:
+          1. Header label.
+          2. Model selector dropdown (populated dynamically from MODEL_DIR).
+          3. Button row: Run, Stop, Export, Clear.
+          4. Progress bar.
+          5. Log output.
+          6. Results table with columns for Platform, Username, Bio, Location, URL, Message, and Resonance Score.
         """
         layout = QVBoxLayout()
 
@@ -162,6 +169,12 @@ class MeredithTab(QWidget):
         header_label.setAlignment(Qt.AlignCenter)
         header_label.setStyleSheet("font-size:16px;font-weight:bold;")
         layout.addWidget(header_label)
+
+        # --- MODEL SELECTOR (Dynamic) ---
+        self.model_selector = QComboBox()
+        self.populate_model_selector()
+        self.model_selector.currentTextChanged.connect(self.switch_model)
+        layout.addWidget(self.model_selector)
 
         # --- BUTTON ROW ---
         button_layout = QHBoxLayout()
@@ -210,13 +223,39 @@ class MeredithTab(QWidget):
 
         self.setLayout(layout)
 
+    def populate_model_selector(self):
+        """
+        Reads all JSON files in the MODEL_DIR and populates the dropdown with their base names.
+        """
+        self.model_selector.clear()
+        if os.path.isdir(MODEL_DIR):
+            files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".json")]
+            # Sort alphabetically for consistency
+            files.sort()
+            for file in files:
+                model_name = os.path.splitext(file)[0]
+                self.model_selector.addItem(model_name)
+        else:
+            self.log("Model directory not found.")
+
+    def switch_model(self, model_name):
+        """
+        Loads the resonance model corresponding to the selected name.
+        """
+        path = os.path.join(MODEL_DIR, f"{model_name}.json")
+        if os.path.exists(path):
+            self.scorer.load_model(path)
+            self.log(f"Resonance model switched to '{model_name}'.")
+        else:
+            self.log(f"Model '{model_name}' not found.")
+
     ###############################################################################
     #                                LOGGING                                      #
     ###############################################################################
 
     def log(self, message: str):
         """
-        Appends a log message to the UI log output and routes it to the Python logger.
+        Appends a log message to the log output and routes it to the Python logger.
         """
         self.log_output.append(message)
         logging.info(f"[MeredithTab] {message}")
@@ -243,7 +282,7 @@ class MeredithTab(QWidget):
 
     def stop_scan(self):
         """
-        Cancels an in-progress scraping operation.
+        Cancels an ongoing scraping operation.
         """
         if hasattr(self, 'scraper_thread') and self.scraper_thread.isRunning():
             self.log("Stop requested. Attempting to cancel ongoing scan...")
@@ -252,8 +291,7 @@ class MeredithTab(QWidget):
 
     def on_scan_completed(self, profiles: list):
         """
-        Called when the scraper thread completes.
-        Re-enables UI controls and populates the results table.
+        Called when the scraper thread completes. Re-enables UI controls and populates the results table.
         """
         self.filtered_profiles = profiles
         self.populate_results_table(profiles)
@@ -275,7 +313,7 @@ class MeredithTab(QWidget):
     def populate_results_table(self, profiles: list):
         """
         Renders each profile as a row in the results table, adding:
-          - A 'Message' button to open the profile URL in the browser.
+          - A 'Message' button to open the profile URL in a browser.
           - A "Resonance Score" computed via the ResonanceScorer.
         """
         self.results_table.setRowCount(len(profiles))
@@ -296,7 +334,7 @@ class MeredithTab(QWidget):
             )
             self.results_table.setCellWidget(row, 5, message_button)
 
-            # 'Resonance Score' column using ResonanceScorer
+            # 'Resonance Score' column
             result = self.scorer.score_profile(profile)
             score_text = f"{result['score']:.2f}"
             self.results_table.setItem(row, 6, QTableWidgetItem(score_text))
@@ -317,7 +355,7 @@ class MeredithTab(QWidget):
 
     def export_results(self):
         """
-        Exports the filtered profiles to a JSON file chosen by the user.
+        Exports the current filtered profiles to a JSON file chosen by the user.
         """
         if not self.filtered_profiles:
             self.log("No results available to export.")
@@ -337,7 +375,7 @@ class MeredithTab(QWidget):
 
     def clear_results(self):
         """
-        Clears the results table, local data, and log output.
+        Clears the results table, local profile data, and log output.
         """
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
