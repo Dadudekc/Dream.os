@@ -11,6 +11,7 @@ A full-featured PyQt5 tab for Dream.OS that:
   - Exports filtered profiles to JSON.
   - Supports canceling an in-progress scrape.
   - Offers a "Clear" function for resetting the tab’s data and logs.
+  - Displays a "Resonance Score" computed via ResonanceScorer.
   - Can be toggled visible/invisible if running in "private mode."
 """
 
@@ -27,6 +28,7 @@ from PyQt5.QtWidgets import (
 
 # Adjust import paths to your project structure
 from meredith.profile_scraper import ScraperManager, ProfileFilter
+from meredith.resonance.resonance_scorer import ResonanceScorer
 
 ###############################################################################
 #                             SCRAPER THREAD                                  #
@@ -66,7 +68,6 @@ class ScraperThread(QThread):
           5. Periodic progress updates.
         """
         try:
-            # Step 1: Start up
             self.log_update.emit("Initializing Meredith full sync scan...")
             self.progress_update.emit(10)
 
@@ -75,7 +76,6 @@ class ScraperThread(QThread):
                 self.scan_completed.emit([])
                 return
 
-            # Step 2: Create and run scrapers
             scraper_manager = ScraperManager(headless=True)
             scraper_manager.register_default_scrapers()
 
@@ -90,15 +90,15 @@ class ScraperThread(QThread):
                 self.scan_completed.emit([])
                 return
 
-            # Step 3: Filter results
             self.log_update.emit("Filtering by location...")
-            local_profiles = ProfileFilter.filter_by_location(all_profiles, ["houston", "htx"], "77090")
+            local_profiles = ProfileFilter.filter_by_location(
+                all_profiles, ["houston", "htx"], "77090"
+            )
 
             self.log_update.emit("Filtering by gender (female)...")
             final_profiles = ProfileFilter.filter_by_gender(local_profiles, "female")
             self.progress_update.emit(90)
 
-            # Clean up
             scraper_manager.close()
             self.log_update.emit(f"Found {len(final_profiles)} matching profiles.")
             self.progress_update.emit(100)
@@ -108,7 +108,6 @@ class ScraperThread(QThread):
                 self.scan_completed.emit([])
                 return
 
-            # Step 4: Emit final results
             self.scan_completed.emit(final_profiles)
 
         except Exception as e:
@@ -127,7 +126,9 @@ class MeredithTab(QWidget):
       - Displaying progress logs and a progress bar.
       - Showing the final filtered profiles in a QTableWidget.
       - Exporting or clearing results.
-      - Optional "Message" button that opens a scraped profile URL in the default browser.
+      - Providing a 'Message' button that opens each profile in your default browser.
+      - Displaying a "Resonance Score" computed via a ResonanceScorer.
+      - Can be toggled visible/invisible if running in "private mode."
 
     Args:
         parent (QWidget): Parent widget, if any.
@@ -137,11 +138,11 @@ class MeredithTab(QWidget):
         super().__init__(parent)
         self.private_mode = private_mode
         self.filtered_profiles = []
+        self.scorer = ResonanceScorer("resonance_match_models/romantic.json")
 
         self.setWindowTitle("Meredith - Private Resonance Scanner")
         self.init_ui()
 
-        # Hide the tab from the start if in private mode
         if self.private_mode:
             self.hide()
 
@@ -149,10 +150,10 @@ class MeredithTab(QWidget):
         """
         Constructs the tab layout:
           1. A header label
-          2. Buttons: Run, Stop, Export, (and optionally Clear)
+          2. Buttons: Run, Stop, Export, Clear
           3. Progress bar
           4. Log output (QTextEdit)
-          5. Results table with an extra "Message" column
+          5. Results table with an extra "Message" column and a "Resonance Score" column.
         """
         layout = QVBoxLayout()
 
@@ -198,10 +199,11 @@ class MeredithTab(QWidget):
         layout.addWidget(self.log_output)
 
         # --- RESULTS TABLE ---
+        # 7 columns: Platform, Username, Bio, Location, URL, Message, Resonance Score
         self.results_table = QTableWidget()
-        self.results_table.setColumnCount(6)  # 5 data cols + 1 for 'Message' button
+        self.results_table.setColumnCount(7)
         self.results_table.setHorizontalHeaderLabels([
-            "Platform", "Username", "Bio", "Location", "URL", "Message"
+            "Platform", "Username", "Bio", "Location", "URL", "Message", "Resonance Score"
         ])
         self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         layout.addWidget(self.results_table)
@@ -214,8 +216,7 @@ class MeredithTab(QWidget):
 
     def log(self, message: str):
         """
-        Appends a log message to the UI log output and
-        also routes it to the Python logger at INFO level.
+        Appends a log message to the UI log output and routes it to the Python logger.
         """
         self.log_output.append(message)
         logging.info(f"[MeredithTab] {message}")
@@ -227,7 +228,7 @@ class MeredithTab(QWidget):
     def run_full_scan(self):
         """
         Initiates the scraping process in a background thread,
-        disabling relevant UI controls until it's done or canceled.
+        disabling UI controls until the scan completes or is canceled.
         """
         self.log("Launching Meredith scraper thread...")
         self._reset_ui_for_new_scan()
@@ -237,15 +238,12 @@ class MeredithTab(QWidget):
         self.scraper_thread.log_update.connect(self.log)
         self.scraper_thread.progress_update.connect(self.progress_bar.setValue)
 
-        # Enable the Stop button
         self.stop_button.setEnabled(True)
-
-        # Start scraping in the worker thread
         self.scraper_thread.start()
 
     def stop_scan(self):
         """
-        Cancels an in-progress scraping operation by signaling the thread to stop.
+        Cancels an in-progress scraping operation.
         """
         if hasattr(self, 'scraper_thread') and self.scraper_thread.isRunning():
             self.log("Stop requested. Attempting to cancel ongoing scan...")
@@ -254,8 +252,8 @@ class MeredithTab(QWidget):
 
     def on_scan_completed(self, profiles: list):
         """
-        Slot called when the worker thread finishes or is canceled/errored.
-        Re-enables the Run button, populates the table, logs the result.
+        Called when the scraper thread completes.
+        Re-enables UI controls and populates the results table.
         """
         self.filtered_profiles = profiles
         self.populate_results_table(profiles)
@@ -276,20 +274,21 @@ class MeredithTab(QWidget):
 
     def populate_results_table(self, profiles: list):
         """
-        Renders each profile as a row in the QTableWidget,
-        plus a 'Message' button to open its URL in a browser.
+        Renders each profile as a row in the results table, adding:
+          - A 'Message' button to open the profile URL in the browser.
+          - A "Resonance Score" computed via the ResonanceScorer.
         """
         self.results_table.setRowCount(len(profiles))
 
         for row, profile in enumerate(profiles):
-            # Standard columns
+            # Standard data columns
             self.results_table.setItem(row, 0, QTableWidgetItem(profile.get("platform", "")))
             self.results_table.setItem(row, 1, QTableWidgetItem(profile.get("username", "")))
             self.results_table.setItem(row, 2, QTableWidgetItem(profile.get("bio", "")))
             self.results_table.setItem(row, 3, QTableWidgetItem(profile.get("location", "")))
             self.results_table.setItem(row, 4, QTableWidgetItem(profile.get("url", "")))
 
-            # 'Message' button
+            # 'Message' button column
             url_for_this_profile = profile.get("url", "")
             message_button = QPushButton("Message")
             message_button.clicked.connect(
@@ -297,10 +296,14 @@ class MeredithTab(QWidget):
             )
             self.results_table.setCellWidget(row, 5, message_button)
 
+            # 'Resonance Score' column using ResonanceScorer
+            result = self.scorer.score_profile(profile)
+            score_text = f"{result['score']:.2f}"
+            self.results_table.setItem(row, 6, QTableWidgetItem(score_text))
+
     def open_profile_in_browser(self, url: str):
         """
         Opens the provided URL in the default web browser.
-        Allows the user to manually DM or interact with the profile.
         """
         if not url:
             self.log("No URL available for this profile.")
@@ -314,7 +317,7 @@ class MeredithTab(QWidget):
 
     def export_results(self):
         """
-        Exports the current filtered profile list to a user-chosen JSON file.
+        Exports the filtered profiles to a JSON file chosen by the user.
         """
         if not self.filtered_profiles:
             self.log("No results available to export.")
@@ -334,7 +337,7 @@ class MeredithTab(QWidget):
 
     def clear_results(self):
         """
-        Clears the table, local profile data, and log output.
+        Clears the results table, local data, and log output.
         """
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
@@ -350,21 +353,18 @@ class MeredithTab(QWidget):
 
     def _reset_ui_for_new_scan(self):
         """
-        Prepares the UI for a fresh scrape:
-        disables certain buttons, resets the progress bar, 
-        and clears old results/logs in memory.
+        Resets UI elements to prepare for a new scrape.
         """
         self.stop_button.setEnabled(False)
         self.run_button.setEnabled(False)
         self.export_button.setEnabled(False)
         self.clear_button.setEnabled(False)
-
         self.progress_bar.setValue(0)
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
 
     def toggle_visibility(self):
         """
-        If in private mode, a hotkey can call this to show/hide the tab.
+        Toggles the tab's visibility (useful for private mode hotkeys).
         """
         self.setVisible(not self.isVisible())
