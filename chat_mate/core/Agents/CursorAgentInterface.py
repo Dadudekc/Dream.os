@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
 
 class CursorAgentInterface(ABC):

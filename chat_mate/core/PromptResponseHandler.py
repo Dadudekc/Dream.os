@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.ReinforcementEngine import ReinforcementEngine
 from core.logging.CompositeLogger import CompositeLogger
 

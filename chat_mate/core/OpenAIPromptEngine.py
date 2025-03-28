@@ -10,9 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from chat_mate_config import Config
-from chat_mate_config import (CUSTOM_GPT_URL, PROMPT_INPUT_SELECTOR, RESPONSE_CONTAINER_SELECTOR,
-                               STOP_BUTTON_XPATH, RETRY_ATTEMPTS, RETRY_DELAY_SECONDS, INTERACTION_LOG_PATH)
+from config.ConfigManager import ConfigManager
 
 logger = logging.getLogger("OpenAIPromptEngine")
 logger.setLevel(logging.INFO)
@@ -35,7 +33,16 @@ class OpenAIPromptEngine:
         self.driver = driver
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir), trim_blocks=True, lstrip_blocks=True)
         self.tts_function = tts_function
-        logger.info(" OpenAIPromptEngine initialized using custom GPT scraper.")
+        # Initialize config manager and load necessary settings
+        self.config = ConfigManager()
+        self.custom_gpt_url = self.config.get("custom_gpt.url", "http://localhost:5000")  # fallback default
+        self.prompt_input_selector = self.config.get("custom_gpt.prompt_input_selector", "textarea.input")
+        self.response_container_selector = self.config.get("custom_gpt.response_container_selector", ".response")
+        self.stop_button_xpath = self.config.get("custom_gpt.stop_button_xpath", "//button[@id='stop']")
+        self.retry_attempts = self.config.get("custom_gpt.retry_attempts", 3)
+        self.retry_delay_seconds = self.config.get("custom_gpt.retry_delay_seconds", 3)
+        self.interaction_log_path = self.config.get("custom_gpt.interaction_log_path", "logs/interaction_log.json")
+        logger.info("OpenAIPromptEngine initialized using custom GPT scraper.")
 
     def _is_driver_alive(self) -> bool:
         """
@@ -61,7 +68,7 @@ class OpenAIPromptEngine:
         try:
             template = self.jinja_env.get_template(template_name)
         except Exception as e:
-            logger.error(f" Failed to load template '{template_name}': {e}")
+            logger.error(f"Failed to load template '{template_name}': {e}")
             raise e
 
         context = {
@@ -70,20 +77,20 @@ class OpenAIPromptEngine:
             "METADATA": metadata or {}
         }
         prompt = template.render(context)
-        logger.info(f" Prompt rendered from template '{template_name}'.")
+        logger.info(f"Prompt rendered from template '{template_name}'.")
         return prompt
 
     def _retry(self, func, *args, **kwargs):
         """
         A generic retry/backoff wrapper.
         """
-        for attempt in range(1, RETRY_ATTEMPTS + 1):
+        for attempt in range(1, self.retry_attempts + 1):
             try:
                 return func(*args, **kwargs)
             except Exception as e:
                 logger.warning(f"Attempt {attempt} failed for {func.__name__}: {e}")
-                if attempt < RETRY_ATTEMPTS:
-                    time.sleep(RETRY_DELAY_SECONDS)
+                if attempt < self.retry_attempts:
+                    time.sleep(self.retry_delay_seconds)
                 else:
                     raise
 
@@ -97,16 +104,16 @@ class OpenAIPromptEngine:
             return None
 
         try:
-            self._retry(self.driver.get, CUSTOM_GPT_URL)
-            logger.info(f"Navigated to custom GPT at {CUSTOM_GPT_URL}")
+            self._retry(self.driver.get, self.custom_gpt_url)
+            logger.info(f"Navigated to custom GPT at {self.custom_gpt_url}")
             # Use dynamic wait instead of fixed sleep
             WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, PROMPT_INPUT_SELECTOR))
+                EC.presence_of_element_located((By.CSS_SELECTOR, self.prompt_input_selector))
             )
 
             input_box = self._retry(
                 WebDriverWait(self.driver, 15).until,
-                EC.presence_of_element_located((By.CSS_SELECTOR, PROMPT_INPUT_SELECTOR))
+                EC.presence_of_element_located((By.CSS_SELECTOR, self.prompt_input_selector))
             )
             input_box.clear()
             input_box.send_keys(prompt)
@@ -119,7 +126,7 @@ class OpenAIPromptEngine:
             return response_text
 
         except Exception as e:
-            logger.error(f" Error sending prompt: {e}")
+            logger.error(f"Error sending prompt: {e}")
             return None
 
     def _wait_for_response_completion(self, timeout: int):
@@ -129,7 +136,7 @@ class OpenAIPromptEngine:
         start_time = time.time()
         while time.time() - start_time < timeout:
             try:
-                stop_buttons = self.driver.find_elements(By.XPATH, STOP_BUTTON_XPATH)
+                stop_buttons = self.driver.find_elements(By.XPATH, self.stop_button_xpath)
                 if not stop_buttons:
                     logger.info("Response generation complete.")
                     return
@@ -143,7 +150,7 @@ class OpenAIPromptEngine:
         Scrape the latest response text from the custom GPT chat.
         """
         try:
-            messages = self.driver.find_elements(By.CSS_SELECTOR, RESPONSE_CONTAINER_SELECTOR)
+            messages = self.driver.find_elements(By.CSS_SELECTOR, self.response_container_selector)
             if not messages:
                 logger.warning("No response messages found.")
                 return None
@@ -164,13 +171,13 @@ class OpenAIPromptEngine:
             "metadata": metadata or {}
         }
         try:
-            if os.path.exists(INTERACTION_LOG_PATH):
-                with open(INTERACTION_LOG_PATH, "r") as f:
+            if os.path.exists(self.interaction_log_path):
+                with open(self.interaction_log_path, "r") as f:
                     data = json.load(f)
             else:
                 data = []
             data.append(interaction)
-            with open(INTERACTION_LOG_PATH, "w") as f:
+            with open(self.interaction_log_path, "w") as f:
                 json.dump(data, f, indent=2)
             logger.info("Interaction logged for reinforcement learning.")
         except Exception as e:

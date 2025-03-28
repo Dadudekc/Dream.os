@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor

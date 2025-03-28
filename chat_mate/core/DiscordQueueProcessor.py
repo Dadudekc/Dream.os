@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.logging.CompositeLogger import CompositeLogger
 from core.UnifiedDiscordService import UnifiedDiscordService
 

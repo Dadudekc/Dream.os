@@ -1,5 +1,5 @@
 from typing import Optional
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
 
 class DiscordLogger(ILoggingAgent):

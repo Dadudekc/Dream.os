@@ -11,9 +11,8 @@ import logging
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
 from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory
-from chat_mate_config import Config
 from core.PathManager import PathManager
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 
 class TaskPriority(Enum):
     """Task priority levels for intelligent dispatching."""

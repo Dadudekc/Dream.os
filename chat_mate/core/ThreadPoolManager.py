@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 
 logger = logging.getLogger(__name__)
 

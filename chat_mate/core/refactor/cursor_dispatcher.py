@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CursorDispatcher")
 
 class CursorDispatcher:
-    def __init__(self, templates_dir="cursor_prompts/full_sync_mode", output_dir="cursor_prompts/outputs"):
+    def __init__(self, templates_dir="D:/overnight_scripts/chat_mate/templates/prompt_templates", output_dir="cursor_prompts/outputs"):
         self.templates_path = Path(templates_dir)
         self.output_path = Path(output_dir)
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -281,24 +281,29 @@ class CursorDispatcher:
                     json.dump([data], f, indent=2)
             except:
                 logger.error(f"Could not salvage data for {file_path}")
-                
+                    
     def execute_prompt_sequence(self, sequence_name: str, initial_context: Dict, skip_wait=False):
         """
         Executes a sequence of prompts defined in a JSON configuration file.
-        
+
         Args:
-            sequence_name: Name of the prompt sequence to execute
+            sequence_name: Name or full path of the prompt sequence to execute
             initial_context: Initial context to start the sequence with
             skip_wait: If True, skips waiting for user input
-            
+
         Returns:
             The final output of the sequence
         """
-        sequence_path = self.templates_path.parent / "sequences" / f"{sequence_name}.json"
-        
+        # Allow full path or just a name
+        sequence_path = Path(sequence_name)
+        if not sequence_path.exists():
+            sequence_path = self.templates_path / "sequences" / f"{sequence_name}.json"
+
+
         if not sequence_path.exists():
             logger.error(f"Prompt sequence not found: {sequence_name}")
             raise FileNotFoundError(f"Prompt sequence not found: {sequence_name}")
+
             
         try:
             with open(sequence_path, 'r') as f:
@@ -498,6 +503,15 @@ if __name__ == "__main__":
     parser.add_argument("--sequence", help="Run a predefined prompt sequence instead of the default flow")
     parser.add_argument("--git-commit", action="store_true", help="Automatically commit changes at the end of the process")
     parser.add_argument("--install-hooks", action="store_true", help="Install Git hooks for analytics")
+    # --------------------------
+    # NEW ARG: Path to templates
+    # --------------------------
+    parser.add_argument(
+        "--templates",
+        type=str,
+        default="D:/overnight_scripts/chat_mate/templates/prompt_templates",
+        help="Path to the directory containing Jinja2 templates"
+    )
     args = parser.parse_args()
     
     skip_waiting = args.auto
@@ -507,7 +521,8 @@ if __name__ == "__main__":
     if skip_waiting:
         logger.info("Running in automated mode - skipping user input pauses")
     
-    dispatcher = CursorDispatcher()
+    # Initialize dispatcher with specified (or default) templates directory
+    dispatcher = CursorDispatcher(templates_dir=args.templates)
     
     # Install Git hooks if requested
     if args.install_hooks:

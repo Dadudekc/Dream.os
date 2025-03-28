@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 from .ChatManager import ChatManager
 from .AletheiaPromptManager import AletheiaPromptManager
-from .ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 
 class PromptCycleOrchestrator:
     """

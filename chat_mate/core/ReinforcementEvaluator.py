@@ -3,7 +3,7 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime
 import json
 import os
-from .ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 
 class ReinforcementEvaluator:
     """

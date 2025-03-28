@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import datetime
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
 
 class ConsoleLogger(ILoggingAgent):

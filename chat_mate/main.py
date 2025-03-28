@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 # Bootstrap paths early
 from core.bootstrap import get_bootstrap_paths
 from core.AgentDispatcher import AgentDispatcher
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.DriverManager import DriverManager
 from core.logging.factories.LoggerFactory import LoggerFactory
 
@@ -65,7 +65,7 @@ def initialize_services():
 
     # Try to initialize CursorSessionManager (for debugging)
     try:
-        from core.CursorSessionManager import CursorSessionManager
+        from core.refactor.CursorSessionManager import CursorSessionManager
         cursor_manager = CursorSessionManager(config_service, {})  # Empty dict as memory_manager placeholder
         services['cursor_manager'] = cursor_manager
         logging.info("CursorSessionManager initialized successfully.")

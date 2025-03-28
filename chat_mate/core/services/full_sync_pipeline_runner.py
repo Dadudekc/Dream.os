@@ -1,18 +1,18 @@
 import asyncio
 from pathlib import Path
 
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.PathManager import PathManager
-from core.dispatchers.cursor_dispatcher import CursorDispatcher
+from core.refactor.cursor_dispatcher import CursorDispatcher
 from core.pipelines.project_optimizer_agent import ProjectOptimizerAgent
-from core.rendering.template_engine import TemplateEngine
+from core.TemplateManager import TemplateManager
 
 class FullSyncPipelineRunner:
     def __init__(self, logger=None):
         self.logger = logger or print
         self.config = ConfigManager()
         self.path_manager = PathManager()
-        self.template_engine = TemplateEngine()
+        self.template_manager = TemplateManager()  # Using TemplateManager now
         self.cursor_dispatcher = CursorDispatcher(self.config, self.path_manager)
         self.optimizer_agent = ProjectOptimizerAgent(self.path_manager, self.logger)
 
@@ -25,10 +25,13 @@ class FullSyncPipelineRunner:
 
         # Step 1: Run meta-prompt to produce plan
         self.logger("📥 Rendering optimization plan prompt...")
-        rendered_prompt = self.template_engine.render("full_sync/project_optimizer.prompt.j2", {
-            "project_context": self.optimizer_agent.load_optimization_plan("project_analysis.json"),
-            "mode": mode,
-        })
+        rendered_prompt = self.template_manager.render_general_template(
+            "full_sync/project_optimizer.prompt.j2",
+            {
+                "project_context": self.optimizer_agent.load_optimization_plan("project_analysis.json"),
+                "mode": mode,
+            }
+        )
 
         self.optimizer_plan_path.parent.mkdir(parents=True, exist_ok=True)
         self.optimizer_plan_path.write_text(rendered_prompt, encoding="utf-8")
@@ -58,4 +61,3 @@ class FullSyncPipelineRunner:
             self.logger(f"{status} {prompt_file.name}")
 
         self.logger("🏁 Full Sync complete.")
-

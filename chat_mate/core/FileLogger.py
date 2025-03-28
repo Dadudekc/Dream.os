@@ -3,7 +3,7 @@ import json
 import glob
 from datetime import datetime
 from typing import Optional, Dict, Any
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.interfaces.ILoggingAgent import ILoggingAgent
 from core.PathManager import PathManager
 

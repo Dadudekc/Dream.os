@@ -37,30 +37,38 @@ class _PathRegistry:
     def get_paths(cls) -> Dict[str, Path]:
         return cls._paths.copy()
 
-
-# --- Register Essential Paths ---
-_PathRegistry.register('data', 'data')
-_PathRegistry.register('logs', 'outputs/logs')
-_PathRegistry.register('outputs', 'outputs')
-_PathRegistry.register('config', 'config')
-_PathRegistry.register('cache', 'cache')
-
-# --- Extended Paths ---
-_PathRegistry.register('memory', 'memory')
-_PathRegistry.register('templates', 'templates')
-_PathRegistry.register('drivers', 'drivers')
-_PathRegistry.register('cycles', 'outputs/cycles')
-_PathRegistry.register('dreamscape', 'outputs/cycles/dreamscape')
-_PathRegistry.register('workflow_audits', 'outputs/cycles/workflow_audits')
-_PathRegistry.register('discord_exports', 'outputs/discord_exports')
-_PathRegistry.register('reinforcement_logs', 'outputs/reinforcement_logs')
-_PathRegistry.register('discord_templates', 'templates/discord_templates')
-_PathRegistry.register('message_templates', 'templates/message_templates')
-_PathRegistry.register('engagement_templates', 'templates/engagement_templates')
-_PathRegistry.register('report_templates', 'templates/report_templates')
+# Register core paths
 _PathRegistry.register('base', PROJECT_ROOT)
+_PathRegistry.register('config', PROJECT_ROOT / 'config')
+_PathRegistry.register('memory', PROJECT_ROOT / 'memory')
+_PathRegistry.register('logs', PROJECT_ROOT / 'logs')
+_PathRegistry.register('drivers', PROJECT_ROOT / 'drivers')
+_PathRegistry.register('cache', PROJECT_ROOT / 'cache')
 
-# --- Custom Paths ---
+# Register template paths
+_PathRegistry.register('templates', PROJECT_ROOT / 'templates')
+_PathRegistry.register('discord_templates', PROJECT_ROOT / 'templates/discord_templates')
+_PathRegistry.register('message_templates', PROJECT_ROOT / 'templates/message_templates')
+_PathRegistry.register('general_templates', PROJECT_ROOT / 'templates/general_templates')
+
+# Register output paths
+_PathRegistry.register('outputs', PROJECT_ROOT / 'outputs')
+_PathRegistry.register('dreamscape', PROJECT_ROOT / 'outputs/dreamscape')
+_PathRegistry.register('cycles', PROJECT_ROOT / 'outputs/cycles')
+
+# Register memory files
+_PathRegistry.register('conversation_memory', PROJECT_ROOT / 'memory/conversation_memory.json')
+_PathRegistry.register('persistent_memory', PROJECT_ROOT / 'memory/persistent_memory.json')
+_PathRegistry.register('system_state', PROJECT_ROOT / 'memory/system_state.json')
+
+# Register additional paths
+_PathRegistry.register('workflow_audits', PROJECT_ROOT / 'outputs/cycles/workflow_audits')
+_PathRegistry.register('discord_exports', PROJECT_ROOT / 'outputs/discord_exports')
+_PathRegistry.register('reinforcement_logs', PROJECT_ROOT / 'outputs/reinforcement_logs')
+_PathRegistry.register('engagement_templates', PROJECT_ROOT / 'templates/engagement_templates')
+_PathRegistry.register('report_templates', PROJECT_ROOT / 'templates/report_templates')
+
+# Register custom paths
 strategies_path = PROJECT_ROOT / 'chat_mate' / 'social' / 'strategies'
 context_db_path = strategies_path / 'context_db.json'
 _PathRegistry.register('strategies', strategies_path)
@@ -91,7 +99,6 @@ logging.basicConfig(
 
 logging.info("Bootstrap: Registered paths: %s", {k: str(v) for k, v in _PathRegistry._paths.items()})
 
-
 def get_bootstrap_paths() -> Dict[str, Path]:
-    """Get the registered path map as Path objects."""
+    """Get all registered paths."""
     return _PathRegistry.get_paths()

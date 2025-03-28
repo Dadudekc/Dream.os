@@ -9,6 +9,8 @@ from . import MainTabs
 from . import PromptExecutionTab
 from . import SocialDashboardTab
 from . import SyncOpsTab
+from . import cursor_execution_tab
+from . import full_sync_tab
 
 __all__ = [
     'AIDE',
@@ -19,4 +21,6 @@ __all__ = [
     'PromptExecutionTab',
     'SocialDashboardTab',
     'SyncOpsTab',
+    'cursor_execution_tab',
+    'full_sync_tab',
 ]

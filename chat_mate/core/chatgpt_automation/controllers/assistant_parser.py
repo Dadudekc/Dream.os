@@ -2,31 +2,34 @@ import json
 import os
 import logging
 import re
+from pathlib import Path
 
-logger = logging.getLogger(__name__)
-
-import os
-import json
-import logging
 
 logger = logging.getLogger(__name__)
 
 def _load_command_config():
     try:
-        # Anchor to project root
-        root_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.abspath(os.path.join(root_dir, "chat_mate"))
+        # Dynamically resolve the project root (2 levels up from this file)
+        project_root = Path(__file__).resolve().parents[2]
+        config_path = project_root / "config" / "command_config.json"
 
-        config_path = os.path.join(project_root, "config", "command_config.json")
-        with open(config_path, "r", encoding="utf-8") as f:
+        if not config_path.exists():
+            logger.warning(f"Config file not found at: {config_path}")
+            return []
+
+        with config_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
-        logger.info(f"Loaded {len(data.get('commands', []))} assistant commands.")
-        return data.get("commands", [])
+
+        commands = data.get("commands", [])
+        logger.info(f"✅ Loaded {len(commands)} assistant commands from {config_path.name}")
+        return commands
+
     except Exception as e:
-        logger.error(f"Failed to load command_config.json: {e}")
+        logger.error(f"❌ Failed to load command_config.json: {e}")
         return []
 
 COMMAND_CONFIG = _load_command_config()
+
 
 
 def parse_input(transcript):

@@ -21,6 +21,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
 from core.service_container import container  # Your dependency injection container
+from core.micro_factories.dreamscape_factory import DreamscapeFactory  # Import the new factory
 
 # -----------------------------------------------------------------------------
 # Service Interface Protocols
@@ -87,7 +88,7 @@ class CursorService(Protocol):
 # -----------------------------------------------------------------------------
 
 def create_config_service(config_name: str = "dreamscape_config.yaml") -> Any:
-    from core.ConfigManager import ConfigManager  # Lazy import
+    from config.ConfigManager import ConfigManager  # Lazy import
     try:
         config = ConfigManager(config_name=config_name)
         logging.info(f"Configuration loaded from {config_name}")
@@ -132,7 +133,7 @@ def create_prompt_service(config_service: Any = None) -> Any:
 def create_chat_service(config_service: Any = None) -> Any:
     """Create and configure the chat service."""
     from core.ChatManager import ChatManager  # Lazy import
-    from core.ConfigManager import ConfigManager  # For type-checking
+    from config.ConfigManager import ConfigManager  # For type-checking
     import json
     if not config_service:
         logging.error("Cannot create chat service without configuration")
@@ -218,7 +219,7 @@ def create_discord_service(config_service: Any = None, logger_obj: Any = None) -
 
 def create_cursor_service(config_service: Any = None, memory_service: Any = None) -> Any:
     try:
-        from core.CursorSessionManager import CursorSessionManager  # Lazy import
+        from core.refactor.CursorSessionManager import CursorSessionManager  # Lazy import
         if not config_service or not memory_service:
             logging.error("Cannot create cursor service without config and memory services")
             return container._create_empty_service("cursor_service")
@@ -277,64 +278,16 @@ def create_task_orchestrator() -> Any:
         return container._create_empty_service("task_orchestrator")
 
 
-def create_dreamscape_generator(chat_service: Any = None, response_handler: Any = None,
-                                discord_service: Any = None, config_service: Any = None) -> Any:
-    from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator  # Lazy import
-    from core.memory_utils import load_memory_file  # Lazy import for memory file handling
-    try:
-        output_dir = "outputs/dreamscape"
-        memory_file = "memory/dreamscape_memory.json"
-        if config_service:
-            output_dir = config_service.get("dreamscape_output_dir", output_dir)
-            memory_file = config_service.get("dreamscape_memory_file", memory_file)
-        if hasattr(output_dir, 'get_path'):
-            output_dir = output_dir.get_path()
-        elif not isinstance(output_dir, (str, os.PathLike)):
-            output_dir = str(output_dir)
-        os.makedirs(output_dir, exist_ok=True)
-        
-        default_memory = {
-            "last_updated": datetime.now().isoformat(),
-            "episode_count": 0,
-            "themes": [],
-            "characters": ["Victor the Architect"],
-            "realms": ["The Dreamscape", "The Forge of Automation"],
-            "artifacts": [],
-            "recent_episodes": [],
-            "skill_levels": {
-                "System Convergence": 1,
-                "Execution Velocity": 1,
-                "Memory Integration": 1,
-                "Protocol Design": 1,
-                "Automation Engineering": 1
-            },
-            "architect_tier": {
-                "current_tier": "Initiate Architect",
-                "progress": "0%",
-                "tier_history": []
-            },
-            "quests": {
-                "completed": [],
-                "active": ["Establish the Dreamscape"]
-            },
-            "protocols": [],
-            "stabilized_domains": []
-        }
-        
-        memory_data = load_memory_file(memory_file, default_memory)
-        
-        return DreamscapeEpisodeGenerator(
-            chat_manager=chat_service,
-            response_handler=response_handler,
-            output_dir=output_dir,
-            discord_manager=discord_service,
-            logger=logging.getLogger("DreamscapeGenerator"),
-            config=config_service,
-            memory_data=memory_data
-        )
-    except Exception as e:
-        logging.error(f"Failed to initialize Dreamscape generator: {str(e)}")
-        return container._create_empty_service("dreamscape_generator")
+def create_dreamscape_generator(*, config_service, chat_service, response_handler, discord_service=None) -> Any:
+    """Create and configure the dreamscape generator service using the new factory."""
+    factory = DreamscapeFactory(
+        config_service=config_service,
+        chat_service=chat_service,
+        response_handler=response_handler,
+        discord_service=discord_service,
+        logger=logging.getLogger("DreamscapeGenerator")
+    )
+    return factory.create()
 
 
 def create_memory_service(config_service: Any = None) -> Any:
@@ -409,6 +362,46 @@ class ServiceRegistry:
                 return lambda *args, **kwargs: None
 
         return EmptyService()
+
+    @classmethod
+    def initialize(cls, config, logger):
+        """Initialize the service registry with configuration."""
+        cls._config = config
+        cls._logger = logger
+        cls._register_core_services()
+    
+    @classmethod
+    def _register_core_services(cls):
+        """Register all core services needed by the application."""
+        try:
+            # Register Dreamscape service using the factory
+            dreamscape_service = DreamscapeFactory(
+                config_service=cls._config,
+                chat_service=cls.get_service("chat_manager"),
+                response_handler=cls.get_service("prompt_handler"),
+                discord_service=cls.get_service("discord_manager"),
+                logger=cls._logger
+            ).create()
+            cls.register_service("dreamscape_generation", dreamscape_service)
+            
+        except Exception as e:
+            cls._logger.error(f"Error registering core services: {str(e)}")
+    
+    @classmethod
+    def register_service(cls, name: str, service: object):
+        """Register a service instance with the registry."""
+        cls._services[name] = service
+        cls._logger.info(f"Registered service: {name}")
+    
+    @classmethod
+    def get_service(cls, name: str) -> object:
+        """Get a service instance by name."""
+        return cls._services.get(name)
+    
+    @classmethod
+    def has_service(cls, name: str) -> bool:
+        """Check if a service is registered."""
+        return name in cls._services
 
 
 def register_all_services() -> None:

@@ -1,26 +1,8 @@
 # AUTO-GENERATED __init__.py
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
-from . import config_service
-from . import debug_service
-from . import discord_service
-from . import dreamscape_services
-from . import fix_service
-from . import git_integration_service
-from . import prompt_execution_service
-from . import prompt_service
-from . import rollback_service
-from . import service_registry
+from . import dreamscape_generator_service
 
 __all__ = [
-    'config_service',
-    'debug_service',
-    'discord_service',
-    'dreamscape_services',
-    'fix_service',
-    'git_integration_service',
-    'prompt_execution_service',
-    'prompt_service',
-    'rollback_service',
-    'service_registry',
+    'dreamscape_generator_service',
 ]

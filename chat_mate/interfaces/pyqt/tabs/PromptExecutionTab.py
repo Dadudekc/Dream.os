@@ -17,7 +17,7 @@ from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
 from core.DiscordQueueProcessor import DiscordQueueProcessor
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 
 # Example: HuggingFace Transformers-based local wrapper
 from transformers import AutoModelForCausalLM, AutoTokenizer

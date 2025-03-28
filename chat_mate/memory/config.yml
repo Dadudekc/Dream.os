@@ -1,1 +1,28 @@
-config: test
+memory_backend: sqlite
+cache_enabled: true
+cache_strategy: lru
+cache_size: 250
+
+compression:
+  enabled: true
+  algorithm: zlib
+
+persistence:
+  file_path: data/memory_store.json
+  autosave: true
+  backup_interval_minutes: 10
+
+sentiment_tracking:
+  enabled: true
+  decay_window: 30  # days
+  positive_threshold: 0.65
+  negative_threshold: 0.35
+
+conversation_retention:
+  max_context_tokens: 4000
+  summarization_enabled: true
+
+backup:
+  enabled: true
+  backup_dir: backups/
+  max_versions: 5

@@ -89,7 +89,9 @@ class DriverManager:
                  undetected_mode: bool = True,
                  max_session_duration: int = DEFAULT_MAX_SESSION_DURATION,
                  retry_attempts: int = DEFAULT_RETRY_ATTEMPTS,
-                 retry_delay: int = DEFAULT_RETRY_DELAY):
+                 retry_delay: int = DEFAULT_RETRY_DELAY,
+                 timeout: Optional[int] = None,
+                 **kwargs):
         """
         Initialize DriverManager.
         
@@ -105,6 +107,8 @@ class DriverManager:
             max_session_duration: Session expiration time in seconds.
             retry_attempts: Retry attempts for driver operations.
             retry_delay: Delay between retry attempts.
+            timeout: Alias for wait_timeout, for backward compatibility.
+            **kwargs: Additional configuration options.
         """
         with self._lock:
             if self._initialized:
@@ -115,13 +119,16 @@ class DriverManager:
             self.driver_cache_dir = driver_cache_dir or os.path.join(os.getcwd(), "drivers")
             self.cookie_file = cookie_file or os.path.join(os.getcwd(), "cookies", "default.pkl")
             self.headless = headless
-            self.wait_timeout = wait_timeout
+            self.wait_timeout = timeout or wait_timeout  # Use timeout if provided, else wait_timeout
             self.mobile_emulation = mobile_emulation
             self.additional_arguments = additional_arguments or []
             self.undetected_mode = undetected_mode and UNDETECTED_AVAILABLE
             self.max_session_duration = max_session_duration
             self.retry_attempts = retry_attempts
             self.retry_delay = retry_delay
+
+            # Store additional kwargs for future use
+            self.additional_options = kwargs
 
             # Runtime state
             self.driver: Optional[webdriver.Chrome] = None

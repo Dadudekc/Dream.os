@@ -37,10 +37,8 @@ logs/
 .DS_Store
 Thumbs.db
 venv/
-../clean_venv/
-/../clean_venv/
 clean_venv/
-../clean_venv/
+
 # .gitignore
 venv*/
 test_venv*/

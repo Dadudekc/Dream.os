@@ -17,7 +17,7 @@ from core.PathManager import PathManager
 from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
 from social.social_post_manager import SocialPostManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from social.UnifiedPostManager import UnifiedPostManager
 from social.StrategyLoader import StrategyLoader
 

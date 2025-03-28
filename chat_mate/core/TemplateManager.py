@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Union
 import os
 import json
 import logging
@@ -60,18 +60,23 @@ class TemplateManager(QObject):
 
         # Use PathManager if available; otherwise, use a fallback based on this file's location.
         if template_dir:
-            general_dir = template_dir
+            general_dir = str(Path(template_dir))
         elif PathManager:
-            general_dir = PathManager.get_path('templates')
+            general_dir = str(PathManager.get_path('templates'))
         else:
-            general_dir = self.get_base_template_dir()
+            general_dir = str(self.get_base_template_dir())
 
         # Setup directories for each category. If using PathManager, get paths; else use subfolders.
         self.template_categories = {
-            "discord": PathManager.get_path('discord_templates') if PathManager else os.path.join(general_dir, "discord_templates"),
-            "messages": PathManager.get_path('message_templates') if PathManager else os.path.join(general_dir, "message_templates"),
+            "discord": str(PathManager.get_path('discord_templates')) if PathManager else os.path.join(general_dir, "discord_templates"),
+            "messages": str(PathManager.get_path('message_templates')) if PathManager else os.path.join(general_dir, "message_templates"),
             "general": general_dir
         }
+
+        # Ensure all template directories exist
+        for category, path in self.template_categories.items():
+            os.makedirs(path, exist_ok=True)
+            self.logger.info(f"Ensuring template directory exists for {category}: {path}")
 
         # Initialize Jinja2 environments for each category.
         self.environments: Dict[str, Environment] = {
@@ -98,11 +103,35 @@ class TemplateManager(QObject):
     def _init_environment(self, path: str) -> Environment:
         """
         Creates a Jinja2 Environment for a given directory.
+        Adds custom filters for JSON handling.
         """
-        return Environment(
+        env = Environment(
             loader=FileSystemLoader(path),
             autoescape=select_autoescape()
         )
+
+        # Add JSON filters
+        def load_json_filter(path):
+            """Load and parse a JSON file."""
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                self.logger.error(f"Error loading JSON from {path}: {e}")
+                return {}
+
+        def tojson_filter(value):
+            """Convert a value to a JSON string."""
+            try:
+                return json.dumps(value, indent=2)
+            except Exception as e:
+                self.logger.error(f"Error converting to JSON: {e}")
+                return str(value)
+
+        env.filters['load_json'] = load_json_filter
+        env.filters['tojson'] = tojson_filter
+
+        return env
 
     def discover_templates(self) -> List[str]:
         """
@@ -121,38 +150,42 @@ class TemplateManager(QObject):
         self.logger.info(f"Discovered {len(discovered)} templates under 'general'")
         return discovered
 
-    def load_templates(self):
+    def load_templates(self, template_dir: Union[str, Path] = None):
         """
-        Reloads templates from the 'general' template directory, adds them to the file watcher,
-        and emits the updated list.
+        Reloads templates from the provided directory (or the 'general' template directory if not specified),
+        adds them to the file watcher, and emits the updated list.
+        
+        Args:
+            template_dir (Union[str, Path]): Directory to load templates from. If None, uses the 'general' directory.
         """
-        base_dir = self.template_categories.get("general", self.get_base_template_dir())
-        templates = []
-        if os.path.exists(base_dir):
-            for root, _, files in os.walk(base_dir):
-                for file in files:
-                    if file.endswith('.j2'):
-                        rel_path = os.path.relpath(os.path.join(root, file), base_dir)
-                        templates.append(rel_path.replace("\\", "/"))
-                        full_path = os.path.join(root, file)
-                        if full_path not in self.watcher.files():
-                            self.watcher.addPath(full_path)
-        self.templates_updated.emit(templates)
-        self.logger.info(f"Loaded {len(templates)} templates from {base_dir}")
+        template_dir = Path(template_dir) if template_dir else Path(self.template_categories.get("general", self.get_base_template_dir()))
+        self.logger.info(f"Loading templates from: {template_dir}")
+        if not template_dir.exists():
+            self.logger.warning(f"Template directory does not exist: {template_dir}")
+            return
+
+        templates = list(template_dir.glob("*.j2"))
+        self.logger.info(f"Found {len(templates)} template(s): {[t.name for t in templates]}")
+        for template_file in templates:
+            with open(template_file, 'r', encoding='utf-8') as f:
+                self.templates[template_file.name] = f.read()
+
+        self.templates_updated.emit([str(t.relative_to(template_dir)) for t in templates])
+        self.logger.info(f"Loaded {len(templates)} templates from {template_dir}")
 
     def get_available_templates(self, category: str = "general") -> List[str]:
         """
         Returns a sorted list of available template filenames for a given category.
         """
         path = self.template_categories.get(category)
-        if not path or not os.path.isdir(path):
-            self.logger.warning(f"No valid directory found for template category: {category}")
+        if not path or not os.path.isdir(str(path)):
+            self.logger.warning(f"No valid directory found for template category: {category} at path: {path}")
             return []
         available = []
-        for root, _, files in os.walk(path):
+        for root, _, files in os.walk(str(path)):
             for file in files:
                 if file.endswith(".j2"):
-                    rel_path = os.path.relpath(os.path.join(root, file), path)
+                    rel_path = os.path.relpath(os.path.join(root, file), str(path))
                     available.append(rel_path.replace("\\", "/"))
         return sorted(available)
 

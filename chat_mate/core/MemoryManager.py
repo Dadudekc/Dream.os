@@ -136,7 +136,7 @@ class MemoryManager:
     def __init__(self,
                  max_cache_size: int = 500,
                  memory_dir: Optional[str] = None,
-                 memory_file: str = "memory/engagement_memory.json",
+                 memory_file: str = "chat_mate/memory/engagement_memory.json",
                  db_file: str = "memory/engagement_memory.db",
                  template_dir: str = "templates",
                  logger: Optional[logging.Logger] = None,

@@ -15,6 +15,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNotFound
 from core.TemplateManager import TemplateManager
 from core.dreamscape.ContextMemoryManager import ContextMemoryManager
+from core.services.service_registry import ServiceRegistry
+from core.services.dreamscape_generator_service import DreamscapeGenerationService
 
 def get_base_template_dir():
     """
@@ -768,3 +770,32 @@ You don't need to use all elements, but reference enough to create a sense of a 
             # Final fallback
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             return f"Episode_{timestamp}"
+
+    def generate_episodes(self):
+        prompt = self.prompt_input.toPlainText()
+        model = self.model_dropdown.currentText()
+        target_chat = self.target_chat_dropdown.currentText()
+        reverse = self.reverse_checkbox.isChecked()
+        headless = self.headless_checkbox.isChecked()
+        post_to_discord = self.post_discord_checkbox.isChecked()
+
+        if not prompt:
+            self.append_log("⚠️ No prompt entered. Please provide a prompt.")
+            return
+
+        result = PromptExecutionService.run_episode_generation(
+            prompt, model, target_chat, headless, reverse, post_to_discord
+        )
+        self.content_output.setPlainText(result)
+        self.append_log("✅ Episode generation successful.")
+
+    def append_log(self, message: str):
+        """Append a message to the log output."""
+        current = self.log_output.toPlainText()
+        self.log_output.setPlainText(current + f"\n{message}")
+
+# Mocking the PromptExecutionService if it doesn't exist
+class PromptExecutionService:
+    @staticmethod
+    def run_episode_generation(prompt, model, target_chat, headless, reverse, post_to_discord):
+        return f"Mock episode generated using {model} for chat '{target_chat}'\nPrompt:\n{prompt}"

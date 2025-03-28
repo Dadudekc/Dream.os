@@ -6,7 +6,7 @@ import os
 
 # Import the new LoggerFactory
 from core.logging.factories.LoggerFactory import LoggerFactory as NewLoggerFactory
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.ConsoleLogger import ConsoleLogger
 
 class LoggerFactory:

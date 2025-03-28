@@ -23,7 +23,7 @@ from social.strategies.youtube_strategy import YouTubeStrategy
 from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
 from social.social_post_manager import SocialPostManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from social.UnifiedPostManager import UnifiedPostManager
 from social.StrategyLoader import StrategyLoader
 

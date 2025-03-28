@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from core.DiscordQueueProcessor import DiscordQueueProcessor
 
 # Local LLM Backends

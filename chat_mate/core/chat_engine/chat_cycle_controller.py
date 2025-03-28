@@ -13,7 +13,7 @@ from core.chat_engine.discord_dispatcher import DiscordDispatcher
 
 # UTILS
 from core.FileManager import FileManager
-from chat_mate_config import Config
+from config.ConfigManager import ConfigManager
 
 logger = logging.getLogger("ChatCycleController")
 logger.setLevel(logging.INFO)
@@ -41,7 +41,7 @@ class ChatCycleController:
         self.output_callback = output_callback or self._default_output_callback
 
         # CONFIG INITIALIZATION
-        self.config = Config(config_path)
+        self.config = ConfigManager(config_path)
         self.model = self.config.get("default_model", "gpt-4o-mini")
         self.output_dir = self.config.get("output_dir", "responses")
         self.reverse_order = self.config.get("reverse_order", False)

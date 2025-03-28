@@ -25,7 +25,7 @@ project_root = Path(__file__).parent.parent.absolute()
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 
 

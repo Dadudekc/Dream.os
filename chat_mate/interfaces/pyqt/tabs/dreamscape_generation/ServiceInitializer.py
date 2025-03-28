@@ -189,7 +189,7 @@ class ServiceInitializer:
         """
         try:
             # Initialize TemplateManager with the path to dreamscape templates.
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+            base_dir = os.path.dirname(os.path.dirname(os.pa(os.path.dirname(os.path.abspath(__file__)))))
             dreamscape_dir = os.path.join(base_dir, 'templates', 'dreamscape_templates')
             self.template_manager = TemplateManager(template_dir=dreamscape_dir)
             self.logger.info("✅ TemplateManager initialized successfully")

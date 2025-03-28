@@ -21,7 +21,7 @@ from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
 from utils.signal_dispatcher import SignalDispatcher
 
 # Import configuration and service loader
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 from core.chatgpt_automation.automation_engine import AutomationEngine
 from core.chatgpt_automation.controllers.assistant_mode_controller import AssistantModeController
@@ -510,7 +510,7 @@ def main():
     }
 
     try:
-        from core.CursorSessionManager import CursorSessionManager
+        from core.refactor.CursorSessionManager import CursorSessionManager
         cursor_url = config.get("cursor_url", "http://localhost:8000") if hasattr(config, "get") else getattr(config, "cursor_url", "http://localhost:8000")
         services['cursor_manager'] = CursorSessionManager(config, services['memory_manager'])
         logger.info("Cursor manager initialized successfully")

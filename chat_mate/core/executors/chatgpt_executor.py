@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from core.executors.base_executor import BaseExecutor
 from core.DriverManager import DriverManager
 from core.PathManager import PathManager
-from core.ConfigManager import ConfigManager
+from config.ConfigManager import ConfigManager
 
 class ChatGPTExecutor(BaseExecutor):
     """Executor for running prompts through ChatGPT web interface."""
