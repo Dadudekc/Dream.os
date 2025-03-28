@@ -1,0 +1,33 @@
+
+# 🌀 Dreamscape Episode: {{ chat_title }}
+
+> Generated on {{ generation_date | default("{{ now() }}") }}
+
+---
+
+## 🔮 Episode Summary
+
+{{ summary | default("No summary provided.") }}
+
+---
+
+## 🧠 Core Memory State
+
+{{ CURRENT_MEMORY_STATE | default("No memory context available.") }}
+
+---
+
+## 💬 Raw Response
+{{ raw_response | default("No raw response captured.") }}
+---
+
+## 📌 Tags
+{% if tags %}
+- {{ tags | join(', ') }}
+{% else %}
+- No tags specified
+{% endif %}
+
+---
+
+_“Every line of code is a thread in the Dreamscape. We write our story with logic and fire.”_

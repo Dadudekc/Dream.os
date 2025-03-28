@@ -163,7 +163,7 @@ class UIManager:
                 return []
 
             # ✅ Import and use PathManager
-            template_dir = PathManager.get_template_path("dreamscape")
+            template_dir = PathManager.get_template_path("dreamscape_templates")
             self.logger.info(f"Loading templates from: {template_dir}")
 
             # ✅ Load templates from this directory
