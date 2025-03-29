@@ -78,6 +78,33 @@ class ServiceInitializer:
         try:
             # Store injected services
             self.prompt_manager = prompt_manager
+            
+            # If prompt_manager is not provided, try to create it using our PromptFactory
+            if self.prompt_manager is None:
+                try:
+                    from core.factories.prompt_factory import PromptFactory
+                    # Try to create using the service registry if available
+                    if self.service_registry:
+                        self.logger.info("Creating PromptManager using PromptFactory with registry...")
+                        self.prompt_manager = PromptFactory.create(self.service_registry)
+                        if self.prompt_manager:
+                            self.logger.info("PromptManager created successfully via factory with registry")
+                    
+                    # If still None, try the standalone factory method
+                    if self.prompt_manager is None:
+                        self.logger.info("Creating PromptManager using standalone factory method...")
+                        self.prompt_manager = PromptFactory.create_prompt_manager(logger=self.logger)
+                        if self.prompt_manager:
+                            self.logger.info("PromptManager created successfully via standalone factory")
+                    
+                    # If still None, create with defaults as last resort
+                    if self.prompt_manager is None:
+                        self.logger.warning("All factory methods failed, creating AletheiaPromptManager directly")
+                        from core.AletheiaPromptManager import AletheiaPromptManager
+                        self.prompt_manager = AletheiaPromptManager()
+                except Exception as e:
+                    self.logger.error(f"Failed to create PromptManager: {e}")
+            
             self.chat_manager = chat_manager
             self.response_handler = response_handler
             self.memory_manager = memory_manager

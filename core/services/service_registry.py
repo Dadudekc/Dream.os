@@ -451,30 +451,39 @@ class ServiceRegistry:
             # Register prompt_manager using the factory
             if "prompt_manager" not in cls._services:
                 try:
+                    # Import the factory with robust error handling
                     from core.factories.prompt_factory import PromptFactory
+                    
+                    # First try the registry-based factory method
                     prompt_manager = PromptFactory.create(cls)
                     if prompt_manager:
                         cls.register_service("prompt_manager", prompt_manager)
-                        cls._logger.info("PromptManager registered via factory")
+                        cls._logger.info("PromptManager registered via registry-based factory")
                     else:
-                        cls._logger.warning("PromptFactory returned None for prompt_manager, attempting fallback creation")
-                        # Fallback: try the legacy creation method
+                        # If that fails, try the standalone method
+                        cls._logger.warning("Registry-based factory returned None, trying standalone factory method")
                         prompt_manager = PromptFactory.create_prompt_manager(logger=cls._logger)
                         if prompt_manager:
                             cls.register_service("prompt_manager", prompt_manager)
-                            cls._logger.info("PromptManager registered via legacy factory method")
+                            cls._logger.info("PromptManager registered via standalone factory")
                         else:
-                            cls._logger.error("Failed to create PromptManager using both factory methods")
+                            # Last resort: create a direct instance
+                            cls._logger.warning("All factory methods failed, creating instance directly")
+                            from core.AletheiaPromptManager import AletheiaPromptManager
+                            prompt_manager = AletheiaPromptManager()
+                            cls.register_service("prompt_manager", prompt_manager)
+                            cls._logger.info("PromptManager created directly as last resort")
                 except Exception as e:
-                    cls._logger.error(f"Failed to create PromptManager via factory: {e}")
-                    try:
-                        # Last resort: direct import and creation
-                        from core.AletheiaPromptManager import AletheiaPromptManager
-                        prompt_manager = AletheiaPromptManager()
-                        cls.register_service("prompt_manager", prompt_manager)
-                        cls._logger.info("PromptManager created directly as fallback")
-                    except Exception as inner_e:
-                        cls._logger.error(f"All attempts to create PromptManager failed: {inner_e}")
+                    cls._logger.error(f"Failed to create PromptManager: {e}")
+                    # Create a stub implementation
+                    prompt_manager = type('PromptManagerStub', (), {
+                        'get_prompt': lambda self, name: f"Stub prompt for {name}",
+                        'save_prompt': lambda self, name, text: None,
+                        'load_prompts': lambda self: {},
+                        'get_random_prompt': lambda self: "Stub random prompt"
+                    })()
+                    cls.register_service("prompt_manager", prompt_manager)
+                    cls._logger.warning("Registered stub PromptManager due to initialization failure")
             
             # Register chat manager using the factory
             if "chat_manager" not in cls._services:
@@ -530,7 +539,41 @@ def register_all_services() -> None:
     
     container.register('logger', create_logging_service)
     container.register('config', create_config_service)
-    container.register('prompt_manager', lambda: PromptFactory.create_prompt_manager())
+    
+    # Update prompt_manager registration to use the factory with proper error handling
+    from core.factories.prompt_factory import PromptFactory
+    def create_prompt_manager_safely():
+        try:
+            # First try using the registry-based factory method
+            from core.services.service_registry import ServiceRegistry
+            registry = ServiceRegistry()
+            prompt_manager = PromptFactory.create(registry)
+            if prompt_manager:
+                logging.info("PromptManager created successfully via factory with registry")
+                return prompt_manager
+            
+            # If that fails, try the standalone method
+            logging.warning("Registry-based factory returned None, trying standalone factory method")
+            prompt_manager = PromptFactory.create_prompt_manager()
+            if prompt_manager:
+                logging.info("PromptManager created successfully via standalone factory")
+                return prompt_manager
+                
+            # Last resort, create with defaults
+            logging.warning("All factory methods failed, creating with defaults")
+            from core.AletheiaPromptManager import AletheiaPromptManager
+            return AletheiaPromptManager()
+        except Exception as e:
+            logging.error(f"Error creating PromptManager: {e}")
+            # Create and return stub implementation
+            return type('PromptManagerStub', (), {
+                'get_prompt': lambda self, name: f"Stub prompt for {name}",
+                'save_prompt': lambda self, name, text: None,
+                'load_prompts': lambda self: {},
+                'get_random_prompt': lambda self: "Stub random prompt"
+            })()
+    
+    container.register('prompt_manager', create_prompt_manager_safely)
     container.register('memory_manager', create_memory_service, ['config'])
     container.register('response_handler', create_response_handler, ['config'])
     container.register('chat_manager', create_chat_service, ['config'])
