@@ -334,7 +334,7 @@ def get_latest_response(driver, timeout=180, stable_period=10):
     Wait for ChatGPT's devlog response:
     Poll every 5 seconds until stable_period seconds pass with no change or timeout.
     """
-    logger.info("Waiting for devlog response...")
+    logger.info(f"Waiting for devlog response... (timeout={timeout}, stable_period={stable_period})")
     start_time = time.time()
     last_response = ""
     stable_start = None
@@ -343,18 +343,25 @@ def get_latest_response(driver, timeout=180, stable_period=10):
         time.sleep(5)
         try:
             messages = driver.find_elements(By.CSS_SELECTOR, ".markdown.prose.w-full.break-words")
+            logger.info(f"Found {len(messages)} messages")
             if messages:
                 current_response = messages[-1].text.strip()
+                logger.info(f"Current response: {current_response[:30]}...")
                 if current_response != last_response:
                     last_response = current_response
                     stable_start = time.time()
                     logger.info("Updated response received...")
                 else:
+                    logger.info(f"Response unchanged. Stable time: {time.time() - stable_start if stable_start else 'N/A'}")
                     if stable_start and (time.time() - stable_start) >= stable_period:
                         logger.info("Response stabilized.")
                         break
+            else:
+                logger.info("No messages found in the chat")
         except Exception as e:
             logger.error(f"Error fetching response: {e}")
+    
+    logger.info(f"Returning response: {last_response[:30]}...")
     return last_response
 
 def generate_devlog(chat_title, devlog_response):

@@ -1,0 +1,4 @@
+# Added dynamic episode chaining for Dreamscape Episodes 
+## Features 
+- Created dreamscape_episode_chain.py module to manage episode continuity 
+- Enhanced templates with previous episode context for narrative continuity 

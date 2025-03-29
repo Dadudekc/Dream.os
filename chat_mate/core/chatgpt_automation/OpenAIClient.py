@@ -42,7 +42,7 @@ class OpenAIClient:
         self.COOKIE_DIR = str(Path(os.getcwd()) / "cookies")
         self.COOKIE_FILE = str(Path(self.COOKIE_DIR) / "openai.pkl")
 
-        # Go up 3 directories from the current file (assuming you're inside core/chatgpt_automation/controllers)
+        # Go up 3 directories from the current file (assuming you're inside core/chatgpt_automation)
         self.CONFIG_FILE = str(Path(__file__).resolve().parents[2] / "config" / "command_config.json")
 
         # Load configuration

@@ -4,12 +4,14 @@ import os
 import logging
 import asyncio
 import warnings
+import signal
+from PyQt5 import QtCore, QtWidgets
 
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QApplication, QLabel, QHBoxLayout,
     QPushButton, QTextEdit, QMessageBox, QTabWidget
 )
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtCore import pyqtSlot, Qt, QThread
 
 from qasync import QEventLoop
 
@@ -55,7 +57,7 @@ class DreamscapeMainWindow(QMainWindow):
         
         # Initialize OpenAI client
         try:
-            profile_dir = self.path_manager.get_path("cache") + "/openai_profile"
+            profile_dir = os.path.join(self.path_manager.get_path("cache"), "openai_profile")
             self.openai_client = OpenAIClient(profile_dir=profile_dir)
             self.logger.info("OpenAI client initialized")
         except Exception as e:
@@ -80,6 +82,8 @@ class DreamscapeMainWindow(QMainWindow):
         self.logger.info("DreamscapeMainWindow initialized")
 
         self.engine = AutomationEngine()  # Initialize engine for project scanning
+
+        self._setup_signal_handlers()
 
     def verify_services(self):
         """
@@ -363,79 +367,34 @@ class DreamscapeMainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """
-        Handle application close event.
-        Ensure proper cleanup of resources in a specific order.
+        Handle the window close event to ensure proper shutdown of all resources
         """
-        self.logger.info("Starting application shutdown sequence...")
-
-        # 1. Stop the assistant first to prevent new operations
-        try:
-            if hasattr(self, 'assistant_controller') and self.assistant_controller:
-                self.logger.info("Stopping assistant controller...")
-                self.stop_assistant()
-        except Exception as e:
-            self.logger.error(f"Error stopping assistant controller: {str(e)}")
-
-        # 2. Clean up UI components and tabs
-        try:
-            if hasattr(self, 'tabs') and self.tabs:
-                self.logger.info("Cleaning up tabs...")
-                self.tabs.cleanup()
-        except Exception as e:
-            self.logger.error(f"Error cleaning up tabs: {str(e)}")
-
-        # 3. Shutdown OpenAI client
-        try:
-            if hasattr(self, 'openai_client') and self.openai_client:
-                self.logger.info("Shutting down OpenAI client...")
+        self.logger.info("🛑 Shutting down DreamOs...")
+        
+        # Shutdown any OpenAI clients
+        if hasattr(self, 'openai_client') and self.openai_client:
+            try:
                 self.openai_client.shutdown()
-        except Exception as e:
-            self.logger.error(f"Error shutting down OpenAI client: {str(e)}")
-
-        # 4. Clean up services in specific order
-        if hasattr(self, 'services'):
-            # First, shutdown high-level services that might depend on others
-            high_level_services = ['discord_service', 'chat_manager', 'prompt_manager']
-            for service_name in high_level_services:
-                self._shutdown_service(service_name)
-
-            # Then shutdown remaining services
-            for service_name, service in self.services.items():
-                if service_name not in high_level_services:
-                    self._shutdown_service(service_name)
-
-        # 5. Stop the event loop manager last
-        try:
-            if self.event_loop_manager:
-                self.logger.info("Shutting down event loop manager...")
-                # First stop the loop
-                if self.event_loop_manager.loop and self.event_loop_manager.loop.is_running():
-                    self.logger.info("Stopping running event loop...")
-                    self.event_loop_manager.loop.call_soon_threadsafe(self.event_loop_manager.loop.stop)
-                
-                # Then shutdown the manager
-                self.event_loop_manager.shutdown()
-        except Exception as e:
-            self.logger.error(f"Error shutting down event loop manager: {str(e)}")
-
-        self.logger.info("Application shutdown completed successfully")
+                self.logger.info("✅ OpenAI client shut down successfully")
+            except Exception as e:
+                self.logger.error(f"❌ Error shutting down OpenAI client: {e}")
+        
+        # Shutdown any service containers
+        if hasattr(self, 'container') and self.container:
+            try:
+                for service_name in ['orchestrator', 'prompt_manager', 'chat_manager']:
+                    service = getattr(self.container, service_name, None)
+                    if service and hasattr(service, 'shutdown'):
+                        service.shutdown()
+                        self.logger.info(f"✅ Service {service_name} shut down successfully")
+            except Exception as e:
+                self.logger.error(f"❌ Error shutting down services: {e}")
+        
+        # Accept the event to close the window
         event.accept()
-
-    def _shutdown_service(self, service_name):
-        """Helper method to shutdown a single service."""
-        try:
-            service = self.services.get(service_name)
-            if service:
-                if hasattr(service, 'shutdown'):
-                    self.logger.info(f"Shutting down {service_name}...")
-                    service.shutdown()
-                elif hasattr(service, 'cleanup'):
-                    self.logger.info(f"Cleaning up {service_name}...")
-                    service.cleanup()
-                else:
-                    self.logger.debug(f"Service {service_name} has no shutdown/cleanup method")
-        except Exception as e:
-            self.logger.error(f"Error shutting down service {service_name}: {str(e)}")
+        
+        # Ensure application fully exits
+        QtWidgets.QApplication.exit(0)
 
     def _run_startup_validation(self):
         """Run startup validation and handle results."""
@@ -492,6 +451,23 @@ class DreamscapeMainWindow(QMainWindow):
                 f.write(code_edit)
         except Exception as e:
             self.logger.error(f"Failed to edit file {target_file}: {e}")
+
+    def _setup_signal_handlers(self):
+        """
+        Set up signal handlers to ensure proper application shutdown
+        on Ctrl+C or SIGINT events.
+        """
+        def signal_handler(sig, frame):
+            self.logger.info("Received interrupt signal, shutting down...")
+            if hasattr(self, 'window') and self.window:
+                self.window.close()
+            else:
+                QtWidgets.QApplication.quit()
+        
+        # Only set handler if in the main thread
+        if QtCore.QThread.currentThread() == QtCore.QCoreApplication.instance().thread():
+            signal.signal(signal.SIGINT, signal_handler)
+            self.logger.info("Signal handlers set up successfully")
 
 
 class EmptyService:

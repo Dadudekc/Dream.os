@@ -18,7 +18,6 @@ from core.PathManager import PathManager
 from config.ConfigManager import ConfigManager
 from core.executors.cursor_executor import CursorExecutor
 from core.executors.chatgpt_executor import ChatGPTExecutor
-from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 from core.services.discord.DiscordBatchDispatcher import DiscordBatchDispatcher
 from core.ReinforcementEvaluator import ReinforcementEvaluator
 from core.DriverSessionManager import DriverSessionManager
@@ -76,7 +75,15 @@ class UnifiedPromptService(QObject):
         self.chatgpt_executor = ChatGPTExecutor(self.driver_manager_instance, self.config, self.path_manager)
 
         # Orchestration components (for multi–prompt async execution, Discord, and reinforcement learning)
-        self.orchestrator = PromptCycleOrchestrator(self.config_service)
+        # Use delayed import to avoid circular dependencies
+        try:
+            # Late import to avoid circular dependency
+            from core.PromptCycleOrchestrator import PromptCycleOrchestrator
+            self.orchestrator = PromptCycleOrchestrator(self.config_service)
+        except ImportError:
+            self.logger.warning("PromptCycleOrchestrator not imported due to circular dependency. Will initialize later if needed.")
+            self.orchestrator = None
+            
         self.discord_dispatcher = DiscordBatchDispatcher(self.config_service)
         self.evaluator = ReinforcementEvaluator(self.config_service)
         self.driver_session_manager = DriverSessionManager(self.config_service)
@@ -492,6 +499,41 @@ class UnifiedPromptService(QObject):
     # -------------------------------------------------
     # PROJECT CONTEXT & FILE ARCHIVING
     # -------------------------------------------------
+    def _load_project_context(self, filepath: Union[str, Path, ConfigManager]) -> Optional[Dict[str, Any]]:
+        """
+        Load project context from a JSON file or ConfigManager.
+        
+        Args:
+            filepath: Path to the context file or a ConfigManager instance
+            
+        Returns:
+            Dict with context data or None if loading failed
+        """
+        try:
+            if isinstance(filepath, ConfigManager):
+                # Extract the path from ConfigManager
+                if hasattr(filepath, 'get'):
+                    filepath_str = filepath.get("context_file_path", "")
+                else:
+                    filepath_str = ""
+            else:
+                filepath_str = str(filepath)
+                
+            if not filepath_str:
+                self.logger.warning("No context file path provided")
+                return None
+                
+            context_path = Path(filepath_str)
+            if not context_path.exists():
+                self.logger.warning(f"Context file does not exist: {context_path}")
+                return None
+                
+            with open(context_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            self.logger.error(f"Failed to load project context: {e}")
+            return None
+
     def load_project_context(self, project_dir: Optional[Union[str, Path]] = None) -> Dict[str, Any]:
         """
         Load project context from project_analysis.json.

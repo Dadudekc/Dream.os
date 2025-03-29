@@ -2,6 +2,7 @@ import discord
 import logging
 import asyncio
 from discord.ext import commands
+import concurrent.futures
 
 logger = logging.getLogger("DiscordDispatcher")
 logger.setLevel(logging.INFO)
@@ -124,12 +125,37 @@ class DiscordDispatcher:
 
     def shutdown(self):
         """
-        Optional: Method to handle bot shutdown cleanly.
+        Handles bot shutdown cleanly.
         """
         try:
             logger.info(" Shutting down Discord bot...")
-            loop = self.bot.loop
-            loop.call_soon_threadsafe(loop.stop)
+            
+            # Only attempt to close if bot is ready and connected
+            if self.ready and self.bot and self.bot.is_ready():
+                if hasattr(self.bot, 'close'):
+                    # Create a future to close the bot connection
+                    if self.bot.loop and self.bot.loop.is_running():
+                        future = asyncio.run_coroutine_threadsafe(self.bot.close(), self.bot.loop)
+                        try:
+                            # Wait with timeout to avoid hanging
+                            future.result(timeout=5)
+                            logger.info(" Discord bot connection closed successfully")
+                        except (asyncio.TimeoutError, concurrent.futures.TimeoutError):
+                            logger.warning(" Timeout waiting for Discord bot to close - forcing close")
+                        
+                # Force stop the event loop
+                if self.bot.loop and self.bot.loop.is_running():
+                    self.bot.loop.call_soon_threadsafe(self.bot.loop.stop)
+                    logger.info(" Discord bot event loop stopped")
+            
+            # Mark bot as not ready to prevent further message attempts
+            self.ready = False
+            logger.info(" Discord bot shutdown complete")
+            
         except Exception as e:
             logger.exception(f" Failed to shutdown Discord bot cleanly: {e}")
+            
+        finally:
+            # Ensure the bot is marked as not ready even if an exception occurs
+            self.ready = False
 

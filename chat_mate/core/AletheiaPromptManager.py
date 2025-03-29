@@ -5,10 +5,11 @@ import re
 import threading
 import logging
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 from jinja2 import Environment, FileSystemLoader
 from utils.json_paths import JsonPaths
 from core.PathManager import PathManager
+from core.interfaces.IPromptManager import IPromptManager
 
 # Setup Logging First
 logger = logging.getLogger("Aletheia_PromptManager")
@@ -25,7 +26,7 @@ if ROOT_DIR not in sys.path:
 from core.services.discord.DiscordManager import DiscordManager
 
 
-class AletheiaPromptManager:
+class AletheiaPromptManager(IPromptManager):
     """
     Aletheia - Autonomous Architect of Strategic Convergence.
 

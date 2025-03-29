@@ -458,8 +458,68 @@ class DriverManager:
                 self.get_driver(force_new=True)
             logger.info("Driver options updated successfully.")
 
+    def shutdown_driver(self):
+        """Cleanly shutdown the driver and force kill any leftover browser processes."""
+        try:
+            if self.driver:
+                self.logger.info("Shutting down WebDriver...")
+                try:
+                    self.driver.quit()
+                except Exception as e:
+                    self.logger.error(f"Error quitting driver: {e}")
+                finally:
+                    self.driver = None
+                    
+            # Force kill any remaining browser processes
+            self.force_kill_browsers()
+            
+            self.logger.info("WebDriver shutdown complete.")
+        except Exception as e:
+            self.logger.error(f"Error during driver shutdown: {e}")
+            
+    def force_kill_browsers(self):
+        """
+        Force kill any remaining browser and WebDriver processes
+        that might be hanging around.
+        """
+        import platform
+        import subprocess
+        
+        self.logger.info("Checking for remaining browser processes...")
+        
+        try:
+            # Kill based on operating system
+            if platform.system() == "Windows":
+                # Kill Chrome and ChromeDriver processes
+                subprocess.run("taskkill /f /im chromedriver.exe", shell=True, capture_output=True)
+                subprocess.run("taskkill /f /im chrome.exe", shell=True, capture_output=True)
+                subprocess.run("taskkill /f /im msedgedriver.exe", shell=True, capture_output=True)
+                subprocess.run("taskkill /f /im msedge.exe", shell=True, capture_output=True)
+            elif platform.system() == "Linux":
+                # Linux process killing
+                subprocess.run("pkill -f chromedriver", shell=True, capture_output=True)
+                subprocess.run("pkill -f chrome", shell=True, capture_output=True)
+                subprocess.run("pkill -f chromium", shell=True, capture_output=True)
+            elif platform.system() == "Darwin":  # macOS
+                # macOS process killing
+                subprocess.run("pkill -f chromedriver", shell=True, capture_output=True)
+                subprocess.run("pkill -f Chrome", shell=True, capture_output=True)
+            
+            self.logger.info("Browser cleanup completed.")
+        except Exception as e:
+            self.logger.error(f"Error during browser cleanup: {e}")
+            # Continue anyway, as this is a best-effort cleanup
+
     def __del__(self):
-        self.quit_driver()
+        """
+        Safer approach to handle object deletion.
+        Use explicit shutdown_driver instead of quit_driver for better cleanup.
+        """
+        try:
+            self.shutdown_driver()
+        except Exception:
+            # Don't raise exceptions during garbage collection
+            pass
 
 
 # ---------------------------

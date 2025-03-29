@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from core.memory_utils import load_memory_file
-from core.services.dreamscape_generator_service import DreamscapeGenerationService
+from core.interfaces.IDreamscapeService import IDreamscapeService
 
 class DreamscapeFactory:
     def __init__(
@@ -25,12 +25,15 @@ class DreamscapeFactory:
         self.discord_service = discord_service
         self.logger = logger or logging.getLogger("DreamscapeFactory")
 
-    def create(self) -> DreamscapeGenerationService:
+    def create(self) -> IDreamscapeService:
         try:
             output_dir = self._resolve_output_dir()
             memory_file = self._resolve_memory_file()
             memory_data = self._load_or_initialize_memory(memory_file)
 
+            # Import here to avoid circular imports
+            from core.services.dreamscape_generator_service import DreamscapeGenerationService
+            
             return DreamscapeGenerationService(
                 config_service=self.config,
                 chat_service=self.chat_service,

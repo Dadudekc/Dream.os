@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QCheckBox, QTextEdit
+from PyQt5.QtCore import QCoreApplication
 
 class GUIEventHandler(QMainWindow):
     """
@@ -31,19 +32,19 @@ class GUIEventHandler(QMainWindow):
         # Headless toggle
         self.headless_checkbox = QCheckBox("Headless Mode", self)
         self.headless_checkbox.setGeometry(20, 70, 200, 30)
-        self.headless_checkbox.setChecked(self.config.headless)
+        self.headless_checkbox.setChecked(self.config.get("headless", True))
         self.headless_checkbox.stateChanged.connect(self.toggle_headless)
 
         # Reverse order toggle
         self.reverse_checkbox = QCheckBox("Reverse Chat Order", self)
         self.reverse_checkbox.setGeometry(20, 110, 200, 30)
-        self.reverse_checkbox.setChecked(self.config.reverse_order)
+        self.reverse_checkbox.setChecked(self.config.get("reverse_order", False))
         self.reverse_checkbox.stateChanged.connect(self.toggle_reverse)
 
         # Archive chats toggle
         self.archive_checkbox = QCheckBox("Archive Chats After Cycle", self)
         self.archive_checkbox.setGeometry(20, 150, 250, 30)
-        self.archive_checkbox.setChecked(self.config.archive_enabled)
+        self.archive_checkbox.setChecked(self.config.get("archive_enabled", True))
         self.archive_checkbox.stateChanged.connect(self.toggle_archive)
 
         # Start button
@@ -67,16 +68,16 @@ class GUIEventHandler(QMainWindow):
     # -----------------------------
 
     def toggle_headless(self):
-        self.config.headless = self.headless_checkbox.isChecked()
-        self.log(f"🟢 Headless mode {'enabled' if self.config.headless else 'disabled'}.")
+        self.config.set("headless", self.headless_checkbox.isChecked())
+        self.log(f"🟢 Headless mode {'enabled' if self.config.get('headless', True) else 'disabled'}.")
 
     def toggle_reverse(self):
-        self.config.reverse_order = self.reverse_checkbox.isChecked()
-        self.log(f"🔄 Reverse chat order {'enabled' if self.config.reverse_order else 'disabled'}.")
+        self.config.set("reverse_order", self.reverse_checkbox.isChecked())
+        self.log(f"🔄 Reverse chat order {'enabled' if self.config.get('reverse_order', False) else 'disabled'}.")
 
     def toggle_archive(self):
-        self.config.archive_enabled = self.archive_checkbox.isChecked()
-        self.log(f"📦 Archive after chat cycle {'enabled' if self.config.archive_enabled else 'disabled'}.")
+        self.config.set("archive_enabled", self.archive_checkbox.isChecked())
+        self.log(f"📦 Archive after chat cycle {'enabled' if self.config.get('archive_enabled', True) else 'disabled'}.")
 
     # -----------------------------
     # DISPATCHER CONTROL
@@ -115,6 +116,38 @@ class GUIEventHandler(QMainWindow):
     def log(self, message):
         self.log_display.append(message)
         print(message)
+
+    def closeEvent(self, event):
+        """
+        Handle the window close event to ensure proper shutdown
+        """
+        self.log("🛑 Shutting down application...")
+        
+        # Stop the dispatcher if running
+        if self.dispatcher and hasattr(self.dispatcher, 'running') and self.dispatcher.running:
+            self.stop_dispatcher()
+        
+        # Additional cleanup for any resources
+        if hasattr(self.dispatcher, 'shutdown'):
+            self.dispatcher.shutdown()
+        
+        # Wait for any remaining threads to terminate
+        if self.dispatcher_thread and self.dispatcher_thread.isRunning():
+            try:
+                self.dispatcher_thread.quit()
+                # Give the thread time to terminate gracefully
+                success = self.dispatcher_thread.wait(3000)  # 3 seconds timeout
+                if not success:
+                    self.log("⚠️ Thread did not terminate gracefully, forcing termination...")
+                    self.dispatcher_thread.terminate()
+            except Exception as e:
+                self.log(f"⚠️ Error during thread shutdown: {e}")
+        
+        # Accept the close event
+        event.accept()
+        
+        # Exit the application
+        QCoreApplication.exit(0)
 
 
 # -----------------------------

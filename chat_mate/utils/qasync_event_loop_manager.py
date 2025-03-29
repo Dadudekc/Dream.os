@@ -94,14 +94,6 @@ class QAsyncEventLoopManager:
         except Exception as e:
             self.logger.error(f"Error stopping event loop: {e}")
 
-        # Cleanup the loop
-        try:
-            if hasattr(self.loop, 'close'):
-                self.loop.close()
-                self.logger.info("Event loop closed")
-        except Exception as e:
-            self.logger.error(f"Error closing event loop: {e}")
-        
         # Clean up asyncio tasks
         try:
             # Get all remaining tasks
@@ -113,5 +105,15 @@ class QAsyncEventLoopManager:
                         task.cancel()
         except Exception as e:
             self.logger.error(f"Error cancelling remaining tasks: {e}")
+            
+        # Don't close the loop if it's still running
+        try:
+            if hasattr(self.loop, 'close') and not self.loop.is_running():
+                self.loop.close()
+                self.logger.info("Event loop closed")
+            else:
+                self.logger.info("Event loop is still running or already closed, skipping loop.close()")
+        except Exception as e:
+            self.logger.error(f"Error closing event loop: {e}")
             
         self.logger.info("Event loop shutdown complete")

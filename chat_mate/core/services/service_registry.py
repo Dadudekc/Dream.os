@@ -20,8 +20,14 @@ import json
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Protocol
 
-from core.service_container import container  # Your dependency injection container
-from core.micro_factories.dreamscape_factory import DreamscapeFactory  # Import the new factory
+# Core interfaces and factories
+from core.interfaces.IPromptManager import IPromptManager
+from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
+from core.interfaces.IDreamscapeService import IDreamscapeService
+from core.micro_factories.prompt_factory import PromptFactory
+from core.micro_factories.orchestrator_factory import OrchestratorFactory
+
+# Note: DreamscapeFactory is imported dynamically when needed to avoid circular imports
 
 # -----------------------------------------------------------------------------
 # Service Interface Protocols
@@ -127,7 +133,7 @@ def create_prompt_service(config_service: Any = None) -> Any:
     
     if not config_service:
         logging.error("Cannot create prompt service without configuration")
-        return container._create_empty_service("prompt_service")
+        return _create_empty_service("prompt_service")
     
     try:
         # Create required dependencies
@@ -135,13 +141,13 @@ def create_prompt_service(config_service: Any = None) -> Any:
         path_manager = PathManager()
         driver_manager = DriverManager(config_service)
         
-        # Get prompt manager from registry or create new
-        prompt_manager = container.get_service("prompt_manager")
+        # Get prompt manager using the factory
+        prompt_manager = get_service("prompt_manager")
         if not prompt_manager:
-            prompt_manager = create_prompt_manager(config_service)
+            prompt_manager = PromptFactory.create_prompt_manager()
         
         # Get feedback engine from registry or create new
-        feedback_engine = container.get_service("feedback_engine")
+        feedback_engine = get_service("feedback_engine")
         
         # Create UnifiedPromptService with all dependencies
         prompt_service = UnifiedPromptService(
@@ -159,7 +165,7 @@ def create_prompt_service(config_service: Any = None) -> Any:
         
     except Exception as e:
         logging.error(f"Failed to initialize UnifiedPromptService: {str(e)}")
-        return container._create_empty_service("prompt_service")
+        return _create_empty_service("prompt_service")
 
 
 def create_chat_service(config_service: Any = None) -> Any:
@@ -169,7 +175,7 @@ def create_chat_service(config_service: Any = None) -> Any:
     import json
     if not config_service:
         logging.error("Cannot create chat service without configuration")
-        return container._create_empty_service("chat_service")
+        return _create_empty_service("chat_service")
     try:
         model = config_service.get("default_model", "gpt-4")
         headless = config_service.get("headless", True)
@@ -221,7 +227,7 @@ def create_chat_service(config_service: Any = None) -> Any:
         
     except Exception as e:
         logging.error(f"Failed to initialize chat service: {str(e)}")
-        return container._create_empty_service("chat_service")
+        return _create_empty_service("chat_service")
 
 
 def create_discord_service(config_service: Any = None, logger_obj: Any = None) -> Any:
@@ -246,7 +252,7 @@ def create_discord_service(config_service: Any = None, logger_obj: Any = None) -
         return UnifiedDiscordService()
     except Exception as e:
         logging.error(f"Failed to initialize Discord service: {str(e)}")
-        return container._create_empty_service("discord_service")
+        return _create_empty_service("discord_service")
 
 
 def create_cursor_service(config_service: Any = None, memory_service: Any = None) -> Any:
@@ -254,11 +260,11 @@ def create_cursor_service(config_service: Any = None, memory_service: Any = None
         from core.refactor.CursorSessionManager import CursorSessionManager  # Lazy import
         if not config_service or not memory_service:
             logging.error("Cannot create cursor service without config and memory services")
-            return container._create_empty_service("cursor_service")
+            return _create_empty_service("cursor_service")
         return CursorSessionManager(config_service, memory_service)
     except Exception as e:
         logging.error(f"Failed to initialize cursor service: {str(e)}")
-        return container._create_empty_service("cursor_service")
+        return _create_empty_service("cursor_service")
 
 
 def create_reinforcement_service(config_service: Any = None, logger_obj: Any = None) -> Any:
@@ -267,7 +273,7 @@ def create_reinforcement_service(config_service: Any = None, logger_obj: Any = N
         return ReinforcementEngine(config_service, logger_obj or logging.getLogger())
     except Exception as e:
         logging.error(f"Failed to initialize reinforcement service: {str(e)}")
-        return container._create_empty_service("reinforcement_service")
+        return _create_empty_service("reinforcement_service")
 
 
 def create_cycle_service(config_service: Any = None, prompt_service: Any = None,
@@ -286,7 +292,7 @@ def create_cycle_service(config_service: Any = None, prompt_service: Any = None,
         )
     except Exception as e:
         logging.error(f"Failed to initialize cycle service: {str(e)}")
-        return container._create_empty_service("cycle_service")
+        return _create_empty_service("cycle_service")
 
 
 def create_response_handler(config_service: Any = None) -> Any:
@@ -298,7 +304,7 @@ def create_response_handler(config_service: Any = None) -> Any:
         )
     except Exception as e:
         logging.error(f"Failed to initialize response handler: {str(e)}")
-        return container._create_empty_service("response_handler")
+        return _create_empty_service("response_handler")
 
 
 def create_task_orchestrator() -> Any:
@@ -307,7 +313,7 @@ def create_task_orchestrator() -> Any:
         return TaskOrchestrator(logging.getLogger("TaskOrchestrator"))
     except Exception as e:
         logging.error(f"Failed to initialize task orchestrator: {str(e)}")
-        return container._create_empty_service("task_orchestrator")
+        return _create_empty_service("task_orchestrator")
 
 
 def create_dreamscape_generator(*, config_service, chat_service, response_handler, discord_service=None) -> Any:
@@ -339,7 +345,7 @@ def create_memory_service(config_service: Any = None) -> Any:
         return MemoryManager(memory_file=memory_file)
     except Exception as e:
         logging.error(f"Failed to initialize memory service: {str(e)}")
-        return container._create_empty_service("memory_service")
+        return _create_empty_service("memory_service")
 
 
 def create_template_manager(config_manager=None, logger=None):
@@ -372,8 +378,11 @@ class ServiceRegistry:
     """
     Central registry for managing and validating services.
     """
+    _services: Dict[str, Any] = {}
+    _config = None
+    _logger = None
+    
     def __init__(self):
-        self._services: Dict[str, Any] = {}
         self._required_services = {
             "cycle_service": "Core service for managing execution cycles",
             "task_orchestrator": "Service for orchestrating and managing tasks",
@@ -381,15 +390,17 @@ class ServiceRegistry:
         }
         self.logger = logging.getLogger(__name__)
 
-    def register(self, name: str, service: Any) -> None:
-        self._services[name] = service
-        self.logger.info(f"Registered service: {name}")
+    @classmethod
+    def register(cls, name: str, service: Any) -> None:
+        cls._services[name] = service
+        logging.info(f"Registered service: {name}")
 
-    def get(self, name: str) -> Optional[Any]:
-        if name not in self._services:
-            self.logger.warning(f"Service '{name}' not available - creating empty implementation")
-            self._services[name] = self._create_empty_service(name)
-        return self._services[name]
+    @classmethod
+    def get(cls, name: str) -> Optional[Any]:
+        if name not in cls._services:
+            logging.warning(f"Service '{name}' not available - creating empty implementation")
+            cls._services[name] = cls._create_empty_service(name)
+        return cls._services[name]
 
     def validate_service_registry(self) -> List[str]:
         missing_services = []
@@ -405,7 +416,8 @@ class ServiceRegistry:
     def _is_empty_service(self, service: Any) -> bool:
         return hasattr(service, '_is_empty_implementation') and service._is_empty_implementation
 
-    def _create_empty_service(self, name: str) -> Any:
+    @classmethod
+    def _create_empty_service(cls, name: str) -> Any:
         class EmptyService:
             def __init__(self):
                 self._is_empty_implementation = True
@@ -428,6 +440,12 @@ class ServiceRegistry:
     def _register_core_services(cls):
         """Register all core services needed by the application."""
         try:
+            # Import container here to avoid circular imports
+            from core.service_container import container
+            
+            # Import DreamscapeFactory here to avoid circular imports
+            from core.micro_factories.dreamscape_factory import DreamscapeFactory
+            
             # Register Dreamscape service using the factory
             dreamscape_service = DreamscapeFactory(
                 config_service=cls._config,
@@ -462,9 +480,12 @@ def register_all_services() -> None:
     """
     Register all services with the service container in proper dependency order.
     """
+    # Import container here to avoid circular imports
+    from core.service_container import container
+    
     container.register('logger', create_logging_service)
     container.register('config', create_config_service)
-    container.register('prompt_manager', create_prompt_service, ['config'])
+    container.register('prompt_manager', lambda: PromptFactory.create_prompt_manager())
     container.register('memory_manager', create_memory_service, ['config'])
     container.register('response_handler', create_response_handler, ['config'])
     container.register('chat_manager', create_chat_service, ['config'])
@@ -482,6 +503,29 @@ def register_all_services() -> None:
                        ['chat_manager', 'response_handler', 'discord_service', 'config'])
     container.register('memory_service', create_memory_service, ['config'])
 
+# Helper functions to avoid circular imports
+def get_service(name: str) -> Any:
+    """Get a service from the registry."""
+    try:
+        # Import container here to avoid circular imports
+        from core.service_container import container
+        return container.get(name)
+    except Exception as e:
+        logging.error(f"Error getting service {name}: {e}")
+        return _create_empty_service(name)
+
+def _create_empty_service(name: str) -> Any:
+    """Create an empty service implementation."""
+    class EmptyService:
+        def __init__(self):
+            self._is_empty_implementation = True
+            self.logger = logging.getLogger(f"EmptyService.{name}")
+
+        def __getattr__(self, attr):
+            self.logger.warning(f"Attempted to call '{attr}' on empty service implementation of '{name}'")
+            return lambda *args, **kwargs: None
+
+    return EmptyService()
 
 # -----------------------------------------------------------------------------
 # End of Service Registry Module

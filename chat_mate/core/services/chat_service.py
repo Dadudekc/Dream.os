@@ -6,9 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from typing import Optional
+from typing import Optional, Any
 
-from interfaces.chat_manager import IChatManager
 from core.micro_factories.chat_factory import create_chat_manager
 
 class ChatService:
@@ -52,9 +51,13 @@ class ChatService:
                 self.logger.info("Shutting down existing ChatManager before reinitializing.")
                 self.chat_manager.shutdown_driver()
 
-            model = model or self.config.default_model
-            headless = headless if headless is not None else self.config.headless
-            excluded_chats = excluded_chats or self.config.excluded_chats
+            default_model = self.config.get("default_model", "gpt-4o") if hasattr(self.config, "get") else getattr(self.config, "default_model", "gpt-4o")
+            default_headless = self.config.get("headless", True) if hasattr(self.config, "get") else getattr(self.config, "headless", True) 
+            default_excluded_chats = self.config.get("excluded_chats", []) if hasattr(self.config, "get") else getattr(self.config, "excluded_chats", [])
+            
+            model = model or default_model
+            headless = headless if headless is not None else default_headless
+            excluded_chats = excluded_chats or default_excluded_chats
 
             self.chat_manager = create_chat_manager(
                 config_manager=self.config,
@@ -76,7 +79,7 @@ class ChatService:
         """Check if the ChatManager is currently running."""
         return self.chat_manager is not None
 
-    def get_chat_manager(self) -> Optional[IChatManager]:
+    def get_chat_manager(self) -> Optional[Any]:
         """
         Get the active ChatManager instance.
         

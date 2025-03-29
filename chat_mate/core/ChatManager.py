@@ -1,6 +1,7 @@
 import re
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -10,9 +11,16 @@ from core.services.prompt_execution_service import UnifiedPromptService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 from core.chat_engine.feedback_engine import FeedbackEngine
 from core.refactor.CursorSessionManager import CursorSessionManager
-from interfaces.chat_manager import IChatManager
+from core.IChatManager import IChatManager  # Import the interface directly
 from config.ConfigManager import ConfigManager
 from core.PathManager import PathManager
+
+# Import the WebChatScraper
+try:
+    from core.scraping.web_chat_scraper import WebChatScraper
+    WEB_SCRAPER_AVAILABLE = True
+except ImportError:
+    WEB_SCRAPER_AVAILABLE = False
 
 def sanitize_filename(filename: str) -> str:
     """
@@ -131,15 +139,37 @@ class ChatManager(IChatManager):
         )
         self.discord_dispatcher = DiscordDispatcher(self.config, self.logger)
 
+        # Initialize WebChatScraper if available
+        if WEB_SCRAPER_AVAILABLE:
+            # Get excluded chats from config
+            excluded_chats = []
+            if hasattr(config, "get"):
+                excluded_chats = config.get("excluded_chats", [])
+            else:
+                excluded_chats = getattr(config, "excluded_chats", [])
+                
+            self.web_scraper = WebChatScraper(
+                driver_manager=self.driver_manager,
+                logger=self.logger,
+                excluded_chats=excluded_chats
+            )
+            self.logger.info("WebChatScraper initialized successfully")
+        else:
+            self.web_scraper = None
+            self.logger.warning("WebChatScraper not available; web scraping of chats will be disabled")
+
         # (Optional) Initialize dreamscape service if available.
-        # This service should be patched so that generate_episodes() is called
-        # without passing an unexpected keyword argument.
         try:
             from core.services.dreamscape_generator_service import DreamscapeGenerationService
             self.dreamscape_service = DreamscapeGenerationService()
         except ImportError:
             self.logger.warning("DreamscapeGenerationService not available; using empty implementation.")
             self.dreamscape_service = None
+
+        # Initialize internal state for orchestration enhancements.
+        self._last_response: Optional[str] = None
+        self._prompt_queue: List[str] = []
+        self._injected_context: Dict[str, Any] = {}
 
     def _load_memory(self):
         """Load or initialize the chat memory file."""
@@ -195,8 +225,18 @@ class ChatManager(IChatManager):
         return response
 
     def get_all_chat_titles(self) -> List[Dict[str, Any]]:
-        """Return a list of all available chat titles."""
-        return self.chat_scraper.get_all_chats()
+        """
+        Return a list of all available chat titles.
+        
+        If the WebChatScraper is available, this will scrape the titles from the web interface.
+        Otherwise, it falls back to the existing scraper or memory file.
+        """
+        if self.web_scraper:
+            self.logger.info("Getting chat titles from web interface")
+            return self.web_scraper.scrape_chat_list()
+        else:
+            self.logger.info("Getting chat titles from existing scraper")
+            return self.chat_scraper.get_all_chats()
 
     def execute_prompts_single_chat(self, prompts: List[str], cycle_speed: int, interaction_id: Optional[str] = None) -> List[str]:
         """
@@ -245,65 +285,191 @@ class ChatManager(IChatManager):
 
     def send_chat_prompt(self, task: str, context: Optional[Dict] = None) -> Optional[str]:
         """
-        Generate and send a prompt via the Cursor session manager.
+        Send a prompt specifically structured for chat-oriented API.
+        Support for context injection.
         
         Args:
-            task (str): Task description.
-            context (Optional[Dict]): Additional context.
+            task: The core prompt/task.
+            context: Optional dict of context.
             
         Returns:
-            Optional[str]: Generated code or None on error.
+            Optional[str]: The response.
         """
-        prompt = self.cursor_manager.generate_prompt(task, context)
         try:
-            generated_code = self.cursor_manager.execute_prompt(prompt)
-            return generated_code
-        except RuntimeError as e:
-            self.logger.error(f"Failed to execute prompt: {e}")
+            if context:
+                self.inject_context(context)
+            return self.execute_prompt_cycle(task)
+        except Exception as e:
+            self.logger.error(f"Error sending chat prompt: {e}")
             return None
 
     def switch_execution_mode(self, mode: str):
         """
-        Switch the execution mode of the Cursor manager.
+        Switch the execution mode for this ChatManager instance.
         
         Args:
-            mode (str): New execution mode.
+            mode (str): The new execution mode.
         """
-        try:
-            self.cursor_manager.switch_mode(mode)
-            self.logger.info(f"Switched execution mode to {mode}")
-        except ValueError as e:
-            self.logger.error(e)
+        if not hasattr(self.cursor_manager, "set_execution_mode"):
+            self.logger.error("CursorSessionManager does not support mode switching")
+            return
+        
+        self.logger.info(f"Switching execution mode to: {mode}")
+        self.cursor_manager.set_execution_mode(mode)
 
-    def generate_dreamscape_episode(self, context: Dict[str, Any]) -> Optional[Any]:
+    def generate_dreamscape_episode(self, chat_title: str, source: str = "memory") -> Optional[Any]:
         """
-        Generate a dreamscape episode using the dreamscape service.
-        This method calls the underlying generate_episode method without an
-        unexpected 'prompt_text' keyword.
+        Generate a dreamscape episode from a specific chat's history.
         
         Args:
-            context (Dict[str, Any]): The context data for episode generation.
-        
+            chat_title: The title of the chat to generate an episode from
+            source: Source of chat history - "memory" (local file) or "web" (live scraping)
+            
         Returns:
-            The generated episode data, or None if generation fails.
+            The generated episode data, or None if generation fails
         """
         if not self.dreamscape_service:
             self.logger.error("Dreamscape service is not available.")
             return None
-
+            
         try:
-            # Call generate_episode using the template name and context.
-            # (Do not pass a 'prompt_text' argument.)
-            episode = self.dreamscape_service.generate_episode(
-                template_name="dreamscape_template.j2",
-                context=context
+            # Retrieve chat history for the specified chat title
+            chat_history = self.get_chat_history(chat_title, source=source)
+            if not chat_history:
+                self.logger.warning(f"No chat history found for '{chat_title}'")
+                return None
+                
+            # Extract messages from the chat history
+            messages = []
+            for entry in chat_history:
+                if 'content' in entry:
+                    messages.append(entry['content'])
+                    
+            if not messages:
+                self.logger.warning(f"No message content found in chat history for '{chat_title}'")
+                return None
+                
+            # Generate episode from chat history
+            episode = self.dreamscape_service.generate_dreamscape_episode(
+                chat_title=chat_title,
+                chat_history=messages
             )
-            self.logger.info("Dreamscape episode generated successfully.")
+            
+            self.logger.info(f"Dreamscape episode generated successfully for chat '{chat_title}'")
             return episode
+            
         except Exception as e:
-            self.logger.error(f"Error generating dreamscape episodes: {e}")
+            self.logger.error(f"Error generating dreamscape episode: {e}")
             return None
 
+    # -----------------------------
+    # Orchestration Enhancements
+    # -----------------------------
+
     def execute_prompt_cycle(self, prompt: str) -> str:
-        # Implementation remains the same
-        pass
+        """
+        Execute a complete prompt cycle: 
+        Optionally inject context, send the prompt, and return the final response.
+        
+        Args:
+            prompt (str): The prompt to execute.
+            
+        Returns:
+            str: The final response.
+        """
+        self.logger.info("Starting prompt cycle...")
+        # Inject external context if present
+        if self._injected_context:
+            prompt = f"{prompt}\nContext: {json.dumps(self._injected_context, indent=2)}"
+            self.logger.info(f"Prompt after context injection: {prompt}")
+            self._injected_context = {}  # Clear injected context after use
+        response = self.send_prompt(prompt)
+        self._last_response = response
+        return response
+
+    def queue_prompts(self, prompts: List[str]) -> None:
+        """
+        Queue multiple prompts for sequential execution.
+        Each prompt is processed via execute_prompt_cycle.
+        
+        Args:
+            prompts (List[str]): List of prompts to queue.
+        """
+        self.logger.info("Queuing prompts for sequential execution...")
+        self._prompt_queue = prompts
+        for prompt in prompts:
+            self.logger.info(f"Processing queued prompt: {prompt}")
+            cycle_response = self.execute_prompt_cycle(prompt)
+            self.logger.info(f"Cycle response: {cycle_response[:100]}...")
+
+    def get_last_response(self) -> Optional[str]:
+        """
+        Get the last received prompt response (post-analysis).
+        
+        Returns:
+            Optional[str]: The last response, or None if not available.
+        """
+        return self._last_response
+
+    def inject_context(self, context: Dict[str, Any]) -> None:
+        """
+        Inject external context (e.g. dreamscape metadata, memory snapshots)
+        into the next prompt.
+        
+        Args:
+            context (Dict[str, Any]): Context to inject.
+        """
+        self._injected_context.update(context)
+        self.logger.info(f"Injected context: {context}")
+
+    def get_chat_history(self, chat_title: str, source: str = "memory") -> List[Dict[str, Any]]:
+        """
+        Get the chat history for a specific chat by title.
+        
+        Args:
+            chat_title: The title of the chat to retrieve history for
+            source: Source of chat history - "memory" (local file) or "web" (live scraping)
+            
+        Returns:
+            List of chat message objects or empty list if not found
+        """
+        try:
+            # Determine the source of chat history
+            if source == "web" and self.web_scraper:
+                self.logger.info(f"Retrieving chat history for '{chat_title}' from web interface")
+                # Get chat history from web interface
+                messages = self.web_scraper.scrape_chat_by_title(chat_title)
+                
+                # Convert web scraper format to common format if necessary
+                standardized_messages = []
+                for msg in messages:
+                    standardized_messages.append({
+                        "role": msg.get("role", "unknown"),
+                        "content": msg.get("content", ""),
+                        "timestamp": msg.get("timestamp")
+                    })
+                
+                return standardized_messages
+            else:
+                # Fall back to memory file
+                self.logger.info(f"Retrieving chat history for '{chat_title}' from memory file")
+                
+                # Load chat history from memory file
+                if not self.memory_path.exists():
+                    self.logger.warning(f"Chat memory file not found: {self.memory_path}")
+                    return []
+                    
+                with self.memory_path.open('r', encoding='utf-8') as f:
+                    memory = json.load(f)
+                    
+                # Find the chat with the specified title
+                for chat in memory.get('chats', []):
+                    if chat.get('title') == chat_title:
+                        return chat.get('messages', [])
+                        
+                self.logger.warning(f"No chat found with title: {chat_title}")
+                return []
+                
+        except Exception as e:
+            self.logger.error(f"Error retrieving chat history: {e}")
+            return []

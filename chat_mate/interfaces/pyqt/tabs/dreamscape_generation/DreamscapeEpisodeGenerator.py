@@ -771,8 +771,8 @@ You don't need to use all elements, but reference enough to create a sense of a 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             return f"Episode_{timestamp}"
 
-    def generate_episodes(self):
-        prompt = self.prompt_input.toPlainText()
+    def generate_episodes(self, prompt_text=None):
+        prompt = prompt_text or self.prompt_input.toPlainText()
         model = self.model_dropdown.currentText()
         target_chat = self.target_chat_dropdown.currentText()
         reverse = self.reverse_checkbox.isChecked()

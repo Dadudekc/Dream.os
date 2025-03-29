@@ -2,11 +2,10 @@
 import logging
 from typing import Optional
 from config.ConfigManager import ConfigManager
-from interfaces.chat_manager import IChatManager
 
-def create_chat_manager(config_manager: ConfigManager, logger: Optional[logging.Logger] = None, prompt_manager=None) -> IChatManager:
+def create_chat_manager(config_manager: ConfigManager, logger: Optional[logging.Logger] = None, prompt_manager=None):
     """
-    Factory method to create a fully initialized ChatManager instance.
+    Factory method to create a fully initialized chat manager instance.
     
     Args:
         config_manager: Configuration manager instance
@@ -14,15 +13,21 @@ def create_chat_manager(config_manager: ConfigManager, logger: Optional[logging.
         prompt_manager: Optional prompt manager instance
     
     Returns:
-        An instance implementing IChatManager
+        A ChatEngineManager instance
     """
     try:
-        from core.ChatManager import ChatManager  # Late import to break circular dependency
-        chat_manager = ChatManager(config=config_manager, logger=logger, prompt_manager=prompt_manager)
+        # Import here to avoid circular import
+        from core.chat_engine.chat_engine_manager import ChatEngineManager
+        
+        chat_manager = ChatEngineManager(
+            config=config_manager,
+            logger=logger,
+            prompt_manager=prompt_manager
+        )
         if logger:
-            logger.info("ChatManager initialized successfully")
+            logger.info("ChatEngineManager initialized successfully")
         return chat_manager
     except Exception as e:
         if logger:
-            logger.error(f"Failed to create ChatManager: {e}")
+            logger.error(f"Failed to create ChatEngineManager: {e}")
         raise

@@ -1,11 +1,13 @@
 from dependency_injector import containers, providers
 
-# Core Services
-from core.PromptCycleOrchestrator import PromptCycleOrchestrator
-from core.AletheiaPromptManager import AletheiaPromptManager
+# Standard services
 from core.PromptResponseHandler import PromptResponseHandler
 from config.ConfigManager import ConfigManager
 from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
+
+# Import factories
+from core.micro_factories.prompt_factory import PromptFactory
+from core.micro_factories.orchestrator_factory import OrchestratorFactory
 
 # Local LLM Backends
 from core.llm_backends.huggingface_backend import HuggingFaceBackend
@@ -18,8 +20,18 @@ class ServiceContainer(containers.DeclarativeContainer):
 
     # Core services
     config_manager = providers.Singleton(ConfigManager)
-    prompt_manager = providers.Singleton(AletheiaPromptManager)
-    orchestrator = providers.Singleton(PromptCycleOrchestrator, config=config_manager)
+    
+    # Use factories to create services and avoid circular dependencies
+    prompt_manager = providers.Singleton(
+        PromptFactory.create_prompt_manager
+    )
+    
+    orchestrator = providers.Singleton(
+        OrchestratorFactory.create_orchestrator,
+        config_manager=config_manager,
+        prompt_service=prompt_manager
+    )
+    
     response_handler = providers.Singleton(PromptResponseHandler, config=config_manager)
     discord_processor = providers.Singleton(DiscordQueueProcessor, config=config_manager)
 
@@ -36,13 +48,3 @@ class ServiceContainer(containers.DeclarativeContainer):
 
 # Global container instance
 container = ServiceContainer()
-
-class ServiceContainer:
-    def __init__(self):
-        self.services = {}
-
-    def register(self, name, service):
-        self.services[name] = service
-
-    def get(self, name):
-        return self.services.get(name)

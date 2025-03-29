@@ -1,32 +1,58 @@
 import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-from interfaces.chat_manager import IChatManager
-from core.AletheiaPromptManager import AletheiaPromptManager
+from core.IChatManager import IChatManager
+from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
+from core.interfaces.IPromptManager import IPromptManager
+from core.micro_factories.prompt_factory import PromptFactory
 from config.ConfigManager import ConfigManager
 
-class PromptCycleOrchestrator:
+class PromptCycleOrchestrator(IPromptOrchestrator):
     """Orchestrates prompt cycles with injected chat management."""
     
-    def __init__(self, config_manager: ConfigManager, chat_manager: IChatManager):
+    def __init__(self, config_manager: ConfigManager, chat_manager: Optional[IChatManager] = None, prompt_service: Any = None):
         """
         Initialize the orchestrator with required dependencies.
         
         Args:
             config_manager: Configuration manager instance
-            chat_manager: Chat manager implementation
+            chat_manager: Chat manager implementation (optional, can be set later)
+            prompt_service: Prompt service implementation (optional, will use factory if not provided)
         """
         self.logger = logging.getLogger(__name__)
         self.config_manager = config_manager
         self.chat_manager = chat_manager
-        self.prompt_manager = AletheiaPromptManager()
+        
+        # Use the provided prompt_service if available, otherwise create using factory
+        if prompt_service:
+            self.prompt_manager = prompt_service
+            self.logger.info("Using provided prompt service")
+        else:
+            # Use the factory to create the prompt manager, avoiding circular imports
+            self.prompt_manager = PromptFactory.create_prompt_manager()
+            self.logger.info("Created prompt manager using factory")
+        
         self.rate_limit_delay = self.config_manager.get('RATE_LIMIT_DELAY', 2)
         self.cooldown_period = self.config_manager.get('COOLDOWN_PERIOD', 5)
+        
+    def set_chat_manager(self, chat_manager: IChatManager) -> None:
+        """
+        Set or update the chat manager instance.
+        
+        Args:
+            chat_manager: Chat manager implementation
+        """
+        self.chat_manager = chat_manager
+        self.logger.info("Chat manager has been set/updated.")
 
     def execute_single_cycle(self, prompt_text: str, new_chat: bool = False) -> List[str]:
         """Execute a single prompt cycle."""
         if not prompt_text:
             self.logger.warning("No prompt text provided.")
+            return []
+        
+        if not self.chat_manager:
+            self.logger.error("No chat manager available. Set chat_manager before executing prompts.")
             return []
             
         try:
