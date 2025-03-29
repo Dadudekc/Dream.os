@@ -19,8 +19,8 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTe
                             QFileDialog)
 from PyQt5.QtCore import Qt, pyqtSlot
 
-from core.chatgpt_automation.views.file_browser_widget import FileBrowserWidget
-from core.chatgpt_automation.GUI.GuiHelpers import GuiHelpers
+from interfaces.pyqt.widgets.file_browser_widget import FileBrowserWidget
+from interfaces.pyqt.GuiHelpers import GuiHelpers
 from core.chatgpt_automation.automation_engine import AutomationEngine
 
 # Define the folder for updated files

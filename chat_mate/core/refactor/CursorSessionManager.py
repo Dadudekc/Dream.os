@@ -6,9 +6,21 @@ import logging
 import psutil
 
 class CursorSessionManager:
-    def __init__(self, project_root, cursor_exe="cursor"):
+    """Manages Cursor IDE sessions and interactions."""
+    
+    DEFAULT_HOTKEYS = {
+        "execute_prompt": "ctrl+shift+enter",
+        "switch_model": "ctrl+shift+m",
+        "new_chat": "ctrl+shift+n",
+        "clear_chat": "ctrl+shift+c",
+        "toggle_mode": "ctrl+shift+t"
+    }
+    
+    def __init__(self, project_root, cursor_exe="cursor", config=None):
         self.project_root = project_root
         self.cursor_exe = cursor_exe
+        self.config = config or {}
+        self.hotkeys = self.config.get('hotkeys', self.DEFAULT_HOTKEYS)
         self.logger = logging.getLogger("CursorSessionManager")
 
     def launch_cursor(self):

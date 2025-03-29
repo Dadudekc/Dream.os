@@ -4,7 +4,7 @@ import glob
 from datetime import datetime
 from typing import Optional, Dict, Any
 from config.ConfigManager import ConfigManager
-from core.interfaces.ILoggingAgent import ILoggingAgent
+from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 from core.PathManager import PathManager
 
 class FileLogger(ILoggingAgent):

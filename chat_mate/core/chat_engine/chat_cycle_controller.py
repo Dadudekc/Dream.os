@@ -7,7 +7,7 @@ from datetime import datetime
 
 # SERVICES
 from core.chat_engine.chat_scraper_service import ChatScraperService
-from core.chat_engine.prompt_execution_service import PromptExecutionService
+from core.services.prompt_execution_service import UnifiedPromptService
 from core.chat_engine.feedback_engine import FeedbackEngine
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 
@@ -50,7 +50,7 @@ class ChatCycleController:
         # SERVICES (Override if provided)
         self.driver_manager = driver_manager
         self.scraper = chat_scraper or ChatScraperService(headless=self.config.get("headless", True))
-        self.executor = prompt_executor or PromptExecutionService(model=self.model)
+        self.executor = prompt_executor or UnifiedPromptService(model=self.model)
         self.feedback_engine = feedback_engine or FeedbackEngine(
             memory_file=self.config.get("memory_file", "memory/persistent_memory.json")
         )

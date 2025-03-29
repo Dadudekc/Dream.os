@@ -1,5 +1,5 @@
 from typing import List, Dict, Any
-from core.interfaces.ILoggingAgent import ILoggingAgent
+from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 from core.logging.utils.AsyncDispatcher import AsyncDispatcher
 from core.ConsoleLogger import ConsoleLogger
 

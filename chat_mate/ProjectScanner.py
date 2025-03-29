@@ -7,10 +7,11 @@ import queue
 import logging
 from pathlib import Path
 from typing import Dict, Union, Optional, List, Any
+import argparse
 
 logger = logging.getLogger(__name__)
 
-# Try importing tree-sitter for Rust/JS/TS parsing
+# Optional: If tree-sitter grammars are present for Rust/JS/TS
 try:
     from tree_sitter import Language, Parser
 except ImportError:
@@ -18,12 +19,20 @@ except ImportError:
     Parser = None
     logger.warning("⚠️ tree-sitter not installed. Rust/JS/TS AST parsing will be partially disabled.")
 
+# ---------------------------------
+# Project Config / Cache File Setup
+# ---------------------------------
 CACHE_FILE = "dependency_cache.json"
 
+# We'll store our final "project_analysis.json" and "chatgpt_project_context.json"
+# in the project root, merging new data with old each time.
 
+
+# ---------------------------------
+# Language Analyzer
+# ---------------------------------
 class LanguageAnalyzer:
     """Handles language-specific code analysis for different programming languages."""
-
     def __init__(self):
         """Initialize language analyzers and parsers."""
         self.rust_parser = self._init_tree_sitter_language("rust")
@@ -31,23 +40,17 @@ class LanguageAnalyzer:
 
     def _init_tree_sitter_language(self, lang_name: str) -> Optional[Parser]:
         """
-        Initializes and returns a Parser for the given language name.
-
-        Args:
-            lang_name: Name of the language (e.g. "rust", "javascript")
-
-        Returns:
-            Optional[Parser]: Configured parser instance or None if initialization fails
+        Initializes and returns a Parser for the given language name (rust, javascript).
+        Adjust grammar_paths to point at your compiled .so files if using tree-sitter.
         """
         if not Language or not Parser:
             logger.warning("⚠️ tree-sitter not installed. Rust/JS/TS AST parsing will be partially disabled.")
             return None
 
         grammar_paths = {
-            "rust": "path/to/tree-sitter-rust.so",
-            "javascript": "path/to/tree-sitter-javascript.so",
+            "rust": "path/to/tree-sitter-rust.so",          # <-- Adjust as needed
+            "javascript": "path/to/tree-sitter-javascript.so"  # <-- Adjust as needed
         }
-
         if lang_name not in grammar_paths:
             logger.warning(f"⚠️ No grammar path for {lang_name}. Skipping.")
             return None
@@ -75,7 +78,7 @@ class LanguageAnalyzer:
             source_code: Contents of the source file
 
         Returns:
-            Dict containing analysis results
+            Dict with structure {language, functions, classes, routes, complexity}
         """
         suffix = file_path.suffix.lower()
         if suffix == ".py":
@@ -93,11 +96,10 @@ class LanguageAnalyzer:
                 "complexity": 0
             }
 
-    # ----- AGENT CATEGORIZER CHANGES START (replaced _analyze_python) -----
     def _analyze_python(self, source_code: str) -> Dict:
         """
-        Analyzes Python source code using AST.
-        Returns dict of {functions, classes, routes, complexity}
+        Analyzes Python source code using the builtin `ast` module.
+        Extracts a naive list of function defs, classes, routes, complexity, etc.
         """
         tree = ast.parse(source_code)
         functions = []
@@ -108,20 +110,18 @@ class LanguageAnalyzer:
             if isinstance(node, ast.FunctionDef):
                 functions.append(node.name)
 
-                # Existing route-detection logic
+                # Route detection (Flask/FastAPI style) from existing logic
                 for decorator in node.decorator_list:
                     if isinstance(decorator, ast.Call) and hasattr(decorator.func, 'attr'):
                         func_attr = decorator.func.attr.lower()
                         if func_attr in {"route", "get", "post", "put", "delete", "patch"}:
                             path_arg = "/unknown"
                             methods = [func_attr.upper()]
-                            # If there's an argument, capture it as route path
                             if decorator.args:
                                 arg0 = decorator.args[0]
                                 if isinstance(arg0, ast.Str):
                                     path_arg = arg0.s
-
-                            # If there's a "methods" keyword, gather them
+                            # Check for "methods" kwarg
                             for kw in decorator.keywords:
                                 if kw.arg == "methods" and isinstance(kw.value, ast.List):
                                     extracted_methods = []
@@ -130,24 +130,12 @@ class LanguageAnalyzer:
                                             extracted_methods.append(elt.s.upper())
                                     if extracted_methods:
                                         methods = extracted_methods
-
                             for m in methods:
-                                routes.append({
-                                    "function": node.name,
-                                    "method": m,
-                                    "path": path_arg
-                                })
+                                routes.append({"function": node.name, "method": m, "path": path_arg})
 
             elif isinstance(node, ast.ClassDef):
-                # Capture docstring
                 docstring = ast.get_docstring(node)
-
-                # Capture method names
-                method_names = [
-                    n.name for n in node.body if isinstance(n, ast.FunctionDef)
-                ]
-
-                # Capture base classes
+                method_names = [n.name for n in node.body if isinstance(n, ast.FunctionDef)]
                 base_classes = []
                 for base in node.bases:
                     if isinstance(base, ast.Name):
@@ -163,16 +151,14 @@ class LanguageAnalyzer:
                         base_classes.append(".".join(reversed(base_parts)))
                     else:
                         base_classes.append(None)
-
                 classes[node.name] = {
                     "methods": method_names,
                     "docstring": docstring,
                     "base_classes": base_classes
                 }
 
-        # Complexity = count of functions + sum of all class methods
+        # Complexity = function count + sum of class methods
         complexity = len(functions) + sum(len(c["methods"]) for c in classes.values())
-
         return {
             "language": ".py",
             "functions": functions,
@@ -180,15 +166,11 @@ class LanguageAnalyzer:
             "routes": routes,
             "complexity": complexity
         }
-    # ----- AGENT CATEGORIZER CHANGES END -----
 
     def _analyze_rust(self, source_code: str) -> Dict:
-        """
-        Analyzes Rust source code using tree-sitter.
-        Returns dict with {functions, classes}.
-        """
+        """Analyzes Rust source code using tree-sitter (if available)."""
         if not self.rust_parser:
-            return {"functions": [], "classes": {}}
+            return {"language": ".rs", "functions": [], "classes": {}, "routes": [], "complexity": 0}
 
         tree = self.rust_parser.parse(bytes(source_code, "utf-8"))
         functions = []
@@ -218,7 +200,6 @@ class LanguageAnalyzer:
                 _traverse(child)
 
         _traverse(tree.root_node)
-        # We won't do route detection for Rust. Complexity is just function + method count
         complexity = len(functions) + sum(len(m) for m in classes.values())
         return {
             "language": ".rs",
@@ -229,12 +210,9 @@ class LanguageAnalyzer:
         }
 
     def _analyze_javascript(self, source_code: str) -> Dict:
-        """
-        Analyzes JavaScript/TypeScript source code using tree-sitter.
-        Returns dict with {functions, classes, routes}.
-        """
+        """Analyzes JS/TS using tree-sitter (if available)."""
         if not self.js_parser:
-            return {"functions": [], "classes": {}, "routes": [], "complexity": 0}
+            return {"language": ".js", "functions": [], "classes": {}, "routes": [], "complexity": 0}
 
         tree = self.js_parser.parse(bytes(source_code, "utf-8"))
         root = tree.root_node
@@ -256,6 +234,7 @@ class LanguageAnalyzer:
                     cls_name = get_node_text(name_node)
                     classes[cls_name] = []
             elif node.type == "lexical_declaration":
+                # arrow functions, etc.
                 for child in node.children:
                     if child.type == "variable_declarator":
                         name_node = child.child_by_field_name("name")
@@ -282,13 +261,11 @@ class LanguageAnalyzer:
                                     "method": method.upper(),
                                     "path": path_str
                                 })
-            # Keep traversing
             for child in node.children:
                 _traverse(child)
 
         _traverse(root)
-        # Complexity = function count + sum of method counts (not extracted in detail here for classes)
-        complexity = len(functions)  # If we had method info in classes, we’d add them
+        complexity = len(functions) + sum(len(v) for v in classes.values())
         return {
             "language": ".js",
             "functions": functions,
@@ -298,37 +275,70 @@ class LanguageAnalyzer:
         }
 
 
-class FileProcessor:
-    """Handles file operations including hashing, caching, and exclusion checks."""
+# ---------------------------------
+# BotWorker & MultibotManager
+# ---------------------------------
+class BotWorker(threading.Thread):
+    """
+    A background worker that pulls file tasks from a queue,
+    processes them, and appends results to results_list.
+    """
+    def __init__(self, task_queue: queue.Queue, results_list: list, scanner, status_callback=None):
+        super().__init__()
+        self.task_queue = task_queue
+        self.results_list = results_list
+        self.scanner = scanner
+        self.status_callback = status_callback
+        self.daemon = True
+        self.start()
 
-    def __init__(
-        self,
-        project_root: Path,
-        cache: Dict,
-        cache_lock: threading.Lock,
-        additional_ignore_dirs: set
-    ):
-        """
-        Initialize the file processor.
-        Args:
-            project_root: Root directory of the project
-            cache: Cache dictionary for file hashes
-            cache_lock: Thread lock for cache operations
-            additional_ignore_dirs: Set of additional directories to ignore
-        """
+    def run(self):
+        while True:
+            file_path = self.task_queue.get()
+            if file_path is None:
+                break
+            result = self.scanner._process_file(file_path)
+            if result is not None:
+                self.results_list.append(result)
+            if self.status_callback:
+                self.status_callback(file_path, result)
+            self.task_queue.task_done()
+
+class MultibotManager:
+    """Manages a pool of BotWorker threads."""
+    def __init__(self, scanner, num_workers=4, status_callback=None):
+        self.task_queue = queue.Queue()
+        self.results_list = []
+        self.scanner = scanner
+        self.status_callback = status_callback
+        self.workers = [
+            BotWorker(self.task_queue, self.results_list, scanner, status_callback)
+            for _ in range(num_workers)
+        ]
+
+    def add_task(self, file_path: Path):
+        self.task_queue.put(file_path)
+
+    def wait_for_completion(self):
+        self.task_queue.join()
+
+    def stop_workers(self):
+        for _ in self.workers:
+            self.task_queue.put(None)
+
+
+# ---------------------------------
+# FileProcessor
+# ---------------------------------
+class FileProcessor:
+    """Handles file hashing, ignoring, caching checks, etc."""
+    def __init__(self, project_root: Path, cache: Dict, cache_lock: threading.Lock, additional_ignore_dirs: set):
         self.project_root = project_root
         self.cache = cache
         self.cache_lock = cache_lock
         self.additional_ignore_dirs = additional_ignore_dirs
 
     def hash_file(self, file_path: Path) -> str:
-        """
-        Calculates an MD5 hash of a file's content.
-        Args:
-            file_path: Path to the file to hash
-        Returns:
-            str: Hex digest string, or "" if an error occurs
-        """
         try:
             with file_path.open("rb") as f:
                 return hashlib.md5(f.read()).hexdigest()
@@ -336,25 +346,17 @@ class FileProcessor:
             return ""
 
     def should_exclude(self, file_path: Path) -> bool:
-        """
-        Checks if a file or directory should be excluded from processing.
-        Returns True if file/directory is excluded; otherwise False.
-        """
+        """Exclude logic for venv, node_modules, .git, etc."""
         default_exclude_dirs = {
             "venv", "__pycache__", "node_modules", "migrations", "build",
             "target", ".git", "coverage", "chrome_profile"
         }
         file_abs = file_path.resolve()
-
-        # Exclude this script itself if needed
         try:
             if file_abs == Path(__file__).resolve():
                 return True
         except NameError:
-            # If __file__ is undefined (interactive mode), ignore
             pass
-
-        # Check user-specified ignore dirs
         for ignore in self.additional_ignore_dirs:
             ignore_path = Path(ignore)
             if not ignore_path.is_absolute():
@@ -364,74 +366,65 @@ class FileProcessor:
                 return True
             except ValueError:
                 continue
-
-        # Check default ignore dirs
         if any(excluded in file_path.parts for excluded in default_exclude_dirs):
             return True
         return False
 
     def process_file(self, file_path: Path, language_analyzer: LanguageAnalyzer) -> Optional[tuple]:
-        """
-        Processes a single file for analysis.
-
-        Args:
-            file_path: Path to the file to process
-            language_analyzer: Language analyzer instance
-
-        Returns:
-            Optional[tuple]: (relative_path, analysis_result) or None if file is skipped
-        """
-        file_hash = self.hash_file(file_path)
+        """Analyzes a file if not in cache or changed, else returns None."""
+        file_hash_val = self.hash_file(file_path)
         relative_path = str(file_path.relative_to(self.project_root))
-
         with self.cache_lock:
-            if (
-                relative_path in self.cache
-                and self.cache[relative_path]["hash"] == file_hash
-            ):
+            if relative_path in self.cache and self.cache[relative_path].get("hash") == file_hash_val:
                 return None
-
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with file_path.open("r", encoding="utf-8") as f:
                 source_code = f.read()
             analysis_result = language_analyzer.analyze_file(file_path, source_code)
-
-            # We already set "complexity" in each language’s analyzer
             with self.cache_lock:
-                self.cache[relative_path] = {"hash": file_hash}
+                self.cache[relative_path] = {"hash": file_hash_val}
             return (relative_path, analysis_result)
         except Exception as e:
             logger.error(f"❌ Error analyzing {file_path}: {e}")
             return None
 
 
+# ---------------------------------
+# ReportGenerator (Merges Old + New)
+# ---------------------------------
 class ReportGenerator:
-    """Handles report generation and file output operations."""
+    """Handles merging new analysis into existing project_analysis.json and chatgpt context."""
 
     def __init__(self, project_root: Path, analysis: Dict[str, Dict]):
-        """
-        Initialize the report generator.
-        Args:
-            project_root: Root directory of the project
-            analysis: Analysis results dictionary
-        """
         self.project_root = project_root
-        self.analysis = analysis
+        self.analysis = analysis  # e.g. { 'subdir/file.py': {language:..., classes:...}, ... }
+
+    def load_existing_report(self, report_path: Path) -> Dict[str, Any]:
+        """Loads any existing project_analysis.json to preserve old entries."""
+        if report_path.exists():
+            try:
+                with report_path.open("r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"Error loading existing report {report_path}: {e}")
+        return {}
 
     def save_report(self):
-        """Writes the final analysis dictionary to a JSON file."""
+        """Merge new analysis results into old project_analysis.json, then write it out."""
         report_path = self.project_root / "project_analysis.json"
-        with open(report_path, "w", encoding="utf-8") as f:
-            json.dump(self.analysis, f, indent=4)
+        existing = self.load_existing_report(report_path)
+
+        # Merge logic: new data overrides old
+        merged = {**existing, **self.analysis}
+
+        with report_path.open("w", encoding="utf-8") as f:
+            json.dump(merged, f, indent=4)
+
+        logger.info(f"✅ Project analysis updated and saved to {report_path}")
 
     def generate_init_files(self, overwrite: bool = True):
-        """
-        Automatically generates __init__.py files for all Python packages.
-        Args:
-            overwrite: Whether to overwrite existing __init__.py files
-        """
+        """Auto-generate __init__.py for all Python packages based on self.analysis."""
         from collections import defaultdict
-
         package_modules = defaultdict(list)
         for rel_path in self.analysis.keys():
             if rel_path.endswith(".py"):
@@ -460,31 +453,92 @@ class ReportGenerator:
             content = "\n".join(lines)
 
             if overwrite or not init_file.exists():
-                with open(init_file, "w", encoding="utf-8") as f:
+                with init_file.open("w", encoding="utf-8") as f:
                     f.write(content)
                 logger.info(f"✅ Generated __init__.py in {package_path}")
             else:
                 logger.info(f"ℹ️ Skipped {init_file} (already exists)")
 
+    def load_existing_chatgpt_context(self, context_path: Path) -> Dict[str, Any]:
+        """Load any existing chatgpt_project_context.json."""
+        if context_path.exists():
+            try:
+                with context_path.open("r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"Error loading existing ChatGPT context: {e}")
+        return {}
 
+    def export_chatgpt_context(self, template_path: Optional[str] = None, output_path: Optional[str] = None):
+        """
+        Merges current analysis details with old chatgpt_project_context.json.
+        If no template, write JSON. Else use Jinja to render a custom format.
+        """
+        if not output_path:
+            context_path = self.project_root / "chatgpt_project_context.json"
+        else:
+            context_path = Path(output_path)
+        context_path.parent.mkdir(parents=True, exist_ok=True)
+        logger.info(f"💾 Writing ChatGPT context to: {context_path}")
+
+
+        # If no template, do direct JSON merging
+        if not template_path:
+            existing_context = self.load_existing_chatgpt_context(context_path)
+            payload = {
+                "project_root": str(self.project_root),
+                "num_files_analyzed": len(self.analysis),
+                "analysis_details": self.analysis
+            }
+            merged_context = {**existing_context, **payload}
+            try:
+                with context_path.open("w", encoding="utf-8") as f:
+                    json.dump(merged_context, f, indent=4)
+                logger.info(f"✅ Merged ChatGPT context saved to: {output_path}")
+            except Exception as e:
+                logger.error(f"❌ Error writing ChatGPT context: {e}")
+            return
+
+        # If we do have a template, we can still load old data, but we'll not attempt JSON merging.
+        # We'll just produce a final rendered template containing the new analysis.
+        try:
+            from jinja2 import Template
+            with open(template_path, "r", encoding="utf-8") as tf:
+                template_content = tf.read()
+            t = Template(template_content)
+
+            # Could load existing context if you want. We'll skip that for Jinja scenario.
+            context_dict = {
+                "project_root": str(self.project_root),
+                "analysis": self.analysis,
+                "num_files_analyzed": len(self.analysis),
+            }
+            rendered = t.render(context=context_dict)
+            with context_path.open("w", encoding="utf-8") as outf:
+                outf.write(rendered)
+            logger.info(f"✅ Rendered ChatGPT context to: {output_path}")
+        except ImportError:
+            logger.error("⚠️ Jinja2 not installed. Run `pip install jinja2` and re-try.")
+        except Exception as e:
+            logger.error(f"❌ Error rendering Jinja template: {e}")
+
+
+# ---------------------------------
+# ProjectScanner
+# ---------------------------------
 class ProjectScanner:
     """
     A universal project scanner that:
-      - Identifies Python, Rust, JS, and TS files.
-      - Extracts functions, classes, and naive route definitions.
+      - Identifies Python, Rust, JS, TS files.
+      - Extracts functions, classes, routes, complexity.
       - Caches file hashes to skip unchanged files.
       - Detects moved files by matching file hashes.
-      - Writes a single JSON report (project_analysis.json) at the end.
-      - Processes files asynchronously via background workers (BotWorker/MultibotManager).
-      - Auto-generates __init__.py files for Python packages using the project analysis context.
+      - Merges new analysis into existing project_analysis.json (no overwrite).
+      - Exports a merged ChatGPT context if requested.
+      - Processes files asynchronously with BotWorker threads.
+      - Auto-generates __init__.py files for Python packages.
     """
-
     def __init__(self, project_root: Union[str, Path] = "."):
-        """
-        Initialize the project scanner.
-        Args:
-            project_root: The root directory of the project to scan.
-        """
         self.project_root = Path(project_root).resolve()
         self.analysis: Dict[str, Dict] = {}
         self.cache = self.load_cache()
@@ -500,13 +554,11 @@ class ProjectScanner:
         self.report_generator = ReportGenerator(self.project_root, self.analysis)
 
     def load_cache(self) -> Dict:
-        """
-        Loads a JSON cache from disk if present.
-        Returns a dict or empty if none found/corrupted.
-        """
-        if Path(CACHE_FILE).exists():
+        """Loads JSON cache from disk if present. Otherwise returns empty."""
+        cache_path = Path(CACHE_FILE)
+        if cache_path.exists():
             try:
-                with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                with cache_path.open("r", encoding="utf-8") as f:
                     return json.load(f)
             except json.JSONDecodeError:
                 return {}
@@ -514,17 +566,19 @@ class ProjectScanner:
 
     def save_cache(self):
         """Writes the updated cache to disk."""
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+        cache_path = Path(CACHE_FILE)
+        with cache_path.open("w", encoding="utf-8") as f:
             json.dump(self.cache, f, indent=4)
 
     def scan_project(self):
         """
         Orchestrates the project scan:
-        - Finds Python, Rust, JS, and TS files using os.walk().
-        - Excludes certain directories.
-        - Detects moved files by comparing cached hashes.
-        - Offloads file analysis to background workers.
-        - Saves a single JSON report 'project_analysis.json'.
+         - Finds Python, Rust, JS, TS files with os.walk()
+         - Excludes certain directories
+         - Detects moved files by comparing cached hashes
+         - Spawns multibot workers for concurrency
+         - Merges new analysis with old project_analysis.json
+         - Writes or updates the final 'project_analysis.json'
         """
         logger.info(f"🔍 Scanning project: {self.project_root} ...")
 
@@ -540,7 +594,6 @@ class ProjectScanner:
                     valid_files.append(file_path)
 
         logger.info(f"📝 Found {len(valid_files)} valid files for analysis.")
-
         previous_files = set(self.cache.keys())
         current_files = {str(f.relative_to(self.project_root)) for f in valid_files}
         moved_files = {}
@@ -582,94 +635,41 @@ class ProjectScanner:
         manager.wait_for_completion()
         manager.stop_workers()
 
-        # Gather results
+        # Gather results from manager
         for result in manager.results_list:
             if result is not None:
                 file_path, analysis_result = result
                 self.analysis[file_path] = analysis_result
 
-        # Write final report and cache
-        self.report_generator.save_report()
+        # Merge & write final report + save updated cache
+        self.report_generator.save_report() 
         self.save_cache()
-        print(f"✅ Scan complete. Results saved to {self.project_root / 'project_analysis.json'}")
+        logger.info(f"✅ Scan complete. Results merged into {self.project_root / 'project_analysis.json'}")
 
     def _process_file(self, file_path: Path):
-        """Internal wrapper to process a file via FileProcessor."""
+        """Processes a file via FileProcessor, returning (relative_path, analysis_result)."""
         return self.file_processor.process_file(file_path, self.language_analyzer)
 
     def generate_init_files(self, overwrite: bool = True):
-        """Generates __init__.py files for Python packages."""
+        """Generate __init__.py for python packages."""
         self.report_generator.generate_init_files(overwrite)
 
-    def export_chatgpt_context(
-        self,
-        template_path: Optional[str] = None,
-        output_path: Optional[str] = None
-    ):
-        """
-        Exports the analysis results into a structured format suitable for ChatGPT or any AI assistant.
-        If no template is provided, writes JSON. Otherwise uses Jinja to render.
-        """
-        if not output_path:
-            output_path = "chatgpt_project_context.md" if template_path else "chatgpt_project_context.json"
+    def export_chatgpt_context(self, template_path: Optional[str] = None, output_path: Optional[str] = None):
+        """Merges new analysis into old chatgpt_project_context.json or uses a Jinja template."""
+        self.report_generator.export_chatgpt_context(template_path, output_path)
 
-        if not template_path:
-            payload = {
-                "project_root": str(self.project_root),
-                "num_files_analyzed": len(self.analysis),
-                "analysis_details": self.analysis
-            }
-            try:
-                with open(output_path, "w", encoding="utf-8") as f:
-                    json.dump(payload, f, indent=4)
-                print(f"✅ Exported project context (JSON) to: {output_path}")
-            except Exception as e:
-                logger.error(f"❌ Error writing JSON context: {e}")
-            return
-
-        # Render with Jinja
-        try:
-            from jinja2 import Template
-            with open(template_path, "r", encoding="utf-8") as tf:
-                template_content = tf.read()
-            t = Template(template_content)
-
-            context_dict = {
-                "project_root": str(self.project_root),
-                "analysis": self.analysis,
-                "num_files_analyzed": len(self.analysis),
-            }
-            rendered = t.render(context=context_dict)
-            with open(output_path, "w", encoding="utf-8") as outf:
-                outf.write(rendered)
-            print(f"✅ Exported project context (Jinja) to: {output_path}")
-        except ImportError:
-            print("⚠️ Jinja2 not installed. Run `pip install jinja2` and re-try.")
-        except Exception as e:
-            logger.error(f"❌ Error rendering Jinja template: {e}")
-
-    # ----- AGENT CATEGORIZER CHANGES START -----
+    # ----- Agent Categorization -----
     def categorize_agents(self):
         """
-        Loops over all analyzed Python classes, assigning:
-          - maturity level (Kiddie Script, Prototype, Core Asset)
-          - agent_type (ActionAgent, DataAgent, SignalAgent, Utility, etc.)
+        Loops over analyzed Python classes, assigning maturity & agent_type.
         """
         for file_path, result in self.analysis.items():
             if file_path.endswith(".py"):
-                # result["classes"] is a dict: {class_name: {methods, docstring, base_classes}}
-                for class_name, class_data in result["classes"].items():
+                for class_name, class_data in result.get("classes", {}).items():
                     class_data["maturity"] = self._maturity_level(class_name, class_data)
                     class_data["agent_type"] = self._agent_type(class_name, class_data)
 
     def _maturity_level(self, class_name: str, class_data: Dict[str, Any]) -> str:
-        """
-        Simple scoring approach:
-          +1 if docstring is present
-          +1 if >3 methods
-          +1 if uses base class besides 'object'
-          +1 if class name starts uppercase
-        """
         score = 0
         if class_data.get("docstring"):
             score += 1
@@ -679,109 +679,51 @@ class ProjectScanner:
             score += 1
         if class_name and class_name[0].isupper():
             score += 1
-
-        # 0 => Kiddie Script, 1 => Prototype, >=2 => Core Asset
         levels = ["Kiddie Script", "Prototype", "Core Asset", "Core Asset"]
         return levels[min(score, 3)]
 
     def _agent_type(self, class_name: str, class_data: Dict[str, Any]) -> str:
-        """
-        Naive classification approach based on docstring & method names.
-        Customize your own logic for better results.
-        """
         doc = (class_data.get("docstring") or "").lower()
         methods = class_data.get("methods", [])
-
-        # If there's a 'run' method
         if "run" in methods:
             return "ActionAgent"
-        # If docstring mentions "transform" or "parse"
         if "transform" in doc or "parse" in doc:
             return "DataAgent"
-        # If there's a method like "predict" or "analyze"
         if any(m in methods for m in ["predict", "analyze"]):
             return "SignalAgent"
-        # Otherwise treat as Utility
         return "Utility"
-    # ----- AGENT CATEGORIZER CHANGES END -----
 
-
-class BotWorker(threading.Thread):
-    """
-    A background worker that continuously pulls file tasks from a queue,
-    processes them using the scanner's _process_file method, and stores results.
-    """
-    def __init__(self, task_queue: queue.Queue, results_list: list, scanner: ProjectScanner, status_callback=None):
-        super().__init__()
-        self.task_queue = task_queue
-        self.results_list = results_list
-        self.scanner = scanner
-        self.status_callback = status_callback
-        self.daemon = True
-        self.start()
-
-    def run(self):
-        while True:
-            file_path = self.task_queue.get()
-            if file_path is None:
-                break
-            result = self.scanner._process_file(file_path)
-            if result is not None:
-                self.results_list.append(result)
-            if self.status_callback:
-                self.status_callback(file_path, result)
-            self.task_queue.task_done()
-
-
-class MultibotManager:
-    """
-    Manages a pool of BotWorker threads.
-    """
-    def __init__(self, scanner: ProjectScanner, num_workers=4, status_callback=None):
-        self.task_queue = queue.Queue()
-        self.results_list = []
-        self.scanner = scanner
-        self.status_callback = status_callback
-        self.workers = [
-            BotWorker(self.task_queue, self.results_list, scanner, status_callback)
-            for _ in range(num_workers)
-        ]
-
-    def add_task(self, file_path: Path):
-        self.task_queue.put(file_path)
-
-    def wait_for_completion(self):
-        self.task_queue.join()
-
-    def stop_workers(self):
-        for _ in range(len(self.workers)):
-            self.task_queue.put(None)
-
-
-# ------------------------------
-# Entry Point (for CLI usage)
-# ------------------------------
-if __name__ == "__main__":
+# ---------------------------------
+# CLI Usage
+# ---------------------------------
+def main():
     import argparse
-
     logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
-    parser = argparse.ArgumentParser(description="Project scanner with optional agent categorization.")
+    parser = argparse.ArgumentParser(description="Project scanner with agent categorization and incremental caching.")
     parser.add_argument("--project-root", default=".", help="Root directory to scan.")
     parser.add_argument("--ignore", nargs="*", default=[], help="Additional directories to ignore.")
-    parser.add_argument("--categorize-agents", action="store_true",
-                        help="If set, categorize Python classes into maturity level and agent type.")
+    parser.add_argument("--categorize-agents", action="store_true", help="Categorize Python classes into maturity level and agent type.")
+    parser.add_argument("--export-chatgpt-context", action="store_true", help="Export ChatGPT context along with project analysis.")
+    parser.add_argument("--generate-init", action="store_true", help="Enable auto-generating __init__.py files.")
     args = parser.parse_args()
 
     scanner = ProjectScanner(project_root=args.project_root)
     scanner.additional_ignore_dirs = set(args.ignore)
 
     scanner.scan_project()
-    scanner.generate_init_files(overwrite=True)
 
-    # Run agent categorization if requested
+    if args.generate_init:
+        scanner.generate_init_files(overwrite=True)
+
     if args.categorize_agents:
         scanner.categorize_agents()
-        # Re-save the final report with updated fields
         scanner.report_generator.save_report()
-        print("✅ Agent categorization complete. Updated 'project_analysis.json' with agent_type and maturity.")
+        logging.info("✅ Agent categorization complete. Updated project_analysis.json.")
+
+    if args.export_chatgpt_context:
+        scanner.export_chatgpt_context()
+        logging.info("✅ ChatGPT context exported.")
+
+if __name__ == "__main__":
+    main()

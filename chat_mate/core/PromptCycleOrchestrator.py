@@ -1,64 +1,32 @@
 import logging
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-from .ChatManager import ChatManager
-from .AletheiaPromptManager import AletheiaPromptManager
+from interfaces.chat_manager import IChatManager
+from core.AletheiaPromptManager import AletheiaPromptManager
 from config.ConfigManager import ConfigManager
 
 class PromptCycleOrchestrator:
-    """
-    Orchestrates prompt cycles, managing the execution flow and coordination
-    between different components of the prompt cycle system.
-    """
-
-    def __init__(self, config_manager: ConfigManager):
+    """Orchestrates prompt cycles with injected chat management."""
+    
+    def __init__(self, config_manager: ConfigManager, chat_manager: IChatManager):
         """
-        Initialize the orchestrator.
+        Initialize the orchestrator with required dependencies.
         
-        :param config_manager: The configuration manager instance
+        Args:
+            config_manager: Configuration manager instance
+            chat_manager: Chat manager implementation
         """
         self.logger = logging.getLogger(__name__)
         self.config_manager = config_manager
+        self.chat_manager = chat_manager
         self.prompt_manager = AletheiaPromptManager()
-        self.chat_manager = None
         self.rate_limit_delay = self.config_manager.get('RATE_LIMIT_DELAY', 2)
         self.cooldown_period = self.config_manager.get('COOLDOWN_PERIOD', 5)
 
-    def initialize_chat_manager(self, excluded_chats: List[str], model: str, headless: bool = False) -> None:
-        """
-        Initialize or reinitialize the chat manager.
-        
-        :param excluded_chats: List of chat titles to exclude
-        :param model: The model to use for chat interactions
-        :param headless: Whether to run in headless mode
-        """
-        if self.chat_manager:
-            self.chat_manager.shutdown_driver()
-            
-        self.chat_manager = ChatManager(
-            driver_manager=None,
-            excluded_chats=excluded_chats,
-            model=model,
-            timeout=180,
-            stable_period=10,
-            poll_interval=5,
-            headless=headless
-        )
-
     def execute_single_cycle(self, prompt_text: str, new_chat: bool = False) -> List[str]:
-        """
-        Execute a single prompt cycle.
-        
-        :param prompt_text: The prompt text to execute
-        :param new_chat: Whether to create a new chat
-        :return: List of responses
-        """
+        """Execute a single prompt cycle."""
         if not prompt_text:
             self.logger.warning("No prompt text provided.")
-            return []
-            
-        if not self.chat_manager:
-            self.logger.error("Chat manager not initialized.")
             return []
             
         try:
@@ -175,4 +143,4 @@ class PromptCycleOrchestrator:
         """Clean up resources and shut down components."""
         if self.chat_manager:
             self.chat_manager.shutdown_driver()
-        self.logger.info("PromptCycleOrchestrator shutdown complete") 
+        self.logger.info("PromptCycleOrchestrator shutdown complete")

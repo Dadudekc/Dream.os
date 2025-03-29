@@ -67,7 +67,10 @@ class PromptExecutionTab(QWidget):
         self.prompt_manager = prompt_manager
 
         # Internal services
-        self.prompt_orchestrator = PromptCycleOrchestrator(self.config)
+        self.prompt_orchestrator = PromptCycleOrchestrator(
+            config_manager=self.config,
+            chat_manager=self.chat_manager
+        )
         self.template_manager = AletheiaPromptManager()
         self.response_handler = PromptResponseHandler(self.config, self.logger)
         self.discord_processor = DiscordQueueProcessor(self.config, self.logger)

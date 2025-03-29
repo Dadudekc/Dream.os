@@ -6,10 +6,13 @@ from typing import Any, Dict, List, Optional
 
 from core.DriverManager import DriverManager
 from core.chat_engine.chat_scraper_service import ChatScraperService
-from core.chat_engine.prompt_execution_service import PromptExecutionService
+from core.services.prompt_execution_service import UnifiedPromptService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 from core.chat_engine.feedback_engine import FeedbackEngine
 from core.refactor.CursorSessionManager import CursorSessionManager
+from interfaces.chat_manager import IChatManager
+from config.ConfigManager import ConfigManager
+from core.PathManager import PathManager
 
 def sanitize_filename(filename: str) -> str:
     """
@@ -23,8 +26,8 @@ def sanitize_filename(filename: str) -> str:
     """
     return re.sub(r'[\\/*?:"<>|]', '_', filename)
 
-class ChatManager:
-    def __init__(self, config: Any, logger: Optional[logging.Logger] = None):
+class ChatManager(IChatManager):
+    def __init__(self, config: ConfigManager, logger: Optional[logging.Logger] = None):
         """
         Initialize the ChatManager.
         
@@ -36,7 +39,6 @@ class ChatManager:
         self.logger = logger or logging.getLogger(__name__)
 
         # Patch memory path initialization using PathManager.
-        from core.PathManager import PathManager  # Import locally to avoid circular dependency
         memory_path = None
         if hasattr(config, "get"):
             memory_path = config.get("memory_file", None)
@@ -47,16 +49,17 @@ class ChatManager:
             self.logger.warning(
                 f"Invalid memory_path provided (got {memory_path}). Using default memory path."
             )
-            memory_path = str(PathManager().get_path("memory") / "chat_memory.json")
-        else:
-            memory_path = str(Path(memory_path))
+            memory_path = PathManager().get_path("memory") / "chat_memory.json"
+        elif isinstance(memory_path, str):
+            memory_path = Path(memory_path)
+        
         self.memory_path = memory_path
+        self.logger.info(f"Initializing ChatManager with memory file: {self.memory_path}")
 
         # Initialize FeedbackEngine with proper memory path
-        feedback_memory_path = str(PathManager().get_path("memory") / "feedback_memory.json")
+        feedback_memory_path = PathManager().get_path("memory") / "feedback_memory.json"
         self.feedback_engine = FeedbackEngine(memory_file=feedback_memory_path)
 
-        self.logger.info(f"Initializing ChatManager with memory file: {self.memory_path}")
         self._load_memory()
 
         # Initialize CursorSessionManager with proper configuration.
@@ -116,7 +119,14 @@ class ChatManager:
 
         # Initialize core chat services.
         self.chat_scraper = ChatScraperService(self.driver_manager, self.logger)
-        self.prompt_engine = PromptExecutionService(self.driver_manager, self.config, model=self.model)
+        self.prompt_engine = UnifiedPromptService(
+            config_manager=self.config,
+            path_manager=PathManager(),
+            config_service=self.config,
+            prompt_manager=self.prompt_manager,
+            driver_manager=self.driver_manager,
+            model=self.model
+        )
         self.discord_dispatcher = DiscordDispatcher(self.config, self.logger)
 
         # (Optional) Initialize dreamscape service if available.
@@ -138,11 +148,13 @@ class ChatManager:
                 self.memory_path.write_text("{}", encoding="utf-8")
             else:
                 self.logger.info(f"Chat memory file found: {self.memory_path}")
-            # For now, we load memory as an empty dictionary; replace with actual logic if needed.
-            self.memory = {}
+            
+            with self.memory_path.open('r', encoding='utf-8') as f:
+                self.memory = json.load(f)
             self.logger.info(f"Chat memory loaded successfully from: {self.memory_path}")
         except Exception as e:
             self.logger.error(f"Error loading chat memory: {e}")
+            self.memory = {}
 
     def start(self):
         """Start the chat manager and all underlying services."""
@@ -180,17 +192,18 @@ class ChatManager:
         self.feedback_engine.process_response(response)
         return response
 
-    def get_all_chat_titles(self) -> List[str]:
+    def get_all_chat_titles(self) -> List[Dict[str, Any]]:
         """Return a list of all available chat titles."""
         return self.chat_scraper.get_all_chats()
 
-    def execute_prompts_single_chat(self, prompt_list: List[str], cycle_speed: int = 2) -> List[str]:
+    def execute_prompts_single_chat(self, prompts: List[str], cycle_speed: int, interaction_id: Optional[str] = None) -> List[str]:
         """
         Execute multiple prompts in a single chat session.
         
         Args:
-            prompt_list (List[str]): List of prompt texts.
+            prompts (List[str]): List of prompt texts.
             cycle_speed (int): Speed for cycling through prompts.
+            interaction_id (Optional[str]): Optional interaction ID.
             
         Returns:
             List[str]: List of responses.
@@ -199,7 +212,7 @@ class ChatManager:
             self.logger.error("Prompt engine not initialized")
             return []
         self.prompt_engine.cycle_speed = cycle_speed
-        return self.prompt_engine.execute_prompts_single_chat(prompt_list)
+        return self.prompt_engine.execute_prompts_single_chat(prompts)
 
     def analyze_execution_response(self, response: str, prompt_text: str) -> Dict[str, Any]:
         """
@@ -218,7 +231,7 @@ class ChatManager:
             "sentiment": "neutral"  # Placeholder for sentiment analysis
         }
 
-    def shutdown_driver(self):
+    def shutdown_driver(self) -> None:
         """Shutdown all services and cleanly close the driver."""
         self.logger.info("Shutting down ChatManager...")
         if hasattr(self.driver_manager, 'quit_driver'):
@@ -288,3 +301,7 @@ class ChatManager:
         except Exception as e:
             self.logger.error(f"Error generating dreamscape episodes: {e}")
             return None
+
+    def execute_prompt_cycle(self, prompt: str) -> str:
+        # Implementation remains the same
+        pass

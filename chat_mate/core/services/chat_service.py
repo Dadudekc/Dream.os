@@ -8,7 +8,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from typing import Optional
 
-from core.ChatManager import ChatManager
+from interfaces.chat_manager import IChatManager
+from core.micro_factories.chat_factory import create_chat_manager
 
 class ChatService:
     """
@@ -55,16 +56,9 @@ class ChatService:
             headless = headless if headless is not None else self.config.headless
             excluded_chats = excluded_chats or self.config.excluded_chats
 
-            driver_options = self._get_driver_options(headless)
-
-            self.chat_manager = ChatManager(
-                driver_options=driver_options,
-                excluded_chats=excluded_chats,
-                model=model,
-                timeout=timeout,
-                stable_period=stable_period,
-                poll_interval=poll_interval,
-                headless=headless
+            self.chat_manager = create_chat_manager(
+                config_manager=self.config,
+                logger=self.logger
             )
 
             self.logger.info(f"ChatManager created with model='{model}', headless={headless}")
@@ -82,7 +76,7 @@ class ChatService:
         """Check if the ChatManager is currently running."""
         return self.chat_manager is not None
 
-    def get_chat_manager(self) -> Optional[ChatManager]:
+    def get_chat_manager(self) -> Optional[IChatManager]:
         """
         Get the active ChatManager instance.
         

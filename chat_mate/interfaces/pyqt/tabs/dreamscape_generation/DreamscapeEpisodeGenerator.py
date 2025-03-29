@@ -783,7 +783,7 @@ You don't need to use all elements, but reference enough to create a sense of a 
             self.append_log("⚠️ No prompt entered. Please provide a prompt.")
             return
 
-        result = PromptExecutionService.run_episode_generation(
+        result = UnifiedPromptService.run_episode_generation(
             prompt, model, target_chat, headless, reverse, post_to_discord
         )
         self.content_output.setPlainText(result)
@@ -794,8 +794,8 @@ You don't need to use all elements, but reference enough to create a sense of a 
         current = self.log_output.toPlainText()
         self.log_output.setPlainText(current + f"\n{message}")
 
-# Mocking the PromptExecutionService if it doesn't exist
-class PromptExecutionService:
+# Mocking the UnifiedPromptService if it doesn't exist
+class UnifiedPromptService:
     @staticmethod
     def run_episode_generation(prompt, model, target_chat, headless, reverse, post_to_discord):
         return f"Mock episode generated using {model} for chat '{target_chat}'\nPrompt:\n{prompt}"

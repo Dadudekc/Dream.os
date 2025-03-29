@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import QTimer, Qt
 
 # Import PathManager for unified log paths
-from core.path_manager import PathManager
+from core.PathManager import PathManager
 # Get the unified log file path for SyncOps sessions
 SYNCOPS_LOG_FILE = str(PathManager().get_path("logs") / "syncops_sessions.json")
 

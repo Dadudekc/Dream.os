@@ -8,7 +8,7 @@ from pathlib import Path
 
 from core.FileManager import FileManager
 from core.PathManager import PathManager
-from core.interfaces.ILoggingAgent import ILoggingAgent
+from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 
 class UnifiedLoggingAgent(ILoggingAgent):
     """

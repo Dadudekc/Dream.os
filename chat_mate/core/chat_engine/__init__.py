@@ -7,7 +7,6 @@ from . import chat_scraper_service
 from . import discord_dispatcher
 from . import feedback_engine
 from . import gui_event_handler
-from . import prompt_execution_service
 
 __all__ = [
     'chat_cycle_controller',
@@ -16,5 +15,4 @@ __all__ = [
     'discord_dispatcher',
     'feedback_engine',
     'gui_event_handler',
-    'prompt_execution_service',
 ]

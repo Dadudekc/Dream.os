@@ -7,8 +7,8 @@ from . import model_gpt4o
 from . import model_gpt4o_mini
 from . import model_mistral
 from . import model_o1
+from . import model_o3_mini
 from . import model_o3_mini_high
-from . import model_o3mini
 from . import model_template
 
 __all__ = [
@@ -18,7 +18,7 @@ __all__ = [
     'model_gpt4o_mini',
     'model_mistral',
     'model_o1',
+    'model_o3_mini',
     'model_o3_mini_high',
-    'model_o3mini',
     'model_template',
 ]

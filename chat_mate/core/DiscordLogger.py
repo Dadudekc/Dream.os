@@ -1,6 +1,6 @@
 from typing import Optional
 from config.ConfigManager import ConfigManager
-from core.interfaces.ILoggingAgent import ILoggingAgent
+from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 
 class DiscordLogger(ILoggingAgent):
     """Stub implementation for Discord logging."""

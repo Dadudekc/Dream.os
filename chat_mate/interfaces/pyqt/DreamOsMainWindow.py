@@ -29,6 +29,8 @@ from core.chatgpt_automation.OpenAIClient import OpenAIClient
 from core.system.startup_validator import StartupValidator
 from core.PathManager import PathManager
 from interfaces.pyqt.tabs.full_sync_tab import FullSyncTab
+from core.micro_factories.chat_factory import create_chat_manager
+from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
 # Suppress SIP deprecation warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -48,8 +50,29 @@ class DreamscapeMainWindow(QMainWindow):
         self.dispatcher = dispatcher
         self.services = services or {}
         self.logger = self.services.get('logger', logging.getLogger("DreamscapeMainWindow"))
-        self.openai_client = None
+        
+        # Initialize OpenAI client
+        try:
+            profile_dir = self.path_manager.get_path("cache") + "/openai_profile"
+            self.openai_client = OpenAIClient(profile_dir=profile_dir)
+            self.logger.info("OpenAI client initialized")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize OpenAI client: {e}")
+            self.openai_client = None
+        
         self.path_manager = PathManager()
+        
+        # Initialize assistant controller
+        try:
+            self.assistant_controller = AssistantModeController(
+                openai_client=self.openai_client,
+                config=self.services.get('config_manager'),
+                logger=self.logger
+            )
+            self.logger.info("Assistant controller initialized")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize assistant controller: {e}")
+            self.assistant_controller = None
         
         # Run startup validation
         self._run_startup_validation()
@@ -268,52 +291,31 @@ class DreamscapeMainWindow(QMainWindow):
         self.logger.error(output_text)
 
     def handle_openai_login(self):
-        """
-        Handle OpenAI login button click.
-        Initializes OpenAIClient and attempts login.
-        """
+        """Handle OpenAI login process with proper initialization sequence."""
         try:
-            config = self.services.get('config_manager')
-            profile_dir = config.get("chat_agent", {}).get("profile_dir", "chrome_profile/openai")
-            
-            # Initialize OpenAI client in non-headless mode for manual login if needed
-            self.openai_client = OpenAIClient(profile_dir=profile_dir, headless=False)
-            self.logger.info("OpenAI client initialized")
-            
-            # Attempt login
+            if not self.openai_client:
+                self.logger.error("OpenAI client not initialized")
+                self.statusBar().showMessage("OpenAI client not initialized", 5000)
+                return
+                
+            if not self.openai_client.is_ready():
+                self.logger.info("Booting OpenAI client...")
+                self.openai_client.boot()
+
             if self.openai_client.login_openai():
-                # Save cookies for future use
-                self.openai_client.save_openai_cookies()
-                
-                # Store chat URL in memory for voice assistant
-                chat_url = self.openai_client.CHATGPT_URL
-                if self.services.get('memory_manager'):
-                    self.services['memory_manager'].set('openai_chat_url', chat_url)
-                    self.logger.info(f"Stored OpenAI chat URL: {chat_url}")
-                    
-                    # TODO: Integrate with voice assistant chat transcription
-                    # This is where we'll hook into the voice assistant later
-                    # self.services['memory_manager'].set('voice_assistant_ready', True)
-                
-                # Show success message
-                QMessageBox.information(self, "Login Success", 
-                    "Successfully logged in to OpenAI and saved session.\nYou can now use the assistant features.")
-                
-                # Shutdown browser
-                self.openai_client.shutdown()
-                self.openai_client = None
-                
+                self.logger.info("✅ OpenAI login successful")
+                self.statusBar().showMessage("OpenAI login successful", 5000)
             else:
-                QMessageBox.warning(self, "Login Required",
-                    "Please complete the login process in the browser.\nClick OK once you've logged in.")
-                
+                self.logger.error("❌ OpenAI login failed")
+                self.statusBar().showMessage("OpenAI login failed", 5000)
         except Exception as e:
-            self.logger.error(f"Failed to initialize OpenAI client: {str(e)}")
-            QMessageBox.critical(self, "Error", 
-                f"Failed to initialize OpenAI client:\n{str(e)}\n\nCheck logs for details.")
-            if self.openai_client:
-                self.openai_client.shutdown()
-                self.openai_client = None
+            self.logger.error(f"OpenAI login error: {e}")
+            try:
+                if self.openai_client:
+                    self.openai_client.shutdown()
+            except Exception as shutdown_error:
+                self.logger.error(f"OpenAI shutdown error: {shutdown_error}")
+            self.statusBar().showMessage(f"OpenAI error: {str(e)}", 5000)
 
     def handle_scan(self):
         """Handle the scan project button click."""
@@ -322,6 +324,11 @@ class DreamscapeMainWindow(QMainWindow):
 
     def start_assistant(self):
         """Start the assistant mode and monitor browser login."""
+        if not self.assistant_controller:
+            self.logger.error("Cannot start assistant: AssistantModeController not initialized")
+            QMessageBox.warning(self, "Error", "Assistant controller not initialized. Please check logs.")
+            return
+            
         self.assistant_controller.start()
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
@@ -339,6 +346,10 @@ class DreamscapeMainWindow(QMainWindow):
 
     def stop_assistant(self):
         """Stop the assistant mode."""
+        if not self.assistant_controller:
+            self.logger.error("Cannot stop assistant: AssistantModeController not initialized")
+            return
+            
         self.assistant_controller.stop()
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
@@ -416,6 +427,14 @@ class DreamscapeMainWindow(QMainWindow):
         # Update status bar or relevant UI component
         self.statusBar().showMessage(message, 5000)  # Show for 5 seconds
 
+    def edit_file(self, target_file: str, instructions: str, code_edit: str) -> None:
+        """Edit a file with the given instructions and code edit."""
+        try:
+            with open(target_file, 'w', encoding='utf-8') as f:
+                f.write(code_edit)
+        except Exception as e:
+            self.logger.error(f"Failed to edit file {target_file}: {e}")
+
 
 class EmptyService:
     """
@@ -453,6 +472,19 @@ def main():
     logger.info("Async event loop initialized")
 
     dispatcher = SignalDispatcher()
+
+    try:
+        # Initialize core services with proper dependency injection
+        services = initialize_services()
+        config_manager = services['config_manager']
+        chat_manager = services['chat_manager']
+        orchestrator = services['orchestrator']
+        logger.info("Core services initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize core services: {str(e)}")
+        config_manager = ConfigManager()
+        chat_manager = None
+        orchestrator = None
 
     try:
         config = ConfigManager(config_name="base.yaml")
@@ -551,6 +583,47 @@ def _ensure_service(service, service_name, logger):
 
 def _create_empty_service(service_name, logger):
     return EmptyService(service_name)
+
+
+def initialize_services():
+    """Initialize and connect core services with proper dependency injection."""
+    try:
+        config_manager = ConfigManager()
+        logger = logging.getLogger("Services")
+        
+        # Repair any corrupted memory files
+        from utils.safe_json import repair_memory_files
+        from core.PathManager import PathManager
+        memory_dir = PathManager().get_path("memory")
+        repair_memory_files(memory_dir, logger)
+        
+        # Create chat manager first
+        chat_manager = create_chat_manager(config_manager, logger)
+        if not chat_manager:
+            raise RuntimeError("Failed to create ChatManager")
+        
+        # Create prompt service with dependencies
+        from core.services.service_registry import create_prompt_service
+        prompt_service = create_prompt_service(config_manager)
+        if not prompt_service:
+            raise RuntimeError("Failed to create UnifiedPromptService")
+        
+        # Create orchestrator with injected dependencies
+        orchestrator = PromptCycleOrchestrator(
+            config_manager=config_manager,
+            chat_manager=chat_manager,
+            prompt_service=prompt_service
+        )
+        
+        return {
+            'config_manager': config_manager,
+            'chat_manager': chat_manager,
+            'orchestrator': orchestrator,
+            'prompt_service': prompt_service
+        }
+    except Exception as e:
+        logger.error(f"Failed to initialize services: {e}")
+        raise
 
 
 if __name__ == "__main__":

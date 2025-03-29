@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from config.ConfigManager import ConfigManager
-from core.interfaces.ILoggingAgent import ILoggingAgent
+from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 
 class ConsoleLogger(ILoggingAgent):
     """Logger implementation for console output."""

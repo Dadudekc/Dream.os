@@ -9,7 +9,6 @@ from . import bot_worker
 from . import config
 from . import driver_factory
 from . import local_llm_engine
-from . import main
 from . import setup_chromedriver
 from . import setup_logging
 
@@ -22,7 +21,6 @@ __all__ = [
     'config',
     'driver_factory',
     'local_llm_engine',
-    'main',
     'setup_chromedriver',
     'setup_logging',
 ]

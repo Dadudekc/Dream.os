@@ -41,7 +41,7 @@ class ConfigService(Protocol):
     def save(self, config_file: Optional[str] = None) -> None: ...
 
 
-class PromptService(Protocol):
+class UnifiedPromptService(Protocol):
     def get_prompt(self, prompt_type: str) -> str: ...
     def save_prompt(self, prompt_type: str, prompt_text: str) -> None: ...
     def get_model(self, prompt_type: str) -> str: ...
@@ -119,14 +119,46 @@ def create_logging_service() -> Any:
 
 
 def create_prompt_service(config_service: Any = None) -> Any:
-    from core.AletheiaPromptManager import AletheiaPromptManager  # Lazy import
-    memory_file = "memory/dreamscape_memory.json"
-    if config_service:
-        memory_file = config_service.get("memory_file", memory_file)
+    """Create and configure the UnifiedPromptService with all required dependencies."""
+    from core.services.prompt_execution_service import UnifiedPromptService
+    from core.PathManager import PathManager
+    from core.DriverManager import DriverManager
+    from config.ConfigManager import ConfigManager
+    
+    if not config_service:
+        logging.error("Cannot create prompt service without configuration")
+        return container._create_empty_service("prompt_service")
+    
     try:
-        return AletheiaPromptManager(memory_file=memory_file)
+        # Create required dependencies
+        config_manager = ConfigManager()
+        path_manager = PathManager()
+        driver_manager = DriverManager(config_service)
+        
+        # Get prompt manager from registry or create new
+        prompt_manager = container.get_service("prompt_manager")
+        if not prompt_manager:
+            prompt_manager = create_prompt_manager(config_service)
+        
+        # Get feedback engine from registry or create new
+        feedback_engine = container.get_service("feedback_engine")
+        
+        # Create UnifiedPromptService with all dependencies
+        prompt_service = UnifiedPromptService(
+            config_manager=config_manager,
+            path_manager=path_manager,
+            config_service=config_service,
+            prompt_manager=prompt_manager,
+            driver_manager=driver_manager,
+            feedback_engine=feedback_engine,
+            model=config_service.get("default_model", "gpt-4o-mini")
+        )
+        
+        logging.info("UnifiedPromptService initialized successfully")
+        return prompt_service
+        
     except Exception as e:
-        logging.error(f"Failed to initialize prompt service: {str(e)}")
+        logging.error(f"Failed to initialize UnifiedPromptService: {str(e)}")
         return container._create_empty_service("prompt_service")
 
 

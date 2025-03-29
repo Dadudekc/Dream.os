@@ -16,7 +16,7 @@ from core.TaskOrchestrator import TaskOrchestrator
 from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 
 # Import services
-from core.services.prompt_service import PromptService
+from core.services.prompt_execution_service import UnifiedPromptService
 from core.services.discord_service import DiscordService
 
 # Import community components
@@ -43,7 +43,7 @@ def initialize_services() -> Dict:
     try:
         # Initialize prompt manager
         services['prompt_manager'] = AletheiaPromptManager()
-        services['prompt_service'] = PromptService(services['prompt_manager'])
+        services['prompt_service'] = UnifiedPromptService(services['prompt_manager'])
         
         # Initialize chat manager
         services['chat_manager'] = ChatManager(headless=False)

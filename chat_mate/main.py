@@ -25,7 +25,7 @@ from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from web.app import start_flask_app
 from core.services.config_service import ConfigService
-from core.services.prompt_service import PromptService
+from core.services.prompt_execution_service import UnifiedPromptService
 from utils.signal_dispatcher import SignalDispatcher
 from core.services.fix_service import FixService
 from core.services.debug_service import DebugService
@@ -48,7 +48,7 @@ def initialize_services():
     services['config'] = config_service
 
     # Initialize prompt service
-    prompt_service = PromptService(config_service)
+    prompt_service = UnifiedPromptService(config_service)
     services['prompt'] = prompt_service
 
     # Initialize fix service
@@ -195,7 +195,6 @@ def execute_mode(mode, services, app=None):
         run_pyqt_gui(app, services)
         sys.exit(app.exec_())
 
-
 def main():
     """Main entry point of the Dreamscape Execution System."""
     setup_logging()
@@ -209,6 +208,11 @@ def main():
     services = initialize_services()
     services['config_manager'] = config_manager
     services['logger'] = logger
+
+    # ✅ Inject ChatManager using factory
+    from core.micro_factories.chat_factory import create_chat_manager
+    chat_manager = create_chat_manager(config_manager, logger=logger)
+    services['chat_manager'] = chat_manager
 
     # Track initialization errors
     errors = []
@@ -240,7 +244,6 @@ def main():
     # Execute the chosen mode
     app = QApplication(sys.argv) if args.mode in ["gui", "all"] else None
     execute_mode(args.mode, services, app=app)
-
-
+    
 if __name__ == "__main__":
     main()

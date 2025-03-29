@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 from config.ConfigManager import ConfigManager
-from core.interfaces.ILoggingAgent import ILoggingAgent
+from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 
 class CursorAgentInterface(ABC):
     """Base interface for Cursor-based agents."""

@@ -6,7 +6,7 @@ from interfaces.pyqt.tabs.LogsTab import LogsTab
 from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
 from interfaces.pyqt.tabs.AIDE import AIDE
-from core.interfaces.pyqt.tabs.meredith_tab import MeredithTab  # NEW
+from interfaces.pyqt.tabs.meredith_tab import MeredithTab  # NEW
 from interfaces.pyqt.tabs.SyncOpsTab import SyncOpsTab        # ADDED
 
 class MainTabs(QTabWidget):
