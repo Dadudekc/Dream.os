@@ -1,4 +1,4 @@
-from core.chat_engine.ChatManager import ChatManager
+from core.ChatManager import ChatManager
 from core.PathManager import PathManager
  
 class ChatFactory:
