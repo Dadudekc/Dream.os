@@ -448,6 +448,19 @@ class ServiceRegistry:
             if "logger" not in cls._services and cls._logger:
                 cls.register_service("logger", cls._logger)
                 
+            # Register prompt_manager using the factory
+            if "prompt_manager" not in cls._services:
+                try:
+                    from core.factories.prompt_factory import PromptFactory
+                    prompt_manager = PromptFactory.create(cls)
+                    if prompt_manager:
+                        cls.register_service("prompt_manager", prompt_manager)
+                        cls._logger.info("PromptManager registered via factory")
+                    else:
+                        cls._logger.warning("PromptFactory returned None for prompt_manager")
+                except Exception as e:
+                    cls._logger.error(f"Failed to create PromptManager via factory: {e}")
+            
             # Register chat manager using the factory
             if "chat_manager" not in cls._services:
                 try:
