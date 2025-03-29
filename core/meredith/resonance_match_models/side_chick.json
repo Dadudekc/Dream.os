@@ -1,0 +1,38 @@
+{
+  "alignment_type": "sideline_partner",
+  "core_traits": {
+    "emotional_stability": 0.25,
+    "discretion_and_loyalty": 0.25,
+    "vibe_alignment": 0.2,
+    "no_drama_energy": 0.15,
+    "independence": 0.1,
+    "physical_affection": 0.05
+  },
+  "deal_breakers": [
+    "tries to become the main without clarity",
+    "starts drama or triangulates relationships",
+    "emotionally manipulative or possessive",
+    "leaks private info or can’t keep things discreet",
+    "pressures for more than was agreed upon",
+    "jealous of other connections",
+    "lives too far away or expects me to travel"
+  ],
+  "location_preferences": {
+    "must_be_near_zip": "77090",
+    "acceptable_radius_miles": 15,
+    "willing_to_travel_to_me": true,
+    "i_dont_drive": true,
+    "location_dealbreakers": [
+      "requires me to travel to them",
+      "lives too far for spontaneous connection",
+      "not local and not willing to meet in person"
+    ]
+  },
+  "desired_dynamics": {
+    "emotional_contract": "This is a clear, discreet connection. You know your role and play it without interfering with the main relationship. There's no pressure for deep commitment beyond the agreed-upon casual support.",
+    "support_energy": "You provide physical intimacy and occasional support when needed without demanding constant emotional involvement.",
+    "intimacy_philosophy": "Intimacy is shared without attachment. You enjoy a physical connection that remains separate from my core life, respecting boundaries at all times.",
+    "space_and_boundaries": "You understand that I’m focused on my main priorities. You don’t flood my phone or push for a more serious connection."
+  },
+  "ideal_energy": "She understands her role as a sideline partner—discreet, confident, and emotionally balanced. She provides physical intimacy and support on mutually agreed terms without complicating my primary life. Loyal in her own way, she’s here to enhance my experience without demanding more than a casual, respectful connection."
+}

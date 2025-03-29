@@ -1,0 +1,13 @@
+Devlog: Fixing the Backtest Loop
+You ever wonder how much precision it actually takes to make a system reliable... like, where the edge of progress really is?
+Today was one of those days where I had to sit with that. The backtest engine was breaking in subtle ways... positions weren’t resetting cleanly after a SELL... equity calculations were drifting... and even when things looked right, they weren’t tight enough to trust. That’s the kind of stuff that makes or breaks automation at scale.
+So I stripped it down.
+Rebuilt the position handling... now after a SELL, it resets clean—no lingering states, no weird side effects.
+Cleaned up exit prices and PnL recording... needed that to be exact, every time, no exceptions.
+Added some deeper logs to track state step by step... gave me eyes where there weren’t any before.
+Hard to explain how easy it is to let little inconsistencies slide... and how much they compound when you’re running hundreds of trades in a loop.
+But it’s dialed now. Tests are cleaner, behavior matches what I’d expect in live trading conditions... and I’m finally seeing the system behave with the discipline it needs.
+What’s next...
+Moving toward AI-driven optimization—parameter tuning, smarter stop-loss handling, all of it. I don’t want to be manually tweaking this stuff in a month. The system needs to adapt on its own.
+And I’m going to tighten up the backtest validation further... simulate more edge cases and get those automated checks in place so I can focus on building forward.
+“Discipline is choosing between what you want now and what you want most.”

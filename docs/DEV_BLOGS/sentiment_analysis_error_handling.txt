@@ -1,0 +1,14 @@
+Devlog — 2025.03.15
+Ever wonder how many cycles you burn waiting on something that should just work?
+Spent the last chunk of time dissecting why sentiment analysis is stalling out. What should've been a smooth JSON return from GPT-4 turned into this repeated loop of retries, parsing fails, and API calls eating up time... and honestly, energy. Three attempts every time, waiting on linear backoff... and it’s still spitting out incomplete JSON. That’s a problem when you’re trying to make calls in the window.
+The real kicker? I was relying on prompt instructions and stop sequences to get clean JSON, but the model isn’t consistent enough. I get it—this isn’t what GPT was built for—but still, it’s a weak link.
+Pulled apart the retry logic. It was just sleep($attempt). That’s deadweight in a system that needs to move. Swapped in exponential backoff with jitter in the next sprint. It'll smooth out the retry times without stacking latency.
+Also spotted a redundancy that’s been nagging me... SmartStock Pro and SSP_Cache_Manager kept initializing over and over. Not a huge thing until it is—once you’re scaling. Going to singleton those services so they stop draining resources unnecessarily.
+And yeah... we’re switching to OpenAI’s function calling for the sentiment analysis. It’ll tighten up the JSON responses, stop relying on hope and string trims. If it’s not schema-valid, we don’t accept it. Clean contract.
+What’s next:
+Asynchronous request handling for the sentiment and stock data. No more blocking processes.
+Real-time monitoring on the pipeline... thinking Grafana for now.
+Cost-per-call tracking. The token spend isn’t horrible, but it’s creeping up, and creep adds up fast.
+Quote that stuck with me today:
+"Slow is smooth. Smooth is fast."
+Let’s make it smooth.

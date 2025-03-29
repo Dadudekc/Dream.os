@@ -1,0 +1,10 @@
+Devlog Entry - March 16, 2025
+How do we keep pushing when everything feels like it's changing at once?
+Today was a big push forward for AI_Architect... We hit some solid milestones, but also ran into some roadblocks that kept me grounded.
+I spent some time refining the Self-Evolver module, integrating Mistral for AI-driven suggestions. I had to fine-tune the subprocess calls, too—there were some encoding issues with handling Mistral's output. It’s frustrating when a simple encoding error slows everything down, but I got that sorted. Took a bit of debugging to make sure it was reading the output correctly, but now it’s working smoothly.
+On top of that, we pushed some project structure updates—added the Wizards and Forges modules for future expansion, and set up .github for CI/CD workflows. Just getting things organized so I don’t have to revisit this mess later.
+Also spent some time cleaning up the repo—removed a ton of deprecated files and reorganized stuff. It’s always a pain, but it feels better when it’s done. Just had to make sure I was committing and pushing the right things, with solid commit messages this time. Didn’t want to slip up and leave a messy trail.
+One thing that threw me off a bit was the number of untracked files—sometimes it's easy to lose track of what’s actually being worked on and what’s just sitting there. But I’ve learned it’s better to deal with them head-on instead of letting it drag on. Got everything pushed, so we’re back on track.
+Next, I’m thinking of diving into DeepSeek and testing how it runs locally. My system specs are decent enough, but I know it’ll take some tweaking to get the AI models running smoothly. I’ll also refine the AI integration for code refactoring... still a lot of room for improvement there.
+It’s been a good grind today, but it's always a balancing act between building, testing, and making sure everything's running clean.
+"The difference between where you are and where you want to be is what you’re willing to do now."

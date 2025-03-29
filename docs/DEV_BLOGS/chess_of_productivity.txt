@@ -1,0 +1,14 @@
+Devlog — 1/3/25
+"How much friction am I willing to tolerate before I rebuild the system?"
+Today was about finding the friction points... and deciding they’ve got to go.
+Started with the Robinhood bot... finally got the API integrated and working... but the MFA flow is killing the momentum. Right now, I’m having to manually punch in the SMS code every time I log in, and it breaks the whole point of automation. We refactored the _login() logic... made it smarter, more interactive... but it's still clunky. Robinhood’s API isn’t really built for this kind of workflow, and I’m starting to think it might be time to pivot to a broker with better automation support. Looking at Alpaca or IBKR next.
+Also built out the TSLA TBOW tactic for 1/3/25... dialed in the breakout levels... $382.34 for the trigger, targets at $385.50, $390, and $392.50. Pulled in QQQ for broader context, and baked in RSI, MACD, Bollinger Bands... plus volume confirmation. What’s tricky here is balancing bullish setups with downside risk. If $380 fails, we’re not hanging around.
+Got all of that formatted across the board—Discord, LinkedIn, Stocktwits, Facebook. Tailored each post so it fits the platform, the audience, and the tone. That’s starting to feel repetitive though... need to build a template engine for this. Jinja2 or something light. AI can handle most of the heavy lifting once the templates are set.
+Closed the loop with content for the blog... three drafts covering backtesting setups, trade metrics, and scaling strategies. Wrote them all in HTML... clean, modular... ready to post. Feels good.
+I’m 63% through the HTML course too... building that cat photo app on freeCodeCamp. Just a reminder that reps matter, no matter how basic they feel.
+What’s next...
+— Automate the content pipeline
+— Explore alternatives to Robinhood for full automation
+— Build out a technical analysis report generator
+— Centralize task management to keep it moving tight
+"Speed matters. But it’s the systems behind the speed that make it sustainable."

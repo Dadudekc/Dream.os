@@ -1,0 +1,81 @@
+{
+    "automation_engine.py": {
+        "language": "python",
+        "functions": [
+            "__init__",
+            "get_chatgpt_response",
+            "switch_model",
+            "shutdown",
+            "process_file",
+            "self_heal_file",
+            "select_model",
+            "run_tests",
+            "deploy_file",
+            "prioritize_files",
+            "process_all_files"
+        ],
+        "classes": {
+            "AutomationEngine": [
+                "__init__",
+                "get_chatgpt_response",
+                "switch_model",
+                "shutdown",
+                "process_file",
+                "self_heal_file",
+                "select_model",
+                "run_tests",
+                "deploy_file",
+                "prioritize_files",
+                "process_all_files"
+            ]
+        },
+        "routes": [],
+        "complexity": 22
+    },
+    "OpenAIClient.py": {
+        "language": "python",
+        "functions": [
+            "__init__",
+            "get_openai_driver",
+            "save_openai_cookies",
+            "load_openai_cookies",
+            "is_logged_in",
+            "login_openai",
+            "send_prompt_smoothly",
+            "get_chatgpt_response",
+            "get_full_response",
+            "process_prompt",
+            "get_full_response_for_debug",
+            "shutdown"
+        ],
+        "classes": {
+            "OpenAIClient": [
+                "__init__",
+                "get_openai_driver",
+                "save_openai_cookies",
+                "load_openai_cookies",
+                "is_logged_in",
+                "login_openai",
+                "send_prompt_smoothly",
+                "get_chatgpt_response",
+                "get_full_response",
+                "process_prompt",
+                "get_full_response_for_debug",
+                "shutdown"
+            ]
+        },
+        "routes": [],
+        "complexity": 24
+    },
+    "setup_chromedriver.py": {
+        "language": "python",
+        "functions": [
+            "get_chrome_version",
+            "download_chromedriver",
+            "update_config"
+        ],
+        "classes": {},
+        "routes": [],
+        "complexity": 3
+    }
+}

@@ -1,0 +1,7 @@
+Devlog // 003
+What’s more important... getting something working fast, or slowing down to make sure the foundation’s solid?
+Spent most of the day trying to get the Trade Analyzer plugin functioning. Simple idea—upload a PDF, parse it with Python, return trade data to WordPress in a clean JSON. But nothing’s ever that simple, is it...
+The admin page worked... the file upload worked... but the actual data? Empty. Zero output from the Python script. That sent me chasing down whether the file paths were wrong, or the MIME types, or if shell_exec was choking on permissions. Turns out, the script was returning text, not JSON—so WordPress had no clue what to do with it.
+I rewrote the Python to output clean JSON instead of printing tables. Wrapped the whole thing in error handling so it doesn’t just die quietly. If there’s an error now, it gets logged... if the PDF’s clean, it gives me a clean JSON array of trades. Ran it directly from the terminal first to sanity-check the output, then looped it back into the plugin. Now when I upload, I can see the trade stats populate from the trade_results.json. Finally.
+Next up... I’m going to harden the logging. Right now, errors just spit to stderr—fine for testing, not great for production. And I’ll probably need to extend the regex to handle more broker formats... Robinhood’s fine for now, but I’ll need to support more if this scales.
+"If you can’t explain it simply, you don’t understand it well enough."

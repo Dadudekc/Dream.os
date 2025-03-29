@@ -1,0 +1,11 @@
+Devlog: Cutting Redundancy... Getting the Flow Clean
+How much time do we lose doing the same thing twice... three times... before we realize the system is fighting us?
+I’ve been sitting with that today.
+Spent the last block ripping out the old Tbow Tactics setup... it was still wired up like a custom post type. Clunky. Every time I needed to push content, it felt like lifting something heavier than it should be. So I scrapped it. Cleaned it down to just category-based posts. Simple. It works. It keeps me moving.
+Rebuilt the page layout too... tightened up the flow so it actually looks like something I’d want people to land on. No more broken links pointing to nowhere... no more manual tweaks every time something shifts. It’s still basic, but the core’s there. Feels cleaner.
+The tricky part... it’s all these little redundant loops. Manually styling buttons... rewriting the same post blocks... fixing the same pagination logic. Over and over. I can feel it slowing me down. That’s the next war to fight.
+I’m going to shift into building out a component system... probably Tailwind + Storybook or something simple to start. Just need pieces I can snap together without thinking about them.
+Then I’ll wire up a CI/CD pipeline so I’m not doing manual checks for every post push.
+After that... want to bridge trading data with content strategy—get these systems actually talking to each other.
+One step at a time... but the goal is velocity.
+"Slow is smooth... smooth is fast."

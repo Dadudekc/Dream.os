@@ -1,0 +1,25 @@
+Devlog // 2025-03-16
+What actually matters most right now?
+Looking back at January, I’ve been feeling like I wasn’t productive enough... but after laying it all out, it’s clearer now. A lot of the work was groundwork—stuff that doesn’t show up in clean deliverables but sets the stage for execution.
+That said... February needs to hit different.
+I’m stripping it back to what’s highest priority for me right now:
+Finish FreeRide Investor
+All plugins for the dashboard.
+Clean up the entire codebase.
+Possibly roll out an auto-blog feature—still on the table.
+Get my GitHub in order
+Every repo needs to work cleanly on clone.
+Docs need to be tight.
+It needs to look like I take my projects seriously—because I do.
+Build a system to track everything I’m working on
+Something simple to start, but it needs to give me a clear view of all my projects in flight.
+I’m probably going to fold that into Focus Forge, with a Momentum Tracker baked in...
+Daily streaks, progress logs, maybe sync it with Pomodoro runs.
+Right now, it’s all about building, organizing, and optimizing. No extras.
+What was tricky today was pulling back and asking the hard question—am I working on what actually matters?
+Feels like I’m there now.
+What’s next...
+Lock in FreeRide Investor by the end of Week 2.
+GitHub cleanup after that.
+Momentum Tracker for Focus Forge in Week 4.
+“Clarity isn’t found. It’s built.”

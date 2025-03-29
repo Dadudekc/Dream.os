@@ -1,0 +1,8 @@
+Devlog // 2025-02-12
+Ever wonder how many times you have to run pytest before all the tests pass? Today, I found out... a lot.
+Spent the day deep in the guts of the VlogForge backend. Cleaned up the Mailchimp integration—rewrote it as a proper class with better error handling. Mocked the API calls so the tests stop hitting live endpoints and breaking every time my connection tanks. That was a win.
+Lead Magnet was a mess... the .env wasn't loading the way I expected. Added some debug logs, tracked down why MAILCHIMP_SERVER_PREFIX was None. Just a simple pathing issue. Happens. Locked that down.
+The Engagement Tracker... that one dragged a little. Floats and precision errors tripped up one of the tests. Switched to assertAlmostEqual to handle it. Then the heatmap test kept failing—turns out my mock data wasn't lining up with the expected output. Tightened that up. Now it's clean.
+By the end, we had all 21 tests green. That was the checkpoint.
+Next up... I need to start stress testing these modules together. Right now, they're passing in isolation, but we’ll see how they hold up in sequence.
+"Slow is smooth... smooth is fast."

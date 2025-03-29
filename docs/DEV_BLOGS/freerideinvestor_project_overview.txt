@@ -1,0 +1,21 @@
+Devlog // 0325
+What’s slowing me down... and how do I clear it?
+Been breaking down the FreerideInvestor flow today… trying to figure out where time, focus, and energy are leaking. There’s this friction I keep feeling—bouncing between projects, figuring out what to prioritize, second-guessing GPT prompts. It’s slowing execution... and I can’t afford that.
+Started auditing everything with GPT—had it analyze the system, workflows, trading, automation, content. And it’s clear... the big block isn’t technical. It’s decision-making. Too many split paths... too much in my head.
+The takeaway?
+I need a Rapid Decision Framework—something that helps me cut fast and clean on what moves the needle. So I’m setting that up. GPT’s going to handle the heavy lifting... impact vs effort vs alignment. No more getting stuck figuring out what’s next.
+Also locked in a plan to turn GPT into an always-on auditor. Continuous feedback... constant optimization. Everything I’m building—trading models, AI trade plans, user flows—is going under a weekly system check. Clean, fast, autonomous.
+The other thing that stood out... there’s redundancy. I keep crafting prompts from scratch, thinking through strategy calls I’ve already made. Fixing that now. Playbooks are coming—prompt libraries for coding, strategy, and automation. Set once... reuse everywhere.
+And the biggest shift?
+System convergence. One loop.
+Trading signals → AI trade plans → backtesting → content for Discord/Twitch.
+No more scattered workflows.
+Everything’s going to feed back into itself.
+Compounding execution. That’s the move.
+What’s next...
+Build the RDF prompt.
+Activate GPT’s Continuous Improvement loop.
+Draft the Strategy Execution Playbook and roll it into my ops.
+Feeling dialed.
+This is where the system starts running itself...
+“The system doesn’t slow down... unless you do.”

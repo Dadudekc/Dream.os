@@ -1,0 +1,16 @@
+Devlog // 0034
+What’s the point of testing if it just slows you down?
+Been thinking about that a lot today... feels like I’ve been spinning in circles with these async tests. Mocking aiohttp context managers became a serious time sink. You’d think once you wire it up, it’s good to go. Turns out... not so much.
+The deeper issue? I’m patching things I shouldn’t be patching. Mocking low-level network calls directly instead of abstracting them behind clean interfaces. That’s why every time I touch a test, it breaks something else. Waste of cycles.
+So here’s where I landed...
+I mapped out the bottlenecks. Testing was a big one—too tightly coupled, too brittle. DataFetchUtils became a god object, handling everything from session management to logging. It’s choking out flexibility.
+Spent time pulling apart the structure... breaking things down into more focused clients (Alpaca, Alpha Vantage, Finnhub, NewsAPI). Each one will have a clear interface. That alone should fix most of the mocking pain.
+Also noticed I’m duplicating environment mocks in pretty much every test. Sloppy. Going to centralize config handling and stop rewriting the same patches.
+The CI pipeline still feels manual... not where I want it. That’s on deck.
+Next up...
+Refactor DataFetchUtils into clean, modular services.
+Build DI into the tests so mocks aren’t a full-time job.
+Tighten up logging and traceability... no more silent fails.
+Push toward full CI automation... hands off, faster feedback.
+One layer at a time.
+"Slow is smooth. Smooth is fast."

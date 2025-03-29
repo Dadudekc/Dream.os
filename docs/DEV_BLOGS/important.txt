@@ -1,0 +1,27 @@
+Devlog | March 15, 2025
+"Where am I creating bottlenecks by holding the system back... and where can I step out of the way?"
+Worked through a full audit of where time and energy are leaking across my builds... Trading Robot Plug, FreerideInvestor, all of it.
+A few things became obvious...
+I'm still at the center of too many decisions. Config edits, API keys, content generation, scheduling trades, scheduling posts... and when I'm in the middle of it all, velocity dies.
+The systems are solid. The Trading Robot fetches, preprocesses, trains, and deploys. It runs.
+The Social Media Manager I built can hit StockTwits, Twitter, LinkedIn, Discord, Instagram, Facebook, WordPress. It posts... it works.
+But they're silos.
+The trading side isn't informing the marketing side. The marketing isn't driving engagement that feeds back into the trading signals.
+Two engines... running parallel. Not converging.
+The audit showed me where I’m slowing it down:
+Manual scheduling
+Manual content creation
+No unified intelligence layer
+No self-healing infra... I'm still restarting things manually when they break
+And no feedback loop between data streams
+So, where do I step out of the way?
+Next moves:
+Build a unified data broker—Kafka or RabbitMQ. Get everything speaking the same language.
+Spin up AI-driven content that reacts to my trades in real time. LLMs to write, post, and adjust without me.
+Move config and secrets management out of flat files and into Vault or AWS Secrets Manager.
+Spin up Kubernetes clusters... remove myself from deployment and scaling.
+CI/CD for both systems. Push code... deploy. Simple.
+Build an AI dashboard that feeds me insights... not data. I don’t need dashboards. I need directives.
+The goal isn’t to run the machine.
+The goal is to design the machine so it runs without me.
+“Don’t move the mountain. Build the system that erodes it.”

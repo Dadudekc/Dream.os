@@ -1,0 +1,9 @@
+Devlog: Cleaning up the engine... again
+Why is it always the simplest stuff that causes the biggest jams?
+Spent today tightening up the Advanced Fintech Engine. This was supposed to be a quick pass… turned into a full teardown and rebuild of the plugin structure. Too much redundant logic creeping in. Admin settings in the theme? Cleaned that up—plugin handles it now, where it should’ve always been. Settings pages, API key management... all consolidated. Feels lighter.
+Namespace errors popped up... classic PHP. Easy fix once I slowed down and got surgical with the file structure. Everything loads clean now—no duplicate class calls, no confusion about what initializes when. Plugin’s lean. Single point of instantiation. No more weird overlapping hooks.
+Also rewired the data fetching flow… redundant fetches burned more time and resources than I wanted to admit. Cache is doing its job now. API calls are precise. One shot, one kill.
+Was hoping to push the RL optimizer further tonight but… this cleanup had to happen first. No point scaling a shaky system.
+Next... rework the cron jobs and CLI tasks. Merge them into a unified flow. And maybe—if the energy’s there—start scaffolding the real-time learning layer.
+Progress is slow until it’s sudden.
+“If you can’t fly, then run… if you can’t run, then walk… but whatever you do, keep moving.”

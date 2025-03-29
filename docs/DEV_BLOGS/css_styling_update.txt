@@ -1,0 +1,9 @@
+Devlog: Closing Gaps Between Systems
+What’s the cost of doing things twice… or three times… without realizing it?
+Been thinking about that while cleaning up the way posts are queried and displayed on the site. I noticed I was splitting logic across different sections—one set of queries for blog posts, another for Tbow Tactics—both doing almost the same thing, just with different filters. It was messy. Felt like patching holes on a sinking ship instead of figuring out why the ship was leaking in the first place.
+So I stepped back... simplified it.
+Rebuilt the queries so they’re more dynamic… consolidated the logic… cut out redundant code. One query can handle multiple post types, categories, whatever. No more duplicated structures fighting for space. Should make the system easier to scale later.
+The other tricky thing was realizing how much friction there still is between trading signals and content creation. Right now, they’re separate workflows… trades happen, content gets made manually, and they don’t talk to each other. That’s energy leaking out. The plan is to bridge that gap—have trading outcomes feed directly into automated content. Imagine finishing a trade and having the system spit out a blog post or breakdown automatically. That’s where this is going.
+Next up… deeper automation between trading and content. And I want to clean up the CSS across the board—still too much repetition slowing things down.
+It’s not glamorous work, but it’s necessary.
+“Clarity comes from clearing the clutter. One piece at a time.”

@@ -1,0 +1,33 @@
+Devlog | 2025-03-15
+Still shaking off the dust… but here we go.
+Ever ask yourself how much energy gets wasted just switching between things?
+That’s been on my mind all day.
+Been deep auditing the system—trading, automation, content.
+A lot of it works… but not as smooth as I thought.
+Redundant processes, manual triggers everywhere, too much waiting on me to push buttons.
+That’s friction.
+That’s drag.
+Trading is solid but narrow... LSTM-only.
+Need more muscle there—probably bringing in Transformers, maybe even an ensemble approach.
+Also... no real-time data feeds yet. That’s a hole.
+Everything runs when I tell it to. Nothing runs when I don’t.
+That’s not how I want to move.
+Automation?
+Still got duplicated logging setups. Fixed part of it by centralizing logging in utils.py...
+but model loading and data handling still repeat too much.
+No caching. No event-driven architecture yet.
+Working on it.
+Content...
+Raw ideas, but no system turning them into multi-platform content.
+Manually posting when I get the energy.
+I need that automated—AI handling the repurposing, scheduling it around my milestones.
+Too much brainpower wasted keeping all these plates spinning.
+What’s next…
+Real-time data feeds, probably with WebSocket or Kafka
+Event-driven pipelines (Airflow or maybe serverless Lambda triggers)
+AutoML or hyperparameter tuning to get better performance without babysitting it
+Content pipeline that turns my drops into posts, videos, audio… on autopilot
+One control plane to rule all of it... streamline the flow
+Tired... but clear.
+This is where it gets real.
+“Speed follows clarity.”

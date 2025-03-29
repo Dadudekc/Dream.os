@@ -1,0 +1,19 @@
+Devlog | 031625
+What bottlenecks are hiding in the obvious... and how much energy is slipping through because I’m not slowing down enough to see them?
+Quick drop...
+Spent time today looking at the design flow for the stock research tool. It’s functional, but I’m noticing the same issue I keep running into—front-loading clarity is everything. Too often, I start building without locking in the criteria. It slows everything down... not because the build is bad, but because I’m constantly having to backtrack and redefine.
+Same thing happened here. I dropped the image without a clear directive. Took extra back-and-forth to align on what mattered—the UI redesign. Obvious in hindsight. This is a pattern across the board... trading flows, automation sequences, content pipelines. Lack of upfront clarity forces me into micro-decisions mid-execution. That breaks flow... and flow is where I do my best work.
+So I did an internal audit while I was at it. Saw three major inefficiencies:
+Delayed intent clarity
+Redundant validation loops
+No structured decision framework for UI/UX or trade logic
+Solutions are pretty clear...
+I’m building a prompt briefing template so AI interactions are clean and scoped from the jump.
+Modular design system is getting priority—no more subjective design loops.
+And decision matrices for both trading and UX adjustments... automated and real-time.
+All of this feeds into AI workflow orchestration, which I’ve been meaning to tighten up anyway.
+What’s next...
+Lock in the design system.
+Get the decision trees running.
+Make the system move without me having to constantly steer it.
+"Slow is smooth. Smooth is fast."

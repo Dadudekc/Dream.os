@@ -1,0 +1,10 @@
+Devlog: Automating What Slows Me Down
+How much time do I waste doing things I shouldn’t be doing anymore...?
+That’s been running through my head today. Not in a burn-out way... more like one of those moments where you realize you’ve been carrying extra weight for no reason. And it’s time to let it go.
+Been deep in the weeds cleaning up the friction points in my system... specifically how much time I’m burning on things like coding out HTML, deploying pages manually, and eyeballing trading levels that should be automated by now. It’s all small stuff on paper... but it adds up. Context switching... the mental drag... it slows everything down.
+The trigger today was trying to drop a TBOw playbook on the site and getting stuck fighting with the platform. Classic case of wasted cycles. Debugging issues that shouldn't exist if the pipeline was set up right. Even the live data widgets felt clunky... and that’s when it hit me. I need to stop thinking like an operator and start acting like an architect.
+What worked—mapping out a tighter loop for automating key levels and trade setups. I’ve got the framework laid out now... real-time signals, auto-generated levels, and pushing that straight into clean content blocks. No more hand-coding. No more babysitting deployments. It’s about setting the system to pull the weight so I can focus on executing.
+What’s next—building a unified control center. One place where everything feeds in... signals, trade setups, content... and I’m not scattered across ten tools trying to stitch it together on the fly.
+"Systems don’t fail because they’re complicated... they fail because they’re fragile."
+Not building fragile systems anymore.
+Let’s keep going.

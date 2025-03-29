@@ -1,0 +1,17 @@
+Devlog // SmartStock Pro
+Ever ask yourself how much manual debugging is too much... and when it’s time to step back and let the system handle itself?
+That was today.
+Been deep in the trenches refactoring SmartStock Pro—plugging gaps, cleaning up inconsistencies, and trying to push this thing into something I don’t have to babysit every time I ship. Got the Alpha Vantage integration cleaned up... API keys are now loaded from wp-config.php, and they fail early if they aren’t set. No more wasted time waiting for errors on live calls. That was low-hanging fruit I ignored too long.
+Shortcodes and AJAX handlers were another mess. I noticed they were bloated, repetitive... and I was context switching too much between them. Refactored them into cleaner, component-based setups. Way less boilerplate now. New endpoints or features won’t be such a grind moving forward.
+But it wasn’t smooth... the AJAX handlers kept breaking because of old nonce issues I didn’t standardize. Also caught a caching bug on the Alpha Vantage historical data—turns out, the JSON response can randomly drop keys if the symbol is invalid or throttled. Threw in better logging and error handling so I’m not blind when it happens again.
+Biggest takeaway? Need better pre-flight checks. Stuff like API key validation, dependency loading—this needs to fail at startup, not runtime. I’m working on a Bootstrap_Validator class to centralize all those checks. Should’ve done that months ago.
+Next is tightening the Git flow—setting up develop branches and CI/CD testing. I’m over shipping blindly into production.
+And yeah... the Showcase page needs more love. Right now, it’s functional but stiff. Need to build in live insights, smoother feedback for users, and kill the dead ends in the UI.
+What’s next:
+Build Bootstrap_Validator
+Refactor AJAX + shortcodes to finalize component standard
+Write unit tests for API calls
+UX clean-up on shortcodes
+Git discipline... no more chaos deploys
+"Discipline equals freedom." —Jocko Willink
+Let's get it.

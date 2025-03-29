@@ -1,0 +1,10 @@
+Devlog // 2025-02-17
+What’s the real cost of letting small issues pile up in the system?
+Spent the better part of today grinding through the ReportManager and DebuggerCLI test suite. It was supposed to be a clean pass... but nah. It got messy.
+Started off tightening up the ReportManager—added log rotation, keyword searches in reports, old file cleanup. The usual maintenance. Most of it worked... until the tests decided they didn’t. Specifically, Windows file locks threw permission errors in tearDown(). Classic “file is being used by another process” stuff. The logger wasn’t releasing the file handler fast enough, so I had to shut down logging explicitly between tests. Even then, I had to catch and skip PermissionError when cleaning up files. It’s not elegant... but it’s stable for now.
+Then came the DebuggerCLI tests. I refactored them to match the updated imports... but ran headfirst into AttributeError after AttributeError. Turns out a bunch of the mocks were pointing to outdated modules. Some methods didn’t even exist anymore. I had to strip things back to basics—patched logging.getLogger() directly instead of playing with internal logger objects. Cleaned up the argument parsing logic too. Still, the AI performance loader test failed because the test input didn’t match the expected structure. Fixed the mock data. Lesson: never assume the test data matches what you expect... double-check it.
+After all that... ran pytest again.
+Seven passes. One fail. And I’m okay with that for now.
+Next up... I’m going to simplify the logger system altogether. Probably switch to a context manager approach for the handlers and avoid this Windows lock dance completely. Also, need to finalize the DebuggerCore integration for rollback and AI feedback.
+But for today, I’m calling it.
+“Slow progress is still progress. Keep showing up.”

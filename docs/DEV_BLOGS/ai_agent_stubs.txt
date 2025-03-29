@@ -1,0 +1,15 @@
+Devlog Drop
+What’s the simplest version of this system that still works?
+That’s the question I’ve been sitting with all day...
+Spent a good chunk of time hammering on the AgentDispatcher... breaking things, fixing things, breaking them again. Got caught up in the logging structure—there were emojis in the logs that seemed clean and clear at first, but when the tests started failing on log assertions, it was obvious they were adding friction instead of flow. So I stripped them. Clean logs. Plain English. No nonsense.
+The test suite for test_agent_dispatcher.py was messy at first. Lots of failed assertions on logger calls because of mismatched strings... lowercase names vs. mixed case, or the log message format itself. It was small stuff—but death by a thousand cuts if I didn’t slow down and clean it right.
+Refactored the dispatcher.
+All agent names are normalized to lowercase at dispatch time.
+Every error message is stripped down to basics—no emoji noise.
+The logging is now consistent and matches the test expectations.
+The tests are clearer now.
+No fancy assertions... just direct calls to logger methods and checking those calls cleanly without fighting the message format. Once I ditched the emoji and simplified the validation logic, things started clicking.
+What’s next...
+I’ll probably give AgentRegistry a second pass. It’s working, but I don’t like how some of the mock patches are being handled in the tests. Feels brittle. Might swap in a fixture system so the tests breathe a little better... we’ll see.
+For now, the dispatcher’s tight and test coverage is clean. Simple is holding.
+“Clarity comes from subtraction, not addition.”

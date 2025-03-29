@@ -1,0 +1,13 @@
+Devlog // 0325
+What’s the real cost of overthinking a simple system?
+Been building out a parser that grabs data from a Google Doc and turns it into a 2D grid… pretty straightforward. The characters get placed by x/y coordinates and printed row by row to reveal a message. Clean. Direct.
+But I caught myself slipping into a loop—refining how the code looks, tweaking comments, debating whether I should store triplets in a list or just process them directly. Classic Victor move... zeroing in on micro-decisions instead of zooming out.
+I started with urllib.request to pull down the raw HTML. Ran it through BeautifulSoup to strip the junk and get the text clean. Lines split, headers found (x-coordinate, Character, y-coordinate)... data came in triplets.
+At first, I was storing them. Felt safer... more controllable. But really? I didn’t need to. The data’s only used once—to populate the grid. So I cut the extra storage, parsed directly into the grid, and simplified the whole thing. Fewer passes. Less friction.
+Tricky part was letting go of my habit of over-documenting as I go. I get why I do it... it keeps my thinking clean. But when I’m pushing for speed, that weight slows me down. There’s a balance between clarity and velocity I’m still calibrating.
+What’s next...
+Abstract the parsing and grid build into a reusable module.
+Set up automated tests so I’m not manually eye-scanning output every time I tweak something.
+Start tracking where the time sinks are in these workflows... especially before they scale.
+“Efficiency is doing better what is already being done.”
+— Peter Drucker

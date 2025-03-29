@@ -1,0 +1,18 @@
+Devlog // 03.15.25
+"Where am I leaking energy in my systems... and why am I letting it happen?"
+Spent time today stepping back... auditing where my time, focus, and execution are actually going.
+It’s uncomfortable... but necessary.
+There’s a pattern I’m seeing: I’m spreading energy across too many tools, platforms, and workflows. Projects are clean in isolation, but as a system... they aren’t converging. Trading systems here. Content pipelines there. Infrastructure kind of... everywhere. It’s bloated. Friction everywhere.
+What stood out:
+My trading pipelines aren’t fully automated. Still manually running backtests, tweaking strategies, and uploading changes. That’s a slow bleed on execution speed.
+Content is too manual. Drafting, editing, pushing posts—shouldn’t be me doing all of it at this point. That’s time better spent designing new systems or refining strategy logic.
+Hosting is scattered. Hostinger, AWS, Azure... too many environments, not enough focus. Each requires maintenance. It’s not scalable.
+The real bottleneck... me.
+I’m still in the loop doing things that AI or automations should be handling.
+What’s next:
+Centralize everything in Notion or Obsidian. Trading ideas, builds, content drops—all in one place. A Victor OS.
+Automate trading strategy workflows—backtesting, deployment, logging—end-to-end. Airflow + MLflow is the move.
+Consolidate hosting. Probably migrate fully to AWS, containerize with Docker/Kubernetes so I’m not babysitting servers.
+AI-generate content drafts and automate posting. If the system’s feeding me insights, I should have AI feeding that back out as content.
+Goal: Converge everything. Less manual. More compounding.
+"Speed isn’t the goal... flow is."

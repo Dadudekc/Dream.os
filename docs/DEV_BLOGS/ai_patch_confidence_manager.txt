@@ -1,0 +1,9 @@
+Devlog // AIConfidenceManager Refactor Drop
+What happens when a system starts returning junk data because you didn’t think through the data types hard enough?
+That’s where I was today. Spent a good chunk of time deep in the AIConfidenceManager code. The earlier build was fine… until it wasn’t. Confidence scores and patch histories were inconsistent. Some were strings when they should’ve been dicts. Classic "looks fine until you run real tests" moment.
+I refactored the core logic. Cleaned up the way high_confidence_store and confidence_scores handle their entries—making sure every patch is a proper dict before any processing happens. That took care of the TypeError: string indices must be integers bugs that were blocking tests. Those were annoying... but it was on me for not adding proper validation earlier.
+get_best_high_confidence_patch and suggest_patch_reattempt now filter out invalid data before they even think about doing work. No more trusting the data blindly.
+Also tightened up store_patch... It now appends instead of overwriting. High-confidence patches won't get accidentally deleted because I forgot to structure the data as lists. Seems basic in hindsight... but the kind of thing you catch when you’re tired and deep in debug logs.
+Tests were breaking because of those assumptions. Now they’re clean. Ran pytest on test_ai_confidence_manager—got the green on assign_confidence_score, and after the updates, the other methods are finally holding.
+Next up... gonna integrate this back into the full agent flow. Making sure patch recommendations actually improve over time in a live run. If it starts feeling clunky, I’ll know I missed something.
+"The details you ignore in design are the details that break in execution."

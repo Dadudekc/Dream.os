@@ -1,0 +1,15 @@
+DEVLOG 0031 — Scaling the Hub, One Cut at a Time
+How much weight can one system carry before it collapses under its own complexity? Been asking myself that a lot lately...
+Spent the day inside the IT Hub… peeling back layers, trying to make it less of a monolith and more of a living system that can scale itself without me babysitting every piece.
+Here’s what I pushed through:
+Broke out the GUI logic into its own directory. That cleaned up the core script a bit… feels lighter already. No more buried fzf loops clogging the main file. Everything UI-driven lives in /gui now, sourced dynamically on startup.
+Next, I sketched out the groundwork for patch modules and premium features. They’ll sit in /patches and /premium folders… gated and isolated. The plan is simple: premium features need to be modular, plug-and-play, and cleanly separated from core functionality. That way I can drop new tools in without breaking existing ones. Thinking ahead to Kubernetes and Logic Apps deployments being premium-tier features… those are going to need their own files and interface standards.
+We’ve also got a /utils directory on deck. That’s where core functions will live—resource management, logging, env handling. Right now they’re still tangled in the main script, which makes everything harder to read and slower to iterate on. That’s the next cut.
+What broke? Nothing dramatic, but I’m seeing the signs. Cognitive load is creeping back in. Too many moving parts inside one file. It’s time to modularize or things will bottleneck as I add more features.
+What’s next…
+Strip the core script down to its skeleton. Controllers only. Everything else moves out.
+Then, drop in a plugin loader so premium patches can register and extend commands cleanly.
+And after that… maybe, finally, give the GitHub Actions workflows the same treatment.
+It’s overdue.
+“The system you build is a mirror of your own discipline.”
+Time to keep it sharp.

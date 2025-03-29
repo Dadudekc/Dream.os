@@ -1,0 +1,24 @@
+2025/03/12-20:05:48.307 23fc Reusing MANIFEST D:\chatgpt_automation\chrome_profile\openai\Default\Local Storage\leveldb/MANIFEST-000001
+2025/03/12-20:05:48.313 23fc Recovering log #13
+2025/03/12-20:05:48.315 23fc Reusing old log D:\chatgpt_automation\chrome_profile\openai\Default\Local Storage\leveldb/000013.log 
+2025/03/12-20:06:08.520 3b28 Level-0 table #17: started
+2025/03/12-20:06:08.732 3b28 Level-0 table #17: 39487 bytes OK
+2025/03/12-20:06:08.770 3b28 Delete type=0 #13
+2025/03/12-20:06:08.770 3b28 Compacting 4@0 + 1@1 files
+2025/03/12-20:06:08.803 3b28 Generated table #18@0: 31 keys, 68626 bytes
+2025/03/12-20:06:08.803 3b28 Compacted 4@0 + 1@1 files => 68626 bytes
+2025/03/12-20:06:08.827 3b28 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/03/12-20:06:08.828 3b28 Delete type=2 #8
+2025/03/12-20:06:08.828 3b28 Delete type=2 #10
+2025/03/12-20:06:08.828 3b28 Delete type=2 #12
+2025/03/12-20:06:08.828 3b28 Delete type=2 #14
+2025/03/12-20:06:08.828 3b28 Delete type=2 #17
+2025/03/12-20:07:49.153 3b28 Level-0 table #20: started
+2025/03/12-20:07:49.194 3b28 Level-0 table #20: 93091 bytes OK
+2025/03/12-20:07:49.220 3b28 Delete type=0 #16
+2025/03/12-20:11:03.430 3b28 Level-0 table #22: started
+2025/03/12-20:11:03.455 3b28 Level-0 table #22: 71316 bytes OK
+2025/03/12-20:11:03.481 3b28 Delete type=0 #19
+2025/03/12-20:11:49.153 3b28 Level-0 table #24: started
+2025/03/12-20:11:49.191 3b28 Level-0 table #24: 58297 bytes OK
+2025/03/12-20:11:49.215 3b28 Delete type=0 #21

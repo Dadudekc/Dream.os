@@ -1,0 +1,20 @@
+Devlog: Infiltration Mirrors Systems
+How much energy do we lose... just keeping things running?
+Been thinking about that a lot today while running the Shadow Row op. It was supposed to be a simple infiltration... move quiet, get eyes on the Ash Vipers, gather intel on their tech pipeline. And yeah, on the surface, it went smooth—flight in, bypassed perimeter patrols, found their entry points. Standard.
+But while I was running that, I started seeing the same patterns playing out across my systems. Fragmented workflows. Redundant processes. The mental context switching between trading logic, automation layers, and content builds... it's a war of attrition if I let it be. I’ve been patching things instead of converging them.
+What I worked on...
+Did a full audit on where my workflows are bleeding time and energy.
+Trading strategies are still way too manual. Running AutoML loops is next.
+Automation scripts are siloed... no central orchestration. That's a big gap.
+Content generation is slowing down because of context shifts... no system holding continuity when I move between projects.
+What broke or was tricky...
+Context switching is killing cognitive bandwidth... didn't realize how bad it was until I mapped it.
+Trading data ingestion needs to be parallelized. I’m still pulling things in sequential chunks—way too slow for what I’m aiming for.
+Content version control is non-existent. It's manual, messy, and I’m losing cycles rewriting stuff that should be modular.
+What's next...
+Building out the orchestration layer to tie all the automation together.
+Moving trade execution into containers with auto-scaling so I’m not throttling execution manually.
+Dropping a context summarizer into the workflow... to reduce mental fatigue and keep flow state tighter.
+Breaking content into atomic blocks... reuse without rewriting.
+"Control isn't about holding everything... it's knowing what you can let go of."
+Onward.

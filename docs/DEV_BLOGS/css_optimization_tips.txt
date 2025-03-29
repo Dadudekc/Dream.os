@@ -1,0 +1,13 @@
+Devlog // 03.16.25
+How many cycles do I waste tweaking details that should’ve been locked by the system itself...?
+Spent most of today deep in layout iterations. The goal was to clean up the buttons and sections on the services page and the ebook showcase... ended up cycling through more versions than I care to admit. Some of them looked better—some, not so much—but none of them were moving fast enough. That friction is a bottleneck I need to kill.
+The core issue... no system. Just hardcoding CSS, inline styles, no component library backing it. Every adjustment was another micro-decision. It’s death by a thousand cuts when I should be pushing full builds, not tweaking pixels.
+I started shifting the mindset while working through this... focused on convergence. Simplified the welcome section. Clean button hierarchy, cleaner spacing, text that actually reads. But even that... felt reactive.
+Here’s what became obvious:
+I need a component system... not just in theory. In place. Tailwind’s next.
+A design system... typography, spacing, color. Final. No back-and-forth.
+Batch feedback. No more micro-tweaks after every minor push.
+Next is stripping the UI process down to a scalable framework. No more bottlenecks on small things. AI's taking more of the load on content. My job is architecture.
+The system isn’t just the website. It’s the process...
+And the process has to scale without me.
+“Speed isn’t about going fast... it’s about not wasting time.”

@@ -1,0 +1,13 @@
+Devlog | March 15, 2025
+What’s the actual bottleneck right now—the system or me?
+Spent today ripping apart the workflows. Felt overdue... the amount of rework on test cycles and the constant “fix the patch path” loops were adding up. The AI’s been fast, but I’m still catching myself doing too much manual cleanup—whether it’s debugging broken mocks or rewriting content outputs because tone was off. It’s a time leak. Not huge in the moment, but over hours and days? It’s velocity loss. That’s on me.
+Trading system is fine structurally... but needed the MySQL schema finalized. There’s no point entertaining SQLite or NoSQL if the goal is long-term scaling tied to the WordPress site and a retrain loop for the models. I’m locking in MySQL now. The focus is on metadata for tracking model inputs, outputs, feedback, and anything that’ll fuel the feedback loop. If I don’t structure that properly, the whole “self-improving model” thing is just a concept, not a system.
+The tests—getting cleaner. Finally standardized mocks with fixtures instead of ad-hoc patching. That’s already speeding things up. Dockerizing the environment next so testing and deployment aren’t fighting each other.
+And content... yeah. Set the AI to hold the tone and style consistently. No more reminders about not using em dashes mid-sentence or cutting out the emojis. Automating the Discord push soon—too much friction otherwise.
+Next up...
+Lock in the MySQL metadata schema
+Build the feedback loop (capture, store, trigger retrain)
+Docker Compose for full-stack parity
+Makefile for test and deploy
+AI as process architect, not just task runner
+"Discipline makes freedom possible."

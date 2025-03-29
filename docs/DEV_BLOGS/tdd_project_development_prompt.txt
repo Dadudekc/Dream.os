@@ -1,0 +1,8 @@
+Devlog // 2025-02-15
+Ever wonder how much noise you have to clear before the signal gets through?
+Spent the better part of today grinding through the unit tests. 30+ files... broken imports everywhere... triple-quoted strings left hanging... some Frankenstein code that probably made sense in the moment but didn’t survive the merge. Compiled everything, and the compiler wasn’t having it. Syntax errors, indentation mess, string literals left dangling in the wind. You name it.
+Started breaking it down... file by file. Swapping out busted imports, killing off the extra colons, rebuilding the test cases into something that can actually run. A couple of files cleaned up nicely—others felt like duct tape holding together spaghetti code. And yeah, I’m leaving notes for where this needs refactoring later.
+Also ran check_imports.py to get a read on what’s missing from the environment... confirmed what I already knew. Lots of modules flagged—some expected, others a reminder I need to tighten up dependency management before I scale this next phase.
+On the API side... started mapping out Tier 1 and Tier 2 integrations, but I want more. I’m pulling from the public APIs repo next... already have a short list to test out. Anything that gets me more real-time data without breaking the budget is going in. No excuses.
+Next up... cleaning the remaining test files and running them clean. Then I’ll move back into system convergence—automating these test passes as part of the CI flow.
+“Clear the noise. Execute the signal.”

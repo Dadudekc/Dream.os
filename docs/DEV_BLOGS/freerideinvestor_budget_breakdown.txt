@@ -1,0 +1,15 @@
+Devlog // 2025-03-15
+FreerideInvestor Build — Budget Strategy + System Audit
+"Where is my energy actually going?"
+That’s the question I kept circling back to today...
+I came into this session thinking about how to use $700 to improve FreerideInvestor. Seemed simple. But as we pulled the thread, I realized the real friction wasn’t just about where to spend the money... it was about how I’m making decisions in the system.
+I’ve got the site up. Domain and hosting locked. The baseline is there... but I’m still re-checking solved problems instead of moving forward. That’s draining momentum.
+What broke?
+The way I’ve been thinking about team vs. tools vs. automation. I’ve been treating them like separate tracks... they’re not. They’re one system. They have to run as a flywheel, feeding each other—otherwise, I’m stuck making the same decisions over and over.
+What worked?
+Mapping out an operating model where AI does the first pass (ideas, drafts, analysis), automation moves things forward (distribution, updates), and the team only steps in for judgment calls. Clean, simple, scalable.
+Next...
+I’m building the system map tonight. Laying out what’s done, what’s in motion, and where things bottleneck. Then I’m locking in the workflow engine—probably Notion and Zapier to start.
+Once the flywheel’s turning, I can focus on scaling content and refining tools like the trading calculators and sentiment analysis.
+One move at a time...
+"Eliminate friction. Iterate faster."

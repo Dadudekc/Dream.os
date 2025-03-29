@@ -1,0 +1,9 @@
+Devlog // 16-Mar-2025
+What’s the simplest version of this that actually works?
+Spent today breaking the FreeRideInvestor Trade Analyzer down to bare bones. No frills... just a clean front-end upload flow, file processing, and data display. Users hit the page, upload their brokerage statements (PDF or CSV), and see their trades right there. That's it.
+Dropped the admin page... we’re not doing backend uploads. No one wants to deal with that friction. Straight from the front end. Focus is on clarity and speed.
+Built a shortcode [trade_analyzer] so I can drop this anywhere in WordPress. Right now, it’s handling uploads, running Python scripts for parsing, pushing trades into the wp_trades table, and spitting out the stats: total trades, P/L, win rate... plus a simple table showing their last ten trades.
+Biggest headache? The database schema. Ran into some missing columns—classic case of an old schema hanging around... missing profit_loss and trade_date. I built a check into the activation hook to force those columns if they don’t exist. Simple fix... but one of those things you only catch when something breaks in real time.
+Kept it single-user for now. No multi-user data isolation yet... not the priority. This MVP just needs to work. Multi-user comes later.
+Next up... thinking about adding some basic visualizations. Maybe a quick Chart.js line chart for P/L over time. After that... AI analytics are on the horizon.
+“First you make it work. Then you make it better.”

@@ -1,0 +1,15 @@
+Devlog // 2025-03-16
+What’s the point of speed if I’m still wasting energy in the wrong places?
+...
+Spent most of today deep in the weeds on system convergence... realizing I’ve been leaving a lot of room for bottlenecks to creep in. I’m doing too much manually—especially with trading prep and content delivery. It’s burning more time than it should... and it’s slowing the entire process down.
+I tightened up the Tbow Tactic flow. Added a bearish rug pull setup because, looking at the charts this morning, TSLA had all the signs. That divergence on MACD, RSI pushing into overbought, and the VWAP sitting on a knife’s edge... the sell walls on the order book were heavy. It was obvious in hindsight, but I should’ve flagged it earlier.
+That’s on me. No excuses.
+Pulled back to map where things are leaking. Market sentiment checks, options flow reads, and news scans are still manual. Same with post-trade journaling. That’s dead weight. I’m moving those to automation—need my energy clean for decision making, not busywork.
+Also spotted redundancies in content output. Building HTML from scratch every time... nah. Switching to dynamic templates and CMS integration to free that up. Speed over polish. The value is in the clarity of the calls, not the code.
+Next steps:
+Automate pre-market sentiment scans and build out rug pull alerts
+Finalize the Tbow Tactic playbook so I’m not freelancing indicators mid-trade
+Tighten post-market journaling so I’m reflecting without delay
+Taking it one block at a time... system convergence isn’t theory anymore, it’s what happens when everything feeds forward.
+...
+"Discipline is choosing between what you want now and what you want most."

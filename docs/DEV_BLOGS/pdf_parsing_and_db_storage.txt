@@ -1,0 +1,13 @@
+Devlog — 07 Feb 2025
+What’s the difference between stuck and steady progress… when the work feels the same either way?
+Been grinding through the FreeRideInvestor Trade Analyzer today. The core’s there now—upload a brokerage statement (PDF/CSV), parse the data with Python, drop it into the database, then visualize trades and stats in WordPress. Pretty clean, mostly modular.
+But getting there wasn’t simple.
+I ran into a mess with the database schema early on... columns missing, fields out of sync. Thought I was covering my bases with ALTER TABLE checks, but they kept failing on old tables. Realized it was an order-of-operations problem... columns like execution_date and profit_loss weren’t consistently getting added. Rebuilt the activation hook to tighten that up. Feels more reliable now.
+Next headache was Python. The parser works, but deploying it inside WordPress meant getting pdfplumber running in a virtual environment. Installed the venv, pip’d everything up... then forgot to actually call the venv python in the plugin. Rookie move. Fixed that—scripts now execute inside the venv, no drama.
+Got the file upload working in the admin panel first... then wired it into the front-end template with a shortcode. Ran into an issue where the file upload wasn’t firing at all on the page template. Turns out, it needed some refactoring—making sure the upload handler was triggered regardless of admin context. That’s sorted. Uploads and processing work on both sides now.
+The data itself? Clean. PDF parser extracted 76 trades from the test doc, solid JSON output... no errors. Now I’m pushing that into charts and tables using DataTables.js and Chart.js. Pretty simple setup: profit/loss over time, trade distributions, full history table. Might add AI insights later... but first, want this base tight.
+Next up:
+— Build out some filters for the trade table
+— Tighten security on file uploads
+— Look into caching or background processing for bigger files
+"Sometimes steady wins look like stuck days… but they’re not. Keep going."

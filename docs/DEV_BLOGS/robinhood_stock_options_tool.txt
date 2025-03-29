@@ -1,0 +1,10 @@
+Devlog | 03.15.25
+What’s the point of capturing the trade if you can’t capture the lesson in the moment?
+That’s been on my mind. I keep missing snapshots while I’m deep in execution... and by the time I go back, the clarity is gone. So I started ripping through the core of the journal tool today. Rebuilt the flow from login all the way through trade capture. Goal was simple—auto-log everything while I’m trading so I don’t have to think about it.
+Here’s the rundown...
+Started by tightening up the Robinhood login. Handled MFA clean, grabbed the token... but ran into a stupid issue with the options positions fetch. Turns out the API kicked back data as a string instead of JSON—broke the loop. Quick fix was adding parsing guards and better error handling, but it took longer than it should have.
+Same thing on order history... quantity fields were coming in as strings with decimals, and the script was trying to shove them into integers. Classic. Refactored the database schema and switched quantities to floats. Cleaned up now.
+On the bigger picture... I’m seeing how linear and slow this whole pipeline was. Single-threaded, sequential calls... way too much waiting around. Next, I’ll parallelize the data pulls—spin up async or multiprocessing for positions, orders, and instrument details. No more crawling through one at a time.
+I also mapped out the next move: automating real-time journaling tied to trade executions. Thinking event-driven capture with screen grabs and notes popping straight into the DB as I pull the trigger. No more post-trade memory lapses. I want this thing thinking faster than me.
+This is all leading toward an AI-driven journal that runs without me... daily summaries, charts, reflections... fed straight from the data. The vision’s tight. The system’s gotta catch up.
+“Discipline creates freedom... automate the discipline, and the freedom scales.”

@@ -1,0 +1,18 @@
+Devlog: Are you really bottlenecked… or are you just overcomplicating it?
+Quick drop…
+Today was one of those days where I realized how much time gets eaten by things I could’ve automated or simplified weeks ago… but didn’t. I’ve been overcomplicating pieces of the system because I thought I was being thorough… turns out I was just slowing myself down.
+What I worked on…
+Cleaned up the trading bot—had an issue with indicator calculations throwing negative dimensions. Classic case of feeding it incomplete data… wasn’t validating hard enough on the front end. Fixed that by adding checks to make sure there’s enough data before it even runs.
+Also tightened up the backtesting logic… there were some signals getting misaligned during high-volatility conditions. It wasn’t catastrophic… but it was sloppy. It’s better now.
+Built out my Fiverr gig properly. Structured the packages, wrote up a clearer offer, and set boundaries. No more vague scope creep. If I’m doing custom Python automation… it’s clean and it’s paid.
+Also finally built the resume. For the first time, it actually feels like it reflects where I’m at. No fluff… just projects, skills, and where I’m headed.
+What broke… or what was tricky…
+Trading bot validation was messier than it should’ve been. I should’ve caught the lack of data earlier.
+The Fiverr gig took way longer to write than I expected… kept catching myself trying to over-explain things instead of making it clear and simple.
+And the resume… honestly, just weird realizing I’ve been doing all this work without actually laying it out in one place. That’s fixed now.
+What’s next…
+Automating the trading execution completely. No more manual trades… time to trust the system.
+Building out modular Python templates so I’m not rebuilding basic stuff for every new Fiverr client.
+Getting the content pipeline automated… blog posts, gig updates, all of it needs to move faster.
+Start sending out job apps. Resume’s done… no excuses.
+“Consistency compounds. Move with purpose.”

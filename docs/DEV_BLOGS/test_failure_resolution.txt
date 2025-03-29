@@ -1,0 +1,11 @@
+Devlog — 2025-03-16
+“What’s the point of building fast if your foundation’s cracked?”
+Today was about tightening bolts that shouldn’t have been loose this far in.
+I’ve been working through data_fetch_utils.py… it’s one of those critical files that’s easy to overlook when you’re chasing shiny new features, but it’s holding the entire data pipeline together. If it breaks, everything downstream lags or fails… so we dialed in on making it reliable. Solid. No excuses.
+Started by digging into the test suite. We had five fails out of six. Not great. Mostly due to missing environment variables and sloppy exception handling. A few wrong assumptions baked into how the mocks were set up for API responses… and the NewsAPI tests were all over the place, assigning GOOGL articles to AAPL. Rookie mistake… but easy to miss when you’re in the middle of a big push.
+The biggest fix was getting the test cases to isolate missing keys properly… no more nuking multiple env vars when we’re just trying to test one thing. That cut down the noise and gave clearer signals on what was breaking. Then we hardened the date validation—added better error handling so if an invalid date sneaks in, it throws a clean ValueError instead of some random pandas parsing exception. Cleaner logs. Easier debugging.
+After cleaning all that up, the tests passed and coverage hit 83%. Felt good. But coverage isn’t the finish line… it’s just proof the nets are holding. What matters is making sure this stays future-proof.
+Next move is systematizing this stuff. Automating the test pipelines… setting up a clean data broker layer so we’re not hand-wiring API calls every time we add a new data source… and getting ahead of issues with real monitoring instead of reactive bug hunts.
+This is all groundwork for scaling. No shortcuts.
+Next devlog should be about automating the CI/CD for trading strategies. That’s overdue.
+“Slow is smooth… smooth is fast.”

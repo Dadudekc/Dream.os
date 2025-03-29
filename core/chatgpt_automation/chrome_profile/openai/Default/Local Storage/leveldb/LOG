@@ -1,0 +1,15 @@
+2025/03/24-22:01:12.319 8e74 Reusing MANIFEST D:\chatgpt_automation\chrome_profile\openai\Default\Local Storage\leveldb/MANIFEST-000001
+2025/03/24-22:01:12.326 8e74 Recovering log #23
+2025/03/24-22:01:12.328 8e74 Reusing old log D:\chatgpt_automation\chrome_profile\openai\Default\Local Storage\leveldb/000023.log 
+2025/03/24-22:02:12.334 3984 Level-0 table #27: started
+2025/03/24-22:02:12.368 3984 Level-0 table #27: 62867 bytes OK
+2025/03/24-22:02:12.403 3984 Delete type=0 #23
+2025/03/24-22:02:12.403 3984 Compacting 4@0 + 1@1 files
+2025/03/24-22:02:12.444 3984 Generated table #28@0: 41 keys, 161818 bytes
+2025/03/24-22:02:12.444 3984 Compacted 4@0 + 1@1 files => 161818 bytes
+2025/03/24-22:02:12.477 3984 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/03/24-22:02:12.478 3984 Delete type=2 #18
+2025/03/24-22:02:12.478 3984 Delete type=2 #20
+2025/03/24-22:02:12.478 3984 Delete type=2 #22
+2025/03/24-22:02:12.478 3984 Delete type=2 #24
+2025/03/24-22:02:12.478 3984 Delete type=2 #27

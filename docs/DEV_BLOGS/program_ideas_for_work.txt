@@ -1,0 +1,14 @@
+Devlog | 2025-03-15
+What’s the actual bottleneck here... the code or the system I’m building it on?
+Spent the last chunk of time trying to get the Swift project to compile clean on Windows. It’s not even the logic breaking... it’s the platform. SwiftUI patterns like @Published and ObservableObject don’t translate cleanly outside of macOS. The compiler throws errors that aren’t code bugs—they’re misalignments in toolchains.
+What broke?
+Platform assumptions... I pushed forward thinking I could get away with testing SwiftUI-based ViewModels on Windows. I can’t. ObservableObject doesn’t exist in this context. @Published is unknown. Then I ran into concurrency problems—actor-isolation warnings, async/await issues... Swift 6 is strict about it.
+Multiple types conflicted too. NetworkError is declared in different places, and it tripped the compiler.
+By the time I was chasing that, I realized I was wasting time patching problems that shouldn’t exist in the first place.
+What’s next...
+I need to stop forcing a cross-platform workflow when the tools aren’t built for it. Either I develop Swift on macOS (cleaner) or drop the dependency on Combine/SwiftUI entirely and use custom observer patterns.
+Time to centralize the domain models. Errors, data types, all of it... one place, clear boundaries.
+I’ll sketch out a concurrency model—actors or at least a clean async abstraction so I’m not juggling DispatchQueues manually.
+And I’ll automate build validation... I’m not sitting through another manual compile just to be told I missed something obvious.
+Feels like a systems problem, not a code problem... and those are the kind that scale badly if I ignore them.
+“The system you build is the system you live in.”

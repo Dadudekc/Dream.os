@@ -1,0 +1,13 @@
+Devlog // 15-Mar-2025
+How much momentum do we lose chasing things that shouldn't have broken in the first place?
+Spent today deep in the guts of SmartStock Pro... chasing down the classic "headers already sent" PHP warnings. One of those things you think you're past, until it's not. Root cause was whitespace and BOM issues on the ajax-handlers.php and alerts-handler.php. Didn't catch them on first pass—wasted time there. Happens.
+Cleaned up the file structure... no whitespace, no BOM, no accidental echoes. Standard stuff, but tedious when it slips through. Pulled everything into shape with pre-commit hooks to kill this upstream. Should've done it sooner, but now it's in.
+Also flagged redundancies... too much validation logic spread across handlers, analyzers, and API calls. Starting a Validator class to centralize it all. That’s going to cut a lot of clutter. Logging was another mess—SSP_Logger is getting a refactor to standardize logs and prep for async/event-driven triggers later.
+CI/CD is next. No more manual deployments. Automating everything... GitHub Actions running tests, packaging, and pushing to WordPress. One button. That's the goal.
+The bigger shift is clear—stop wasting mental bandwidth on things AI and automation can already handle. Let the system self-organize so I can focus on building the next layer.
+Next up:
+Validator and Logger refactor
+CI/CD pipeline build-out
+Start the orchestration layer that ties trading, content, and automation into one system
+"Velocity isn't found in speed... it's in reducing friction."
+—Victor

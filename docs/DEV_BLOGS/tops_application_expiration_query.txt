@@ -1,0 +1,12 @@
+Devlog // 032
+What’s the real cost of friction in a system that’s meant to flow?
+Been doing some surgical auditing on the workflows today—trading, automation, content. Had to get brutally honest about where things are dragging... and it’s not pretty.
+Trading’s tight in theory, but there’s a bottleneck in the execution. Manual validation’s slowing the pipeline, and I’m spending too much time double-checking data that an automated system could handle faster and cleaner. The feedback loop on trades feels sluggish... not because the signals aren’t there, but because I’m still inserting myself where I shouldn’t be.
+Automation’s another story. Scripts are solid, but they’re scattered. Everything’s running in isolation... no orchestration. Too many redundant checks, and the energy bleed is real. It’s like every system’s doing its own thing without knowing where it fits in the bigger picture.
+Content... yeah. The QA cycle is a time sink. I’m doing too much manual cleanup, and that’s killing deployment speed. Worst part? I’m not even timing the drops right because there’s no automated trigger tied to audience peaks.
+What’s next...
+First priority—central orchestrator. Looking at Prefect or Airflow to bring some order to the chaos.
+Next—automate pre-trade validation and execution, and build an AI journal that logs and analyzes in real time.
+Content pipeline gets an AI-driven QA layer so I can offload the first pass edits and automate scheduling.
+The big theme... convergence. Everything has to feed into everything else, or I’m wasting cycles.
+“Flow is found on the other side of friction.”

@@ -1,0 +1,74 @@
+{
+    "sequence_name": "modularize_chat_cycle_controller",
+    "tasks": [
+      {
+        "file_path": "core/ChatCycleController.py",
+        "instructions": [
+          {
+            "type": "extract",
+            "anchor_start": "def _save_prompt_response(",
+            "anchor_end": "def _save_run_summary(",
+            "destination": "core/services/storage/file_storage.py",
+            "insert_marker": "# --- File Storage Functions ---"
+          },
+          {
+            "type": "extract",
+            "anchor_start": "def _save_run_summary(",
+            "anchor_end": "def shutdown(",
+            "destination": "core/services/storage/file_storage.py",
+            "insert_marker": "# --- File Storage Functions ---"
+          }
+        ]
+      },
+      {
+        "file_path": "core/ChatCycleController.py",
+        "instructions": [
+          {
+            "type": "replace",
+            "anchor": "self._save_prompt_response(chat_title, prompt_name, response)",
+            "content": "from core.services.storage.file_storage import save_response\nsave_response(chat_title, prompt_name, response, self.output_dir)"
+          },
+          {
+            "type": "replace",
+            "anchor": "self._save_run_summary(chat_title, chat_responses, run_metadata)",
+            "content": "from core.services/storage/file_storage import save_run_summary\nsave_run_summary(chat_title, chat_responses, run_metadata, self.output_dir)"
+          }
+        ]
+      },
+      {
+        "file_path": "core/ChatCycleController.py",
+        "instructions": [
+          {
+            "type": "extract",
+            "anchor_start": "def _default_output_callback(",
+            "anchor_end": "def append_output(",
+            "destination": "core/utils/output_handler.py",
+            "insert_marker": "# --- Output Handler Functions ---"
+          },
+          {
+            "type": "replace",
+            "anchor": "def append_output(self, message: str):",
+            "content": "from core.utils.output_handler import log_message\n\ndef append_output(self, message: str):\n    log_message(message)"
+          }
+        ]
+      },
+      {
+        "file_path": "core/ChatCycleController.py",
+        "instructions": [
+          {
+            "type": "extract",
+            "anchor_start": "def start(self):",
+            "anchor_end": "def process_chat(self, chat):",
+            "destination": "core/controllers/chat_cycle_executor.py",
+            "insert_marker": "# --- Chat Cycle Execution Functions ---"
+          },
+          {
+            "type": "replace",
+            "anchor": "def start(self):",
+            "content": "from core.controllers.chat_cycle_executor import run_chat_cycle\n\ndef start(self):\n    run_chat_cycle(self)"
+          }
+        ]
+      }
+    ]
+  }
+  

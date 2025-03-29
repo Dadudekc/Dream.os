@@ -1,0 +1,20 @@
+Devlog // 2025-03-15
+“Where am I over-complicating things... and where am I under-building?”
+That’s been sitting in my head all day.
+Today was a system audit... deep dive on FreerideInvestor... where I’m bleeding time and energy, where things are messy. This project started as a plugin... and now it’s grown into something that needs to be enterprise-ready. But I’ve still got one foot in the old build... and the other trying to sprint into Azure, microservices, real-time alerts, AI orchestration.
+That split? It’s costing me.
+Talked through some of the hard truths:
+The WordPress stack is a legacy anchor. It worked as a PoC, but keeping it alive while trying to scale Azure and serverless architecture is just noise.
+I’m doing too much... execution, strategy, and system intelligence. And until I offload some of that cognitive load to AI and automation, I’m capping my own velocity.
+What broke?
+Not code. Not tech.
+The problem was me playing architect and builder at the same time... slowing the system’s ability to self-organize.
+Had to face that and cut the fat.
+So... here’s what’s next:
+Fully pivot off WordPress for core functions. React frontend + Azure Functions become the backbone.
+Alerts go real-time with SignalR + Event Grid.
+AI system controller gets architected this week... it’s going to start making decisions I don’t need to be in the middle of.
+Content creation and distribution automated. Data to content to audience, without me touching every piece.
+Centralize logs, observability... make this thing talk to me, not the other way around.
+This isn’t about adding more... it’s about removing anything slowing the signal.
+"The work works when you work the work."

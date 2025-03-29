@@ -1,0 +1,13 @@
+Devlog | 2025-03-16 | AI Sentiment Refactor
+What’s the point of analyzing data if the signals are muddy from the start?
+Been deep inside the FreerideInvestor AI Market News system... and it’s been exposing some ugly truths in the sentiment pipeline. Everything was coming back "Neutral." Not because the market’s flat, but because my logic was lazy.
+I built out an AI_Analyzer class to handle sentiment on news articles. Thought I was being clever by running a summarization before analyzing sentiment. Problem is, I was hammering OpenAI twice for every news item—one call for summarization, another for sentiment. Double the API usage, double the latency... and all for the privilege of getting back "Neutral" because I wasn’t validating the outputs properly.
+And the caching? Sloppy. I was caching failed responses for 24 hours, so if OpenAI spit out garbage or rate-limited me, I’d just live with stale or wrong data. Not a vibe.
+Also ran into a classic "headers already sent" error—turns out I had whitespace creeping in at the top of my PHP files. Rookie move. Cleaned that up.
+Here’s the path forward:
+Refactor the analyzer to streamline API calls into one multi-purpose function.
+Tighten error handling. No more lazy defaults—log everything, even the edge cases.
+Cache intelligently. If the data’s good, keep it. If it’s junk, expire it fast.
+Validate outputs like a bouncer at an exclusive club. Only Bullish, Bearish, or Neutral get in.
+Feels good catching these leaks in the system. Not because it’s fun, but because every patch increases the system’s velocity.
+"Refinement isn’t optional when you’re building systems that last."

@@ -1,0 +1,20 @@
+Devlog — 2025-03-15
+What’s the actual cost of context switching... and how much of my energy is being bled in the seams between systems?
+Spent today dissecting the FreerideInvestor system. Most of it. Went deep.
+Turns out, I’m burning way more time than I should on stuff that should already be automated...
+Manual structuring, hand-assembling XML for configs, writing out data formats from scratch—every single time. That’s adding friction I don’t need.
+The Python fetch scripts are too linear... I’m calling APIs one after another when I could be hitting them concurrently. No caching yet either, so I’m making redundant calls that waste cycles...
+Energy leak.
+On the content side, there’s a gap. I’ve got trade plans, sentiment analysis, historicals... but they’re not flowing into automated content yet. No pipeline pushing reports, newsletters, or even simple Discord drops... Everything’s still a manual relay between insights and output. Another bottleneck.
+Here’s where it gets interesting though—
+If I refactor the fetch system to async, add Redis caching, and wire automated content generation directly into the trade insights... things move faster. A lot faster.
+Next step is setting up code generation templates so I’m not rebuilding the same XML/JSON blocks manually. Just feed data and let it render.
+Once that’s in place, I’ll layer CI/CD over the whole thing with schema validation and tests... Cut out the human error factor.
+The real work isn’t about more features. It’s about reducing the noise between systems so they can self-organize...
+And that’s where I’m focused.
+What’s next...
+Async I/O rewrite
+Redis cache drop-in
+Template generation (Jinja2 maybe?)
+And the pipeline from trading insights to content posts... that gets wired tight.
+“Speed isn’t just about moving fast. It’s about removing everything that slows you down.”

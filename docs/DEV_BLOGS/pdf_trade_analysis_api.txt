@@ -1,0 +1,12 @@
+Devlog // 2025-03-16
+What’s the point of parsing clean JSON if it never makes it to the front end?
+Spent today deep in the guts of the trade analyzer—refining the PDF parser, making sure it’s pushing out structured JSON like it should. Locally, it runs clean... dumps the data, outputs perfectly. No issues. But once I wire it into the WordPress plugin... silence. Empty responses. No JSON. Just logs mocking me with “No output received.”
+Dug into the logs. The file paths were sloppy—an extra period creeping into the command string. That was easy enough to fix. What wasn’t easy was figuring out why the script worked fine in CLI but not in production. Turns out, it was a combination of output buffering and how Python was handling stdout. Flushed it manually. Added -u to the command in the plugin. Output finally came through.
+After that, I realized pushing JSON isn’t enough if I want to do real data science on these trades. So I reworked the script to insert everything straight into MySQL—using the same creds from wp-config. No extra config files, no hardcoding passwords. Just a clean pipe from parser to DB.
+And now... I’ve got the trade data landing in a real table (wp_trades), ready to be sliced up however I need. This opens up way more room for analytics, visualizations, and maybe even pushing it through OpenAI later for deeper insights. But first, need to focus on stability.
+What’s next:
+Tighten up DB structure
+Build out some summary stats
+Start drafting the template page that pulls all this together in the admin dashboard
+Progress is progress. One step at a time.
+"Slow is smooth. Smooth is fast."

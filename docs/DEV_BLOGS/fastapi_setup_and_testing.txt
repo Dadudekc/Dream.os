@@ -1,0 +1,9 @@
+Devlog - March 16, 2025
+What if everything I build could automatically create itself? What if I could just feed it a request and boom—code is generated, files are created, projects are live?
+Spent some time today fine-tuning the core of my project creation flow. I kicked off with a basic FastAPI setup—a simple / route to check if things were running smoothly. That went off without a hitch. Easy win.
+Then I moved on to building out an actual project creation endpoint. /api/v1/projects/create is live now. It takes a project name and description, creates the project directory, and drops a README.md in there. No fuss, just functional. One of the tricky bits was making sure the directory doesn’t already exist (don’t want to overwrite anything). But that was clean.
+The real magic started when I added in the AI-powered code generation feature. This endpoint, /api/v1/generate_code, takes a feature request (name, given, when, then) and spits out a Python function, saves it to a file, and I get back a confirmation. This is what I’ve been aiming for—getting the system to generate code automatically. I’m seeing the foundations of what could turn into a true self-evolving framework.
+Some challenges—getting the file saving process right took a few tweaks, making sure paths were valid and the structure was solid. But it’s working now, and I’m excited about the possibilities.
+Next? I want to refine this process further. Need to test more complex code generation and start expanding the features so it can handle more than just simple functions. I’ll likely add a few more validation steps too, just to make sure things don’t go off-track when scaling.
+It's slow, but it's progress. Just one more step closer to a system that builds itself.
+"Success is the sum of small efforts, repeated day in and day out."

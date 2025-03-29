@@ -1,0 +1,17 @@
+Devlog // 2025-03-16
+What’s the point of building when AI can do most of it faster?
+That’s been sitting with me today... and it hit harder when I realized a lot of what I’m working on—someone could just craft some prompts and get 80% of the way there.
+But here’s the thing... it’s not about what AI can do. It’s about what I can orchestrate. How I can use it better than anyone else.
+That’s where I’m pivoting my head right now.
+What I worked on:
+Dialed in the idea that I need to stop thinking like a builder, and start thinking like an orchestrator.
+Broke down how all my projects—TradingRobotPlug, FreeRide Investor, Focus Forge, Troop—are part of one system, not isolated tools. The AI system I’m building isn’t about a trading bot... it’s about decision velocity, across trading, execution, and content.
+Focused on building my own AI prompt library—specific to my trading, my workflows. No generic stuff. This will be the backbone that powers everything else.
+What broke / was tricky:
+Tried running Ollama with Mistral:latest to build out a TSLA day trade plan, and it either hallucinated prices or gave me swing trade plans... which doesn’t help when I’m looking for precise intraday levels.
+Realized a lot of the prompts I’ve been using are too general... if I want actionable trade plans, I need tight prompts, focused on pre-market high/low, VWAP zones, breakout triggers, and execution timing.
+What’s next:
+Refine my intraday prompt library for real-time trading setups. I need AI to give me clear long/short triggers, risk levels, and entry/exit windows... not philosophy.
+Automate daily TSLA pre-market scans and end-of-day reviews. This loop has to tighten if I’m going to scale this.
+Keep stacking my AI-powered execution workflows—I’m not building tools anymore... I’m building a system that runs at speed.
+"Clarity isn’t built in a vacuum—it’s forged in the middle of the work."

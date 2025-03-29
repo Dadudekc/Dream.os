@@ -1,0 +1,11 @@
+Devlog // 1️⃣6️⃣ Mar 2025
+What’s the fastest way to detect and fix the simple stuff… without losing sight of the hard stuff?
+I’ve been deep in refactoring the debugging system today. The core idea was merging a bunch of scattered strategies into one unified flow—cleaner, faster, less room for redundancy. Started by pulling together the basic debugging loop that runs tests, parses failures, applies fixes, and rolls back if needed. That part was solid but still felt disconnected from the deeper learning systems I’ve been playing with.
+So I merged in the advanced cycle... now we’ve got AI-powered patch generation with a learning DB, JSON pytest reports, error signatures... the works. The two loops (simple and advanced) are finally under one roof. You can choose how deep you want to go—either fast and light or more methodical with retries and a memory of past errors.
+Then came the import errors.
+I needed a clean way to catch them early—those dumb “ModuleNotFound” and “ImportError” bugs that waste cycles. Built a detector for that... regex-driven, straightforward. It parses the error messages and flags missing modules or broken imports right out of the gate. Feeds off the project structure with a quick analyze_project pass. It’s not fancy... but it cuts noise and gets me to the fix faster.
+What broke? Honestly, aligning the patch targets from the diff headers was messier than I thought. Parsing filenames in the patch and making sure the patch CLI didn’t throw fits... tedious. But it’s working now.
+What’s next?
+I want better rollback handling. Right now, it’s reactive. I want proactive—backups before patches hit, rollback plans baked in. And then I need smarter AI feedback loops... the LLM generating the patch should also get told if its fix failed.
+One thing at a time.
+"Don’t rush the process. Trust it."

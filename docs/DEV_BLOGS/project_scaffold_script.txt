@@ -1,0 +1,15 @@
+Devlog: Standardization and Friction Removal
+March 15, 2025
+What’s the actual cost of friction in your system? Not the theoretical kind... the small, daily stuff that stacks up until you realize half your execution time is wasted fixing what shouldn’t be broken.
+That’s where I was today.
+Spent the bulk of the session tearing down tool misalignment. I was running a Bash script in PowerShell... rookie mistake, but it forced me to step back and look at the deeper problem. Environments weren’t standardized. Some things ran in WSL, some in Windows... Docker was there, but not enforced across everything. Result? Slowed builds, broken flow, wasted cycles.
+So I went back to basics...
+Rebuilt the dev environment using DevContainers and WSL2. Dockerized the workflow completely. Now everything spins up clean. No more context switching... no more “why isn’t this running” purgatory.
+Next step was tackling automation on the task level. Built out a Makefile that handles everything... environment setup, scaffolding, running Docker Compose. What used to be six manual steps is now one command. This feels small, but it’s not. It’s like removing gravel from your shoes on a long run... it adds up.
+The big insight?
+Manual scaffolding and file creation were eating time I didn’t even realize I was losing. The fix: building a Cookiecutter template for backend/frontend scaffolding. That’s in progress now... once it’s done, spinning up a new service or feature is instant.
+What’s next...
+Orchestration. Prefect or Dagster is going to handle the pipeline automation for alerts, data fetching, and AI insights. The goal is to unify the flow... no more duct-taped cron jobs or scripts living in silos. Clean. Modular. Observable.
+I’ll also be automating docs generation... README, changelogs, API docs. GPT and MkDocs handling the grunt work so I can stay focused on building.
+“Speed is a byproduct of clarity. Remove what’s unclear... and you move faster.”
+Onward.

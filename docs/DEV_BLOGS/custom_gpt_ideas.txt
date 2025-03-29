@@ -1,0 +1,8 @@
+Devlog // Feb 7
+"How many times do I need to prove to myself that consistency is everything?"
+Today was a step. Not the biggest one, but the kind that builds. Spent the bulk of the session refining the Tbow Tactic framework... tightening the process, making sure I’m not leaving gaps in how I interpret the data after I drop a chart. The workflow’s cleaner—chart goes up, I extract key price data, calculate missing indicators, and layer it into the trade plan automatically. Took a while to dial in how I want the grading system to feel... ended up locking in Risk Management at an A-, Adaptability a B, and Trade Timing at a B-. Clean? Yeah. But not consistent enough.
+What worked?
+I scaled into the TSLA $362.5 Puts... started small, got confirmation, and then loaded heavier. Two contracts, then twenty. Took profit on both. +$317 locked. Felt solid, but I can tell I’m still rushing some entries. Need to stick to high-conviction confirmations, not just gut reads.
+What’s tricky right now is balancing confidence with discipline... I can size up without flinching, but I catch myself tweaking stop-losses after I'm already in. That’s where the review work comes in. Been writing these out in the journal—seeing the patterns.
+Next week, the focus is all on consistency. No breaks. No fades. Just show up and do the work.
+"The spark is lit… now keep feeding it."

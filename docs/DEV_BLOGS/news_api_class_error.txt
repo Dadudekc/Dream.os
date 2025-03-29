@@ -1,0 +1,11 @@
+Devlog: Where’s the waste hiding?
+Spent today hunting down inefficiencies in the system… those little leaks that seem small but add up fast when you're scaling.
+I realized a big chunk of time and energy was getting burned on redundant API calls. Finnhub, Yahoo Finance, TwelveData—all pulling overlapping data. No real reason for it… just inertia from when I first wired them in. Cleaned that up. Stripped it down to the essentials. Now it’s running tighter… less overhead, fewer points of failure.
+Caching was another one. I had everything locked to a one-hour window, regardless of volatility. Doesn’t make sense when some assets are flying and others are dead still. So I’m moving towards dynamic cache windows—shorter for high-volatility assets, longer for stable ones. More responsive without hammering the system.
+The other drag was OpenAI. Using it for sentiment analysis worked fine early on… but now it’s slow, expensive, and adding latency I don’t want. Looking at shifting that to a local model or a cheaper API. Might even build something lightweight just for headlines.
+Also stripped back the logging… it was verbose as hell. Everything was getting logged, even the obvious stuff. Cleaned that up and tiered it. Just showing what matters now. Less noise… easier to spot the real issues.
+What’s next—
+Finish the local sentiment model.
+Get the caching dynamic.
+And tighten error handling so the system can fix more of its own problems without me stepping in.
+“We don’t rise to the level of our goals… we fall to the level of our systems.”

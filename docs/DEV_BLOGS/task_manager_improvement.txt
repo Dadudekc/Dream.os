@@ -1,0 +1,21 @@
+Devlog // TRP2 Build
+“Where exactly is my time getting burned... and what would happen if I cut that out completely?”
+Today was another one of those days where you realize how much time gets sucked into fixing things that shouldn’t need fixing...
+I’ve been hammering away at TRP2’s data fetch layer and the test suite... and while I thought I was making progress, most of the hours got spent chasing down environment issues and import loops.
+It’s the small stuff...
+Imports failing because of where setup_logger lived...
+Tests returning NoneType because the mocks weren’t wired tight enough...
+Spending energy on patching the same things over and over instead of focusing on getting clean, unified outputs.
+And every time I fix one, another pops up because the structure wasn’t locked in from the start.
+We cleaned up the setup_logger situation—folded it properly inside ConfigManager—and killed the redundant patches. That worked...
+But then the tests blew up because the return types weren’t consistent across the data fetches. DataFrames when I expected them, None when I didn’t.
+Mocking Alpaca, Finnhub, Alpha Vantage... repeat.
+It’s all fragile until it’s not.
+So here’s what I’m doing next...
+Containerizing everything—dev, test, and mocks—so the env is never the bottleneck again.
+Building a Mock DataFactory to generate clean, consistent test data and ditch the manual patching.
+Unifying the data fetch returns behind a strict schema... every fetch, every API, same structure, no surprises.
+Pulling logging and tracing into a central place so I can see exactly where things break without digging.
+I’m done reacting to the system.
+Time to make it self-correcting.
+"Don’t add things to do... remove what doesn’t need doing."

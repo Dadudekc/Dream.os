@@ -1,0 +1,18 @@
+Devlog | March 16, 2025
+What’s the threshold where fixing code becomes less about debugging and more about rebuilding the entire foundation?
+Today was about getting clear on structure… specifically, imports and test files. I kept running into issues with broken imports across a bunch of the test files. It was frustrating because I’ve been flagging the wrong patterns creeping back in over and over again. I had to step back and lock in a consistent import structure for the core modules—AgentBase, AIModelManager, AIPatchUtils, CustomAgent, and TradingAgent. Those are now standardized, and I’ll be watching them tight going forward.
+The bigger mess was running pytest and seeing 22 errors blow up... most of them were caused by syntax errors, module import failures, or legacy references to files that don’t even exist anymore. There were also a few binary compatibility issues with NumPy and SciPy—classic dependency mismatch. Tracked that down to an Anaconda environment conflict. This is the stuff that slows momentum if I let it, but we’re not doing that.
+What I worked on:
+Cleaned up import structures across core agent utilities.
+Rewrote and updated test files for AgentDispatcher, AgentRegistry, AIConfidenceManager, AIPatchOptimizer, AIPatchRetryManager, AIPatchReviewManager, AIRollbackAnalysis, AutoFixer, CustomAgent, DebuggerAgent, DebuggerCLI, DebuggerCore, DebuggerReporter, DebuggerRunner, DeepSeekModel, and OpenAIModel.
+Verified structure by compiling all test files. Syntax issues are mostly patched—except for some edge cases.
+What broke:
+Found multiple unterminated string literals and indentation bugs in test files. Most were holdovers from older refactors.
+Imports in AIConfidenceManager and DebuggerCore tests weren’t hitting the right modules because of broken paths.
+NumPy/Scipy version mismatch causing binary incompatibility warnings. Resolved by aligning package versions.
+What’s next:
+Run fresh pytest on all tests after dependency alignment.
+Get a new environment spun up for cleaner isolation—probably moving away from the current Anaconda base.
+Start tightening error handling around patch generation and retry logic... too much is slipping through the cracks in AIPatchRetryManager and DebugAgentAutoFixer.
+“Discipline equals freedom.” — Jocko Willink
+Back at it tomorrow.

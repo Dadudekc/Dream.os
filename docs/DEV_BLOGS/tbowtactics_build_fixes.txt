@@ -1,0 +1,16 @@
+Devlog // 2025-03-15
+What systems are still slowing me down... and why am I letting them?
+Today was all about hunting bottlenecks in the flow—trading, automation, OpenAI integrations... it’s still a little messier than I want it to be.
+I took a deep dive into the service layers. NetworkManager, OpenAIService, StockResearchViewModel—they were fragmented. Too many versions floating around. Same logic rewritten three times in slightly different flavors... no source of truth. That’s friction I don’t need.
+A lot of cognitive drift is coming from this lack of system architecture. I noticed I’m often rewriting things that should already be modular and locked. Clean protocols, dependency injection... none of that was standardized. So I’ve been dragging decisions out because there’s no pre-defined measure for “done.”
+I also spotted redundancy in my testing. Right now, validation depends on manual CLI runs and waiting on handlers to finish. Waste of time. Need to shift into automated testing pipelines—mock services for OpenAI, mocks for Alpha Vantage data—get those feedback loops fast and tight.
+Caching is next on the board. Right now I’m hitting the APIs on every call, and I don’t have throttling in place. That’s a vulnerability. It slows things down and risks burning out my quotas.
+The good news? The architecture is starting to take shape. I’m pulling these scattered parts together. One NetworkManager, one OpenAIService, clear protocols, a lean ViewModel structure. Once I lock those, the system can actually move.
+What’s next...
+Lock v1 of the core service implementations
+Build the test suite—automated, no more manual checking
+Implement caching and throttling layers
+Formalize the architecture so I stop questioning what “done” looks like
+...Then I can get back to AI-driven trading strategies. That’s where the leverage is.
+"When you remove the bottlenecks, you remove the excuses."
+Let’s move.

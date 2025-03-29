@@ -1,0 +1,24 @@
+Devlog: Where’s the Real Bottleneck?
+Been thinking about this all morning…
+What’s really slowing the system down?
+Not in theory. Not on paper.
+But right here… in the workflows I touch every day.
+This drop’s about the bottlenecks I finally confronted head-on today.
+First, API dependency. Way too much of it. Pulling macro data from FRED, indicators from Twelve Data, sentiment from SocialSentiment.io… it’s all a drag. Slow calls. Rate limits. Too many points of failure.
+So, we pushed caching. Set up a tighter ETL pipeline to automate the fetch… normalize it… keep it ready locally. No more waiting around for an API to hand us our data on its terms.
+Next, local inference. Started wiring up an actual implementation. No more placeholders or mocks. Models running through ONNX or TensorFlow.js… triggering real predictions. Fast. Client-side where it makes sense. Server-side for heavy lifting.
+There’s still a lot to do here. Optimizing the execution time… streamlining the call between PHP and the inference scripts… but we’re in motion.
+Also rewired the error handling and logging. Centralized it.
+It’s clean now. And it’s one less thing that can trip us up when we scale.
+What broke?
+The data calls are still noisy…
+Some API data structures are just messy, and I’ll probably need to normalize deeper.
+Model outputs aren’t standardized yet… so mapping back into the workflows is gonna be tedious until I clean that up.
+But this is just grunt work at this point.
+What’s next?
+Full model versioning + A/B testing so we can swap models without breaking flow
+More reinforcement learning hooks
+Scaling the local inference so it’s seamless
+Tighten the data pipelines with new sources—Reddit, Twitter sentiment, maybe even more alt signals
+“Slow is smooth… smooth is fast.”
+That’s the vibe right now. Keeping steady.

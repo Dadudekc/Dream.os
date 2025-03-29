@@ -1,0 +1,8 @@
+Devlog | 2025-03-15
+What happens when your system is doing a lot... but not converging fast enough?
+Been deep in the weeds on tightening up the Agent workflows. The original setup had good bones, but there was too much fragmentation—separate components for task management, sandboxing, performance monitoring... and planning was still off doing its own thing. So I pulled them all into a single AgentDispatcher class. Now it runs planning, execution, and monitoring in one loop. Cleaner. Less mental load.
+The tricky part was balancing task distribution. I realized I’d hardcoded max_workers=3 and left it. Dumb. The system wasn’t adaptive. So I rewired the architecture to prep for dynamic load balancing. Some tasks need to go real-time (trades, debugging critical errors), and others can batch (refactors, deep analysis). Next, I'll need to rig dynamic resource allocation to make that scale.
+Then there’s the trading execution bottleneck... MACD curl detection works, but order placement is still static. No smart routing. That’s costing efficiency. So I’m sketching out a smarter executor—liquidity checks, dynamic sizing, real-time slippage handling. Tight execution is non-negotiable.
+On the content side... still too manual. Insights from trading and debugging aren't auto-syndicated across platforms yet. That’s a waste. Building the layer that takes logs and turns them into threads, clips, and posts is up next. One action needs to trigger infinite outputs... or this doesn’t scale.
+Bottom line... the systems are waking up, but they aren’t learning from each other yet. That’s the work.
+"Don’t optimize for now. Optimize for always."

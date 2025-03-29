@@ -1,0 +1,110 @@
+Below is a refreshed, side‑by‑side 4‑card layout that presents your phases in a clean, horizontal row. The design uses a CSS Grid with four columns on desktop (which stacks on mobile) and subtle colored side borders for a professional look true to the FreeRideInvestor brand.
+html
+Copy
+Edit
+<!-- Side-by-Side 4 Phase Cards Layout -->
+
+<style>
+  /* Global Styles */
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    font-family: 'Roboto', sans-serif;
+    color: #ddd;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+  }
+  
+  /* Phase Cards Container: 4 Cards Side-by-Side */
+  .phase-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  
+  /* Each Phase Card */
+  .phase-card {
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    border-left: 6px solid transparent;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .phase-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+  }
+  
+  /* Color Coded Side Borders */
+  .phase-1 { border-left-color: #6afc6a; }
+  .phase-2 { border-left-color: #ffbe33; }
+  .phase-3 { border-left-color: #4287f5; }
+  .phase-4 { border-left-color: #ff4b4b; }
+  
+  /* Card Typography */
+  .phase-card h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #fff;
+  }
+  .phase-card p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #ccc;
+  }
+  
+  /* Responsive: Stack Cards on Smaller Screens */
+  @media (max-width: 768px) {
+    .phase-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="container">
+  <div class="phase-cards">
+    <!-- Phase 1: The Plan -->
+    <div class="phase-card phase-1">
+      <h2>Phase 1: The Plan</h2>
+      <p>
+        A re-engineered trading system built for efficiency and precision—featuring AI‑optimized trade signals, automated risk management, and scalability across account sizes.
+      </p>
+    </div>
+    
+    <!-- Phase 2: The Challenge -->
+    <div class="phase-card phase-2">
+      <h2>Phase 2: The Challenge</h2>
+      <p>
+        A challenge designed for traders starting small, with step‑by‑step blueprints, live trade reviews, and community-driven accountability.
+      </p>
+    </div>
+    
+    <!-- Phase 3: Strategy Breakdown -->
+    <div class="phase-card phase-3">
+      <h2>Phase 3: Strategy Breakdown</h2>
+      <p>
+        The system revolves around three pillars—automation, risk control, and scalability—to ensure precision and consistent execution.
+      </p>
+    </div>
+    
+    <!-- Phase 4: Cash Generation -->
+    <div class="phase-card phase-4">
+      <h2>Phase 4: Cash Generation</h2>
+      <p>
+        Beyond winning trades, this phase focuses on creating consistent cash flow through premium clubs, AI-powered research, and monetization strategies.
+      </p>
+    </div>
+  </div>
+</div>
+Overview
+Side-by-Side Layout:
+The four phase cards are arranged horizontally using CSS Grid, ensuring they appear side by side on desktop screens.
+Professional Styling:
+Each card features a subtle colored side border, clean typography, and a gentle hover effect to enhance interactivity without overwhelming the design.
+Responsive Design:
+On smaller screens, the cards stack vertically to maintain readability.
+Feel free to tweak the content, colors, or spacing to best match your FreeRideInvestor branding.

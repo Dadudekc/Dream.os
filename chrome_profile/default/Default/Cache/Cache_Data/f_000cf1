@@ -1,0 +1,744 @@
+,File,Class,Method,Arguments
+0,utils\Debuggers\DebugAgent.py,global,__init__,"self, name, project_name"
+1,utils\Debuggers\DebugAgent.py,global,__init__,"self, name"
+2,utils\Debuggers\DebugAgent.py,global,_load_learning_db,self
+3,utils\Debuggers\DebugAgent.py,global,_save_learning_db,self
+4,utils\Debuggers\DebugAgent.py,global,solve_task,"self, task"
+5,utils\Debuggers\DebugAgent.py,global,run_tests,self
+6,utils\Debuggers\DebugAgent.py,global,run_tests_for_files,"self, files"
+7,utils\Debuggers\DebugAgent.py,global,parse_test_failures,"self, test_output"
+8,utils\Debuggers\DebugAgent.py,global,apply_fix,"self, failure"
+9,utils\Debuggers\DebugAgent.py,global,retry_tests,"self, max_retries"
+10,utils\Debuggers\DebugAgent.py,global,automate_debugging,self
+11,utils\Debuggers\DebugAgent.py,global,run_debug_cycle,"self, max_retries"
+12,utils\Debuggers\DebugAgent.py,global,analyze_error,"self, error, context"
+13,utils\Debuggers\DebugAgent.py,global,run_diagnostics,"self, system_check, detailed"
+14,utils\Debuggers\DebugAgent.py,global,rollback_changes,"self, files_modified"
+15,utils\Debuggers\DebugAgent.py,global,push_to_github,"self, commit_message"
+16,utils\Debuggers\DebugAgent.py,global,shutdown,self
+17,utils\Debuggers\DebugAgent.py,global,describe_capabilities,self
+18,utils\Debuggers\DebugAgent.py,global,_apply_known_pattern,"self, failure"
+19,utils\Debuggers\DebugAgent.py,global,_quick_fix_missing_attribute,"self, file_name, error_msg"
+20,utils\Debuggers\DebugAgent.py,global,_quick_fix_assertion_mismatch,"self, file_name, error_msg"
+21,utils\Debuggers\DebugAgent.py,global,_quick_fix_import_error,"self, file_name, error_msg"
+22,utils\Debuggers\DebugAgent.py,global,_quick_fix_type_error,"self, file_name, error_msg"
+23,utils\Debuggers\DebugAgent.py,global,_quick_fix_indentation,"self, file_name"
+24,utils\Debuggers\DebugAgent.py,global,_apply_adaptive_learning_fix,"self, failure"
+25,utils\Debuggers\DebugAgent.py,global,_search_learned_fix,"self, error_msg"
+26,utils\Debuggers\DebugAgent.py,global,_store_learned_fix,"self, error_msg, fix_str"
+27,utils\Debuggers\DebugAgent.py,global,__init__,self
+28,utils\Debuggers\DebugAgent.py,global,record_failed_patch,"self, error_signature, patch"
+29,utils\Debuggers\DebugAgent.py,global,record_successful_patch,"self, error_signature, patch"
+30,utils\Debuggers\DebugAgent.py,global,get_failed_patches,"self, error_signature"
+31,utils\Debuggers\DebugAgent.py,global,apply_patch,"self, patch"
+32,utils\Debuggers\DebugAgent.py,global,assign_confidence_score,"self, error_signature, patch"
+33,utils\Debuggers\DebugAgent.py,global,get_confidence,"self, error_signature, patch"
+34,utils\Debuggers\DebugAgent.py,global,__init__,self
+35,utils\Debuggers\DebugAgent.py,global,load_existing_report,self
+36,utils\Debuggers\DebugAgent.py,global,log_failed_patch,"self, error_signature, reason"
+37,utils\Debuggers\DebugAgent.py,global,log_ai_explanation,"self, error_signature, explanation"
+38,utils\Debuggers\DebugAgent.py,global,log_successful_fix,"self, error_signature, confidence_score"
+39,utils\Debuggers\DebugAgent.py,global,save_report,self
+40,utils\Debuggers\DebugAgent.py,global,__init__,"self, name"
+41,utils\Debuggers\DebugAgent.py,global,_load_learning_db,self
+42,utils\Debuggers\DebugAgent.py,global,_save_learning_db,self
+43,utils\Debuggers\DebugAgent.py,global,solve_task,"self, task"
+44,utils\Debuggers\DebugAgent.py,global,run_tests,self
+45,utils\Debuggers\DebugAgent.py,global,run_tests_for_files,"self, files"
+46,utils\Debuggers\DebugAgent.py,global,parse_test_failures,"self, test_output"
+47,utils\Debuggers\DebugAgent.py,global,apply_fix,"self, failure"
+48,utils\Debuggers\DebugAgent.py,global,retry_tests,"self, max_retries"
+49,utils\Debuggers\DebugAgent.py,global,automate_debugging,self
+50,utils\Debuggers\DebugAgent.py,global,run_debug_cycle,"self, max_retries"
+51,utils\Debuggers\DebugAgent.py,global,analyze_error,"self, error, context"
+52,utils\Debuggers\DebugAgent.py,global,run_diagnostics,"self, system_check, detailed"
+53,utils\Debuggers\DebugAgent.py,global,rollback_changes,"self, files_modified"
+54,utils\Debuggers\DebugAgent.py,global,push_to_github,"self, commit_message"
+55,utils\Debuggers\DebugAgent.py,global,shutdown,self
+56,utils\Debuggers\DebugAgent.py,global,describe_capabilities,self
+57,utils\Debuggers\DebugAgent.py,global,_apply_known_pattern,"self, failure"
+58,utils\Debuggers\DebugAgent.py,global,_quick_fix_missing_attribute,"self, file_name, error_msg"
+59,utils\Debuggers\DebugAgent.py,global,_quick_fix_assertion_mismatch,"self, file_name, error_msg"
+60,utils\Debuggers\DebugAgent.py,global,_quick_fix_import_error,"self, file_name, error_msg"
+61,utils\Debuggers\DebugAgent.py,global,_quick_fix_type_error,"self, file_name, error_msg"
+62,utils\Debuggers\DebugAgent.py,global,_quick_fix_indentation,"self, file_name"
+63,utils\Debuggers\DebugAgent.py,global,_apply_adaptive_learning_fix,"self, failure"
+64,utils\Debuggers\DebugAgent.py,global,_search_learned_fix,"self, error_msg"
+65,utils\Debuggers\DebugAgent.py,global,_store_learned_fix,"self, error_msg, fix_str"
+66,utils\Debuggers\DebugAgent.py,global,__init__,self
+67,utils\Debuggers\DebugAgent.py,global,_load_json,"self, path"
+68,utils\Debuggers\DebugAgent.py,global,_save_json,"self, path, data"
+69,utils\Debuggers\DebugAgent.py,global,run_tests,self
+70,utils\Debuggers\DebugAgent.py,global,parse_test_failures,"self, test_output"
+71,utils\Debuggers\DebugAgent.py,global,apply_patch,"self, error_signature"
+72,utils\Debuggers\DebugAgent.py,global,_apply_patch_logic,"self, patch"
+73,utils\Debuggers\DebugAgent.py,global,log_patch_attempt,"self, error_signature, patch, outcome"
+74,utils\Debuggers\DebugAgent.py,global,retry_tests,"self, max_retries"
+75,utils\Debuggers\DebugAgent.py,global,commit_to_git,"self, commit_message"
+76,utils\Debuggers\DebugAgent.py,global,process_human_reviewed_patches,self
+77,utils\Debuggers\DebugAgent.py,global,rank_human_reviewed_patches,self
+78,utils\Debuggers\DebugAgent.py,global,evaluate_patch,"self, patch"
+79,utils\Debuggers\DebugAgent.py,global,analyze_patch_failures,self
+80,utils\Debuggers\DebugAgent.py,AgentBase,__init__,"self, name, project_name"
+81,utils\Debuggers\DebugAgent.py,DebugAgent,__init__,"self, name"
+82,utils\Debuggers\DebugAgent.py,DebugAgent,_load_learning_db,self
+83,utils\Debuggers\DebugAgent.py,DebugAgent,_save_learning_db,self
+84,utils\Debuggers\DebugAgent.py,DebugAgent,solve_task,"self, task"
+85,utils\Debuggers\DebugAgent.py,DebugAgent,run_tests,self
+86,utils\Debuggers\DebugAgent.py,DebugAgent,run_tests_for_files,"self, files"
+87,utils\Debuggers\DebugAgent.py,DebugAgent,parse_test_failures,"self, test_output"
+88,utils\Debuggers\DebugAgent.py,DebugAgent,apply_fix,"self, failure"
+89,utils\Debuggers\DebugAgent.py,DebugAgent,retry_tests,"self, max_retries"
+90,utils\Debuggers\DebugAgent.py,DebugAgent,automate_debugging,self
+91,utils\Debuggers\DebugAgent.py,DebugAgent,run_debug_cycle,"self, max_retries"
+92,utils\Debuggers\DebugAgent.py,DebugAgent,analyze_error,"self, error, context"
+93,utils\Debuggers\DebugAgent.py,DebugAgent,run_diagnostics,"self, system_check, detailed"
+94,utils\Debuggers\DebugAgent.py,DebugAgent,rollback_changes,"self, files_modified"
+95,utils\Debuggers\DebugAgent.py,DebugAgent,push_to_github,"self, commit_message"
+96,utils\Debuggers\DebugAgent.py,DebugAgent,shutdown,self
+97,utils\Debuggers\DebugAgent.py,DebugAgent,describe_capabilities,self
+98,utils\Debuggers\DebugAgent.py,DebugAgent,_apply_known_pattern,"self, failure"
+99,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_missing_attribute,"self, file_name, error_msg"
+100,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_assertion_mismatch,"self, file_name, error_msg"
+101,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_import_error,"self, file_name, error_msg"
+102,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_type_error,"self, file_name, error_msg"
+103,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_indentation,"self, file_name"
+104,utils\Debuggers\DebugAgent.py,DebugAgent,_apply_adaptive_learning_fix,"self, failure"
+105,utils\Debuggers\DebugAgent.py,DebugAgent,_search_learned_fix,"self, error_msg"
+106,utils\Debuggers\DebugAgent.py,DebugAgent,_store_learned_fix,"self, error_msg, fix_str"
+107,utils\Debuggers\DebugAgent.py,PatchTrackingManager,__init__,self
+108,utils\Debuggers\DebugAgent.py,PatchTrackingManager,record_failed_patch,"self, error_signature, patch"
+109,utils\Debuggers\DebugAgent.py,PatchTrackingManager,record_successful_patch,"self, error_signature, patch"
+110,utils\Debuggers\DebugAgent.py,PatchTrackingManager,get_failed_patches,"self, error_signature"
+111,utils\Debuggers\DebugAgent.py,PatchTrackingManager,apply_patch,"self, patch"
+112,utils\Debuggers\DebugAgent.py,AIConfidenceManager,assign_confidence_score,"self, error_signature, patch"
+113,utils\Debuggers\DebugAgent.py,AIConfidenceManager,get_confidence,"self, error_signature, patch"
+114,utils\Debuggers\DebugAgent.py,DebuggerReporter,__init__,self
+115,utils\Debuggers\DebugAgent.py,DebuggerReporter,load_existing_report,self
+116,utils\Debuggers\DebugAgent.py,DebuggerReporter,log_failed_patch,"self, error_signature, reason"
+117,utils\Debuggers\DebugAgent.py,DebuggerReporter,log_ai_explanation,"self, error_signature, explanation"
+118,utils\Debuggers\DebugAgent.py,DebuggerReporter,log_successful_fix,"self, error_signature, confidence_score"
+119,utils\Debuggers\DebugAgent.py,DebuggerReporter,save_report,self
+120,utils\Debuggers\DebugAgent.py,DebugAgent,__init__,"self, name"
+121,utils\Debuggers\DebugAgent.py,DebugAgent,_load_learning_db,self
+122,utils\Debuggers\DebugAgent.py,DebugAgent,_save_learning_db,self
+123,utils\Debuggers\DebugAgent.py,DebugAgent,solve_task,"self, task"
+124,utils\Debuggers\DebugAgent.py,DebugAgent,run_tests,self
+125,utils\Debuggers\DebugAgent.py,DebugAgent,run_tests_for_files,"self, files"
+126,utils\Debuggers\DebugAgent.py,DebugAgent,parse_test_failures,"self, test_output"
+127,utils\Debuggers\DebugAgent.py,DebugAgent,apply_fix,"self, failure"
+128,utils\Debuggers\DebugAgent.py,DebugAgent,retry_tests,"self, max_retries"
+129,utils\Debuggers\DebugAgent.py,DebugAgent,automate_debugging,self
+130,utils\Debuggers\DebugAgent.py,DebugAgent,run_debug_cycle,"self, max_retries"
+131,utils\Debuggers\DebugAgent.py,DebugAgent,analyze_error,"self, error, context"
+132,utils\Debuggers\DebugAgent.py,DebugAgent,run_diagnostics,"self, system_check, detailed"
+133,utils\Debuggers\DebugAgent.py,DebugAgent,rollback_changes,"self, files_modified"
+134,utils\Debuggers\DebugAgent.py,DebugAgent,push_to_github,"self, commit_message"
+135,utils\Debuggers\DebugAgent.py,DebugAgent,shutdown,self
+136,utils\Debuggers\DebugAgent.py,DebugAgent,describe_capabilities,self
+137,utils\Debuggers\DebugAgent.py,DebugAgent,_apply_known_pattern,"self, failure"
+138,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_missing_attribute,"self, file_name, error_msg"
+139,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_assertion_mismatch,"self, file_name, error_msg"
+140,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_import_error,"self, file_name, error_msg"
+141,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_type_error,"self, file_name, error_msg"
+142,utils\Debuggers\DebugAgent.py,DebugAgent,_quick_fix_indentation,"self, file_name"
+143,utils\Debuggers\DebugAgent.py,DebugAgent,_apply_adaptive_learning_fix,"self, failure"
+144,utils\Debuggers\DebugAgent.py,DebugAgent,_search_learned_fix,"self, error_msg"
+145,utils\Debuggers\DebugAgent.py,DebugAgent,_store_learned_fix,"self, error_msg, fix_str"
+146,utils\Debuggers\DebugAgent.py,DebugAgent,__init__,self
+147,utils\Debuggers\DebugAgent.py,DebugAgent,_load_json,"self, path"
+148,utils\Debuggers\DebugAgent.py,DebugAgent,_save_json,"self, path, data"
+149,utils\Debuggers\DebugAgent.py,DebugAgent,run_tests,self
+150,utils\Debuggers\DebugAgent.py,DebugAgent,parse_test_failures,"self, test_output"
+151,utils\Debuggers\DebugAgent.py,DebugAgent,apply_patch,"self, error_signature"
+152,utils\Debuggers\DebugAgent.py,DebugAgent,_apply_patch_logic,"self, patch"
+153,utils\Debuggers\DebugAgent.py,DebugAgent,log_patch_attempt,"self, error_signature, patch, outcome"
+154,utils\Debuggers\DebugAgent.py,DebugAgent,retry_tests,"self, max_retries"
+155,utils\Debuggers\DebugAgent.py,DebugAgent,commit_to_git,"self, commit_message"
+156,utils\Debuggers\DebugAgent.py,DebugAgent,process_human_reviewed_patches,self
+157,utils\Debuggers\DebugAgent.py,DebugAgent,rank_human_reviewed_patches,self
+158,utils\Debuggers\DebugAgent.py,DebugAgent,evaluate_patch,"self, patch"
+159,utils\Debuggers\DebugAgent.py,DebugAgent,analyze_patch_failures,self
+160,utils\Debuggers\DebuggerCLI.py,global,main,
+161,utils\Debuggers\DebuggerCLI.py,global,__init__,self
+162,utils\Debuggers\DebuggerCLI.py,global,load_ai_performance,self
+163,utils\Debuggers\DebuggerCLI.py,global,show_ai_performance,self
+164,utils\Debuggers\DebuggerCLI.py,global,run_debugger,"self, file"
+165,utils\Debuggers\DebuggerCLI.py,global,show_logs,self
+166,utils\Debuggers\DebuggerCLI.py,global,rollback_fixes,self
+167,utils\Debuggers\DebuggerCLI.py,global,fix_imports,self
+168,utils\Debuggers\DebuggerCLI.py,global,parse_arguments,self
+169,utils\Debuggers\DebuggerCLI.py,global,execute_commands,"self, args"
+170,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,__init__,self
+171,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,load_ai_performance,self
+172,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,show_ai_performance,self
+173,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,run_debugger,"self, file"
+174,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,show_logs,self
+175,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,rollback_fixes,self
+176,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,fix_imports,self
+177,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,parse_arguments,self
+178,utils\Debuggers\DebuggerCLI.py,DebuggerCLI,execute_commands,"self, args"
+179,utils\Debuggers\DebuggerDashboard.py,global,__init__,self
+180,utils\Debuggers\DebuggerDashboard.py,global,load_json,"self, key"
+181,utils\Debuggers\DebuggerDashboard.py,global,save_json,"self, key, data"
+182,utils\Debuggers\DebuggerDashboard.py,global,update_dashboard,self
+183,utils\Debuggers\DebuggerDashboard.py,global,handle_import_fix,"self, row, column"
+184,utils\Debuggers\DebuggerDashboard.py,global,apply_import_fix,"self, module, suggested_fix"
+185,utils\Debuggers\DebuggerDashboard.py,global,modify_source_file,"self, file_path, module, suggested_fix"
+186,utils\Debuggers\DebuggerDashboard.py,global,commit_to_git,"self, file_path, message"
+187,utils\Debuggers\DebuggerDashboard.py,global,undo_selected_fix,self
+188,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,__init__,self
+189,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,load_json,"self, key"
+190,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,save_json,"self, key, data"
+191,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,update_dashboard,self
+192,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,handle_import_fix,"self, row, column"
+193,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,apply_import_fix,"self, module, suggested_fix"
+194,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,modify_source_file,"self, file_path, module, suggested_fix"
+195,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,commit_to_git,"self, file_path, message"
+196,utils\Debuggers\DebuggerDashboard.py,DebuggerDashboard,undo_selected_fix,self
+197,utils\Debuggers\DebuggerLogger.py,global,__init__,self
+198,utils\Debuggers\DebuggerLogger.py,global,log_attempt,"self, failure, patch_description, success"
+199,utils\Debuggers\DebuggerLogger.py,global,_write_log,"self, log_entry"
+200,utils\Debuggers\DebuggerLogger.py,global,_load_existing_logs,self
+201,utils\Debuggers\DebuggerLogger.py,global,get_logs,self
+202,utils\Debuggers\DebuggerLogger.py,global,clear_logs,self
+203,utils\Debuggers\DebuggerLogger.py,DebuggerLogger,__init__,self
+204,utils\Debuggers\DebuggerLogger.py,DebuggerLogger,log_attempt,"self, failure, patch_description, success"
+205,utils\Debuggers\DebuggerLogger.py,DebuggerLogger,_write_log,"self, log_entry"
+206,utils\Debuggers\DebuggerLogger.py,DebuggerLogger,_load_existing_logs,self
+207,utils\Debuggers\DebuggerLogger.py,DebuggerLogger,get_logs,self
+208,utils\Debuggers\DebuggerLogger.py,DebuggerLogger,clear_logs,self
+209,utils\Debuggers\DebuggerReporter.py,global,__init__,self
+210,utils\Debuggers\DebuggerReporter.py,global,load_existing_report,self
+211,utils\Debuggers\DebuggerReporter.py,global,log_failed_patch,"self, error_signature, reason"
+212,utils\Debuggers\DebuggerReporter.py,global,log_successful_fix,"self, error_signature, confidence_score"
+213,utils\Debuggers\DebuggerReporter.py,global,log_ai_explanation,"self, error_signature, explanation"
+214,utils\Debuggers\DebuggerReporter.py,global,save_report,self
+215,utils\Debuggers\DebuggerReporter.py,global,send_email_report,"self, recipient_email"
+216,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,__init__,self
+217,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,load_existing_report,self
+218,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,log_failed_patch,"self, error_signature, reason"
+219,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,log_successful_fix,"self, error_signature, confidence_score"
+220,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,log_ai_explanation,"self, error_signature, explanation"
+221,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,save_report,self
+222,utils\Debuggers\DebuggerReporter.py,DebuggerReporter,send_email_report,"self, recipient_email"
+223,utils\Debuggers\DebuggerRunner.py,global,__init__,"self, max_retries, enable_email_reports"
+224,utils\Debuggers\DebuggerRunner.py,global,run_tests,self
+225,utils\Debuggers\DebuggerRunner.py,global,retry_tests,self
+226,utils\Debuggers\DebuggerRunner.py,global,finalize_report,self
+227,utils\Debuggers\DebuggerRunner.py,DebuggerRunner,__init__,"self, max_retries, enable_email_reports"
+228,utils\Debuggers\DebuggerRunner.py,DebuggerRunner,run_tests,self
+229,utils\Debuggers\DebuggerRunner.py,DebuggerRunner,retry_tests,self
+230,utils\Debuggers\DebuggerRunner.py,DebuggerRunner,finalize_report,self
+231,utils\Debuggers\debugger_agent.py,global,__init__,self
+232,utils\Debuggers\debugger_agent.py,global,record_failed_patch,"self, error_signature, patch"
+233,utils\Debuggers\debugger_agent.py,global,record_successful_patch,"self, error_signature, patch"
+234,utils\Debuggers\debugger_agent.py,global,get_failed_patches,"self, error_signature"
+235,utils\Debuggers\debugger_agent.py,global,apply_patch,"self, patch"
+236,utils\Debuggers\debugger_agent.py,global,assign_confidence_score,"self, error_signature, patch"
+237,utils\Debuggers\debugger_agent.py,global,get_confidence,"self, error_signature, patch"
+238,utils\Debuggers\debugger_agent.py,global,__init__,self
+239,utils\Debuggers\debugger_agent.py,global,load_existing_report,self
+240,utils\Debuggers\debugger_agent.py,global,log_failed_patch,"self, error_signature, reason"
+241,utils\Debuggers\debugger_agent.py,global,log_ai_explanation,"self, error_signature, explanation"
+242,utils\Debuggers\debugger_agent.py,global,log_successful_fix,"self, error_signature, confidence_score"
+243,utils\Debuggers\debugger_agent.py,global,save_report,self
+244,utils\Debuggers\debugger_agent.py,global,__init__,"self, name"
+245,utils\Debuggers\debugger_agent.py,global,_load_learning_db,self
+246,utils\Debuggers\debugger_agent.py,global,_save_learning_db,self
+247,utils\Debuggers\debugger_agent.py,global,solve_task,"self, task"
+248,utils\Debuggers\debugger_agent.py,global,run_tests,self
+249,utils\Debuggers\debugger_agent.py,global,run_tests_for_files,"self, files"
+250,utils\Debuggers\debugger_agent.py,global,parse_test_failures,"self, test_output"
+251,utils\Debuggers\debugger_agent.py,global,apply_fix,"self, failure"
+252,utils\Debuggers\debugger_agent.py,global,retry_tests,"self, max_retries"
+253,utils\Debuggers\debugger_agent.py,global,automate_debugging,self
+254,utils\Debuggers\debugger_agent.py,global,run_debug_cycle,"self, max_retries"
+255,utils\Debuggers\debugger_agent.py,global,analyze_error,"self, error, context"
+256,utils\Debuggers\debugger_agent.py,global,run_diagnostics,"self, system_check, detailed"
+257,utils\Debuggers\debugger_agent.py,global,rollback_changes,"self, files_modified"
+258,utils\Debuggers\debugger_agent.py,global,push_to_github,"self, commit_message"
+259,utils\Debuggers\debugger_agent.py,global,shutdown,self
+260,utils\Debuggers\debugger_agent.py,global,describe_capabilities,self
+261,utils\Debuggers\debugger_agent.py,global,_apply_known_pattern,"self, failure"
+262,utils\Debuggers\debugger_agent.py,global,_quick_fix_missing_attribute,"self, file_name, error_msg"
+263,utils\Debuggers\debugger_agent.py,global,_quick_fix_assertion_mismatch,"self, file_name, error_msg"
+264,utils\Debuggers\debugger_agent.py,global,_quick_fix_import_error,"self, file_name, error_msg"
+265,utils\Debuggers\debugger_agent.py,global,_quick_fix_type_error,"self, file_name, error_msg"
+266,utils\Debuggers\debugger_agent.py,global,_quick_fix_indentation,"self, file_name"
+267,utils\Debuggers\debugger_agent.py,global,_apply_adaptive_learning_fix,"self, failure"
+268,utils\Debuggers\debugger_agent.py,global,_search_learned_fix,"self, error_msg"
+269,utils\Debuggers\debugger_agent.py,global,_store_learned_fix,"self, error_msg, fix_str"
+270,utils\Debuggers\debugger_agent.py,PatchTrackingManager,__init__,self
+271,utils\Debuggers\debugger_agent.py,PatchTrackingManager,record_failed_patch,"self, error_signature, patch"
+272,utils\Debuggers\debugger_agent.py,PatchTrackingManager,record_successful_patch,"self, error_signature, patch"
+273,utils\Debuggers\debugger_agent.py,PatchTrackingManager,get_failed_patches,"self, error_signature"
+274,utils\Debuggers\debugger_agent.py,PatchTrackingManager,apply_patch,"self, patch"
+275,utils\Debuggers\debugger_agent.py,AIConfidenceManager,assign_confidence_score,"self, error_signature, patch"
+276,utils\Debuggers\debugger_agent.py,AIConfidenceManager,get_confidence,"self, error_signature, patch"
+277,utils\Debuggers\debugger_agent.py,DebuggerReporter,__init__,self
+278,utils\Debuggers\debugger_agent.py,DebuggerReporter,load_existing_report,self
+279,utils\Debuggers\debugger_agent.py,DebuggerReporter,log_failed_patch,"self, error_signature, reason"
+280,utils\Debuggers\debugger_agent.py,DebuggerReporter,log_ai_explanation,"self, error_signature, explanation"
+281,utils\Debuggers\debugger_agent.py,DebuggerReporter,log_successful_fix,"self, error_signature, confidence_score"
+282,utils\Debuggers\debugger_agent.py,DebuggerReporter,save_report,self
+283,utils\Debuggers\debugger_agent.py,DebugAgent,__init__,"self, name"
+284,utils\Debuggers\debugger_agent.py,DebugAgent,_load_learning_db,self
+285,utils\Debuggers\debugger_agent.py,DebugAgent,_save_learning_db,self
+286,utils\Debuggers\debugger_agent.py,DebugAgent,solve_task,"self, task"
+287,utils\Debuggers\debugger_agent.py,DebugAgent,run_tests,self
+288,utils\Debuggers\debugger_agent.py,DebugAgent,run_tests_for_files,"self, files"
+289,utils\Debuggers\debugger_agent.py,DebugAgent,parse_test_failures,"self, test_output"
+290,utils\Debuggers\debugger_agent.py,DebugAgent,apply_fix,"self, failure"
+291,utils\Debuggers\debugger_agent.py,DebugAgent,retry_tests,"self, max_retries"
+292,utils\Debuggers\debugger_agent.py,DebugAgent,automate_debugging,self
+293,utils\Debuggers\debugger_agent.py,DebugAgent,run_debug_cycle,"self, max_retries"
+294,utils\Debuggers\debugger_agent.py,DebugAgent,analyze_error,"self, error, context"
+295,utils\Debuggers\debugger_agent.py,DebugAgent,run_diagnostics,"self, system_check, detailed"
+296,utils\Debuggers\debugger_agent.py,DebugAgent,rollback_changes,"self, files_modified"
+297,utils\Debuggers\debugger_agent.py,DebugAgent,push_to_github,"self, commit_message"
+298,utils\Debuggers\debugger_agent.py,DebugAgent,shutdown,self
+299,utils\Debuggers\debugger_agent.py,DebugAgent,describe_capabilities,self
+300,utils\Debuggers\debugger_agent.py,DebugAgent,_apply_known_pattern,"self, failure"
+301,utils\Debuggers\debugger_agent.py,DebugAgent,_quick_fix_missing_attribute,"self, file_name, error_msg"
+302,utils\Debuggers\debugger_agent.py,DebugAgent,_quick_fix_assertion_mismatch,"self, file_name, error_msg"
+303,utils\Debuggers\debugger_agent.py,DebugAgent,_quick_fix_import_error,"self, file_name, error_msg"
+304,utils\Debuggers\debugger_agent.py,DebugAgent,_quick_fix_type_error,"self, file_name, error_msg"
+305,utils\Debuggers\debugger_agent.py,DebugAgent,_quick_fix_indentation,"self, file_name"
+306,utils\Debuggers\debugger_agent.py,DebugAgent,_apply_adaptive_learning_fix,"self, failure"
+307,utils\Debuggers\debugger_agent.py,DebugAgent,_search_learned_fix,"self, error_msg"
+308,utils\Debuggers\debugger_agent.py,DebugAgent,_store_learned_fix,"self, error_msg, fix_str"
+309,utils\Debuggers\DebuggingOrchestrator.py,global,__init__,self
+310,utils\Debuggers\DebuggingOrchestrator.py,global,start_debugging_session,"self, task_description, error_log"
+311,utils\Debuggers\DebuggingOrchestrator.py,global,resolve_and_document,"self, resolution_steps"
+312,utils\Debuggers\DebuggingOrchestrator.py,global,summarize_session,"self, task_description"
+313,utils\Debuggers\DebuggingOrchestrator.py,global,perform_scheduled_backup,self
+314,utils\Debuggers\DebuggingOrchestrator.py,global,_determine_task_priority,"self, error_log"
+315,utils\Debuggers\DebuggingOrchestrator.py,DebuggingOrchestrator,__init__,self
+316,utils\Debuggers\DebuggingOrchestrator.py,DebuggingOrchestrator,start_debugging_session,"self, task_description, error_log"
+317,utils\Debuggers\DebuggingOrchestrator.py,DebuggingOrchestrator,resolve_and_document,"self, resolution_steps"
+318,utils\Debuggers\DebuggingOrchestrator.py,DebuggingOrchestrator,summarize_session,"self, task_description"
+319,utils\Debuggers\DebuggingOrchestrator.py,DebuggingOrchestrator,perform_scheduled_backup,self
+320,utils\Debuggers\DebuggingOrchestrator.py,DebuggingOrchestrator,_determine_task_priority,"self, error_log"
+322,utils\Debuggers\DebuggingStrategy.py,global,__init__,self
+323,utils\Debuggers\DebuggingStrategy.py,global,_load_learning_db,self
+324,utils\Debuggers\DebuggingStrategy.py,global,_save_learning_db,self
+325,utils\Debuggers\DebuggingStrategy.py,global,_compute_error_signature,"self, error_message, code_context"
+326,utils\Debuggers\DebuggingStrategy.py,global,detect_import_error,"self, error_message"
+327,utils\Debuggers\DebuggingStrategy.py,global,generate_patch,"self, error_message, code_context, test_file"
+328,utils\Debuggers\DebuggingStrategy.py,global,apply_patch,"self, patch"
+329,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,__init__,self
+330,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,_load_learning_db,self
+331,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,_save_learning_db,self
+332,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,_compute_error_signature,"self, error_message, code_context"
+333,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,detect_import_error,"self, error_message"
+334,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,generate_patch,"self, error_message, code_context, test_file"
+335,utils\Debuggers\DebuggingStrategy.py,DebuggingStrategy,apply_patch,"self, patch"
+336,utils\Debuggers\run_debugger.py,global,main,
+337,utils\Debuggers\plugins\AutoFixManager.py,global,__init__,self
+338,utils\Debuggers\plugins\AutoFixManager.py,global,run_tests,self
+339,utils\Debuggers\plugins\AutoFixManager.py,global,_parse_test_failures,"self, test_output"
+340,utils\Debuggers\plugins\AutoFixManager.py,global,_apply_patch_with_retries,"self, file_name, error_message"
+341,utils\Debuggers\plugins\AutoFixManager.py,global,retry_tests,self
+342,utils\Debuggers\plugins\AutoFixManager.py,global,rollback_changes,"self, failed_files"
+343,utils\Debuggers\plugins\AutoFixManager.py,AutoFixManager,__init__,self
+344,utils\Debuggers\plugins\AutoFixManager.py,AutoFixManager,run_tests,self
+345,utils\Debuggers\plugins\AutoFixManager.py,AutoFixManager,_parse_test_failures,"self, test_output"
+346,utils\Debuggers\plugins\AutoFixManager.py,AutoFixManager,_apply_patch_with_retries,"self, file_name, error_message"
+347,utils\Debuggers\plugins\AutoFixManager.py,AutoFixManager,retry_tests,self
+348,utils\Debuggers\plugins\AutoFixManager.py,AutoFixManager,rollback_changes,"self, failed_files"
+349,utils\plugins\AgentMemory.py,global,__init__,"self, memory_file"
+350,utils\plugins\AgentMemory.py,global,_initialize_memory_file,self
+351,utils\plugins\AgentMemory.py,global,save_interaction,"self, project_name, user_input, ai_response"
+352,utils\plugins\AgentMemory.py,global,retrieve_memory,"self, project_name, limit"
+353,utils\plugins\AgentMemory.py,global,clear_memory,"self, project_name"
+354,utils\plugins\AgentMemory.py,global,_load_memory_data,self
+355,utils\plugins\AgentMemory.py,global,_save_memory_data,"self, data"
+356,utils\plugins\AgentMemory.py,AgentMemory,__init__,"self, memory_file"
+357,utils\plugins\AgentMemory.py,AgentMemory,_initialize_memory_file,self
+358,utils\plugins\AgentMemory.py,AgentMemory,save_interaction,"self, project_name, user_input, ai_response"
+359,utils\plugins\AgentMemory.py,AgentMemory,retrieve_memory,"self, project_name, limit"
+360,utils\plugins\AgentMemory.py,AgentMemory,clear_memory,"self, project_name"
+361,utils\plugins\AgentMemory.py,AgentMemory,_load_memory_data,self
+362,utils\plugins\AgentMemory.py,AgentMemory,_save_memory_data,"self, data"
+363,utils\plugins\AgentPlugin.py,global,__init__,"self, name, memory_manager, performance_monitor, dispatcher"
+364,utils\plugins\AgentPlugin.py,global,name,self
+365,utils\plugins\AgentPlugin.py,global,memory_manager,self
+366,utils\plugins\AgentPlugin.py,global,performance_monitor,self
+367,utils\plugins\AgentPlugin.py,global,dispatcher,self
+368,utils\plugins\AgentPlugin.py,global,describe_capabilities,self
+369,utils\plugins\AgentPlugin.py,global,__str__,self
+370,utils\plugins\AgentPlugin.py,AgentPlugin,__init__,"self, name, memory_manager, performance_monitor, dispatcher"
+371,utils\plugins\AgentPlugin.py,AgentPlugin,name,self
+372,utils\plugins\AgentPlugin.py,AgentPlugin,memory_manager,self
+373,utils\plugins\AgentPlugin.py,AgentPlugin,performance_monitor,self
+374,utils\plugins\AgentPlugin.py,AgentPlugin,dispatcher,self
+375,utils\plugins\AgentPlugin.py,AgentPlugin,describe_capabilities,self
+376,utils\plugins\AgentPlugin.py,AgentPlugin,__str__,self
+377,utils\plugins\AIConfidenceManager.py,global,__init__,self
+378,utils\plugins\AIConfidenceManager.py,global,_load_json,"self, file_path"
+379,utils\plugins\AIConfidenceManager.py,global,_save_json,"self, file_path, data"
+380,utils\plugins\AIConfidenceManager.py,global,_get_historical_success_rate,"self, error_signature"
+381,utils\plugins\AIConfidenceManager.py,global,assign_confidence_score,"self, error_signature, patch"
+382,utils\plugins\AIConfidenceManager.py,global,store_patch,"self, error_signature, patch, success"
+383,utils\plugins\AIConfidenceManager.py,global,get_best_high_confidence_patch,"self, error_signature"
+384,utils\plugins\AIConfidenceManager.py,global,suggest_patch_reattempt,"self, error_signature, patch"
+385,utils\plugins\AIConfidenceManager.py,global,get_confidence,"self, error_signature"
+386,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,__init__,self
+387,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,_load_json,"self, file_path"
+388,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,_save_json,"self, file_path, data"
+389,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,_get_historical_success_rate,"self, error_signature"
+390,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,assign_confidence_score,"self, error_signature, patch"
+391,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,store_patch,"self, error_signature, patch, success"
+392,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,get_best_high_confidence_patch,"self, error_signature"
+393,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,suggest_patch_reattempt,"self, error_signature, patch"
+394,utils\plugins\AIConfidenceManager.py,AIConfidenceManager,get_confidence,"self, error_signature"
+395,utils\plugins\AIDebugAgent.py,global,__init__,self
+396,utils\plugins\AIDebugAgent.py,global,load_plugins,self
+397,utils\plugins\AIDebugAgent.py,global,execute,"self, plugin_name"
+398,utils\plugins\AIDebugAgent.py,AIDebugAgent,__init__,self
+399,utils\plugins\AIDebugAgent.py,AIDebugAgent,load_plugins,self
+400,utils\plugins\AIDebugAgent.py,AIDebugAgent,execute,"self, plugin_name"
+401,utils\plugins\AIDebuggingAnalytics.py,global,__init__,"self, storage_manager"
+402,utils\plugins\AIDebuggingAnalytics.py,global,record_feedback,"self, error_signature, feedback, quality_score"
+403,utils\plugins\AIDebuggingAnalytics.py,global,update_performance_metrics,self
+404,utils\plugins\AIDebuggingAnalytics.py,AIDebuggingAnalytics,__init__,"self, storage_manager"
+405,utils\plugins\AIDebuggingAnalytics.py,AIDebuggingAnalytics,record_feedback,"self, error_signature, feedback, quality_score"
+406,utils\plugins\AIDebuggingAnalytics.py,AIDebuggingAnalytics,update_performance_metrics,self
+407,utils\plugins\AIModelManager.py,global,__init__,"self, model_name"
+408,utils\plugins\AIModelManager.py,global,generate_with_model,"self, model_name, prompt"
+409,utils\plugins\AIModelManager.py,global,validate_patch,"self, error_signature, patch"
+410,utils\plugins\AIModelManager.py,global,apply_patch,"self, error_signature, file_path, patch"
+411,utils\plugins\AIModelManager.py,global,_apply_patch_diff,"self, original_content, patch_lines"
+412,utils\plugins\AIModelManager.py,AIModelManager,__init__,"self, model_name"
+413,utils\plugins\AIModelManager.py,AIModelManager,generate_with_model,"self, model_name, prompt"
+414,utils\plugins\AIModelManager.py,AIModelManager,validate_patch,"self, error_signature, patch"
+415,utils\plugins\AIModelManager.py,AIModelManager,apply_patch,"self, error_signature, file_path, patch"
+416,utils\plugins\AIModelManager.py,AIModelManager,_apply_patch_diff,"self, original_content, patch_lines"
+417,utils\plugins\AIPatchAnalyzer.py,global,__init__,self
+418,utils\plugins\AIPatchAnalyzer.py,global,analyze_failed_patch,"self, error_signature, patch"
+419,utils\plugins\AIPatchAnalyzer.py,global,modify_failed_patch,"self, error_signature, patch"
+420,utils\plugins\AIPatchAnalyzer.py,AIPatchAnalyzer,__init__,self
+421,utils\plugins\AIPatchAnalyzer.py,AIPatchAnalyzer,analyze_failed_patch,"self, error_signature, patch"
+422,utils\plugins\AIPatchAnalyzer.py,AIPatchAnalyzer,modify_failed_patch,"self, error_signature, patch"
+423,utils\plugins\AIPatchOptimizer.py,global,__init__,self
+424,utils\plugins\AIPatchOptimizer.py,global,refine_failed_patch,"self, error_signature, original_patch"
+425,utils\plugins\AIPatchOptimizer.py,global,_modify_patch,"self, patch"
+426,utils\plugins\AIPatchOptimizer.py,global,attempt_patch_reapply,"self, error_signature, test_file, original_patch"
+427,utils\plugins\AIPatchOptimizer.py,AIPatchOptimizer,__init__,self
+428,utils\plugins\AIPatchOptimizer.py,AIPatchOptimizer,refine_failed_patch,"self, error_signature, original_patch"
+429,utils\plugins\AIPatchOptimizer.py,AIPatchOptimizer,_modify_patch,"self, patch"
+430,utils\plugins\AIPatchOptimizer.py,AIPatchOptimizer,attempt_patch_reapply,"self, error_signature, test_file, original_patch"
+431,utils\plugins\AIPatchRetryManager.py,global,__init__,self
+432,utils\plugins\AIPatchRetryManager.py,global,retry_failed_patches,"self, failed_patches"
+433,utils\plugins\AIPatchRetryManager.py,global,_process_failed_patch,"self, error_signature, patch"
+434,utils\plugins\AIPatchRetryManager.py,global,_update_confidence,"self, error_signature, confidence_boost"
+435,utils\plugins\AIPatchRetryManager.py,global,_should_retry_patch,"self, error_signature, confidence"
+436,utils\plugins\AIPatchRetryManager.py,global,_attempt_retry,"self, error_signature, patch"
+437,utils\plugins\AIPatchRetryManager.py,AIPatchRetryManager,__init__,self
+438,utils\plugins\AIPatchRetryManager.py,AIPatchRetryManager,retry_failed_patches,"self, failed_patches"
+439,utils\plugins\AIPatchRetryManager.py,AIPatchRetryManager,_process_failed_patch,"self, error_signature, patch"
+440,utils\plugins\AIPatchRetryManager.py,AIPatchRetryManager,_update_confidence,"self, error_signature, confidence_boost"
+441,utils\plugins\AIPatchRetryManager.py,AIPatchRetryManager,_should_retry_patch,"self, error_signature, confidence"
+442,utils\plugins\AIPatchRetryManager.py,AIPatchRetryManager,_attempt_retry,"self, error_signature, patch"
+443,utils\plugins\AIPatchReviewManager.py,global,__init__,self
+444,utils\plugins\AIPatchReviewManager.py,global,load_patch_rankings,self
+445,utils\plugins\AIPatchReviewManager.py,global,load_patch_logs,self
+446,utils\plugins\AIPatchReviewManager.py,global,rank_human_reviewed_patches,self
+447,utils\plugins\AIPatchReviewManager.py,global,log_patch_attempt,"self, error_signature, patch, outcome, extra_info"
+448,utils\plugins\AIPatchReviewManager.py,global,get_best_patch,"self, error_signature"
+449,utils\plugins\AIPatchReviewManager.py,global,process_human_reviewed_patches,self
+450,utils\plugins\AIPatchReviewManager.py,global,analyze_patch_failures,self
+451,utils\plugins\AIPatchReviewManager.py,global,save_patch_rankings,self
+452,utils\plugins\AIPatchReviewManager.py,global,save_patch_logs,self
+453,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,__init__,self
+454,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,load_patch_rankings,self
+455,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,load_patch_logs,self
+456,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,rank_human_reviewed_patches,self
+457,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,log_patch_attempt,"self, error_signature, patch, outcome, extra_info"
+458,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,get_best_patch,"self, error_signature"
+459,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,process_human_reviewed_patches,self
+460,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,analyze_patch_failures,self
+461,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,save_patch_rankings,self
+462,utils\plugins\AIPatchReviewManager.py,AIPatchReviewManager,save_patch_logs,self
+463,utils\plugins\AIPatchUtils.py,global,chunk_code,"file_content, max_chars"
+464,utils\plugins\AIPatchUtils.py,global,query_llm,"prompt, model"
+465,utils\plugins\AIPatchUtils.py,global,query_openai,prompt
+466,utils\plugins\AIPatchUtils.py,global,generate_patch,"cls, file_content, error_msg"
+468,utils\plugins\AIPatchUtils.py,AIPatchUtils,chunk_code,"file_content, max_chars"
+469,utils\plugins\AIPatchUtils.py,AIPatchUtils,query_llm,"prompt, model"
+470,utils\plugins\AIPatchUtils.py,AIPatchUtils,query_openai,prompt
+471,utils\plugins\AIPatchUtils.py,AIPatchUtils,generate_patch,"cls, file_content, error_msg"
+472,utils\plugins\AIRefactorAgent.py,global,__init__,"self, model, max_retries, sleep_between_retries"
+473,utils\plugins\AIRefactorAgent.py,global,_call_ai,"self, prompt"
+474,utils\plugins\AIRefactorAgent.py,global,call_ai_and_parse_json,"self, prompt"
+475,utils\plugins\AIRefactorAgent.py,global,analyze_code,"self, file_path"
+476,utils\plugins\AIRefactorAgent.py,global,refactor_function,"self, function_data"
+477,utils\plugins\AIRefactorAgent.py,AIRefactorAgent,__init__,"self, model, max_retries, sleep_between_retries"
+478,utils\plugins\AIRefactorAgent.py,AIRefactorAgent,_call_ai,"self, prompt"
+479,utils\plugins\AIRefactorAgent.py,AIRefactorAgent,call_ai_and_parse_json,"self, prompt"
+480,utils\plugins\AIRefactorAgent.py,AIRefactorAgent,analyze_code,"self, file_path"
+481,utils\plugins\AIRefactorAgent.py,AIRefactorAgent,refactor_function,"self, function_data"
+482,utils\plugins\AutoFixer.py,global,__init__,"self, needed_files"
+483,utils\plugins\AutoFixer.py,global,_setup_workspace,"self, needed_files"
+484,utils\plugins\AutoFixer.py,global,_get_full_path,"self, file_name"
+485,utils\plugins\AutoFixer.py,global,apply_fix,"self, failure"
+486,utils\plugins\AutoFixer.py,global,_apply_known_pattern,"self, failure"
+487,utils\plugins\AutoFixer.py,global,_apply_learned_fix,"self, failure"
+488,utils\plugins\AutoFixer.py,global,_apply_llm_fix,"self, failure"
+489,utils\plugins\AutoFixer.py,global,_fix_missing_attribute,"self, file_name, error_msg"
+490,utils\plugins\AutoFixer.py,global,_fix_import_error,"self, file_name, error_msg"
+491,utils\plugins\AutoFixer.py,AutoFixer,__init__,"self, needed_files"
+492,utils\plugins\AutoFixer.py,AutoFixer,_setup_workspace,"self, needed_files"
+493,utils\plugins\AutoFixer.py,AutoFixer,_get_full_path,"self, file_name"
+494,utils\plugins\AutoFixer.py,AutoFixer,apply_fix,"self, failure"
+495,utils\plugins\AutoFixer.py,AutoFixer,_apply_known_pattern,"self, failure"
+496,utils\plugins\AutoFixer.py,AutoFixer,_apply_learned_fix,"self, failure"
+497,utils\plugins\AutoFixer.py,AutoFixer,_apply_llm_fix,"self, failure"
+498,utils\plugins\AutoFixer.py,AutoFixer,_fix_missing_attribute,"self, file_name, error_msg"
+499,utils\plugins\AutoFixer.py,AutoFixer,_fix_import_error,"self, file_name, error_msg"
+500,utils\plugins\AutoFixManager.py,global,__init__,self
+501,utils\plugins\AutoFixManager.py,global,run_tests,self
+502,utils\plugins\AutoFixManager.py,global,_parse_test_failures,"self, test_output"
+503,utils\plugins\AutoFixManager.py,global,_apply_patch_with_retries,"self, file_name, error_message"
+504,utils\plugins\AutoFixManager.py,global,retry_tests,self
+505,utils\plugins\AutoFixManager.py,global,rollback_changes,"self, failed_files"
+506,utils\plugins\AutoFixManager.py,AutoFixManager,__init__,self
+507,utils\plugins\AutoFixManager.py,AutoFixManager,run_tests,self
+508,utils\plugins\AutoFixManager.py,AutoFixManager,_parse_test_failures,"self, test_output"
+509,utils\plugins\AutoFixManager.py,AutoFixManager,_apply_patch_with_retries,"self, file_name, error_message"
+510,utils\plugins\AutoFixManager.py,AutoFixManager,retry_tests,self
+511,utils\plugins\AutoFixManager.py,AutoFixManager,rollback_changes,"self, failed_files"
+512,utils\plugins\DatabaseManager.py,global,__init__,"self, db_file"
+513,utils\plugins\DatabaseManager.py,global,_initialize_database,self
+514,utils\plugins\DatabaseManager.py,global,save_ai_suggestion,"self, file_name, original_code, ai_suggestion"
+515,utils\plugins\DatabaseManager.py,global,get_human_feedback,self
+516,utils\plugins\DatabaseManager.py,global,submit_human_feedback,"self, review_id, feedback"
+517,utils\plugins\DatabaseManager.py,DatabaseManager,__init__,"self, db_file"
+518,utils\plugins\DatabaseManager.py,DatabaseManager,_initialize_database,self
+519,utils\plugins\DatabaseManager.py,DatabaseManager,save_ai_suggestion,"self, file_name, original_code, ai_suggestion"
+520,utils\plugins\DatabaseManager.py,DatabaseManager,get_human_feedback,self
+521,utils\plugins\DatabaseManager.py,DatabaseManager,submit_human_feedback,"self, review_id, feedback"
+522,utils\plugins\DebugAgentAutoFixer.py,global,__init__,self
+523,utils\plugins\DebugAgentAutoFixer.py,global,ensure_modules_exist,self
+524,utils\plugins\DebugAgentAutoFixer.py,global,fix_unterminated_strings,self
+525,utils\plugins\DebugAgentAutoFixer.py,global,check_syntax_errors,self
+526,utils\plugins\DebugAgentAutoFixer.py,global,backup_file,"self, file_path"
+527,utils\plugins\DebugAgentAutoFixer.py,global,restore_backup,"self, file_path"
+528,utils\plugins\DebugAgentAutoFixer.py,global,re_attempt_failed_patches,"self, error_signature, file_path"
+529,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,__init__,self
+530,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,ensure_modules_exist,self
+531,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,fix_unterminated_strings,self
+532,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,check_syntax_errors,self
+533,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,backup_file,"self, file_path"
+534,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,restore_backup,"self, file_path"
+535,utils\plugins\DebugAgentAutoFixer.py,DebugAgentAutoFixer,re_attempt_failed_patches,"self, error_signature, file_path"
+536,utils\plugins\DebugAgentUtils.py,global,deepseek_chunk_code,"file_content, max_chars"
+537,utils\plugins\DebugAgentUtils.py,global,run_ai_analysis,"chunks, error_msg, model_priority"
+538,utils\plugins\DebugAgentUtils.py,global,parse_diff_suggestion,suggestion
+539,utils\plugins\DebugAgentUtils.py,global,apply_diff_patch,"file_path, patch"
+540,utils\plugins\DebugAgentUtils.py,global,rollback_changes,files_modified
+541,utils\plugins\DebugAgentUtils.py,global,queue_additional_agents,agent_list
+542,utils\plugins\DebugAgentUtils.py,DebugAgentUtils,deepseek_chunk_code,"file_content, max_chars"
+543,utils\plugins\DebugAgentUtils.py,DebugAgentUtils,run_ai_analysis,"chunks, error_msg, model_priority"
+544,utils\plugins\DebugAgentUtils.py,DebugAgentUtils,parse_diff_suggestion,suggestion
+545,utils\plugins\DebugAgentUtils.py,DebugAgentUtils,apply_diff_patch,"file_path, patch"
+546,utils\plugins\DebugAgentUtils.py,DebugAgentUtils,rollback_changes,files_modified
+547,utils\plugins\DebugAgentUtils.py,DebugAgentUtils,queue_additional_agents,agent_list
+548,utils\plugins\DebuggerReporter.py,global,__init__,self
+549,utils\plugins\DebuggerReporter.py,global,load_existing_report,self
+550,utils\plugins\DebuggerReporter.py,global,log_failed_patch,"self, error_signature, reason"
+551,utils\plugins\DebuggerReporter.py,global,log_successful_fix,"self, error_signature, confidence_score"
+552,utils\plugins\DebuggerReporter.py,global,log_ai_explanation,"self, error_signature, explanation"
+553,utils\plugins\DebuggerReporter.py,global,save_report,self
+554,utils\plugins\DebuggerReporter.py,global,send_email_report,"self, recipient_email"
+555,utils\plugins\DebuggerReporter.py,DebuggerReporter,__init__,self
+556,utils\plugins\DebuggerReporter.py,DebuggerReporter,load_existing_report,self
+557,utils\plugins\DebuggerReporter.py,DebuggerReporter,log_failed_patch,"self, error_signature, reason"
+558,utils\plugins\DebuggerReporter.py,DebuggerReporter,log_successful_fix,"self, error_signature, confidence_score"
+559,utils\plugins\DebuggerReporter.py,DebuggerReporter,log_ai_explanation,"self, error_signature, explanation"
+560,utils\plugins\DebuggerReporter.py,DebuggerReporter,save_report,self
+561,utils\plugins\DebuggerReporter.py,DebuggerReporter,send_email_report,"self, recipient_email"
+562,utils\plugins\DebuggingStrategy.py,global,__init__,self
+563,utils\plugins\DebuggingStrategy.py,global,generate_patch,"self, source_code, error_message"
+564,utils\plugins\DebuggingStrategy.py,global,apply_patch,"self, original_code, patch_code"
+565,utils\plugins\DebuggingStrategy.py,global,rollback_patch,"self, patched_code"
+566,utils\plugins\DebuggingStrategy.py,DebuggingStrategy,__init__,self
+567,utils\plugins\DebuggingStrategy.py,DebuggingStrategy,generate_patch,"self, source_code, error_message"
+568,utils\plugins\DebuggingStrategy.py,DebuggingStrategy,apply_patch,"self, original_code, patch_code"
+569,utils\plugins\DebuggingStrategy.py,DebuggingStrategy,rollback_patch,"self, patched_code"
+570,utils\plugins\EmailReporter.py,global,__init__,self
+571,utils\plugins\EmailReporter.py,global,validate_email,"self, email"
+572,utils\plugins\EmailReporter.py,global,send_report,"self, report_data, recipient_email"
+573,utils\plugins\EmailReporter.py,EmailReporter,__init__,self
+574,utils\plugins\EmailReporter.py,EmailReporter,validate_email,"self, email"
+575,utils\plugins\EmailReporter.py,EmailReporter,send_report,"self, report_data, recipient_email"
+577,utils\plugins\ExampleAgent.py,global,__init__,"self, name"
+578,utils\plugins\ExampleAgent.py,global,describe_capabilities,self
+579,utils\plugins\ExampleAgent.py,ExampleAgent,__init__,"self, name"
+580,utils\plugins\ExampleAgent.py,ExampleAgent,describe_capabilities,self
+581,utils\plugins\ExecutionSandbox.py,global,__init__,self
+582,utils\plugins\ExecutionSandbox.py,global,run_sandboxed_code,"self, code, state"
+583,utils\plugins\ExecutionSandbox.py,global,_apply_loop_limit,"self, code"
+584,utils\plugins\ExecutionSandbox.py,ExecutionSandbox,__init__,self
+585,utils\plugins\ExecutionSandbox.py,ExecutionSandbox,run_sandboxed_code,"self, code, state"
+586,utils\plugins\ExecutionSandbox.py,ExecutionSandbox,_apply_loop_limit,"self, code"
+587,utils\plugins\FileManager.py,global,__init__,"self, root, log_file"
+588,utils\plugins\FileManager.py,global,get_python_files,self
+589,utils\plugins\FileManager.py,global,backup_file,"self, file_path"
+590,utils\plugins\FileManager.py,global,restore_backup,"self, file_path"
+591,utils\plugins\FileManager.py,global,update_performance_log,"self, refactored_files"
+592,utils\plugins\FileManager.py,FileManager,__init__,"self, root, log_file"
+593,utils\plugins\FileManager.py,FileManager,get_python_files,self
+594,utils\plugins\FileManager.py,FileManager,backup_file,"self, file_path"
+595,utils\plugins\FileManager.py,FileManager,restore_backup,"self, file_path"
+596,utils\plugins\FileManager.py,FileManager,update_performance_log,"self, refactored_files"
+597,utils\plugins\FixForge.py,global,main,
+598,utils\plugins\FixForge.py,global,generate_patch,"self, error, file"
+599,utils\plugins\FixForge.py,global,apply_patch,"self, patch"
+600,utils\plugins\FixForge.py,global,__init__,"self, parent"
+601,utils\plugins\FixForge.py,global,init_ui,self
+602,utils\plugins\FixForge.py,global,run_setup,self
+603,utils\plugins\FixForge.py,global,__init__,"self, parent"
+604,utils\plugins\FixForge.py,global,init_ui,self
+605,utils\plugins\FixForge.py,global,apply_fix,self
+606,utils\plugins\FixForge.py,global,__init__,"self, parent"
+607,utils\plugins\FixForge.py,global,init_ui,self
+608,utils\plugins\FixForge.py,global,start_session,self
+609,utils\plugins\FixForge.py,global,document_resolution,self
+610,utils\plugins\FixForge.py,global,summarize_session,self
+611,utils\plugins\FixForge.py,global,perform_backup,self
+612,utils\plugins\FixForge.py,global,__init__,self
+613,utils\plugins\FixForge.py,global,init_ui,self
+614,utils\plugins\FixForge.py,DummyDebuggingStrategy,generate_patch,"self, error, file"
+615,utils\plugins\FixForge.py,DummyDebuggingStrategy,apply_patch,"self, patch"
+616,utils\plugins\FixForge.py,ProjectSetupTab,__init__,"self, parent"
+617,utils\plugins\FixForge.py,ProjectSetupTab,init_ui,self
+618,utils\plugins\FixForge.py,ProjectSetupTab,run_setup,self
+619,utils\plugins\FixForge.py,ApplyFixTab,__init__,"self, parent"
+620,utils\plugins\FixForge.py,ApplyFixTab,init_ui,self
+621,utils\plugins\FixForge.py,ApplyFixTab,apply_fix,self
+622,utils\plugins\FixForge.py,DebuggingOrchestratorTab,__init__,"self, parent"
+623,utils\plugins\FixForge.py,DebuggingOrchestratorTab,init_ui,self
+624,utils\plugins\FixForge.py,DebuggingOrchestratorTab,start_session,self
+625,utils\plugins\FixForge.py,DebuggingOrchestratorTab,document_resolution,self
+626,utils\plugins\FixForge.py,DebuggingOrchestratorTab,summarize_session,self
+627,utils\plugins\FixForge.py,DebuggingOrchestratorTab,perform_backup,self
+628,utils\plugins\FixForge.py,MainWindow,__init__,self
+629,utils\plugins\FixForge.py,MainWindow,init_ui,self
+630,utils\plugins\ImportFixTracker.py,global,__init__,"self, storage_manager"
+631,utils\plugins\ImportFixTracker.py,global,track_import_fix,"self, module_name, fix_success"
+632,utils\plugins\ImportFixTracker.py,global,get_import_fix_stats,self
+633,utils\plugins\ImportFixTracker.py,ImportFixTracker,__init__,"self, storage_manager"
+634,utils\plugins\ImportFixTracker.py,ImportFixTracker,track_import_fix,"self, module_name, fix_success"
+635,utils\plugins\ImportFixTracker.py,ImportFixTracker,get_import_fix_stats,self
+636,utils\plugins\LoggerManager.py,global,__init__,"self, log_level, log_file, max_bytes, backup_count"
+637,utils\plugins\LoggerManager.py,global,_setup_logging,self
+638,utils\plugins\LoggerManager.py,global,set_log_level,"self, level"
+639,utils\plugins\LoggerManager.py,global,get_logger,self
+640,utils\plugins\LoggerManager.py,LoggerManager,__init__,"self, log_level, log_file, max_bytes, backup_count"
+641,utils\plugins\LoggerManager.py,LoggerManager,_setup_logging,self
+642,utils\plugins\LoggerManager.py,LoggerManager,set_log_level,"self, level"
+643,utils\plugins\LoggerManager.py,LoggerManager,get_logger,self
+644,utils\plugins\PatchDataManager.py,global,__init__,self
+645,utils\plugins\PatchDataManager.py,global,_get_file_path,"self, key"
+646,utils\plugins\PatchDataManager.py,global,_load_patch_data,"self, key"
+647,utils\plugins\PatchDataManager.py,global,_save_patch_data,"self, key"
+648,utils\plugins\PatchDataManager.py,global,get_data,"self, key"
+649,utils\plugins\PatchDataManager.py,global,update_data,"self, key, new_data"
+650,utils\plugins\PatchDataManager.py,global,append_data,"self, key, entry"
+651,utils\plugins\PatchDataManager.py,PatchDataManager,__init__,self
+652,utils\plugins\PatchDataManager.py,PatchDataManager,_get_file_path,"self, key"
+653,utils\plugins\PatchDataManager.py,PatchDataManager,_load_patch_data,"self, key"
+654,utils\plugins\PatchDataManager.py,PatchDataManager,_save_patch_data,"self, key"
+655,utils\plugins\PatchDataManager.py,PatchDataManager,get_data,"self, key"
+656,utils\plugins\PatchDataManager.py,PatchDataManager,update_data,"self, key, new_data"
+657,utils\plugins\PatchDataManager.py,PatchDataManager,append_data,"self, key, entry"
+658,utils\plugins\PatchHistoryManager.py,global,__init__,"self, storage_manager"
+659,utils\plugins\PatchHistoryManager.py,global,get_failed_patches,"self, error_signature"
+660,utils\plugins\PatchHistoryManager.py,global,get_successful_patches,"self, error_signature"
+661,utils\plugins\PatchHistoryManager.py,global,undo_last_fix,"self, error_signature"
+662,utils\plugins\PatchHistoryManager.py,PatchHistoryManager,__init__,"self, storage_manager"
+663,utils\plugins\PatchHistoryManager.py,PatchHistoryManager,get_failed_patches,"self, error_signature"
+664,utils\plugins\PatchHistoryManager.py,PatchHistoryManager,get_successful_patches,"self, error_signature"
+665,utils\plugins\PatchHistoryManager.py,PatchHistoryManager,undo_last_fix,"self, error_signature"
+666,utils\plugins\PatchManager.py,global,__init__,"self, debug_strategy, file_manager"
+667,utils\plugins\PatchManager.py,global,apply_fix,"self, failure"
+668,utils\plugins\PatchManager.py,global,rollback_fix,"self, file_path"
+669,utils\plugins\PatchManager.py,PatchManager,__init__,"self, debug_strategy, file_manager"
+670,utils\plugins\PatchManager.py,PatchManager,apply_fix,"self, failure"
+671,utils\plugins\PatchManager.py,PatchManager,rollback_fix,"self, file_path"
+672,utils\plugins\PatchStorageManager.py,global,__init__,self
+673,utils\plugins\PatchStorageManager.py,global,_load_all_patch_data,self
+674,utils\plugins\PatchStorageManager.py,global,_load_patch_data,"self, filename"
+675,utils\plugins\PatchStorageManager.py,global,_save_patch_data,"self, key"
+676,utils\plugins\PatchStorageManager.py,global,get_data,"self, key"
+677,utils\plugins\PatchStorageManager.py,global,update_data,"self, key, new_data"
+678,utils\plugins\PatchStorageManager.py,global,append_to_data,"self, key, entry"
+679,utils\plugins\PatchStorageManager.py,global,store_patch,"self, category, error_signature, patch"
+680,utils\plugins\PatchStorageManager.py,PatchStorageManager,__init__,self
+681,utils\plugins\PatchStorageManager.py,PatchStorageManager,_load_all_patch_data,self
+682,utils\plugins\PatchStorageManager.py,PatchStorageManager,_load_patch_data,"self, filename"
+683,utils\plugins\PatchStorageManager.py,PatchStorageManager,_save_patch_data,"self, key"
+684,utils\plugins\PatchStorageManager.py,PatchStorageManager,get_data,"self, key"
+685,utils\plugins\PatchStorageManager.py,PatchStorageManager,update_data,"self, key, new_data"
+686,utils\plugins\PatchStorageManager.py,PatchStorageManager,append_to_data,"self, key, entry"
+687,utils\plugins\PatchStorageManager.py,PatchStorageManager,store_patch,"self, category, error_signature, patch"
+688,utils\plugins\PatchTrackingManager.py,global,__init__,self
+689,utils\plugins\PatchTrackingManager.py,global,record_failed_patch,"self, error_signature, patch"
+690,utils\plugins\PatchTrackingManager.py,global,record_successful_patch,"self, error_signature, patch"
+691,utils\plugins\PatchTrackingManager.py,global,record_applied_patch,"self, error_signature, patch"
+692,utils\plugins\PatchTrackingManager.py,global,record_import_fix,"self, module_name, fix_success"
+693,utils\plugins\PatchTrackingManager.py,global,get_import_fix_stats,self
+694,utils\plugins\PatchTrackingManager.py,PatchTrackingManager,__init__,self
+695,utils\plugins\PatchTrackingManager.py,PatchTrackingManager,record_failed_patch,"self, error_signature, patch"
+696,utils\plugins\PatchTrackingManager.py,PatchTrackingManager,record_successful_patch,"self, error_signature, patch"
+697,utils\plugins\PatchTrackingManager.py,PatchTrackingManager,record_applied_patch,"self, error_signature, patch"
+698,utils\plugins\PatchTrackingManager.py,PatchTrackingManager,record_import_fix,"self, module_name, fix_success"
+699,utils\plugins\PatchTrackingManager.py,PatchTrackingManager,get_import_fix_stats,self
+700,utils\plugins\ReasonerController.py,global,__init__,self
+701,utils\plugins\ReasonerController.py,global,handle_task,"self, task"
+702,utils\plugins\ReasonerController.py,global,_process_reasoning,"self, task"
+703,utils\plugins\ReasonerController.py,ReasonerController,__init__,self
+704,utils\plugins\ReasonerController.py,ReasonerController,handle_task,"self, task"
+705,utils\plugins\ReasonerController.py,ReasonerController,_process_reasoning,"self, task"
+706,utils\plugins\TaskManager.py,global,__init__,"self, max_workers"
+707,utils\plugins\TaskManager.py,global,run_task_sync,"self, task"
+708,utils\plugins\TaskManager.py,TaskManager,__init__,"self, max_workers"
+709,utils\plugins\TaskManager.py,TaskManager,run_task_sync,"self, task"
+710,utils\ErrorHandler.py,global,__init__,"self, log_file"
+711,utils\ErrorHandler.py,global,classify_severity,"self, error_type"
+712,utils\ErrorHandler.py,global,detect_errors,"self, output"
+713,utils\ErrorHandler.py,global,log_errors,"self, error_output"
+714,utils\ErrorHandler.py,ErrorHandler,__init__,"self, log_file"
+715,utils\ErrorHandler.py,ErrorHandler,classify_severity,"self, error_type"
+716,utils\ErrorHandler.py,ErrorHandler,detect_errors,"self, output"
+717,utils\ErrorHandler.py,ErrorHandler,log_errors,"self, error_output"
+718,utils\PerformanceMonitor.py,global,__init__,"self, performance_file, log_file"
+719,utils\PerformanceMonitor.py,global,_initialize_performance_file,self
+720,utils\PerformanceMonitor.py,global,log_performance,"self, agent_name, task, success, details"
+721,utils\PerformanceMonitor.py,PerformanceMonitor,__init__,"self, performance_file, log_file"
+722,utils\PerformanceMonitor.py,PerformanceMonitor,_initialize_performance_file,self
+723,utils\PerformanceMonitor.py,PerformanceMonitor,log_performance,"self, agent_name, task, success, details"
+724,utils\PerformanceTracker.py,global,__init__,"self, log_file"
+725,utils\PerformanceTracker.py,global,track_performance,"self, func"
+727,utils\PerformanceTracker.py,PerformanceTracker,__init__,"self, log_file"
+728,utils\PerformanceTracker.py,PerformanceTracker,track_performance,"self, func"
+729,utils\PythonNotebook.py,global,__init__,self
+730,utils\PythonNotebook.py,global,execute_code,"self, code"
+731,utils\PythonNotebook.py,global,set_state,"self, key, value"
+732,utils\PythonNotebook.py,global,get_state,"self, key"
+733,utils\PythonNotebook.py,global,reset_state,self
+734,utils\PythonNotebook.py,PythonNotebook,__init__,self
+735,utils\PythonNotebook.py,PythonNotebook,execute_code,"self, code"
+736,utils\PythonNotebook.py,PythonNotebook,set_state,"self, key, value"
+737,utils\PythonNotebook.py,PythonNotebook,get_state,"self, key"
+738,utils\PythonNotebook.py,PythonNotebook,reset_state,self
+739,utils\ShellExecutor.py,global,__init__,"self, log_file"
+740,utils\ShellExecutor.py,global,execute_command,"self, command"
+741,utils\ShellExecutor.py,global,execute_command_with_shell,"self, command"
+742,utils\ShellExecutor.py,global,_run_command,"self, command, use_shell"
+743,utils\ShellExecutor.py,ShellExecutor,__init__,"self, log_file"
+744,utils\ShellExecutor.py,ShellExecutor,execute_command,"self, command"
+745,utils\ShellExecutor.py,ShellExecutor,execute_command_with_shell,"self, command"
+746,utils\ShellExecutor.py,ShellExecutor,_run_command,"self, command, use_shell"

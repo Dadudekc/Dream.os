@@ -1,0 +1,22 @@
+Devlog // AutoFixer Refactor + TDD Stress Test
+"How do you know when to slow down and refactor... and when to just push through?"
+Been sitting with that question a lot today. Not in some deep way... just practical. The AutoFixer module has been a mess. I wanted to get it to a point where I can use it inside my own projects without worrying it’ll break things—or worse, rewrite files I don’t want it touching.
+Here’s what went down...
+Started with the core logic... merged two different versions of AutoFixer that I had floating around. One was handling quick patch patterns and AI fixes, the other was managing test workspaces so I’m not editing live project files. Had to strip both down and rebuild. The goal was simple: fix files inside a sandbox, learn from successful fixes, and keep the original files clean.
+Implemented the test workspace setup in test_workspace/, with a fallback error if project_files/ doesn’t exist. That tripped me up... because I didn’t actually have a project_files/ dir in place during testing. Obvious oversight... but one of those that eats time if you’re not paying attention.
+The patching flow is in now:
+Quick pattern-based fixes
+Learned patches from the LearningDB
+AI-powered LLM diffs if nothing else works
+But...
+The tests are still wrecked.
+Ran pytest on tests/test_auto_fixer.py... 8 fails out of 8. Mostly because the quick fix methods weren’t hooked properly after the merge, and the paths inside the test suite were doubling up (test_workspace/test_workspace/...). Also, I forgot to fully implement _quick_fix_import_error and some others after restructuring.
+No excuses... I missed steps.
+Next up:
+Set up a clean project_files/ directory with dummy files
+Refactor the test cases to match the new path logic
+Double-check that all quick fix methods are implemented and tested
+Clean up the error handling so I can trust what’s breaking and why
+This is close... but it’s not ready for personal use yet.
+Not until I can run it inside a project and trust it won’t touch anything I didn’t give it permission to.
+“Measure twice. Cut once. Then cut again if you have to.”

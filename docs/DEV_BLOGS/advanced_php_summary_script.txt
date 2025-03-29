@@ -1,0 +1,8 @@
+Devlog // 2025-03-16
+What’s the right balance between simplicity and depth when breaking down a system?
+Spent the last block refactoring that basic PHP parser script I had sitting around... It was functional, but it felt surface-level—good enough to get through a directory of files, not good enough to trust at scale.
+Started by adding more depth to what it extracts. Pulled in include and require statements so I can track file dependencies. That was missing, and it matters if I'm trying to map out code relationships. Cleaned up the output too... now it's not just listing files, it's giving me full paths, timestamps for when things were scanned, and a clearer picture of class structures if they exist.
+Encoding was a minor pain... UTF-8 everywhere, just to be safe. And I added better handling for non-ASCII stuff in the JSON/YAML outputs. Nothing was breaking, but I didn’t trust it.
+Not flashy work... but necessary. And that’s the theme today—clean, necessary progress. No bloat.
+Next up... probably going to tie this into a visualizer or something that lets me see code structure in real time. Not sure yet. Let’s see how this runs on a few bigger projects first.
+"If you can't explain it simply, you don't understand it well enough."

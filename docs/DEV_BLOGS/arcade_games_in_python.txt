@@ -1,0 +1,17 @@
+Devlog // 03.16.25
+What do you trade off when you simplify a system for speed... and what’s left behind when you strip it down to the essentials?
+Been thinking about that today while working on the Tetris RL setup. Pulled everything into a modular structure that finally makes sense. Clean project layout:
+makefile
+Copy
+Edit
+D:\Mygames\Tetris\
+├── environment\
+├── gui\
+├── training\
+└── tetris_gym_wrapper.py
+Each folder’s got a job. environment holds the core logic, gui renders the boards, training runs A2C, PPO, DQN. tetris_gym_wrapper.py bridges it all so I can push models through Gym without hand-rolling everything.
+Built out a multi-player Tetris GUI that runs up to three agents side-by-side. Each slot can swap in an RL model, a random policy, or a human player. It’s simple—if I want two PPO agents and a human to face off, it’s one line. Control modes: ["rl", "rl", "human"]. No fuss. Frame skipping’s in too, so I can keep things fast without choking on redraws.
+Ran into some trouble when I tried wiring the battle Tetris into Gym for training. RealtimeBattleTetris wasn’t built for that. Tried passing width=10, height=20 like it was flexible. It wasn’t. TypeError popped. Had to cut those arguments and hard-code dimensions for now... trade-off. Gave up config flexibility for stability in the training loop.
+Could refactor RealtimeBattleTetris to accept dynamic sizes later. But today wasn’t about elegant scaling... it was about getting three models playing clean on the same screen, in sync. That’s done.
+Next is figuring out if I want to loop this into multi-agent training directly... or just let these models spar asynchronously and visualize the outcomes.
+“Don’t overthink the start. Clean execution beats endless planning.”

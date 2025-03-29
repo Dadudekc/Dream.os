@@ -1,0 +1,13 @@
+Devlog 003 - March 16, 2025
+What's the point of clean architecture if your foundation is cracked?
+Today was about tightening the bolts on the AI Debugger system... been noticing little cracks in the testing layer, and it was time to face them.
+Started with a full pass on the MistralModel—rewrote it to match the same fallback and validation structure as the DeepSeekModel. It’s not just about parity... it’s about having a repeatable, reliable system no matter which model’s in the rotation. DeepSeek, Mistral, OpenAI—they all play by the same rules now.
+From there, I cleaned up the ErrorParser. It was doing the job, but sloppily. Regex was fine... but I tightened the matching logic, added some sanity checks, and made the logs more human-readable. When you’re running this stuff overnight, clarity in the logs saves you later.
+Then came the unit tests. I did a full sweep on the AI model managers and patch retry logic. Mocks, patches... the whole dance. These things are tedious, but skipping them is where bad data creeps in. Caught a bunch of issues where confidence scores weren’t being applied right. Fixed that.
+The big ugly?
+Pytest flagged 20 errors on the run. Syntax errors. Unterminated string literals. Some files weren’t even being parsed. Had to manually go through and clean them up—closing strings, fixing mismatched quotes... basic stuff, but in a codebase this size, it slips. No shame in that. Just grind.
+Finally, wrapped by fixing the RollbackManager tests. They’re working now... backups, restores, retry logic. It’s all solid. That was the last piece before I could trust the rollback flow again.
+What’s next...
+I want to automate the rollback restores with better granularity. Right now it’s binary—restore or not. I need smarter decisions on partial rollbacks depending on patch segments. But that’s tomorrow-Victor’s problem.
+For now...
+“Fix the foundation. Then you can build anything.”

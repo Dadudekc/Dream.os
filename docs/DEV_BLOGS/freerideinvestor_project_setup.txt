@@ -1,0 +1,15 @@
+Devlog: Where’s the Bottleneck?
+Ever catch yourself wondering if the system is really as streamlined as you think it is... or if you’ve just been patching holes without stepping back? That’s where I’m at. Spent the last block of time knee-deep in stock research tool debugging.
+Here’s what got done:
+Rebuilt the OpenAI integration for generating trade plans… finally swapped out the deprecated models, went with GPT-3.5 Turbo—cleaner prompts, better outputs.
+Stripped out the old sentiment analysis code... was a mess of redundancy. We’re now using OpenAI for sentiment scoring, no external libraries or scripts cluttering the flow.
+Cleaned up the stock data fetching—Alpha Vantage and Finnhub are working as they should. API calls are cached properly… no extra lag, no wasted requests.
+What broke…
+The mobile version was completely dead at one point—no loading, no logs, nothing. Debugging that was a grind. Ended up being a frontend issue with how the scripts were localized.
+Sentiment scoring was returning zeros because the fallback system (a Python script) wasn’t even there… figured out I didn’t need it. Ripped it out and let OpenAI handle the job.
+Ran into an error where the AI wasn’t returning trade plans... turns out I was still sending prompts to a deprecated model. Classic. Fixed.
+What’s next...
+Build out real-time logs on the front end so I don’t have to keep checking the backend logs just to know if something fired.
+Start piping this data into a dashboard I can actually use—something modular.
+And honestly... revisit the architecture again. Feels like there’s still friction that doesn’t need to be there.
+"The fastest path is the one you keep clearing every day."

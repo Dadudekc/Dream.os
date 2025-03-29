@@ -1,0 +1,10 @@
+Devlog: Untangling the API Chaos
+What’s the real cost of duct-taping systems together instead of building them right the first time...?
+Spent today deep in the guts of the fintech engine... untangling a mess of API integrations that were clogging the whole flow. Finnhub, NewsAPI, TwelveData, OpenAI... all technically “working,” but not in sync. Some of the data was stale. Some calls were redundant. And the worst part—nothing was clean.
+Had to step back and rework the architecture... split out each API handler, added caching to kill off unnecessary requests, and set up proper error logging that actually tells me something useful when things break. It’s not glamorous work, but it’s what gets things moving again.
+Biggest headache was the sentiment analysis... OpenAI responses were all over the place. Sometimes good, sometimes trash. Still not totally happy with it, but I wired in better prompts and some fallback logic to keep the flow from breaking when OpenAI chokes.
+There was also a loop of missing dependencies—traits and classes firing errors because they weren’t getting loaded in the right order. Classic... but it’s fixed now. The Logger trait is in place, and I’ll keep it minimal until I know where it’s really needed.
+What’s next...?
+Need to pull in a few more free data sources—thinking about layering in Yahoo Finance or something that won’t cost a kidney in API fees. Also gonna spin up better testing for edge cases... sick of chasing ghosts every time something glitches in the data flow.
+Progress feels slower than it should be, but this is the trench work... clearing space for faster builds.
+"Discipline is choosing what you want most over what you want now."

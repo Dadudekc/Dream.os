@@ -1,0 +1,15 @@
+Devlog // 2025-03-16
+Where’s my time actually going?
+That’s what hit me today while breaking down everything on the table... Tbow Tactics, FreeRideInvestor, TradingRobotPlug... I’m spread thin, and it’s showing in the cycles. Energy is getting fragmented, and some of the core builds are stalling because of it.
+This week I’m pulling it in tighter. The focus is metadata infrastructure for TradingRobotPlug and getting a basic website live within 7 days. No drift. No extra layers. Just the fundamentals... the backend, feedback loops, and a clean front-end that makes sense.
+We mapped out seven clear tasks:
+Metadata schema locked in.
+MySQL live and structured.
+Backend API for CRUD ops.
+Feedback loop integrated.
+Website framework built.
+UI simple and functional.
+Hooking the site into live data as a trust builder.
+The audit hit hard... I’m juggling too many workflows that should already be merged. Discord feedback from FreeRideInvestor can drive the beta loop for TradingRobotPlug. Content should be auto-publishing instead of eating hours. Prioritization is getting a proper ICE framework—high-impact, clear scoring, move fast.
+The surgical move this week is convergence... less talk, more system building.
+“Small moves make big waves when you stay on course.”

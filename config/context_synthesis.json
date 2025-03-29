@@ -1,0 +1,33 @@
+{
+  "context_weights": {
+    "web_scraping": 0.3,
+    "episode_chain": 0.4,
+    "semantic_memory": 0.5
+  },
+  "context_max_episodes": 3,
+  "context_max_quests": 5,
+  "max_recent_messages": 10,
+  "use_llm_summarization": false,
+  "source_thresholds": {
+    "episode_chain": 0.3,
+    "semantic_memory": 0.4,
+    "web_content": 0.25
+  },
+  "features": {
+    "include_previous_episodes": true,
+    "prioritize_active_quests": true,
+    "add_location_history": true,
+    "include_emotional_arc": true
+  },
+  "llm_summary_options": {
+    "model": "gpt-4o-mini",
+    "token_limit": 1000,
+    "temperature": 0.7,
+    "system_prompt": "Synthesize this context into a coherent narrative continuity summary that maintains themes and character development."
+  },
+  "processing_options": {
+    "async_loading": false,
+    "cache_results": true,
+    "cache_ttl_minutes": 30
+  }
+} 

@@ -1,0 +1,15 @@
+Devlog // 2025-03-16
+“How do you scale decision-making without breaking speed?”
+Been sitting with that question all morning...
+I think today’s work cracked something open.
+I mapped out the core of the trading system prototype—end-to-end.
+Live data flow from Alpaca. Technical indicators built in... EMA, MACD, RSI, Bollinger Bands. Trade plan logic is finally feeling clean—entry zones, stop-loss, profit targets, all calculated in a way that’s modular and easy to plug into the next layers.
+What surprised me is how much time I spent refining the risk management piece... dynamic stop-loss that reacts to volatility, position sizing that adjusts based on account risk thresholds. It’s all math, but getting it dialed in to feel reliable under pressure took a minute.
+Had to pause on live API testing since the environment here can’t run Alpaca directly... but I’ve got it rigged with mock data for now. Simulated trades are firing. Position size calculated. Trades executed (mock) at the right levels. No drama... just numbers lining up.
+What’s tricky is keeping it simple without killing flexibility.
+I’m pushing to automate more—AI self-iteration is next on my radar. Feels like that’s where the execution speed jumps to another level.
+Next up:
+Testing the live API side on my local
+Layering in stress testing with different market conditions
+Thinking about how to loop this into the bigger automation stack
+“Clarity comes from execution... not thought.”

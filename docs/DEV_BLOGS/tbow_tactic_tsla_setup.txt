@@ -1,0 +1,7 @@
+Devlog // 3.16.25 // 8:45 AM
+"How do you stay sharp when the setup is there... but the volume isn't?"
+Quick drop before market open. Spent the morning breaking down TSLA’s levels... running a Tbow strat for today’s game plan. Price is hugging that lower Bollinger... RSI sitting weak at 39... MACD starting to curl but no juice yet. It’s one of those days where the setup looks clean, but I’m not trusting the follow-through unless volume shows up.
+Built out a clean HTML structure for the Tbow Tactic... nothing fancy, just clear zones and actionables. Support/resistance, triggers, targets, stops—all there. Keeping the code light so I can drop it straight onto the FreeRide Investor site if I want. Might wire it up to live data later... but today, it’s all about the read and execution.
+What was tricky? Deciding on the bias. Long bias if it reclaims VWAP, short if it breaks $360 clean... but the indecision is where traders bleed. Not trying to be that guy.
+What’s next... watch the open... stay patient... let the setup come to me.
+“Discipline is the bridge between goals and execution.”

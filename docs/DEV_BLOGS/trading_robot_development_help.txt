@@ -1,0 +1,9 @@
+Devlog — 03/16/25
+“What’s the simplest version of this that actually works?”
+That’s been running through my head all day. Clean, simple... working. Not extra.
+Spent today tightening up the Digital Dream Journal. Took it from a basic PyQt5 input form to something that actually feels useful. The AI analysis is in and running smooth now—finally. Hit a wall early on with the OpenAI API changes... the old ChatCompletion.create() method is gone, so had to rework the whole call flow using client.chat.completions.create(). Not hard, but annoying when you’re already thinking ahead and have to backtrack.
+Got word wrapping sorted for the AI interpretations... before, it was spitting out these long single-line walls of text that stretched the window across the screen. Fixed that by enabling setWordWrap(True) on the QLabel. Way cleaner.
+Took the time to mock out OpenAI calls and built a full test suite. It hits everything—UI elements, save/load for dreams, and AI error handling. Feels solid. No more guessing if something breaks in the future. Full coverage. No excuses.
+What’s next...
+Might build out the AI responses so they get saved alongside the dreams. I keep thinking about stats too... like, tagging emotional tone or pulling recurring themes. But one step at a time.
+“Measure twice. Cut once.”

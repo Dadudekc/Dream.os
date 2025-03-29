@@ -1,0 +1,13 @@
+Devlog: Cleaning Up the Data Flow
+How much complexity is too much before it slows you down?
+I’ve been sitting with that question today…
+I went deep on the data-fetch side of things. The current setup was trying to pull stock data, news, technical indicators, and sentiment from multiple APIs—Finnhub, Alpha Vantage, NewsAPI, OpenAI... the works. It was functional... but bloated. Too many calls, too many points of failure. Every time an API choked—or returned something weird—it slowed everything else down.
+The big blocker was Alpha Vantage. Their technical indicators kept hitting a paywall... premium features I’m not paying for yet. So I stripped it out. Dropped in Twelve Data for now—cleaner, free tier gets me enough signal to move forward. Consolidated API calls so there’s less duplication... I was pulling the same indicator data from different places without even realizing how redundant it was getting.
+Caching was another thing... I was relying on WordPress transients, but they’re kind of dumb by default. Everything was time-based, not data-aware. So I set up a smarter cache that holds data longer unless the volatility justifies refreshing it sooner.
+The sentiment analysis loop was also overkill. Every time news came in, OpenAI was running a sentiment analysis... burning tokens. Now it only runs if there’s a big enough shift in the news cycle or on a schedule. Simple... lighter... faster.
+What’s next—
+I need to build in a self-healing mechanism. If one API fails, the system needs to fallback to another without breaking the flow. Right now, it just logs the error and stops that part of the process. Not good enough.
+Also thinking about automating report generation... daily and weekly insights, without waiting on fresh data every time.
+Progress...
+but still lots to tune.
+"Slow is smooth. Smooth is fast."

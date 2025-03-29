@@ -1,0 +1,15 @@
+Devlog | 03.16.25
+What’s the cost of complexity... and how much of it am I building into my own system?
+Been in audit mode today. Deep dive into where the workflow’s leaking energy—trading, automation, content... everything on the table. Sometimes I get so caught up in spinning new systems, I don’t realize I’m also spinning in place. Too much context switching, too many manual confirmations... and that’s slowing execution when speed’s supposed to be the edge.
+What we mapped out is clear:
+Trading: Automating first-level analysis is a must. These RSI/VWAP checks don’t need me every time... they need to trigger signals without me second-guessing. Static screenshot uploads? Done. Next push is real-time data feeds piped directly into the system. Less friction.
+Automation: Task management’s scattered. GitHub. Discord. Notion. It’s slowing convergence. Moving everything into a single system of record. Notion for ops... GitHub for execution... everything else gets cut or automated.
+Content: Blog structure’s getting componentized. No more manually rebuilding TOCs or phasing diagrams post by post. Streamlined, scalable publishing. Thinking ahead to gamification... turning readers into engaged feedback loops for the models.
+Hard part? Cutting things that aren’t broken—just inefficient. But if it’s not moving fast, it’s dead weight.
+What’s next:
+Ship the MVP for the screenshot analysis... simple, fast, functional.
+Bring WebSocket feeds online for live data. Static analysis was always a patch.
+Tighten the feedback loop between user actions and ML model refinement.
+Velocity comes from convergence... and clarity.
+“Simple scales. Complex fails.”
+—Alex Hormozi

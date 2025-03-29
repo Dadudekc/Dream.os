@@ -1,0 +1,16 @@
+Devlog | March 15, 2025
+Question I’m sitting with: Where is my time leaking, and how fast can I close the gap?
+Tight audit today… Had to get surgical about where the system’s leaking time and energy.
+Trading?
+Still too much emotional latency. I’m hesitating on exits, ignoring stops, getting greedy when the move’s already played out. Wrote myself a note about it... $400 profit nearly flipped into a $900 loss. Walked away with $27. It wasn’t the money—it was the discipline. Same thing I keep saying: trade the plan, not my emotions. So... the priority now is automating execution on clean signals (MACD curls, ATR trailing stops). Kill the hesitation. Close the loop.
+Content side?
+There’s friction. Too much manual handling... writing, recording, editing... I'm in all of it. No leverage there. Spent time mapping out the workflow, and it’s messy—templates scattered, redundant effort between blog posts, YouTube, and social drops. Cleaned that up. Central hub going into Notion. Automation’s next: record once, slice it up, Zapier handles distribution. Editing needs to go to someone else... I’m bottlenecking myself.
+The team build’s still on paper for now. Got $700 budgeted for the first roles—content specialist and tech support—but I’m not rushing hires until KPIs are clean. If it doesn’t move the needle, it’s wasted budget. Priority is ROI on time, not just tasks off my plate.
+Automation and workflows?
+Streamlined a daily cycle: pre-market scan > trigger Tbow setups > auto-journal entries > social posts queued... but it’s not fully clicking yet. Feels like I’m still pulling levers instead of watching them move on their own. That’s the work...
+Get out of the operator seat and into architect mode.
+What’s next...
+Auto-execution on trade signals.
+Centralize and automate content production.
+Move team roles from concept to reality... one good hire, not three half-measures.
+"Discipline equals freedom... but automation makes it scalable."

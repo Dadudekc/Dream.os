@@ -1,0 +1,25 @@
+Devlog — March 15, 2025
+"What’s the actual bottleneck here... me or the system?"
+Today was a deep dive on where things are slowing down... and where I’m bleeding time without realizing it.
+The core of it? I’m overextending—wearing too many hats at once. Building, debugging, testing, strategizing. Context switching is killing flow, and it’s showing up in the small stuff... like wasting time fixing module imports on Windows when I should be building the system at a higher level.
+I broke down the workflow and spotted three big friction points:
+Too much low-level execution... not enough system-level thinking.
+Linear task flow... when I could be running processes in parallel.
+Windows slowing down Swift dev... Combine issues, toolchain quirks. All avoidable.
+So... I’m pivoting.
+Switching over to macOS for core development.
+Streamlining everything into milestone-driven execution—no more endless lists of tasks without a north star.
+First milestone? MVP CLI + REST API + ARIMA predictions live and working.
+Dropping random forest and neural nets from the MVP... for now. I need delivery speed, not complexity.
+On the technical side...
+Shared service layer is getting prioritized so I’m not duplicating logic between CLI and API.
+CI pipeline going in next to kill manual builds/tests.
+Kanban flow with WIP limits is next... force focus, reduce cognitive load.
+The goal is system convergence... fast.
+Automated, self-organizing, scalable.
+Next up...
+Move dev to macOS, lock the ARIMA model, and build the shared service.
+Once that’s done, I’m integrating the REST API and pushing to FreeRideInvestor.
+System’s getting leaner...
+I’m getting sharper.
+"Speed isn’t the absence of complexity. It’s the mastery of focus."

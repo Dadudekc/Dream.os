@@ -1,0 +1,11 @@
+Devlog // 0325
+What’s the real cost of running fragmented systems?
+Spent some time today doing a deep audit on the FreerideInvestor build... the trading workflows, automation pipelines, and the whole content stack. It’s been moving, but not moving clean. A lot of effort getting diffused because the core isn’t converging the way it should.
+Right now, I’m running stock data pulls across PHP, Python, and JS. That sounds flexible, but in reality... it’s redundant. Same data, getting hit from multiple angles, costing me API calls and time. There’s no clean orchestration. And that’s the bottleneck. Multiple processes, none of them speaking the same language in real time.
+The WordPress cron jobs are another slowdown... they’re fine for basic checks, but they’re throttling the system’s ability to react when it matters. Waiting on scheduled intervals to trigger alerts? Feels archaic. Not the move.
+Also—API key management... manual. Every time I scale or pivot the environment, I’m messing with key injection by hand. That’s wasted cycles.
+What’s next is consolidating the data layer. One ingestion point, event-driven. Thinking Redis pub/sub or Kafka to handle the streams. Kill the polling. Everything triggers off of real events.
+Shifting from email-based alerts to real-time bots—probably Slack or Telegram. Faster feedback, more room for automated responses.
+And I’m done with monoliths. Breaking everything down into modular packages. Composer for PHP, pip for Python. Clean boundaries, better test coverage.
+...this is where the system starts running itself.
+"The real flex isn’t doing more. It’s doing less... with precision."

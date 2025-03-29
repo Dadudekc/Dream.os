@@ -1,0 +1,9 @@
+Devlog | 03.16.25 | Late Night Session
+What’s the point of automation if it doesn’t stop when you tell it to?
+That’s the question that’s been burning in my head tonight.
+I spent the last few hours ripping apart the overnight training loop... again. Found out the stop mechanism was basically ignoring me when I tried to kill it. Classic threading issues—time.sleep() was blocking the loop from hearing the stop call in time. Switched to using threading.Event() with a clean .wait() instead of sleep... now it actually listens when I say “enough.” Small win, but important.
+Pulled in the ConfigManager fully this time. Before, half the system was reading from .env, the other half was blind. No more guessing where the API keys are coming from. Alpaca, Polygon, Postgres—all centralized now. If something breaks, it’s on me... and that’s exactly how it should be.
+Also decided to kill Aftermarket Mode... it was noise. Overnight Mode is the focus. Train... optimize... save the best models... do it hands-off. That’s the goal. No clutter. Simplicity scales.
+Next up—tighten the feedback loop between the DataFetchUtils and the ARIMA trainer. There’s still room to improve how data flows... especially on retries when an API call fails. But tonight, we stabilize.
+"Discipline is choosing between what you want now and what you want most."
+—Abraham Lincoln

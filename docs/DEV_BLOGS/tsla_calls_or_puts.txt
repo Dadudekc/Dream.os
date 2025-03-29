@@ -1,0 +1,8 @@
+Devlog // 2025-03-16 // TSLA Trades + Market News Build
+“At what point does patience cross the line into stubbornness... and how do you catch yourself before you’re deep in it?”
+Today was rough on the trading side. Got caught holding TSLA puts way longer than I should’ve. The plan was there—cut if $348 broke. It broke... and I stayed in. Watched it rip through $350, then $356... all while I’m sitting on hands, waiting for some magical reversal that wasn’t coming.
+I told myself I was waiting for the tariff news drop at noon. It came. But that wasn’t strategy... that was hope.
+On the system side, made some moves. Started laying the groundwork for the Market News app. Priority is caching API responses once an hour, with a manual “Fetch Now” trigger for admin. First pass of the PHP script is done, but had to shift it so the API key pulls from wp-config.php instead of being hardcoded. No excuses on security or best practice, even if it’s just v1.
+Haven’t tested it fully yet—need to drop it into the WP backend and wire up the admin page. That’ll be next.
+Biggest takeaway from today: if the plan is there, execute it. Don’t sit there hoping your bad play turns good. Respect the system... or pay the price.
+"Discipline is the bridge between goals and results."

@@ -1,0 +1,10 @@
+Devlog // Feb 19
+What if the simplest things are the ones that break us the most? Or maybe... they’re the ones that force us to sharpen the blade.
+I’ve been deep in the weeds with the logger tests... simple in theory—track the logs, assert the outputs, move on. In practice, it was like chasing my tail through broken handlers and streams that didn’t want to cooperate.
+First, I got the advanced_logger module wired up with console and file handlers—color formatting, rotating files, the whole thing. Solid. Then the testing started.
+I mocked subprocess, OpenAI, handlers, all of it. Ran through logger init tests, console output, file writes... and then the problems kicked in.
+Console logging tests failed. Nothing hit capsys. Turns out, StreamHandlers and capsys aren’t always friends. Even after flushing handlers and forcing sys.stdout, it wouldn’t catch. Same thing for the file logging tests—logs were writing, but the temp files were locked up. Windows file locking hit me there... had to explicitly close and flush handlers between tests. Still threw a PermissionError when tearing down the temp files.
+After a few rounds of clearing handlers, resetting streams, and verifying log output manually, I got most of it stable... but that console test still bugs me. It’s not clean yet. Might need to rethink the handler strategy for test isolation.
+What’s next... I’m shifting focus to testing the AIModelManager. Mocking the Ollama subprocess calls, faking OpenAI responses, and making sure confidence scores and patch generation follow the logic chain. Should move smoother—should.
+But yeah... today was one of those "small things aren’t so small" days.
+"The details you avoid today will decide the battles you fight tomorrow."

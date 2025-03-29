@@ -1,0 +1,12 @@
+Devlog: Where’s the Drag?
+Where is the system slowing me down… and why?
+That’s been the question on repeat lately. Every time I think things are moving smooth, something gums up the gears… too many moving parts, or worse, the wrong ones repeating work they shouldn’t. So today was about cutting out the noise.
+What I worked on:
+Cleaned up the API key management first. Realized there’s no reason I should be punching in keys through a settings panel when I could just hardwire them into the config. Less overhead, less room for error… now they’re baked into the environment. Just works.
+Then I hit the data flow. Right now, we’ve got calls firing off every time a user hits a shortcode or triggers a fetch. It’s dumb… wasteful. Moved to a more event-driven setup. Smart caching, timed refreshes based on what matters, not just time passing. Especially on stuff like Finnhub—rate limits are real, and the data doesn’t need to update on every tap.
+Started thinking about how I’m still manually bridging trading signals and content. Like… why? Why am I still the guy pushing the buttons to get content out when the machine could handle it? So I sketched out an event-based trigger system—when something moves in the markets, it kicks off an automated post, sentiment update, whatever’s needed. Not built yet, but the bones are there.
+What was tricky:
+The usual… decision fatigue. So many places to optimize, but not every one is high ROI. Had to sit with that for a bit… narrow in on the few points of real drag instead of tinkering everywhere.
+What’s next:
+The system needs to self-organize. Not just automate tasks, but make decisions about when and how to act—without me poking it. Next, I’m building out a centralized AI layer that’ll handle that… market data, sentiment, content… all feeding into a single decision engine. It’s gonna take some work, but once it’s in place, execution speed goes up. Way up.
+"Clarity comes from doing the work, not thinking about it."

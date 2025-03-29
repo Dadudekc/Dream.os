@@ -1,0 +1,11 @@
+Devlog // 2025-03-16
+"How often do bugs in the system trace back to something simple... and how often do we complicate the fix by looking everywhere but the root?"
+Been knee-deep in test failures most of today... started out clean with the AgentDispatcher suite. Six tests in, everything green... bumped coverage on agent_dispatcher.py to 86%. Clean. Solid.
+But after that, things got messy.
+Dug into the AgentBase tests—fixed inconsistent return values on describe_capabilities() and solve_task()... they were out of sync with what the tests expected. Small fix, but one of those things that makes you wonder how it drifted in the first place. Got that cleaned up... 100% pass rate on the core agent foundation.
+Then the deeper stuff hit.
+AgentRegistry tests were breaking... JournalAgent wasn't showing up in the registry. Spent time chasing that... turns out there’s a disconnect somewhere in how the registry loads agents. Didn’t fully close the loop on it yet, but it's scoped.
+Biggest blocker today was around all the retry managers and patch utilities. Tons of attribute errors. Modules missing. auto_fix_manager, confidence_manager, patch_review_manager... all either moved, renamed, or removed in refactors. The test code didn’t catch up. Had to rewrite a good chunk of the patching system tests... re-pointed them to patch_tracking_manager where it made sense. Got the retry manager tests cleaned up too—patched paths were broken because of wrong module targets. Fixed those imports and mocks. Tests are clean there now.
+This was one of those days where you just have to sit in the chair and grind it out... line by line. One patch at a time.
+Next up... I need to fully rework the agent registry loader. Also thinking about adding a dynamic agent discovery module to avoid these registration issues long term.
+“Start where you are. Use what you have. Do what you can.”

@@ -1,0 +1,30 @@
+Devlog // What's Diluting My Execution?
+Been thinking about this a lot today...
+Where exactly am I leaking time and energy?
+I went deep into the weeds with the site.
+Built out the front page flow to showcase the ebook—"Roadmap"—with a heavy focus on list building. We’ve got the pitch dialed... "We’re going to charge for it soon." Simple, direct.
+But the real work was automating delivery so people aren’t stuck waiting or emailing me asking where their PDF is.
+Pulled the ebook form out of shortcode hell and wired it into a proper custom form handler.
+We’re collecting emails, firing off the ebook via email with a clean download link.
+For now, it's all running through WordPress...
+But I’m seeing where the next bottleneck hits.
+Transactional emails on WordPress? Sketchy.
+Need to push that off to Mailchimp or ConvertKit, maybe SendGrid for delivery.
+No point building an email delivery system when one already exists.
+Next sprint.
+The media side...
+Spent too much time cycling on images.
+DALL-E broke half the time.
+Had to redo simple things like removing a letter or changing a color.
+That’s on me. I should’ve had a brand style guide ready to go before we started asset generation.
+We were chasing aesthetics instead of executing the system.
+Batch the requests. Define the standard. Move on.
+No more getting stuck there.
+What’s next...
+Get the email funnel running through an external system.
+Map the ebook > Discord > Paid offer flow and tighten that up.
+Start pulling insights from trade logs into content themes.
+Everything I do on the trading side needs to be feeding content...
+No separation between the work and the story anymore.
+“The system that executes faster wins.”
+Let’s get it.

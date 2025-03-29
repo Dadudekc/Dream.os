@@ -1,0 +1,19 @@
+Devlog // 2025-03-15
+What’s the real cost of debugging in the middle of flow? And how many cycles are wasted fixing the same class of errors over and over?
+I spent today ripping apart the AJAX handlers and the OpenAI pipeline... trying to get to the root of where things are breaking. The logs told the story—bad JSON coming back from OpenAI... missing closing brackets... partial responses that just hang. It’s not always easy to see until the logs are showing you the same errors, over and over.
+That was the first bottleneck... cognitive load from repetitive debugging. The system doesn’t protect itself. It waits for me to catch it.
+What I worked on:
+Mapped out where OpenAI’s responses break down.
+Found that the prompts weren’t strict enough... and I wasn’t retrying failed responses.
+Realized input validation is happening after everything is already in motion, not before. That’s a problem.
+What broke:
+JSON validation... because it didn’t exist.
+Manual prompt tweaking is slowing me down. I’m writing the same things twice in different places—no central prompt system.
+No unified error handling... which means duplicated try/catch logic that’s messy and inconsistent.
+What’s next:
+Build a validator + retry layer around OpenAI calls. Auto-retries, fallback to cache if things fail.
+Centralize prompts. Template them. No more scattered strings.
+Set up pre-validation for all incoming data—stock symbols, alert conditions... everything.
+Start pulling out heavy tasks (like sentiment analysis) into async queues. Synchronous execution is choking the system.
+The priority is system convergence. Less manual babysitting. More autonomy... and resilience.
+"Speed means nothing if you’re stopping to fix the same leaks twice."

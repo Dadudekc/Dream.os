@@ -1,0 +1,10 @@
+Devlog | 2025-02-12
+What’s the trade-off between shipping fast and fixing things the right way? I’ve been sitting with that one all day... because today was both.
+Started off chasing down a ton of integration bugs. Twitter API blew up first—OAuth errors, 403s, rate limits... the works. Took a while to get the v2 client stable with free tier limitations. Rebuilt the error handling and self-healing logic on the fetch calls. It’s solid now, exponential backoff in place... still won’t fix Twitter’s nonsense, but at least it doesn’t crash the cycle.
+Refactored AudienceInteractionTracker after it threw missing method errors mid-run. Added an update() method to keep the loop moving and cleaned up how reports are generated. The engagement rate and CTR calculations are tighter... though I’m still faking link clicks until I figure out a better metric for that.
+Big one today was AutoPostScheduler. No post() method—just straight up didn’t exist. Built that out, added better scheduling checks, and hooked in auto_publish() logic. Ended up writing tests for the whole thing to catch dupes, prevent past schedules, and make sure future posts don’t blow up. Clean, but getting there wasn’t fun.
+Heatmap data gave me a headache too. Different formats for EngagementTracker and EngagementHeatmap... smashed them together into one dataset so both systems can read it. Lesson there: standardize earlier.
+Cycle runs end-to-end now... Content generation → Scheduling → Posting → Engagement → Reporting. Still some glue holding it together, but it’s moving.
+What’s next...
+Might tackle real data for engagement tomorrow. Thinking dashboards too, but I need sleep first.
+“Start where you are. Use what you have. Do what you can.”

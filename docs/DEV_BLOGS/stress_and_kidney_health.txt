@@ -1,0 +1,19 @@
+Devlog // 03.15.25
+“Where am I leaking focus... and how do I seal it without losing momentum?”
+That’s what I’ve been sitting with today.
+The system audit dropped some clear signals... context switching is bleeding me dry. Trading... automation... content... health data... it's all coming in, and without a proper triage layer, I'm the bottleneck. Not because the system isn't capable, but because I'm manually routing too much.
+So, I broke it down.
+The big leak is in attention management. No Hierarchical Attention Filter (HAF) in place yet... which means every micro-query or off-path thought hijacks high-bandwidth focus. That’s gotta be sealed. Immediate plan is to implement a priority router—Tier 1 stays on my desk, Tier 2 and 3 get pushed to AI or batched for later.
+The Living Knowledge Graph (LKG) was another clear gap. Right now, insights come and go... but they’re not compounding. No central node holding it all together. So I’m rolling out a graph system—probably Neo4j or Obsidian—something lightweight but scalable. The goal is to capture everything I’m learning in real time, so it feeds back into trading models, health optimization, and content flow.
+Another thing... Autonomous Task Dispatch (ATD). I’ve been holding too many low-leverage tasks. Health research? Routine data parsing? That can move to AI agents. I’ll be scoping that out over the next week, pushing it through LangChain or an AutoGPT wrapper.
+And then there’s tone drift. Jumping from clinical to casual to strategic without a unified thread. I’m codifying a Unified Narrative Layer (UNL) to anchor everything. One voice. One purpose. Less friction when shifting between outputs.
+What was tricky?
+Honestly... catching myself in the act. Noticing where I’m reacting instead of steering. Once I saw it, it was obvious.
+What’s next?
+Build and deploy HAF.
+Spin up the Knowledge Graph.
+Start delegating low-priority workflows to AI agents.
+Get the tone guide locked in and run it through prompt templates.
+Small moves... but they’ll uncap the system.
+I’m after velocity right now.
+"If you can’t see the bottleneck… you are the bottleneck."

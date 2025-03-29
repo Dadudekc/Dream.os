@@ -1,0 +1,10 @@
+Devlog // 2025-03-16
+How much time do we spend fixing what's supposed to be working?
+Been deep in the trenches today... cleaning up test failures and refactoring some of the core AI agent utilities. Most of the focus was on debugging and patch management—trying to stabilize the AIPatchRetryManager, AIPatchOptimizer, and AIConfidenceManager. Tests kept breaking because of attribute errors and missing method calls... turns out a bunch of mock paths were still pointing to the old structure. Classic. Fixed imports across modules like ai_patch_review_manager, patch_tracking_manager, and auto_fix_manager. That alone cleared a few blockers.
+Ran into a snag with AIConfidenceManager.get_confidence—the method didn't exist where it was supposed to. Had to double back and make sure the mocks reflected the new model structure... and that the real objects actually had those methods. Simple, but tedious.
+Another annoying one: JournalAgent needed some cleanup. Tightened up the CRUD operations, made error handling consistent, and rewrote the logger outputs so they give clearer signals during runs. It was one of those cases where small changes across the board finally made the bigger picture stable again.
+Tests are still failing on some edge cases. test_debugger_reporter.py isn’t passing the send_debugging_report mock, because that function doesn’t exist in EmailReporter anymore. So, that's next... Either rebuild the method or update the calls and mocks to match what I’m actually using now.
+What's next?
+Finishing the patch retry flow and locking in the last pieces of AIPatchReviewManager. I’ll probably need a full system sweep tomorrow to make sure the retry-reapply logic is consistent across agents. No sense in pushing forward without a clean base.
+One step at a time...
+"Persistence guarantees results... patience guarantees clarity."

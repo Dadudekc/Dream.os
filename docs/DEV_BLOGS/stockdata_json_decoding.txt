@@ -1,0 +1,18 @@
+Devlog | Reorg Checkpoint + Build Breakdowns
+March 15, 2025
+How much of the slowdown is caused by the structure... and how much is caused by me forcing things forward before they’re ready?
+Spent the last few hours deep in the reorganization... pushing the TBOWTactics repo toward modular clarity. Split the core services, domain models, and shared utilities into Core and Shared modules. Tried to clean the slate. It looked clean.
+Then it broke.
+Swift build’s still throwing no such module errors. First Services, now Models. Even though those have been merged into Core and Shared... the imports are still tangled. Feels like I’m untangling a knot, and every time I loosen one thread, another tightens.
+The real issue? Dependencies aren’t flat. Shared is depending on Core, but TBOWTactics is still expecting to pull from Models... which doesn’t exist anymore. At least, not how it used to. I’m probably keeping too much legacy in play.
+Manual builds, manual commits, manual tests...
+That’s the pattern right now.
+But it’s not sustainable. Not if I want this to move on its own.
+I need to enforce build and test passes before commits even happen. Pre-commit hooks will fix that. The longer I wait, the more I pay for it later... I know better.
+The CLI works... but it’s still too manual. If I’m serious about convergence, I need an autonomous pipeline. NetworkManager pulls data, OpenAIService builds trade plans, and the system moves without me typing swift run like a caveman.
+What’s next:
+Flatten Core and Shared. Remove legacy modules from my head first, then from the code.
+Pre-commit hooks. No more broken builds slipping through.
+Move CLI actions into scheduled, event-driven services.
+Automate the devlogs... like this one.
+"Slow is smooth. Smooth is fast."

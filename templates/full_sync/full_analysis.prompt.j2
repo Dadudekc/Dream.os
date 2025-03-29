@@ -1,0 +1,38 @@
+You are an expert AI developer working inside a modular codebase.
+
+Use the project structure and target file below to:
+1. Analyze test coverage
+2. Identify missing tests
+3. Suggest and generate unit tests
+4. Perform refactor suggestions with structural awareness
+
+---
+
+Target File: {{ target_file }}
+
+Project Context:
+{{ project_context | tojson }}
+
+---
+
+## 🔍 TASK 1: Missing Test Coverage
+
+Analyze the file and list:
+- Untested functions/methods
+- Integration points not verified
+- Known failure paths lacking assertions
+
+---
+
+## 🧪 TASK 2: Generate Unit Tests
+
+Produce a complete test file:
+- Use `pytest` style
+- Mock dependencies
+- Handle edge cases
+- Document each test clearly
+
+Format:
+```python
+# tests/core/memory/test_memory_manager.py
+# (Your generated test code here)

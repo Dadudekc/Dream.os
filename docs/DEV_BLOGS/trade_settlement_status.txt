@@ -1,0 +1,19 @@
+Devlog — 2025-03-15
+“Where am I still reacting... instead of automating?”
+Traded options yesterday... simple play... but this morning I had to double-check if the markets were open because of Jimmy Carter’s funeral. Manual search... again. That’s when it clicked—still too much reliance on me checking things that should be automated.
+It’s subtle, but it adds up.
+Latency in decision-making... energy leaks in small confirmations.
+Spent time breaking it down...
+The core bottleneck is dependency on external checks—market status, settlement confirmations, even news that impacts execution speed. Right now, I’m still pulling that data manually or on-demand. That’s not scalable. And it’s not aligned with where I’m driving this system.
+Next step is clear:
+Auto-monitoring of market closures (webhooks + trading platform triggers).
+A bot that tracks T+1 settlements, pings me when funds are clear... no more guessing.
+AI filtering the news for events that mess with my flow—direct feeds, actionable signals, no noise.
+Also realized I’m still writing out templates for projects by hand...
+That’s going to a dynamic generator... probably piped into the API layer.
+What’s tricky about this?
+Nothing big technically—just friction in my own process. It’s the human loop I’m cleaning up here. These are the last threads I need to cut to get closer to a fully autonomous execution stack.
+Next up...
+I’m building out the bot to watch settlements and closing the gap on market alerts. Then turning the project templates into API-first workflows.
+One step tighter... one less thing in the way.
+"The less you hold, the faster you move."

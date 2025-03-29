@@ -1,0 +1,19 @@
+Devlog // FreerideInvestor Plugin Update
+Blast from the past... 30 days ago
+Ever ask yourself how many cycles you burn on things that should just run?
+I was looking back at some of the earlier FreerideInvestor builds—specifically when I wired up the support/resistance engine and API key security. Clean system now... but back then? It was messy.
+What worked:
+Pulled all the API keys out of the codebase... got them into wp-config.php. Easy win. Reduced exposure, easier to manage when things scale.
+Built the support/resistance calculator... started simple, swing highs and lows. It gave me something to see on the charts. Even if the algo was basic, it was fast and it worked.
+Got Chart.js running to display everything. AJAX requests fetch the data, charts get updated without a reload. Lightweight... felt good.
+What was tricky...
+Caching wasn’t there. The system hit Alpha Vantage directly. No backup feeds, no Redis, no queue priority. That slowed things down.
+Manual testing. No CI/CD, no automated validations. It was me running things by hand, making sure nothing broke. That’s fine early on... but it’s a velocity killer.
+Context switching. Building code, writing logs, testing endpoints, making content. All in one sprint... energy leak.
+What’s next...
+Multi-layer data pipeline. Redis cache. Failovers. If Alpha Vantage chokes, another feed kicks in.
+CI/CD for the plugin. Tests, deploys... no more manual steps.
+Merge trading outputs with content generation... let the system talk to itself, auto-generate the updates.
+Block out tighter sprints. Build deep, write later.
+The less I do, the more the system should be doing.
+"Discipline is choosing between what you want now and what you want most."

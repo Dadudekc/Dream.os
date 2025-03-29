@@ -1,0 +1,15 @@
+Devlog | 15-Mar-2025
+Introspective question: What’s the true cost of letting small errors stack before they break something big?
+Been deep in the weeds today...
+Found myself tracking down some persistent PHP warnings and fatal errors on the site. Stuff that’s been lingering too long... little cracks that got louder.
+Main thing: the theme’s functions.php is brittle. Missing constant definitions, sloppy handling of nulls, and no guardrails on shortcode functions. Kept triggering fatal errors tied to SimplifiedTradingTheme\TradeJournal. Turns out the theme’s relying on constants that don’t exist... or aren’t being passed cleanly. So, anytime the shortcode runs, it just breaks.
+On top of that, the widget system is throwing warnings about null titles. Not mission-critical but annoying—and a signal that validation is weak.
+The real issue isn’t just the errors... it’s the time sink. Every time this stuff fails, I have to stop. Context switch. Debug. Manual log checks. It’s burning hours I should be putting into actual builds... trading logic... automation layers.
+What’s next...
+Priority one is spinning up real-time log monitoring with alerts. I’m not sitting around waiting for the next break.
+After that, refactoring the theme... stripping functions down, modularizing, and putting some automated testing in place so I’m not hand-holding it every time something changes.
+Longer-term... looking at decoupling the content system from the front-end entirely. Move to headless... maybe Next.js on the front.
+But that’s after I plug the leaks.
+Feels like tightening bolts on a ship while it’s moving...
+But that’s the work.
+"You don’t rise to the level of your goals. You fall to the level of your systems."

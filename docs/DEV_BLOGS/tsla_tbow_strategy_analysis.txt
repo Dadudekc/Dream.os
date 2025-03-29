@@ -1,0 +1,19 @@
+Devlog // Tbow Tactics Prompt Refinement
+March 16, 2025 - Evening
+What makes a prompt complete?
+That’s been running through my head while tightening up the Tbow Tactics workflow today...
+Spent some time dialing in the actual prompt I’m using to get clean, comprehensive Tbow breakdowns. The earlier versions worked but they were messy—too much back and forth, too many missing pieces. I needed a single prompt that forces clarity in the response... everything I’d want before taking a trade, right there.
+The refined version now pulls:
+Full technicals (EMA, MACD curl, RSI, Bollinger)
+QQQ correlation
+Options order flow
+Economic news/macro catalysts
+Then it structures the trade plan with entry, stop, TP, confirmation signals... all of it clean and execution-ready.
+What was tricky...
+It was balancing detail without overwhelming the response. Too many prompts turn into an essay when I need surgical precision. The new version forces actionable data—no fluff, no wandering. Feels right.
+Then I took it a step further...
+Built a second prompt that formats the analysis into a FreeRideInvestor blog post. Full structure, emojis where they help, concise and ready to drop. I kept it stripped down... traders don’t need theory, they need levels and clarity. This format gives both.
+Next...
+I’m going to test these prompts in live analysis, see if they hold up when speed matters. Might hook them into a daily workflow and automate some of the post formatting through scripts... save myself some clicks.
+“Precision beats power. Timing beats speed.”
+— Conor McGregor

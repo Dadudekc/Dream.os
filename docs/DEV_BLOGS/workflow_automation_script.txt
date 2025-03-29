@@ -1,0 +1,11 @@
+Devlog | 03.15.2025
+"At what point does building the system become avoiding the system?"
+Today was one of those days where I had to take a hard look at where the time’s going... and why.
+Spent a chunk of the day wiring up a PyQt5 Workflow Manager. The goal was simple—load JSON files, edit them clean, manage the system in a modular way... no surprises there. Started with a Tkinter base, realized fast it wasn't scaling, and rebuilt the thing in PyQt5. It works now. Dynamic, scalable, and no hardcoded junk. Two files—modular. Main app file and a dedicated JSON tree widget. Clean separation.
+But here’s the thing that kept chewing at me... I’m building editors and GUIs that are adding friction, not removing it. Every time I click through the interface, it slows me down. It’s not automated. It’s not AI-first. It’s still me in the loop, dragging things forward when I should be designing systems that move on their own.
+The audit made that pretty clear... GUI-heavy workflows are eating execution time. There’s no unified intelligence layer across projects yet. Manual testing and patching is slow. Content systems, trading systems, bot systems... they’re still siloed.
+So yeah, the tools work. But the question is... are they getting me closer to self-organization?
+What’s next...
+— Strip out the GUIs where they aren’t pulling weight. — Replace them with headless, schema-driven JSON pipelines. — Get a graph database running. Unify everything: trading data, bot engagement, content metrics. — CI/CD pipelines. No excuses. — AI agents handling updates, task flow, and reporting. Autonomous cycles, not manual pushes.
+Tired... but focused.
+"Build the machine that builds the machine... then let it run."

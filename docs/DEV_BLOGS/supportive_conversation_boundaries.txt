@@ -1,0 +1,15 @@
+Devlog | 03.15.25
+How many bottlenecks am I tolerating just because they feel familiar?
+Today was one of those clarity-through-discomfort kind of days...
+I ran a system audit on myself... trading, automation, content workflows. Asked the hard questions. The audit didn’t hold back. Trading? No journal. No automated feedback loops. Too much instinct... not enough structured data. I’m leaving performance on the table just because I’m not documenting or reviewing consistently. That’s a leak... no excuse for it.
+Automation? Running critical systems off my phone like I’m proud of it. Reality check—this isn’t a flex. It’s throttling execution. No cloud setup. No centralized dashboard. Updates are slow because the whole pipeline is fragmented. Feels like I’m driving a race car through traffic with one hand.
+Content flow? Ad hoc as hell. Ideas get posted when I’m in the mood, but there’s no system pulling the weight when I’m not. Zero batching. Zero automation on distribution. Basically... I’m working harder, not smarter.
+What’s tricky is realizing how much I’m tolerating because it’s familiar. But if I’m serious about scaling, I need ruthless systems.
+What’s next...
+Spinning up a trading journal today. Manual for now, automated by this week.
+Laying out three non-negotiable trading rules to cut discretionary nonsense.
+Starting the move to cloud-based infrastructure for all bots and dashboards.
+Batch producing 3 pieces of evergreen content and building out a Notion pipeline.
+CI/CD pipeline and GitHub setup is on deck. No more guessing which version is live.
+Clearing friction... gaining velocity.
+"Most people don’t fail because they aim too high and miss. They fail because they aim too low and hit."

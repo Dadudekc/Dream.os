@@ -1,0 +1,12 @@
+Devlog // 2025-02-19
+What’s the signal that a system’s ready to scale?
+I keep coming back to that... especially on days like this when the friction shows up in the simplest spots.
+Spent the day tightening up the AIModelManager. The old unit tests were throwing errors... load_model and save_model weren’t even implemented, which explains the AttributeErrors in test_load_model and test_save_model. Not sure how I missed that. Fixed it by wiring up the file IO, got it saving and loading JSON model states clean now.
+The bigger headache was in generate_patch. Confidence scores were coming back None in some cases... which caused a TypeError when comparing them to floats. Rookie move. Cleaned that up—any missing confidence defaults to 0.0 now. No more blowing up on simple comparisons.
+Also reworked how it cycles through model priorities... Mistral → DeepSeek → OpenAI fallback... Simulations are in for now, but the scaffolding is there for when I plug in the real models.
+Unit tests are passing again. Clean.
+Still got more to build... but we’re moving.
+Next:
+I need to wire this manager into the dispatcher and see how it plays under real tasks. The patch tracking and confidence scoring will need stress testing. That’s where it gets interesting.
+"Most people overestimate what they can do in a day and underestimate what they can do in a year."
+—Bill Gates

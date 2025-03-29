@@ -1,0 +1,11 @@
+Devlog | 2025-03-15
+What’s the real cost of friction when you’re scaling a system?
+Been grinding through the Swift build pipeline today... and I’m starting to question how much velocity I’m losing by staying tied to Windows for this part of the stack. The toolchains are improving, sure... but Swift’s concurrency model on Windows is still a rough ride. The isolation errors with @MainActor and how it trips up even basic singleton access—more time wasted than I’d like to admit.
+Tried building ViewModels—and the same pattern repeats: async/await bumps into legacy completion handler design... which makes the system feel fractured. The fetchStockData call expects a callback, but the ViewModel’s already moving toward pure async. Had to stop and rethink the service protocols... again. This isn’t just a code problem... it’s a flow problem. Too many mixed paradigms.
+What’s tricky is balancing that tension between getting it working and getting it converged. Right now, convergence matters more.
+Next steps are pretty clear...
+Rip out the completion handler junk and go all-in on async/await. No dual systems. Clean contracts.
+Offload builds to a Linux/macOS CI runner—get out of my own way. No more local builds when they eat hours.
+Pre-commit hooks and automated validation, so I’m not the one catching stuff every time.
+Friction’s the drag on execution velocity. If I can clear it... the system gets faster without me.
+"Simplicity is the soul of efficiency."

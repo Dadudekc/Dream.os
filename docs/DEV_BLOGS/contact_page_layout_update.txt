@@ -1,0 +1,21 @@
+Devlog: Cutting the Noise
+What’s the actual cost of friction in a system?
+Not money… time. Energy. Focus.
+And I’ve been bleeding all three.
+Today was about hunting down the bottlenecks I’ve been tolerating.
+I started with the contact page… cleaning up the layout, stripping out anything unnecessary. We don’t need to post addresses or phone numbers anymore… it’s just noise. Kept it simple—email and the form. One clear path for anyone trying to reach out.
+The image work was the real time sink.
+I went back and forth way too many times on banners… hero shots… cleaning up text… removing things that shouldn’t have been there in the first place. That was on me. Not enough clarity in the asks upfront… and it spiraled.
+Good news? That’s fixable.
+Next time, tighter prompts, clearer direction… lock it in before the first render.
+I also pulled all the repetitive file conversions into a clean flow. No more manual PNG to JPG nonsense.
+That kind of stuff… it adds up.
+And the weight of it slows you down.
+What’s next…
+I’m building out automated content blocks—dynamic, smart templates that can flex across the site without me hand-stitching every word.
+More AI-driven workflows. Less human bottlenecking.
+The goal’s the same:
+Cut the friction.
+Move faster.
+Build sharper.
+"Speed isn’t reckless. It’s disciplined precision."

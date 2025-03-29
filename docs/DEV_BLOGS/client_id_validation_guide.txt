@@ -1,0 +1,12 @@
+Devlog // 2025-03-15
+What’s the real bottleneck... the tech, or how much I’m babysitting it?
+Been deep in the Robinhood integration today... hit a wall on authentication. The script's throwing 403s at login. Turns out, it’s stuck on SMS-based MFA. Manual code entry every time… slows everything down. Hard stop for any kind of autonomous flow.
+I’ve been relying on Robinhood’s private API, which is feeling like a liability. No official support... no guarantees. I’m forcing the system to work through an unstable access point. That’s not scalable.
+So—next steps on the trading stack:
+Moving away from SMS MFA. I’m going to swap to TOTP wherever I can. Might need to rig a temporary workaround to automate SMS code pulls in the meantime... not ideal, but it keeps the flow alive.
+Looking hard at diversifying broker APIs. Alpaca and IBKR are next. Robinhood was always a stopgap. Time to make it modular.
+Pre-flight health checks are going in. If a script fails because of a missing token or an expired login, that’s on me for not catching it earlier.
+Also spotted some redundant loops... doing the same validation across scripts without a shared check. That’s getting abstracted.
+What broke was my patience with human-in-the-loop systems... I need to get out of the way so the thing can run itself.
+What’s next is removing me from core workflows... one node at a time.
+“Efficiency is doing better what is already being done. Effectiveness is doing what needs to be done.”

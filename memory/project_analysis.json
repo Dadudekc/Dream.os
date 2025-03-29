@@ -1,0 +1,1654 @@
+{
+    "chat_mate.py": {
+        "functions": [
+            "setup_logging",
+            "get_driver",
+            "save_cookies",
+            "load_cookies",
+            "is_logged_in",
+            "force_model_in_url",
+            "get_chat_titles",
+            "send_prompt_to_chat",
+            "get_latest_response",
+            "generate_devlog",
+            "save_rough_draft",
+            "archive_chat",
+            "main"
+        ],
+        "classes": {},
+        "routes": [],
+        "complexity": 13
+    },
+    "__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\OptimizedMemoryManager.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\UnifiedPromptEngine.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\chat_engine\\driver_manager.py": {
+        "functions": [
+            "__init__",
+            "get_driver",
+            "_init_driver_lazy",
+            "shutdown_driver",
+            "is_logged_in"
+        ],
+        "classes": {
+            "DriverManager": [
+                "__init__",
+                "get_driver",
+                "_init_driver_lazy",
+                "shutdown_driver",
+                "is_logged_in"
+            ]
+        },
+        "routes": [],
+        "complexity": 10
+    },
+    "core\\logging\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\logging\\handlers\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\logging\\services\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\logging\\utils\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\social\\driver_manager.py": {
+        "functions": [
+            "get_multi_driver_sessions",
+            "__init__",
+            "initialize_driver",
+            "_build_chrome_options",
+            "_apply_stealth_settings",
+            "shutdown_driver",
+            "cleanup_profile",
+            "restart_driver",
+            "_get_profile_dir"
+        ],
+        "classes": {
+            "DriverSession": [
+                "__init__",
+                "initialize_driver",
+                "_build_chrome_options",
+                "_apply_stealth_settings",
+                "shutdown_driver",
+                "cleanup_profile",
+                "restart_driver",
+                "_get_profile_dir"
+            ]
+        },
+        "routes": [],
+        "complexity": 17
+    },
+    "core\\social\\social_post_db.py": {
+        "functions": [
+            "__init__",
+            "_load",
+            "_save",
+            "_load_memory",
+            "_save_memory",
+            "update_memory",
+            "get_memory",
+            "add_to_queue",
+            "mark_posted",
+            "mark_failed",
+            "get_next_post",
+            "get_queue_length"
+        ],
+        "classes": {
+            "SocialPostDatabase": [
+                "__init__",
+                "_load",
+                "_save",
+                "_load_memory",
+                "_save_memory",
+                "update_memory",
+                "get_memory",
+                "add_to_queue",
+                "mark_posted",
+                "mark_failed",
+                "get_next_post",
+                "get_queue_length"
+            ]
+        },
+        "routes": [],
+        "complexity": 24
+    },
+    "core\\social\\StrategyLoader.py": {
+        "functions": [
+            "__init__",
+            "load_strategy",
+            "_validate_strategy",
+            "get_available_strategies",
+            "reload_strategy",
+            "register_strategy"
+        ],
+        "classes": {
+            "StrategyLoader": [
+                "__init__",
+                "load_strategy",
+                "_validate_strategy",
+                "get_available_strategies",
+                "reload_strategy",
+                "register_strategy"
+            ]
+        },
+        "routes": [],
+        "complexity": 12
+    },
+    "core\\social\\TaskQueueManager.py": {
+        "functions": [
+            "__init__",
+            "start",
+            "stop",
+            "add_task",
+            "_worker",
+            "queue_size",
+            "status",
+            "sample_task"
+        ],
+        "classes": {
+            "TaskQueueManager": [
+                "__init__",
+                "start",
+                "stop",
+                "add_task",
+                "_worker",
+                "queue_size",
+                "status"
+            ]
+        },
+        "routes": [],
+        "complexity": 15
+    },
+    "core\\social\\ai\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\social\\strategies\\BaseEngagementBot.py": {
+        "functions": [
+            "retry_on_failure",
+            "decorator_retry",
+            "__init__",
+            "get_driver",
+            "get_random_user_agent",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "_login_with_credentials",
+            "post",
+            "like_posts",
+            "comment_on_posts",
+            "follow_users",
+            "unfollow_non_returners",
+            "go_viral",
+            "_log_followed_users",
+            "_find_posts",
+            "_find_like_button",
+            "_find_comment_box",
+            "_find_profile_url",
+            "_find_follow_button",
+            "_find_unfollow_button",
+            "run_daily_session",
+            "wrapper_retry"
+        ],
+        "classes": {
+            "BaseEngagementBot": [
+                "__init__",
+                "get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "_login_with_credentials",
+                "post",
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "go_viral",
+                "_log_followed_users",
+                "_find_posts",
+                "_find_like_button",
+                "_find_comment_box",
+                "_find_profile_url",
+                "_find_follow_button",
+                "_find_unfollow_button",
+                "run_daily_session"
+            ]
+        },
+        "routes": [],
+        "complexity": 45
+    },
+    "core\\social\\strategies\\config_loader.py": {
+        "functions": [
+            "load_yaml_config",
+            "load_json_config",
+            "load_configs",
+            "get_nested",
+            "get_env_or_config",
+            "reload_configs"
+        ],
+        "classes": {},
+        "routes": [],
+        "complexity": 6
+    },
+    "core\\social\\strategies\\linkedin_strategy.py": {
+        "functions": [
+            "retry_on_failure",
+            "decorator_retry",
+            "__init__",
+            "_get_driver",
+            "get_random_user_agent",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "_login_with_credentials",
+            "post",
+            "like_posts",
+            "comment_on_posts",
+            "follow_users",
+            "unfollow_non_returners",
+            "go_viral",
+            "_log_followed_users",
+            "_find_posts",
+            "_find_like_button",
+            "_find_comment_box",
+            "_find_profile_url",
+            "_find_follow_button",
+            "_find_unfollow_button",
+            "run_daily_session",
+            "__init__",
+            "is_logged_in",
+            "_login_with_credentials",
+            "post",
+            "_find_posts",
+            "_find_like_button",
+            "_find_comment_box",
+            "_find_profile_url",
+            "_find_follow_button",
+            "_find_unfollow_button",
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "get_random_user_agent",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_content",
+            "run_daily_strategy_session",
+            "wrapper_retry"
+        ],
+        "classes": {
+            "BaseEngagementBot": [
+                "__init__",
+                "_get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "_login_with_credentials",
+                "post",
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "go_viral",
+                "_log_followed_users",
+                "_find_posts",
+                "_find_like_button",
+                "_find_comment_box",
+                "_find_profile_url",
+                "_find_follow_button",
+                "_find_unfollow_button",
+                "run_daily_session"
+            ],
+            "LinkedInEngagementBot": [
+                "__init__",
+                "is_logged_in",
+                "_login_with_credentials",
+                "post",
+                "_find_posts",
+                "_find_like_button",
+                "_find_comment_box",
+                "_find_profile_url",
+                "_find_follow_button",
+                "_find_unfollow_button"
+            ],
+            "LinkedinStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session"
+            ]
+        },
+        "routes": [],
+        "complexity": 91
+    },
+    "core\\social\\strategies\\reddit_strategy.py": {
+        "functions": [
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_content",
+            "run_daily_strategy_session",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "run_feedback_loop",
+            "adaptive_posting_strategy"
+        ],
+        "classes": {
+            "RedditStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy"
+            ]
+        },
+        "routes": [],
+        "complexity": 34
+    },
+    "core\\social\\strategies\\stocktwits_strategy.py": {
+        "functions": [
+            "__init__",
+            "login",
+            "is_logged_in",
+            "post",
+            "engage_community",
+            "_log_follow",
+            "unfollow_non_returners",
+            "run_daily_session",
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_content",
+            "run_daily_strategy_session",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "run_feedback_loop",
+            "adaptive_posting_strategy",
+            "reinforce_engagement",
+            "reward_top_engagers",
+            "cross_platform_feedback_loop"
+        ],
+        "classes": {
+            "StocktwitsCommunityArchitect": [
+                "__init__",
+                "login",
+                "is_logged_in",
+                "post",
+                "engage_community",
+                "_log_follow",
+                "unfollow_non_returners",
+                "run_daily_session"
+            ],
+            "StocktwitsStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy",
+                "reinforce_engagement",
+                "reward_top_engagers",
+                "cross_platform_feedback_loop"
+            ]
+        },
+        "routes": [],
+        "complexity": 56
+    },
+    "core\\social\\strategies\\tiktok_strategy.py": {
+        "functions": [
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_video",
+            "run_daily_strategy_session",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "run_feedback_loop",
+            "adaptive_posting_strategy",
+            "update_trending_hashtags",
+            "reward_top_creators",
+            "cross_platform_feedback_loop"
+        ],
+        "classes": {
+            "TikTokStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_video",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy",
+                "update_trending_hashtags",
+                "reward_top_creators",
+                "cross_platform_feedback_loop"
+            ]
+        },
+        "routes": [],
+        "complexity": 40
+    },
+    "core\\social\\strategies\\youtube_strategy.py": {
+        "functions": [
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_video",
+            "run_daily_strategy_session",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "run_feedback_loop",
+            "adaptive_posting_strategy",
+            "reward_top_creators",
+            "cross_platform_feedback_loop"
+        ],
+        "classes": {
+            "YouTubeStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_video",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy",
+                "reward_top_creators",
+                "cross_platform_feedback_loop"
+            ]
+        },
+        "routes": [],
+        "complexity": 38
+    },
+    "gui_old\\feedback_dashboard.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "refresh_dashboard",
+            "update_display"
+        ],
+        "classes": {
+            "FeedbackDashboard": [
+                "__init__",
+                "initUI",
+                "refresh_dashboard",
+                "update_display"
+            ]
+        },
+        "routes": [],
+        "complexity": 8
+    },
+    "gui_old\\components\\prompt_execution_tab.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "_create_exclusion_group",
+            "_create_prompt_controls_group",
+            "add_exclusion",
+            "remove_exclusion",
+            "get_excluded_chats",
+            "update_execution_mode",
+            "load_prompt"
+        ],
+        "classes": {
+            "PromptExecutionTab": [
+                "__init__",
+                "initUI",
+                "_create_exclusion_group",
+                "_create_prompt_controls_group",
+                "add_exclusion",
+                "remove_exclusion",
+                "get_excluded_chats",
+                "update_execution_mode",
+                "load_prompt"
+            ]
+        },
+        "routes": [],
+        "complexity": 18
+    },
+    "gui_old\\components\\dialogs\\discord_settings.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "save_credentials",
+            "map_prompt_to_channel",
+            "unmap_selected_prompt",
+            "refresh_prompt_channel_list"
+        ],
+        "classes": {
+            "DiscordSettingsDialog": [
+                "__init__",
+                "initUI",
+                "save_credentials",
+                "map_prompt_to_channel",
+                "unmap_selected_prompt",
+                "refresh_prompt_channel_list"
+            ]
+        },
+        "routes": [],
+        "complexity": 12
+    },
+    "gui_old\\components\\dialogs\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "gui_old\\components\\dialogs\\reinforcement_dialog.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "load_feedback",
+            "display_feedback_details",
+            "export_feedback",
+            "clear_feedback",
+            "auto_tune_prompts"
+        ],
+        "classes": {
+            "ReinforcementToolsDialog": [
+                "__init__",
+                "initUI",
+                "load_feedback",
+                "display_feedback_details",
+                "export_feedback",
+                "clear_feedback",
+                "auto_tune_prompts"
+            ]
+        },
+        "routes": [],
+        "complexity": 14
+    },
+    "gui_old\\tabs\\LogsTab.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "append_log",
+            "append_output",
+            "clear_logs"
+        ],
+        "classes": {
+            "LogsTab": [
+                "__init__",
+                "initUI",
+                "append_log",
+                "append_output",
+                "clear_logs"
+            ]
+        },
+        "routes": [],
+        "complexity": 10
+    },
+    "interfaces\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "interfaces\\pyqt\\DreamscapeMainWindow.py": {
+        "functions": [
+            "main",
+            "__init__",
+            "setup_ui",
+            "setup_signals",
+            "on_append_output",
+            "on_status_update",
+            "on_discord_log",
+            "on_task_started",
+            "on_task_progress",
+            "on_task_completed",
+            "on_task_failed",
+            "closeEvent"
+        ],
+        "classes": {
+            "DreamscapeMainWindow": [
+                "__init__",
+                "setup_ui",
+                "setup_signals",
+                "on_append_output",
+                "on_status_update",
+                "on_discord_log",
+                "on_task_started",
+                "on_task_progress",
+                "on_task_completed",
+                "on_task_failed",
+                "closeEvent"
+            ]
+        },
+        "routes": [],
+        "complexity": 23
+    },
+    "interfaces\\pyqt\\splash_screen.py": {
+        "functions": [
+            "show_splash_screen",
+            "__init__",
+            "initUI"
+        ],
+        "classes": {
+            "SplashScreen": [
+                "__init__",
+                "initUI"
+            ]
+        },
+        "routes": [],
+        "complexity": 5
+    },
+    "interfaces\\pyqt\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "interfaces\\pyqt\\components\\discord_tab.py": {
+        "functions": [
+            "__init__",
+            "_connect_signals",
+            "initUI",
+            "_create_discord_group",
+            "update_status",
+            "append_log",
+            "get_bot_config",
+            "_on_task_done",
+            "handle_discord_event",
+            "handle_dreamscape_generated",
+            "handle_prompt_executed"
+        ],
+        "classes": {
+            "DiscordTab": [
+                "__init__",
+                "_connect_signals",
+                "initUI",
+                "_create_discord_group",
+                "update_status",
+                "append_log",
+                "get_bot_config",
+                "_on_task_done",
+                "handle_discord_event",
+                "handle_dreamscape_generated",
+                "handle_prompt_executed"
+            ]
+        },
+        "routes": [],
+        "complexity": 22
+    },
+    "interfaces\\pyqt\\components\\logs_panel.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "append_log",
+            "clear_logs",
+            "export_logs",
+            "get_logs"
+        ],
+        "classes": {
+            "LogsPanel": [
+                "__init__",
+                "initUI",
+                "append_log",
+                "clear_logs",
+                "export_logs",
+                "get_logs"
+            ]
+        },
+        "routes": [],
+        "complexity": 12
+    },
+    "interfaces\\pyqt\\components\\logs_tab.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "append_log",
+            "clear_logs",
+            "get_logs"
+        ],
+        "classes": {
+            "LogsTab": [
+                "__init__",
+                "initUI",
+                "append_log",
+                "clear_logs",
+                "get_logs"
+            ]
+        },
+        "routes": [],
+        "complexity": 10
+    },
+    "interfaces\\pyqt\\components\\prompt_panel.py": {
+        "functions": [
+            "__init__",
+            "setup_ui",
+            "load_sample_prompts",
+            "_add_prompt_to_list",
+            "on_prompt_selected",
+            "save_prompt",
+            "use_prompt",
+            "add_custom_prompt",
+            "remove_custom_prompt",
+            "get_prompt_text",
+            "set_prompt_text"
+        ],
+        "classes": {
+            "PromptPanel": [
+                "__init__",
+                "setup_ui",
+                "load_sample_prompts",
+                "_add_prompt_to_list",
+                "on_prompt_selected",
+                "save_prompt",
+                "use_prompt",
+                "add_custom_prompt",
+                "remove_custom_prompt",
+                "get_prompt_text",
+                "set_prompt_text"
+            ]
+        },
+        "routes": [],
+        "complexity": 22
+    },
+    "interfaces\\pyqt\\components\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "interfaces\\pyqt\\components\\dialogs\\exclusions_dialog.py": {
+        "functions": [
+            "__init__",
+            "initUI",
+            "refresh_list",
+            "add_exclusion",
+            "remove_selected",
+            "get_exclusions"
+        ],
+        "classes": {
+            "ExclusionsDialog": [
+                "__init__",
+                "initUI",
+                "refresh_list",
+                "add_exclusion",
+                "remove_selected",
+                "get_exclusions"
+            ]
+        },
+        "routes": [],
+        "complexity": 12
+    },
+    "interfaces\\pyqt\\tabs\\DreamscapeGenerationTab.py": {
+        "functions": [
+            "__init__",
+            "_inject_services",
+            "_initialize_services",
+            "init_ui",
+            "log_output",
+            "handle_prompt_executed",
+            "handle_discord_event",
+            "_on_task_done"
+        ],
+        "classes": {
+            "DreamscapeGenerationTab": [
+                "__init__",
+                "_inject_services",
+                "_initialize_services",
+                "init_ui",
+                "log_output",
+                "handle_prompt_executed",
+                "handle_discord_event",
+                "_on_task_done"
+            ]
+        },
+        "routes": [],
+        "complexity": 16
+    },
+    "interfaces\\pyqt\\tabs\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "interfaces\\pyqt\\tabs\\MainTabs.py": {
+        "functions": [
+            "__init__",
+            "_init_ui",
+            "_connect_signals",
+            "_on_prompt_executed",
+            "_on_dreamscape_generated",
+            "_on_discord_event",
+            "append_output",
+            "broadcast_message"
+        ],
+        "classes": {
+            "MainTabs": [
+                "__init__",
+                "_init_ui",
+                "_connect_signals",
+                "_on_prompt_executed",
+                "_on_dreamscape_generated",
+                "_on_discord_event",
+                "append_output",
+                "broadcast_message"
+            ]
+        },
+        "routes": [],
+        "complexity": 16
+    },
+    "interfaces\\pyqt\\tabs\\PromptExecutionTab.py": {
+        "functions": [
+            "__init__",
+            "_init_ui",
+            "_connect_signals",
+            "on_prompt_loaded",
+            "_on_task_done",
+            "log_output",
+            "handle_discord_event"
+        ],
+        "classes": {
+            "PromptExecutionTab": [
+                "__init__",
+                "_init_ui",
+                "_connect_signals",
+                "on_prompt_loaded",
+                "_on_task_done",
+                "log_output",
+                "handle_discord_event"
+            ]
+        },
+        "routes": [],
+        "complexity": 14
+    },
+    "project_root\\core\\agents\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\interfaces\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\interfaces\\cli\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\interfaces\\pyqt\\components\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\interfaces\\pyqt\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\interfaces\\web\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\shared\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "project_root\\tests\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "social\\AIChatAgent.py": {
+        "functions": [
+            "__init__",
+            "ask",
+            "_ask_openai",
+            "_ask_ollama",
+            "_build_prompt",
+            "_initialize_chat_thread",
+            "append_to_chat_thread",
+            "_log_interaction"
+        ],
+        "classes": {
+            "AIChatAgent": [
+                "__init__",
+                "ask",
+                "_ask_openai",
+                "_ask_ollama",
+                "_build_prompt",
+                "_initialize_chat_thread",
+                "append_to_chat_thread",
+                "_log_interaction"
+            ]
+        },
+        "routes": [],
+        "complexity": 16
+    },
+    "social\\community_integration.py": {
+        "functions": [
+            "__init__",
+            "_initialize_strategies",
+            "_initialize_dashboard",
+            "_initialize_post_manager",
+            "analyze_community_health",
+            "generate_insights_and_recommendations",
+            "create_community_building_plan",
+            "identify_advocates",
+            "post_across_platforms",
+            "track_member_interaction",
+            "optimize_platform_strategies",
+            "generate_visualizations",
+            "run_daily_community_management"
+        ],
+        "classes": {
+            "CommunityIntegrationManager": [
+                "__init__",
+                "_initialize_strategies",
+                "_initialize_dashboard",
+                "_initialize_post_manager",
+                "analyze_community_health",
+                "generate_insights_and_recommendations",
+                "create_community_building_plan",
+                "identify_advocates",
+                "post_across_platforms",
+                "track_member_interaction",
+                "optimize_platform_strategies",
+                "generate_visualizations",
+                "run_daily_community_management"
+            ]
+        },
+        "routes": [],
+        "complexity": 26
+    },
+    "social\\log_writer.py": {
+        "functions": [
+            "write_json_log",
+            "log_login",
+            "log_post",
+            "log_error"
+        ],
+        "classes": {},
+        "routes": [],
+        "complexity": 4
+    },
+    "social\\platform_login_manager.py": {
+        "functions": [
+            "load_cookies",
+            "save_cookies",
+            "wait_for_manual_login",
+            "__init__",
+            "login",
+            "post",
+            "__init__",
+            "dispatch_all",
+            "_process_platform",
+            "_generate_content",
+            "_shutdown_all_drivers"
+        ],
+        "classes": {
+            "PlatformStrategy": [
+                "__init__",
+                "login",
+                "post"
+            ],
+            "SocialPlatformDispatcher": [
+                "__init__",
+                "dispatch_all",
+                "_process_platform",
+                "_generate_content",
+                "_shutdown_all_drivers"
+            ]
+        },
+        "routes": [],
+        "complexity": 19
+    },
+    "social\\social_post_manager.py": {
+        "functions": [
+            "__init__",
+            "post_next",
+            "post_all",
+            "enqueue_post",
+            "shutdown",
+            "post_to_platform"
+        ],
+        "classes": {
+            "SocialPostManager": [
+                "__init__",
+                "post_next",
+                "post_all",
+                "enqueue_post",
+                "shutdown"
+            ]
+        },
+        "routes": [],
+        "complexity": 11
+    },
+    "social\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "social\\UnifiedPostManager.py": {
+        "functions": [
+            "__init__",
+            "_load_post_history",
+            "_save_post_history",
+            "post_to_platform",
+            "_adapt_content_for_platform",
+            "schedule_post",
+            "get_scheduled_posts",
+            "cancel_scheduled_post",
+            "get_post_analytics",
+            "_get_current_metrics",
+            "generate_content_ideas"
+        ],
+        "classes": {
+            "UnifiedPostManager": [
+                "__init__",
+                "_load_post_history",
+                "_save_post_history",
+                "post_to_platform",
+                "_adapt_content_for_platform",
+                "schedule_post",
+                "get_scheduled_posts",
+                "cancel_scheduled_post",
+                "get_post_analytics",
+                "_get_current_metrics",
+                "generate_content_ideas"
+            ]
+        },
+        "routes": [],
+        "complexity": 22
+    },
+    "social\\ai\\chat_agent.py": {
+        "functions": [
+            "__init__"
+        ],
+        "classes": {
+            "AIChatAgent": [
+                "__init__"
+            ]
+        },
+        "routes": [],
+        "complexity": 2
+    },
+    "social\\data\\post_history.py": {
+        "functions": [
+            "__init__",
+            "_load_history",
+            "_save_history",
+            "add_post",
+            "get_posts",
+            "clear_history"
+        ],
+        "classes": {
+            "PostHistory": [
+                "__init__",
+                "_load_history",
+                "_save_history",
+                "add_post",
+                "get_posts",
+                "clear_history"
+            ]
+        },
+        "routes": [],
+        "complexity": 12
+    },
+    "social\\data\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "social\\strategies\\context_db.py": {
+        "functions": [
+            "__init__",
+            "create_tables",
+            "log_post",
+            "fetch_recent_posts",
+            "fetch_last_post_content",
+            "log_engagement",
+            "fetch_engagements_for_post",
+            "get_rate_limit",
+            "update_rate_limit",
+            "update_sentiment",
+            "close"
+        ],
+        "classes": {
+            "UnifiedContextEngine": [
+                "__init__",
+                "create_tables",
+                "log_post",
+                "fetch_recent_posts",
+                "fetch_last_post_content",
+                "log_engagement",
+                "fetch_engagements_for_post",
+                "get_rate_limit",
+                "update_rate_limit",
+                "update_sentiment",
+                "close"
+            ]
+        },
+        "routes": [],
+        "complexity": 22
+    },
+    "social\\strategies\\facebook_strategy.py": {
+        "functions": [
+            "retry_on_failure",
+            "get_random_user_agent",
+            "start_scheduler",
+            "post_to_facebook",
+            "decorator_retry",
+            "__init__",
+            "_wait",
+            "get_driver",
+            "is_logged_in",
+            "login",
+            "post",
+            "like_posts",
+            "comment_on_posts",
+            "follow_users",
+            "unfollow_non_returners",
+            "_log_followed_users",
+            "go_viral",
+            "run_daily_session",
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "get_random_user_agent",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_content",
+            "run_daily_strategy_session",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "adaptive_posting_strategy",
+            "analyze_comment_sentiment",
+            "reinforce_engagement",
+            "reward_top_followers",
+            "cross_platform_feedback_loop",
+            "run_feedback_loop",
+            "wrapper_retry"
+        ],
+        "classes": {
+            "FacebookBot": [
+                "__init__",
+                "_wait",
+                "get_driver",
+                "is_logged_in",
+                "login",
+                "post"
+            ],
+            "FacebookEngagementBot": [
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "_log_followed_users",
+                "go_viral",
+                "run_daily_session"
+            ],
+            "FacebookStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "adaptive_posting_strategy",
+                "analyze_comment_sentiment",
+                "reinforce_engagement",
+                "reward_top_followers",
+                "cross_platform_feedback_loop",
+                "run_feedback_loop"
+            ]
+        },
+        "routes": [],
+        "complexity": 76
+    },
+    "social\\strategies\\instagram_strategy.py": {
+        "functions": [
+            "retry_on_failure",
+            "get_random_mobile_user_agent",
+            "start_scheduler",
+            "post_to_instagram",
+            "decorator_retry",
+            "__init__",
+            "get_driver",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "create_post",
+            "like_posts",
+            "comment_on_posts",
+            "_gather_post_links",
+            "follow_users",
+            "unfollow_user",
+            "__init__",
+            "run_daily_session",
+            "generate_ai_comments",
+            "like_posts",
+            "comment_on_posts",
+            "follow_users",
+            "unfollow_non_returners",
+            "_log_followed_users",
+            "go_viral",
+            "__init__",
+            "initialize",
+            "cleanup",
+            "get_community_metrics",
+            "get_top_members",
+            "track_member_interaction",
+            "_get_driver",
+            "_wait",
+            "login",
+            "is_logged_in",
+            "post_content",
+            "run_daily_strategy_session",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "analyze_comment_sentiment",
+            "reinforce_engagement",
+            "reward_top_engagers",
+            "cross_platform_feedback_loop",
+            "run_feedback_loop",
+            "wrapper_retry"
+        ],
+        "classes": {
+            "InstagramBot": [
+                "__init__",
+                "get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "create_post",
+                "like_posts",
+                "comment_on_posts",
+                "_gather_post_links",
+                "follow_users",
+                "unfollow_user"
+            ],
+            "InstagramEngagementBot": [
+                "__init__",
+                "run_daily_session",
+                "generate_ai_comments",
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "_log_followed_users",
+                "go_viral"
+            ],
+            "InstagramStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "analyze_comment_sentiment",
+                "reinforce_engagement",
+                "reward_top_engagers",
+                "cross_platform_feedback_loop",
+                "run_feedback_loop"
+            ]
+        },
+        "routes": [],
+        "complexity": 86
+    },
+    "social\\strategies\\twitter_strategy.py": {
+        "functions": [
+            "__init__",
+            "login",
+            "is_logged_in",
+            "post_tweet",
+            "post_thread",
+            "_extract_tweet_id",
+            "engage_community",
+            "_follow_author",
+            "_log_follow",
+            "unfollow_non_returners",
+            "run_daily_session",
+            "post_thread",
+            "__init__",
+            "_load_feedback_data",
+            "_save_feedback_data",
+            "analyze_engagement_metrics",
+            "adaptive_posting_strategy",
+            "analyze_comment_sentiment",
+            "reinforce_engagement",
+            "reward_top_engagers",
+            "cross_platform_feedback_loop",
+            "run_feedback_loop",
+            "run_daily_strategy_session"
+        ],
+        "classes": {
+            "TwitterCommunityArchitect": [
+                "__init__",
+                "login",
+                "is_logged_in",
+                "post_tweet",
+                "post_thread",
+                "_extract_tweet_id",
+                "engage_community",
+                "_follow_author",
+                "_log_follow",
+                "unfollow_non_returners",
+                "run_daily_session",
+                "post_thread"
+            ],
+            "TwitterStrategy": [
+                "__init__",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "adaptive_posting_strategy",
+                "analyze_comment_sentiment",
+                "reinforce_engagement",
+                "reward_top_engagers",
+                "cross_platform_feedback_loop",
+                "run_feedback_loop",
+                "run_daily_strategy_session"
+            ]
+        },
+        "routes": [],
+        "complexity": 46
+    },
+    "social\\strategies\\wordpress_strategy.py": {
+        "functions": [
+            "__init__",
+            "initialize",
+            "cleanup",
+            "sync_youtube_video",
+            "moderate_comment",
+            "get_community_metrics",
+            "get_top_members",
+            "_load_community_data",
+            "_save_community_data",
+            "generate_engagement_report",
+            "track_member_interaction"
+        ],
+        "classes": {
+            "WordPressCommunityStrategy": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "sync_youtube_video",
+                "moderate_comment",
+                "get_community_metrics",
+                "get_top_members",
+                "_load_community_data",
+                "_save_community_data",
+                "generate_engagement_report",
+                "track_member_interaction"
+            ]
+        },
+        "routes": [],
+        "complexity": 22
+    },
+    "social\\strategies\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "tests\\test_async_event_flow.py": {
+        "functions": [
+            "dispatcher",
+            "dreamscape_tab",
+            "discord_tab",
+            "__init__",
+            "log_output",
+            "handle_discord_event",
+            "__init__",
+            "log_output",
+            "handle_dreamscape_generated",
+            "on_task_failed"
+        ],
+        "classes": {
+            "MockDreamscapeTab": [
+                "__init__",
+                "log_output",
+                "handle_discord_event"
+            ],
+            "MockDiscordTab": [
+                "__init__",
+                "log_output",
+                "handle_dreamscape_generated"
+            ]
+        },
+        "routes": [],
+        "complexity": 16
+    },
+    "tests\\test_report_exporter.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "tests\\test_signal_dispatcher.py": {
+        "functions": [
+            "dispatcher",
+            "recorder",
+            "test_log_output_signal",
+            "test_prompt_executed_signal",
+            "test_dreamscape_generated_signal",
+            "test_discord_event_signal",
+            "test_task_signals",
+            "test_listener_registration",
+            "__init__",
+            "on_log_output",
+            "on_prompt_executed",
+            "on_dreamscape_generated",
+            "on_discord_event",
+            "on_task_started",
+            "on_task_progress",
+            "on_task_completed",
+            "on_task_failed",
+            "on_status_update"
+        ],
+        "classes": {
+            "SignalRecorder": [
+                "__init__",
+                "on_log_output",
+                "on_prompt_executed",
+                "on_dreamscape_generated",
+                "on_discord_event",
+                "on_task_started",
+                "on_task_progress",
+                "on_task_completed",
+                "on_task_failed",
+                "on_status_update"
+            ]
+        },
+        "routes": [],
+        "complexity": 28
+    },
+    "utils\\qasync_event_loop_manager.py": {
+        "functions": [
+            "__init__",
+            "start",
+            "schedule_task",
+            "_shutdown_handler",
+            "shutdown"
+        ],
+        "classes": {
+            "QAsyncEventLoopManager": [
+                "__init__",
+                "start",
+                "schedule_task",
+                "_shutdown_handler",
+                "shutdown"
+            ]
+        },
+        "routes": [],
+        "complexity": 10
+    },
+    "utils\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "utils\\web\\__init__.py": {
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    }
+}

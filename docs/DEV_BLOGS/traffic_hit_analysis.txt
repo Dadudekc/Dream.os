@@ -1,0 +1,22 @@
+Devlog Drop
+March 15, 2025
+How much time do I lose chasing noise instead of building clarity?
+Been sitting with that today...
+I ran the numbers on my site—30,000 hits in the last week. At first, it felt wild... until I remembered most of that was me hammering the site while debugging plugins. Classic.
+The problem isn’t the number... it’s the signal pollution. What I’m seeing isn’t what’s real—it’s noise I’m generating just by working inside the system.
+And that’s the issue...
+If I’m doing this on the site, how often am I doing it in trading? In automation? How often is my own manual intervention muddying the data I’m trying to trust?
+Today was about getting surgical with that realization.
+I broke it down and found a few things that need to change immediately:
+IP filtering on all analytics—my traffic doesn’t belong in the data
+Excluding admin and logged-in user hits from tracking
+I need automated test pipelines... no more manual plugin debugging inflating numbers
+Real-time data filtering needs to happen pre-ingestion across everything, not just on the site
+And I’m building a clean dashboard that pulls real signals only... no more context-switching between tools trying to figure out what’s true
+The biggest shift is carving a clear line between what the automation handles and where I step in... no more blurring roles. That’s where the system starts slowing down.
+Next up...
+I’m getting the automated testing up in the next 72 hours
+Refining the trading data filters next week
+Unified dashboard build kicks off after that
+The faster I move on this, the clearer everything else gets.
+“Clarity is speed. The more noise you strip away, the faster you move.”

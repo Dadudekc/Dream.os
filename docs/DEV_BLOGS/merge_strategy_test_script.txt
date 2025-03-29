@@ -1,0 +1,19 @@
+Devlog: Centralizing Systems and Cleaning the Slate
+How much energy am I wasting doing the same thing twice?
+That’s what hit me today... looking at my trading bot, my resume, even how I’ve been managing data. It’s not the big things slowing me down—it’s the scattered processes bleeding time in the background.
+Spent most of the day tightening up the data side of the bot.
+I was pulling TSLA data from different places—YFinance, Alpaca, Polygon... and every time I’d switch providers, it was like rewriting half the damn pipeline. Messy.
+So I consolidated it. One unified data fetcher... pick the source, set it, and the bot runs clean.
+Added caching... error handling... now I’m not babysitting data pulls or worrying about bad feeds wrecking a test.
+On the backtesting side, it was slow. Too slow. Every strategy validation was a grind—run, review, adjust... repeat.
+So I rewired the backtesting logic to run strategies in parallel.
+It’s faster now. Cleaner. Still testing, but it’s already saving me time.
+Also rewrote my resume today. I realized I’ve been doing that manually for every gig or app... rewriting bullets, adjusting tone... wasting hours.
+Now it’s automated. Pulls directly from my project logs and repo descriptions. One less bottleneck.
+It’s not flashy—but it’s clean, and I’m done letting that stuff slow me down.
+What’s next...
+I need to keep refining strategy validation.
+Expand the bot’s logic... integrate more of the sentiment analysis stuff I’ve shelved.
+Also thinking about building a small portfolio site that auto-updates like the resume. Make it easier to share what’s in progress.
+More systems. Less overhead.
+"Discipline is choosing between what you want now... and what you want most."

@@ -1,0 +1,13 @@
+Devlog // 03.16.25 // Why didn’t this system just work the first time?
+Spent the day deep in trade analytics... trying to figure out why I didn’t make money last year. I ran a bunch of raw data analysis off my PDF statements—month by month—looking for the leaks. Confirmed a frustrating reality... breakeven. No obvious profit, no major losses, just a lot of churn. Trades that should’ve worked cancelling each other out.
+But here’s the kicker... while parsing the data manually worked, I wanted to run it through the plugin I started building—FreeRideInvestor Trade Analyzer. That’s where things broke down.
+The WordPress plugin wasn’t rendering the analysis properly. JSON parsing errors kept popping up. Dug into the project files... found a couple big issues.
+Python wasn’t always outputting clean JSON. Added better validation and flushed outputs.
+The regex for parsing Robinhood PDFs? Too brittle. It worked on a few lines... missed plenty of others. Tightened that up, but I still need more robust handling.
+Flask URLs were hardcoded. That’s fine for a prototype, but not sustainable. Reworking it to pull dynamically from the WordPress instance.
+AJAX lacked proper error handling, so when things broke... silence. Fixed that, added more debug logging.
+And the database inserts... they were failing quietly when they shouldn’t have. Wrapped those in better error reporting.
+What’s next?
+I’m gonna get a clean round of uploads running through the system... PDFs and CSVs. Then polish up the chart visualizations and get the Flask API fully integrated. Need to stress-test it on more data after that.
+Some builds go smooth. Some fight you the whole way... This one’s swinging back hard. But I’m not stopping.
+"The path to mastery is repetition with reflection."

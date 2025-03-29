@@ -1,0 +1,18 @@
+Devlog 1/6/2025
+“Where am I still wasting time I can’t get back?”
+That’s what’s sitting with me after today’s run-through.
+Spent most of the session deep in trade execution and system flow... and it’s clear—there’s still too much manual work happening in spots I thought were tighter.
+Here’s what I worked on:
+TSLA trades off the open. I grabbed a $487.5 call early at $0.79, then scaled in three more at $0.34. Ended up selling the lot around $0.49. Managed risk tight, got out green. Net was about +$14.76. Not huge, but clean execution.
+Reviewed the entries... I’m still getting caught putting in that first order manually. It works, but it’s slow. The whole open feels like I’m burning extra energy for something I could automate.
+Ran a full audit on my workflow across trading, automation, and content. Saw the gaps... stuff I keep doing by hand that AI or scripting should be doing for me.
+What was tricky...
+The mental load on entries is heavier than it needs to be. I’m making sizing decisions in real time when they should be pre-calculated.
+My content flow is sequential instead of parallel. I’m still prompting for graphics when I should have a few ready to go. Hashtags are an afterthought instead of systemized.
+What’s next...
+Automate my pre-market scan and first order at the open. No more guessing.
+Build a dynamic position sizing engine. Clean, mechanical, no second-guessing.
+Auto-journal my trades in real-time and set up AI briefs by 7:30 AM CST... get ahead of the noise.
+Batch content templates and automate hashtags. Keep it flowing without stopping to think about it.
+If I want this system to self-organize, I need to stop being the bottleneck...
+“Speed isn’t the goal... clarity is. But clarity makes you faster.”

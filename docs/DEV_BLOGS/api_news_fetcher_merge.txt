@@ -1,0 +1,9 @@
+Devlog | Feb 9, 2025
+What’s the point of plugging in clean code if you’re missing the basics? I ran right into that today...
+Spent most of the session cleaning up the Market_News_Fetcher. Hardcoded the News API endpoint (finally), so we’re not relying on random settings or config that shouldn’t be optional in the first place. Priority is to make sure the NEWS_API_KEY is pulled straight from wp-config.php—no more guesswork.
+Then the fetch started breaking. API threw a userAgentMissing error. Totally missed the fact that NewsAPI won’t play ball without a User-Agent header. Simple fix—added a custom User-Agent string to the request. After that, the API calls went clean... no more errors.
+Still had a moment where nothing was showing up for TSLA... turns out, the API response was fine, but the validation step in the fetch was way too rigid. Tweaked the response handling to properly parse articles instead of looking for a 'news' array like it was before.
+Feels like half the day was reading logs and chasing missing pieces in the response data. But it’s solid now.
+Next up... I want to make the search dynamic on the frontend. Let users type in any ticker and pull back live news in real-time. Already hooked up the shortcode and the AJAX handler, just need to streamline the UI so it doesn’t feel clunky.
+“If you can’t describe what you’re doing as a process, you don’t know what you’re doing.”
+– W. Edwards Deming

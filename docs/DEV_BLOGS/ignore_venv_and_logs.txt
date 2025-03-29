@@ -1,0 +1,9 @@
+Devlog | 2025-03-05
+What’s the real bottleneck… the system, or the way I’m interfacing with it?
+Today was an audit day... surgical, no fluff. Spent a few cycles reviewing the function extraction pipeline—turns out there was more inefficiency there than I thought. The back-and-forth on function_map.json made it obvious... redundant I/O, linear validation, and me stepping in too often to review things AI should already be handling.
+So I rebuilt it.
+Moved the whole extraction process to run in-memory... cuts down disk latency and gets rid of the constant reads and writes. Cleaned up how the function names are indexed—now it actually respects class structures instead of spitting out half-broken mappings. Also locked in a recursive validator, so every time the map gets generated, it runs its own sanity check before I ever look at it. Saves me from babysitting.
+And I started pulling the system together... centralizing feedback loops, making sure the AI isn’t just assisting, but actually orchestrating. The goal here is velocity... no more bottlenecks that make me the slowest part of the stack.
+What’s next...
+Building the execution graph. A real one. Something that lets the AI reprioritize tasks on its own based on real-time efficiency. And fully parallelizing validation—because linear reviews are killing convergence speed.
+“Speed isn’t the goal. It’s the byproduct of alignment.”

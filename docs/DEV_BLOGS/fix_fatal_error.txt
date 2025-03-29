@@ -1,0 +1,10 @@
+Devlog: Can clarity and velocity coexist… or does one always slow the other down?
+Been sitting with that question most of the day… because today was one of those deep-in-the-wiring sessions. Full stack cleanup. Every layer touched.
+Spent most of the time restructuring how data is flowing through the system… starting with API call logic. Got rid of redundant requests that were burning cycles for no reason. Everything is now cached locally first—if it’s not there, it goes to Alpaca, then Polygon, then Alpha Vantage… in that order. If none of them hit, we fallback to the MySQL data we’ve already stored from the Python data fetchers. That flow used to be messy… it’s clean now.
+Also reworked the portfolio update logic… made it transactional. If one part of the trade fails, the whole thing rolls back. No partial updates. No weird states where the system thinks it owns something it doesn’t. It’s solid.
+The tricky part was getting the RL and GA models to stop stepping on each other. Reinforcement Learning was fine on its own… but when Genetic Algorithms kicked in, the cycles would overlap and it wasn’t efficient. Now they run in sync… RL optimizes based on the policy, GA optimizes on Sharpe Ratio… they stay out of each other’s way.
+What’s next…
+I need to decouple OpenAI from the trading pipeline. It’s too slow to be in the direct flow of execution. AI suggestions should enrich decisions, not gate them.
+Also thinking of shifting the financial data completely out of WordPress. It’s not built for this. Time to move that data into a dedicated DB optimized for speed and scalability.
+Still work to do… but this was a good round.
+"Slow is smooth… smooth is fast."

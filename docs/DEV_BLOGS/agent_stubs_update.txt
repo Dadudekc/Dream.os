@@ -1,0 +1,11 @@
+Devlog | March 16, 2025
+What’s the point of building an autonomous system if it can’t pick itself back up after something breaks?
+Tonight was about getting TestSis to handle herself... or at least start acting like it.
+I cleaned up the overnight run, but it didn’t go how I expected. Files vanished... not sure if it was a Git slip or a script misfire, but the workspace got messy. Had to backtrack and figure out what was left standing. Kinda hate when that happens, but it’s part of this. I always think of systems as these clean loops, but the reality is it’s chaotic. Clean-up is half the work.
+Got a lot done before that, though...
+TestSis is now running an auto-regenerate loop when tests fail. If she finds something broken in AI-generated tests, she rewrites the prompts on the fly... re-runs... and keeps going until it works (or until I say stop). It’s not perfect, but the self-healing logic is there. Feels like a win. She’s also pulling the latest function maps if they aren’t there, so the process stays dynamic.
+The biggest piece was laying out the fine-tuning pipeline for Mistral. Pulled the functions and existing tests into paired datasets... formatted them for JSONL... got that ready for a local Ollama run or Hugging Face fine-tune. Pushed it through pytest—five clean passes on the prep scripts. That felt solid.
+Ollama’s fine-tune process was a wall, though. Their CLI expects a Modelfile, and I wasn’t ready for that yet. Not blocked—just gotta shift the focus and figure out what’s next for that piece.
+End of the day, this isn’t about one tool. It’s about building systems that evolve while I’m sleeping.
+Next up... restoring the overnight changes to a branch, cleaning up the repo, and deciding if TestSis should handle auto-commits.
+"The process doesn’t respect your expectations. It respects your execution."

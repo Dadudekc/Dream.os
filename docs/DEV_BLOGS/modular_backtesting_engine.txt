@@ -1,0 +1,12 @@
+Devlog Drop
+What’s the real cost of clean architecture when you’re building out a trading system?
+Been asking myself that today. The deeper I go, the clearer it gets: composability isn’t just a design flex—it’s survival. Especially when the system starts growing faster than you can refactor.
+So... here's the state of play.
+Started the day locking in the AllIndicatorsUnifier. The goal was to push it beyond a basic aggregation... ended up turning it into a full-blown pipeline. Custom hooks, parallel processing, indicator toggles—you name it. It's flexible now. Whether you want volume, volatility, trend, ML indicators, or a full sweep... it's all composable.
+Then the IndicatorCalculator got a serious overhaul. It’s now running RSI, MACD, ATR, Bollinger Bands, Keltner Channels, Pivot Points, Fibonacci retracements and extensions, CCI, ADX, Heiken Ashi... It’s a monster. I’m aiming for "best-in-class," and I think it's starting to get there. The logging is clean, the error handling is bulletproof, and the methods are modular. No more hacks. Just solid, reusable blocks.
+But it wasn’t smooth. Python path issues slowed me down for a minute—those classic ModuleNotFoundError: No module named 'src' errors. Fixed it with dynamic path resolution, but it was a time suck. The circular imports are still lurking too... gonna have to clean that up later.
+Also spun up a Backtest API endpoint using FastAPI. Strategy registry is hooked in, health checks are up, and you can now trigger backtests remotely. Pretty sure the event loop is still a bottleneck when we scale this out, but it's functional for now.
+What’s next?
+I need to stress test the parallel execution in the unifier. Make sure it holds up under multiple symbols across different strategies. After that, I'll wire up automated tests for the new indicators... and maybe give my brain a break before diving back in.
+"There is no finish line... only another lap."
+Back at it soon.

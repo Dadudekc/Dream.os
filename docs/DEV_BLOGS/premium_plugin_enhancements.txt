@@ -1,0 +1,17 @@
+Devlog: Modular or Monolith?
+What’s harder… knowing when to modularize or when to go all-in on one system?
+Been sitting with that. Most of today’s build was sorting that exact tension.
+I ended up splitting the new support/resistance algo off into its own module… didn’t feel right jamming it straight into FreerideInvestor. That plugin’s already doing heavy lifting—sentiment analysis, trade plans, historical data, alerts… all under one roof. Adding more without thinking it through was starting to feel messy.
+So I paused… refactored the entire flow.
+The decision:
+FreerideInvestor stays the core research tool.
+The new real-time technical levels and indicators become an add-on… lightweight, surgical, and built to plug in clean. It taps the same API keys from wp-config… keeps everything streamlined.
+Users will be able to check their own charting calls against AI insights… in real time. That got me hyped.
+What tripped me up—naming.
+Can’t call it FreerideInvestor anything. Already had conflicts in the plugin directory.
+Still thinking through the new name… but I’ll lock it in once I’ve tested stability.
+Next up:
+Build out the UI in Module 1 so users can interact with these dynamic levels.
+Expand FreerideInvestor to offer the same modular integration for future tools.
+Sketch a pipeline for more adaptive learning (users improving alongside AI insights).
+“The difference between motion and progress… is reflection.”

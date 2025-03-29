@@ -1,0 +1,15 @@
+Devlog | 2025-03-15
+Is this system really converging, or am I just adding more weight to something already heavy?
+Took a step back today and ran a deep audit on the trading bot, the Robinhood journal, and the broader automation stack… and man, the bottlenecks are clearer now.
+Most of the friction is coming from all these manual handoffs—MFA codes, re-auth loops, clunky data fetch cycles... too many points where I have to stop what I’m doing and babysit a process. That’s a problem. If I’m trying to automate my edge, I can’t be the one holding it up.
+The structure right now is doing too much in a linear way. Single-threaded processes, no proper async, no event-driven orchestration. Feels like I’ve been building a machine that has to wait on itself.
+Also… there’s duplication. Logging in one place, fetching in another, retry logic copied here and there. It works—but it’s messy. I can’t scale messy.
+What broke? Nothing catastrophic... but the Robinhood options positions fetch choked hard. ‘Str’ object error because of poor type handling in the API response. A small thing, but it exposed how brittle the flow is when I’m relying on sequential tasks and blocking I/O. That’s not gonna fly as this grows.
+What’s next:
+Event-driven orchestration first (leaning Redis Pub/Sub). Everything needs to talk, but without waiting on each other.
+Kill manual MFA. Either headless auth or something like Robocorp. I need true hands-free trading.
+Async everything… especially fetches and trade executions.
+Plug the journal data into a content generator. The journal’s rich already—there’s no excuse for me to be writing every recap by hand.
+Build a risk engine that runs in real-time. No more after-the-fact P&L reviews. I want alerts mid-trade if something blows out risk parameters.
+The aim is convergence… not complexity. Simple systems. Fast systems. Self-correcting systems.
+"Simplicity is the ultimate sophistication."

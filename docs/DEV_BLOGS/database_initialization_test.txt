@@ -1,0 +1,23 @@
+Devlog | 2025-03-15
+How much friction am I still tolerating in workflows that should already be self-organizing?
+Been deep auditing my system... across trading, automation, content generation. Realized there are still a lot of bottlenecks and inefficiencies that are slowing things down. A lot of time dilution from stuff that should be converging by now.
+The database initialization tests exposed some gaps. DB_PATH overrides were messy... too much manual patching just to run a test. Tests were brittle because of hard-coded paths and static config files. Everything was tightly coupled. It slowed down execution and made simple changes feel heavier than they should be.
+On the data pipeline side... I’ve got three separate fetchers for AlphaVantage, Polygon.io, and NASDAQ. All running similar logic, duplicated in different wrappers. It’s clean enough to run, but scaling that is another story. Every new API, every new tweak... means rewriting boilerplate instead of just plugging in a new strategy.
+And logging... scattered. Sometimes prints, sometimes logger. No central aggregation. When something fails, it’s not obvious until I dig.
+So I stepped back and ran a system audit on myself.
+Where I landed...
+What broke:
+Test environments were fragile. DB paths and configs weren’t decoupled.
+Redundant logic was spreading maintenance cost.
+Logging and error handling were inconsistent.
+Coverage is still weak on the core—7%? Unacceptable.
+CI/CD isn’t in place yet. Manual testing is costing velocity.
+What’s next:
+Build a ConfigManager... environment-driven, no more static files holding me back.
+Refactor all the data fetchers into one modular DataFetcher with interchangeable strategies. No more duplication.
+Mock all the API calls in tests. Build temp fixtures to kill test fragility.
+Shift all logs to structured JSON... feed it into something I can watch in real-time.
+Replace CSV directory shuffling with in-memory or database ingestion... no more IO bottlenecks.
+CI pipeline. Tests run on push. Coverage enforced.
+Velocity isn’t about doing more... it’s about removing everything that slows down what matters.
+"If you want to go fast, clear the road."

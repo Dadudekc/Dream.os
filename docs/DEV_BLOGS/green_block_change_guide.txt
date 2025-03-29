@@ -1,0 +1,17 @@
+Devlog | 2025-03-16
+"How much time am I spending on things that should already be solved?"
+Been asking myself that all morning... and the answer's kinda obvious after today’s build session.
+Spent way too long doing frontend cleanup on the site. Tweaking the hero section... spacing footer links... swapping out social links manually in the footer.php file. Had to update the Twitch link—simple, but that turned into a rabbit hole. Ended up chasing color inconsistencies too. The green in the hero section looked off... washed out, old-school, not where I want the brand heading. I patched it in PHP with inline styles because it was faster, but honestly, that’s not the move long-term.
+I realized I’m still doing a lot of low-leverage work. Manual fixes that eat time... energy I should be putting into higher-level systems and trading strategy. It’s bottlenecking the speed I want to move at. Simple stuff like centralizing links, automating distribution to Twitch, Discord, the blog... those should already be solved.
+What broke?
+More like what’s slowing me down.
+Manually refreshing to clear cache... styling directly in PHP templates... and hopping back and forth to update the same link in three different places. It’s not broken, but it’s friction. And friction kills flow.
+What’s next...
+I'm mapping out an immediate cleanup:
+Move social links and brand settings to a global config or CMS options page.
+Start building a basic design system... probably TailwindCSS to speed up component styling.
+Set up Zapier or n8n to automate content flow—so I’m not copy-pasting Twitch links again.
+And I need staging with CI/CD on WordPress... no more cowboy coding in prod.
+Might need to pull in a VA or dev help soon. The front-end stuff works, but it’s costing me focus on the trading side.
+One step at a time...
+"Simplify everything, systemize what remains, and automate the flow."

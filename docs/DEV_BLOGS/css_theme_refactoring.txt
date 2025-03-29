@@ -1,0 +1,19 @@
+Devlog: Systems Audit and Refactor Pass
+How much energy do I lose to friction I don’t even notice anymore?
+That’s what hit me today...
+I sat down and ran a systems audit... trading, automation, content workflows. Everything. Just to see where time and attention are bleeding out.
+Here’s the short version:
+Too many redundant steps. Too much fragmentation between tools. Some things are overbuilt... some things are under-automated. And that’s been slowing down the whole machine.
+Trading...
+Data pipelines weren’t as clean as they should be. Some of the signal validation layers were pointless. I’m tightening up backtesting to live execution so it’s one flow—no dead space in between. Risk management’s still lagging behind where I want it... that’s next.
+Automation...
+A lot of manual triggers for things that should already be modular and running without me. It’s easy to think you’re automated until you aren’t. Cleaned up a lot of that... integrated more tools... fewer hands needed to push buttons.
+Content...
+Too many revisions. Too many platforms that don’t talk to each other. I’m moving toward AI-assisted drafting with automated distribution and feedback loops. That alone should save hours a week.
+What’s next...
+Fully automate risk management in trading... position sizing, stop losses, rebalancing
+AI-drive content creation, from draft to post
+Modularize the entire automation stack so I can swap pieces without breaking flow
+Feels like a turning point...
+The more friction I cut, the faster this thing moves.
+“Speed isn’t the goal. Flow is.”

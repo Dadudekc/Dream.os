@@ -1,0 +1,22 @@
+Devlog // 2025-03-15
+"Where am I wasting effort that should already be automated?"
+Been deep in system audits today... pulling apart the FreerideInvestor plugin workflows and looking for where things are getting sluggish or unnecessarily manual.
+Here's the rundown...
+What I worked on
+Laid out a complete project structure and documented all major files: freerideinvestor.php, uninstall.php, the Python fetch_data.py script, plus the dashboard CSS/JS assets. Packaged them into a standalone PDF and JSON for clean distribution...
+That’s the easy part.
+Then I flipped the lens back on the system itself... where I'm losing speed... where things aren’t self-evolving yet.
+What broke / what was tricky
+The biggest friction?
+I'm duplicating processes...
+Data fetching is happening twice—once in PHP for the WordPress plugin and again in Python. It’s splitting my time, splitting the system's energy.
+Alert triggers are still tied to WP cron jobs. That’s fine at low volume, but it's not built for real-time responsiveness.
+And then... there's the manual content generation. PDFs, JSON structures... every time I ask for them, it's a one-off. That should already be running as a background process, not something I'm tasking manually.
+It's not just about the time sink. It’s the cognitive drag. Repeating workflows that should already be automated slows everything.
+What’s next
+First move—centralize data fetching into a single API layer. Thinking FastAPI or Node.
+That clears up redundancy and gets me off the WordPress dependency for live data.
+Second—kill WP cron for alerts. Set up a task queue (Celery + Redis or AWS Lambda/EventBridge).
+And then build a CI/CD pipeline to push updates automatically... docs, code, assets.
+No more manual PDF drops. No more delays.
+"Once you see where the friction lives, it’s on you to remove it... or stay stuck."

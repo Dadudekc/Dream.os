@@ -1,0 +1,29 @@
+Devlog // 2025-03-15
+“Where is my energy getting diluted... and what systems are leaking more than they’re compounding?”
+That’s been running through my head all day.
+I sat down and did a hard audit of the workflows—trading, automation, content—and there’s a common thread... too much manual handling, not enough system convergence.
+What got worked on...
+Cleaned up the CSS for the trading journal pages... made sure they align with the FreerideInvestor main styles, but stay modular. No global bleed.
+Refactored _trading-journal-insights.css to fully leverage the variables system... it’s clean now. No redundant color calls.
+Started planning the grid layout for the journal content—main sections, sidebar, clear flow. It’s practical... keeps it easy to read and builds toward the scalable system I’ve been after.
+Audit flagged major time sinks:
+Manual trade bias validation
+Emotional capital spent managing risk
+Rebuilding UI components every time
+Laid out the next steps for tightening this up: AI Ops dashboard, automated trading bias validator, and a real atomic design system for content.
+What broke... or was tricky...
+I’m still context-switching too much...
+The automation pipeline isn’t unified yet—trading ops, content generation, system tasks... they’re living in different tools. Not a big deal when I’m running on full energy. But when I’m tired? It drags.
+The trading bias system isn’t deployed yet... I’m running it manually, which is draining.
+And the MVPs... I keep prototyping but not pushing anything into production. That’s gotta change.
+Noticing how much I’m caught in build mode instead of scale mode.
+What’s next...
+Build the AI Ops dashboard... Retool or Streamlit. 7 days.
+Deploy the trading bias validator. 14 days.
+Launch the atomic design system. Standardize components for content and dashboards. 14 days.
+Automate the journal and devlog publishing workflow.
+Document everything as I go... minimal context-switching.
+The energy’s good... but I’m keeping it grounded.
+Next three weeks are about execution speed and reducing decision fatigue.
+Clean pipelines. Clean execution.
+"Discipline is choosing between what you want now and what you want most."

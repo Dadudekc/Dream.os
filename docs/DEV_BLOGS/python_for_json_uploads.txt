@@ -1,0 +1,15 @@
+Devlog // 2025-02-12
+What’s the real cost of over-relying on PHP for data handling when Python can handle validation faster and cleaner?
+Been deep in the FreeRide Projects dashboard today... integrating the backend JSON handling and wrestling with where to draw the line between PHP and Python responsibility. The old method was clunky—PHP uploading the JSON, validating it, and updating the options table. It worked... but it wasn’t clean. So I pulled Python into the loop.
+New flow: PHP handles the upload... then passes it off to a Python script to validate and parse. Python shoots back the cleaned data, and PHP stores it. Simple enough... until you hit edge cases.
+Couple hours gone on tracking why json_decode() was throwing nulls... turns out if get_option() returns null or something unexpected, PHP quietly breaks... unless you check and log it. Now there’s a fallback and some extra logging to catch anything weird before it hits the front end.
+Also saw a weird fatal on another plugin... looks like a missing class in the market news fetcher. That’s next.
+What’s working:
+Uploading JSON files through the dashboard
+Python validation pipeline is smooth
+The PHP error handling is finally less brittle
+What’s next:
+Clean up the Python script—add schema validation
+Revisit the market news fetcher... figure out why it’s crashing cron
+Might look at swapping to an API endpoint for the Python calls if things scale
+“Measure twice. Cut once. Then measure again just to be sure.”

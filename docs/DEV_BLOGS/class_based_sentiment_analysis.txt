@@ -1,0 +1,176 @@
+Below is one approach to tie everything together with a new SentimentIntegration class that orchestrates sentiment from Stocktwits (and potentially other sources like Twitter, NewsAPI, etc. in the future).
+You’ll see how to:
+Keep StocktwitsSentimentAnalyzer for real Stocktwits scraping and analysis.
+Extend SentimentIntegration to call that analyzer (and any future APIs).
+Update SentimentDrivenTradingBot to fetch its sentiment via SentimentIntegration rather than calling StocktwitsSentimentAnalyzer directly.
+1) sentiment_integration.py
+python
+Copy
+Edit
+# Filename: sentiment_integration.py
+import random
+import logging
+import asyncio
+
+# Import your real Stocktwits analyzer
+from stocktwits_sentiment_analyzer import StocktwitsSentimentAnalyzer
+
+class SentimentIntegration:
+    """
+    Orchestrator for multiple sentiment sources. Currently integrates:
+      - StocktwitsSentimentAnalyzer (real scraping)
+      - (Placeholder) random sentiment for Twitter / NewsAPI / etc.
+    """
+    def __init__(self):
+        logging.info("🔎 Sentiment Integration Initialized")
+        self.stocktwits_analyzer = StocktwitsSentimentAnalyzer(
+            db_name="trade_analyzer.db",  # or your chosen DB
+            cookie_file="stocktwits_cookies.json",
+            max_scrolls=50,
+            scroll_pause_time=2
+        )
+
+    async def get_sentiment_score(self, symbol: str) -> float:
+        """
+        Returns a combined sentiment score in the range [-1.0, 1.0].
+        - Calls real Stocktwits sentiment
+        - Optionally calls other sources (placeholders here)
+        - Aggregates to a single final score
+        """
+        # 1) Real Stocktwits sentiment (range roughly [-1, 1])
+        stocktwits_score = await self.stocktwits_analyzer.get_stocktwits_sentiment_async(symbol)
+
+        # 2) Placeholder for other sources
+        #    e.g., random sentiment for demonstration
+        #    In the future, this is where you'd add:
+        #        - Twitter queries
+        #        - NewsAPI queries
+        #        - Weighted average among them
+        random_score = round(random.uniform(-1.0, 1.0), 2)
+
+        # For now, let's just average Stocktwits with the placeholder
+        final_score = (stocktwits_score + random_score) / 2
+
+        logging.info(f"✅ Integrated Sentiment for {symbol}: {final_score:.2f} "
+                     f"(Stocktwits={stocktwits_score:.2f}, Other={random_score:.2f})")
+
+        return final_score
+Key Points
+We instantiate StocktwitsSentimentAnalyzer inside SentimentIntegration.
+get_sentiment_score is an async method that awaits the Stocktwits call, and then merges that result with the placeholder random result.
+In the future, you’d expand this method to fetch Twitter, NewsAPI, etc., and apply your own weighting or averaging logic.
+2) Updated SentimentDrivenTradingBot
+Below is how you can update your bot to use the new SentimentIntegration instead of directly calling the StocktwitsSentimentAnalyzer. We’ll assume the rest of your classes (SimulatedTradeEngine, AITradeJournal) remain the same.
+python
+Copy
+Edit
+# Filename: sentiment_driven_trader.py
+import logging
+import asyncio
+import yfinance as yf
+from datetime import datetime
+
+# Existing classes
+from simulated_trade_engine import SimulatedTradeEngine  # Contains SimulatedTradeEngine, AITradeJournal
+from ai_trade_journal import AITradeJournal
+from sentiment_integration import SentimentIntegration
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
+
+class SentimentDrivenTradingBot:
+    """
+    Orchestrates sentiment (via SentimentIntegration) with yfinance-based
+    trading logic (SimulatedTradeEngine + AITradeJournal).
+    """
+    def __init__(self):
+        self.sentiment_integration = SentimentIntegration()
+        self.trade_engine = SimulatedTradeEngine()
+        self.journal = AITradeJournal()
+
+    def run(self):
+        """
+        1) Ask user for symbol.
+        2) Fetch integrated sentiment (Stocktwits + placeholders).
+        3) Download historical data (yfinance).
+        4) Execute naive trading logic based on daily price changes.
+        5) Analyze journal results.
+        """
+        symbol = input("Enter the stock ticker symbol (e.g. AAPL): ").strip().upper()
+
+        # 1) Get integrated sentiment (async)
+        integrated_sentiment = asyncio.run(self.sentiment_integration.get_sentiment_score(symbol))
+        logger.info(f"Overall (integrated) sentiment for {symbol}: {integrated_sentiment:.2f}\n")
+
+        # 2) Fetch historical data from yfinance
+        data = yf.download(symbol, period="30d", interval="1d")
+        if data.empty:
+            logger.warning(f"No data retrieved for {symbol}. Exiting.")
+            return
+        logger.info(f"Retrieved {len(data)} days of data for {symbol}.\n")
+        logger.info(f"\nLatest Stock Data:\n{data[['Close']].tail(5)}\n")
+
+        # 3) Simple trading loop
+        for i in range(1, len(data)):
+            price = float(data["Close"].iloc[i])
+            prev_price = float(data["Close"].iloc[i - 1])
+
+            logger.info(f"Day {i}: Prev Close={prev_price:.2f}, Current={price:.2f}")
+
+            # Example rules:
+            # - If integrated sentiment > 0.3, we interpret it as "bullish"
+            # - BUY if price dropped more than 1% from previous day AND sentiment is bullish
+            # - SELL if price rose more than 2% from previous day
+            if price < prev_price * 0.99 and integrated_sentiment > 0.3:
+                logger.info("📊 BUY Condition Met (dip + bullish sentiment). Executing Trade.")
+                self.trade_engine.execute_trade(symbol, "BUY", 10, price)
+                last_trade = self.trade_engine.get_trade_history().iloc[-1]
+                self.journal.log_trade(last_trade)
+
+            elif price > prev_price * 1.02:
+                logger.info("📊 SELL Condition Met (price jumped). Executing Trade.")
+                self.trade_engine.execute_trade(symbol, "SELL", 10, price)
+                last_trade = self.trade_engine.get_trade_history().iloc[-1]
+                self.journal.log_trade(last_trade)
+
+        # 4) Analyze performance
+        logger.info("\n🔎 Analyzing trading performance:")
+        df_performance = self.journal.analyze_performance()
+        if df_performance is not None:
+            logger.info(f"\nTrade Details:\n{df_performance}\n")
+
+
+if __name__ == "__main__":
+    bot = SentimentDrivenTradingBot()
+    bot.run()
+What Changed Here?
+Removed direct usage of StocktwitsSentimentAnalyzer from SentimentDrivenTradingBot.
+Replaced it with a call to the new SentimentIntegration class.
+By default, SentimentIntegration is returning an average of:
+Real Stocktwits sentiment
+A placeholder random sentiment.
+You can now extend SentimentIntegration to incorporate Twitter, NewsAPI, Reddit, or any other sentiment sources.
+Putting It All Together
+Install dependencies if you haven’t already:
+bash
+Copy
+Edit
+pip install selenium bs4 textblob vaderSentiment yfinance webdriver_manager pandas
+Launch sentiment_driven_trader.py:
+bash
+Copy
+Edit
+python sentiment_driven_trader.py
+Enter Stocktwits credentials on first run, if your cookies aren’t recognized.
+Watch the script:
+Scrape Stocktwits sentiment
+Combine with placeholder random sentiment
+Download data from yfinance
+Perform naive trades
+Print out trade history and analysis
+With this structure, you can keep expanding your pipeline:
+Add actual Twitter queries.
+Use NewsAPI for headlines.
+Build a more advanced weighting system in SentimentIntegration.
+Good luck with your integrated sentiment-driven trading bot!

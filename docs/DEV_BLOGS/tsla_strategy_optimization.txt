@@ -1,0 +1,29 @@
+Devlog // Trading Leads Bot Deployment Prep
+“What does ‘done’ actually look like if you’re serious about running without touching it?”
+That’s been the core question all day.
+Today was about closing loops… not half-building. We’re sitting on a lead gen system that’s meant to scrape and log fresh leads automatically. LinkedIn, Reddit, SeekingAlpha—ditched Twitter and Instagram after testing… too much friction. Not worth the maintenance headache.
+Built out the config. Cleaned up the database setup.
+SQLite for now... fast to deploy, does the job.
+The scraper.py is live in the repo—logic’s tight. Pulls posts, checks for duplicates, logs to SQLite so we’re not spamming the same people over and over. Solid.
+The GitHub repo itself?
+Organized.
+Got tests in the tests folder. CI pipeline prepped with scraper.yml.
+Secrets are next on deck. That’s tomorrow’s job when I’m home.
+A lot of today was about realizing: this isn’t about trading bots right now. It’s about getting people into the funnel. If the bot’s making noise but no one’s there to hear it? Doesn’t matter.
+That clarity hit different.
+What’s tricky...
+I can already see where we’re gonna need scaling.
+This is SQLite... but once the pipeline works, we’ll need a real database. Thinking Postgres + Supabase to keep it tight and real-time.
+But we’re not there yet.
+Right now, it's: deploy what’s here.
+Let it breathe.
+Collect data.
+Refine.
+Next steps for tonight when I’m home:
+Plug in the GitHub secrets.
+Run a live test on the scraper—confirm it logs and filters clean.
+Plan out the engagement logic (first contact, follow-up, etc).
+Set the task list for tomorrow’s execution window.
+I’m not leaving anything half-built anymore.
+"Most people stop at 'it works'… we build until it works without us."
+—V.

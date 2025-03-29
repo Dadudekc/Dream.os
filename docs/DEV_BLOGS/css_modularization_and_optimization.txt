@@ -1,0 +1,22 @@
+Devlog // 03.15.2025
+"Where is the real drag coming from... and am I the bottleneck or is it the system?"
+Today was mostly about finding the friction points... not just in the code, but in the way I’m moving between projects.
+I broke things down across three areas—trading, automation, and content builds. The deeper I went, the more obvious it got: there’s way too much context-switching. One second I’m structuring SCSS files... next I’m mapping narrative arcs... then I’m debugging Discord bots. Each one feels clean on its own—but together? It’s noisy.
+I ran an audit on myself, really. Figured out where time and energy are leaking:
+Too much manual process—especially on builds and deployments.
+Diagramming workflows was helpful... but static. No automation feeding off those diagrams yet.
+Bots are solid but I’m still relying on manual logging... no unified observability.
+What worked:
+Cleaned up SCSS architecture. Broke it into logical files—_variables.scss, _components.scss, etc. Next step is to wire that into a CI/CD pipeline... no more local compiles.
+Built out the Mermaid.js diagrams for everything... bots, SCSS workflows, even the narrative expansions. It’s clear now—just needs to move from diagrams to JSON to tasks.
+Laid out a tighter clustering system. One sprint, one domain at a time. No more juggling.
+What broke:
+The usual temptation to "jump in and fix everything." Had to pull back... set priorities.
+No monitoring means I’m still reactive with the bots. That’s not sustainable.
+Next:
+CI/CD for SCSS and bots. GitHub Actions... dead simple.
+Centralized logging. Thinking Grafana + Loki... unless something lighter makes more sense.
+Automate Mermaid diagram conversion—JSON outputs I can feed into task runners or agents.
+Prototype an AI-driven content pipeline... headless CMS that feeds into the existing templates. Less click-drag... more generate-deploy.
+If you’re stuck... break the loop, not the system.
+"Focus is a force multiplier."

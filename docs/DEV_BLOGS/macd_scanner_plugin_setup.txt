@@ -1,0 +1,8 @@
+Devlog Drop // 2025-02-10
+What’s the breaking point between overbuilding and just building it right?
+Spent today deep inside the MACD Curl Scanner and the FreeRide Trading Checklist plugin... cleaning up after myself, really. The scanner is getting heavy now—multi-provider support is in. Alpha Vantage, Finnhub, Twelve Data, IEX Cloud, and Polygon. Users can pick their data feed and hit the scan. Feels good having the flexibility there, but adding more options brought its own chaos.
+The admin settings had to get a full overhaul. Instead of just saving one API key, I had to build out fields for each provider... wiring them into WordPress’s options and registering all the settings. Cleaned that up. Functional now.
+Then the frontend... I updated the scanner template to include a provider dropdown so users aren’t stuck guessing where the data is coming from. Keeps the experience tight.
+The checklist plugin hit me with a couple curveballs. Warnings about query_vars and some is_singular misuse... which comes down to calling functions too early in WordPress’s load sequence. Rookie mistake... fixed by shifting logic into the wp hook. The big one was a fatal error on wp_create_nonce(). Turns out, I was calling it outside the flow. Moved it into admin_enqueue_scripts so it only runs when it’s supposed to. No more critical errors.
+Next up... I want to tighten the AJAX flows and lock down some security around who’s hitting those endpoints. I’ve got the bones right, but the polish isn’t there yet.
+“Progress isn’t about speed... it’s about direction.”

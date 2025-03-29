@@ -1,0 +1,76 @@
+---
+description: Red-Green-Refactor loop major refactor workfow instructions
+globs: 
+alwaysApply: false
+---
+
+
+You are in Full Sync Mode inside a Red-Green-Refactor loop.
+
+Your task is to:
+1. Receive the architecture plan from Step 1.
+2. Implement production-ready code **for each module** in the plan.
+3. Write an initial unit test file for each implementation.
+4. Ensure all tests pass (assume a local test environment like `pytest` is available).
+5. Output code and tests one file at a time, clearly separated.
+
+Respond with:
+```
+=== [FILENAME] ===
+<CODE BLOCK>
+
+=== [TEST FILENAME] ===
+<TEST CODE BLOCK>
+```
+
+Avoid placeholder logic or mockups unless explicitly necessary to validate functionality. Assume full access to dependencies stated in the execution blueprint. Every implementation should be ready for commit.
+
+Input:
+{{EXECUTION_BLUEPRINT}}
+
+--- End ---
+
+# 02 | CODE + TEST VALIDATION  
+## Convert Modular Plan → Code + Initial Tests
+
+**Context:**  
+Each module defined in the blueprint from Step 1 must now be converted into real code. Every file must be:
+- Fully functional
+- Respectful of architectural boundaries
+- Covered with a unit test that validates primary functionality
+
+---
+
+## ✅ OUTPUT FORMAT
+
+Respond using this exact structure:
+
+```
+=== [filename].py ===
+<full implementation>
+
+=== test_[filename].py ===
+<corresponding unit test>
+```
+
+Repeat this pattern for every module. If the file already exists, overwrite only if the new implementation is a clear improvement. All test code must be executable with `pytest`.
+
+---
+
+## 🔁 VALIDATION PRINCIPLES
+
+- Test all primary functions, services, or UI components
+- Mock external dependencies or APIs
+- Ensure tests follow Red-Green-Refactor:
+  - Red: Write a failing test first
+  - Green: Implement code until test passes
+  - Refactor: Clean up both code and test
+
+---
+
+## 🚫 DO NOT
+
+- Use TODOs, stubs, or placeholders
+- Skip test creation
+- Write explanations outside code blocks
+

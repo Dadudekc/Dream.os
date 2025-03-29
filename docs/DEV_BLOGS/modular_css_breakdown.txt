@@ -1,0 +1,15 @@
+Devlog // 2025-03-15
+"How much friction am I keeping in play just because I haven't built a system to take it off the table?"
+Today was a gut check on where energy’s leaking in the system. Sat down thinking I was just going to merge some CSS... walked away realizing how much manual drag I’m still carrying.
+We ran an audit on the workflows—trading, automation, content. Some real bottlenecks surfaced:
+Manual triggers for GitHub > WordPress updates... still needing me to SSH in or run WP-CLI instead of having clean CI/CD handling it. Slows everything down. I’ve got the token now, but there’s still too many hands-on steps. It's working, but it’s not flowing yet.
+The compounding math? Been running it in my head or hacking numbers on the fly. That’s fine when you're fresh. But over time? It drains decision-making. I need a simulator—plug in numbers, get the timeline. Done. That’s going into the build queue.
+And the CSS cleanup... I was halfway into merging duplicate table styles before realizing how much cruft’s been stacking up. Not just in the code—mentally too. Time to consolidate into SCSS and standardize the components. More scale, less noise.
+What’s next?
+GitHub CI/CD pipeline to automate theme updates.
+Auto-compounding calculator, maybe Python/Pandas or JS.
+Refactor CSS into a modular system.
+WP-CLI scripts to kill off any remaining manual deploys.
+Add deploy logs + Discord alerts... keep eyes on the machine.
+Clean the pipes. Clear the flow. Strip friction anywhere it shows up.
+"Fast is fine, but accuracy is everything. Aim small, miss small."

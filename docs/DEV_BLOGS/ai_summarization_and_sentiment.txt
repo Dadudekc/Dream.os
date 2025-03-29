@@ -1,0 +1,12 @@
+Devlog | Feb 4, 2025
+What’s the point of running automated systems if you still need to manually check the foundations?
+I keep circling back to that. This drop pretty much reinforced it.
+Spent the last block digging through why the market news wasn’t displaying on the frontend, despite having everything "working" in the backend... or so I thought.
+At first glance, the admin dashboard confirmed news was being fetched. That was solid. Logs were firing off, no major errors on fetch. Table wp_market_news looked fine, but when I ran a query directly—empty. That told me everything I needed to know... news wasn’t being inserted.
+Then came the blocker: wp_freerideinvest_query_logs table didn’t exist. Classic foreign key mismatch. My user_id was set to INT, but wp_users.ID is BIGINT(20) UNSIGNED. Rookie move. Fixed that, recreated the table via PHPMyAdmin (because dbDelta wasn’t cutting it), and finally cleared that error off the board.
+Once the query logs table was standing, I verified the fetch pipeline. Ran a test fetch manually... nothing was saving. Dug into the store_news() function and confirmed insert statements were missing or failing quietly. Added error logging—turns out I was skipping duplicates too aggressively. Tweaked the duplicate logic. Inserted manually to verify.
+Articles showed up in the DB. But still no display on the page.
+That’s when I realized Fri_News_Render was running fetch_news() without confirming results. Added debug logs—empty results. SQL query was wrong. Fixed the query. Ran it again. Data returned... but still no display. Turns out the rendering function was expecting different data keys (object vs array). Patched that. Now it's showing on the frontend... finally.
+What's next...
+Clean up the fetch and render flow. Lock the query log process down so I’m not catching that foreign key issue again. Might write a health check that verifies core tables before fetch even runs. Need to trust the foundation.
+"Measure twice, cut once. And when in doubt, measure again."

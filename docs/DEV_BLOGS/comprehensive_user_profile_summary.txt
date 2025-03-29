@@ -1,0 +1,18 @@
+Devlog // 2025-03-15
+"Where’s the energy leak... and what’s slowing the system down?"
+Been thinking about that a lot today. Came at it from an auditor’s lens... looked over my trading, automation, and content workflows like they were all nodes in the same network. The truth? There’s friction in the flow. Too many open threads... not enough locked phases.
+Here’s where I landed...
+What Got Worked On
+Did a deep dive into Phase 1: Foundation and Organization for FreeRideInvestor. It’s clear now... everything scales off this phase being tight.
+Took the PyQt5 task manager app and pushed it a little further. It’s clean... but building tools I don’t need to build is a time bleed. This one’s getting replaced with something lighter—probably Notion or ClickUp, wired straight into GitHub and Discord.
+Cleaned up the TSLA Pine Script strategy. Added arrows for entry/exit clarity. Organized the logic, comments, and inputs to match a tighter format. Made it easier to read... easier to iterate.
+What Broke / What Was Tricky
+Too many tools doing the same job... task management spread out over PyQt5, loose lists, and project boards. Redundant systems mean I’m wasting decision energy.
+Manual backtesting... one param tweak at a time... slows things way down. I need automation here. Looking at Backtrader with Optuna or TensorTrade for param sweeps next.
+Feedback loops are too slow. No weekly reviews, no automated summaries... so drift creeps in.
+What’s Next
+Locking Single-Phase Execution into place. One phase, one focus... no exceptions.
+Centralizing task and project management... Notion is the first stop. Everything feeds into one dashboard—GitHub, Discord, trade metrics.
+Building an automated backtest and optimization pipeline. That’s the core engine. AI-enhanced, real-time adaptive.
+This isn’t about productivity hacks... it’s about velocity. Getting the system to self-correct, self-optimize, and move without me dragging it forward.
+"Discipline is remembering what you want."

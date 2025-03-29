@@ -1,0 +1,14 @@
+Devlog: System Audit & Workflow Cleanse
+"What happens when you realize the system you’re building is duplicating itself... and you’re the one splitting your own time?"
+Been running hard across different builds lately—Forex, stocks, frontend dashboards, backend logic... all getting energy, but I hit a wall. It wasn’t a brick wall. More like quicksand. The more I pushed, the more I noticed how much time was getting sucked into redundant work.
+I’ve got two systems doing the same thing—stock and Forex research—both pulling data, running sentiment checks, and kicking out trade plans... but I’m building them separately. Same backend logic, different wrappers. It’s draining. Should’ve abstracted that out weeks ago.
+WordPress + PHP is fine for frontend dashboards. Clean UI. But trying to run real-time alerts, AI analysis, and data fetching through that setup? Heavy, slow, clunky. Cron jobs firing on the hour to check alerts… in trading time, that’s ancient history. It won’t scale. It won’t adapt. Time to shift.
+The answer’s pretty clear—central backend service. Python or Node, doesn’t matter right now. What matters is pulling the logic out of WP, making it modular, real-time, and scalable. Redis Pub/Sub or EventBridge for real-time alerts. WebSockets for instant frontend updates. That’s the move.
+I also need to stop being the bottleneck. Context switching between code, automation, and content is killing velocity. Some of this work needs to get delegated. The focus has to be on architecture and system design... everything else gets automated or handed off.
+What’s next?
+Strip out redundant logic. Build one core backend service for all trading tools.
+Migrate alerts from cron jobs to real-time event handling.
+Automate AI interactions. Cache responses. Prep for LLM fine-tuning when it makes sense.
+Clean up repos. Streamline deployment. No more fragmented codebases.
+Real execution velocity comes when the system organizes itself... not when I’m the glue holding it together.
+"The system you design reflects the clarity of your intent. Confusion builds complexity. Clarity builds convergence."

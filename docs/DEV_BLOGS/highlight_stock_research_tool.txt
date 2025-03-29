@@ -1,0 +1,14 @@
+Devlog // 2025-03-15
+Question I’m sitting with...
+How much energy am I wasting on decisions that should’ve been made once and never revisited?
+Spent the day tearing through the tools archive page. The main goal was to get the Stock Research Tool front and center. It’s our best piece right now... and it wasn’t getting the visibility it deserves.
+Stripped out the clutter—killed the extra buttons, cleaned up the flow. Moved the other tools further down. They’re useful, but they’re not the showpiece. I’d been stacking features like a to-do list instead of thinking about the user’s sequence. Fixed that.
+What tripped me up...
+Button alignment. Simple, but dumb friction. I kept hacking line breaks to line things up. Stopped and pulled back—realized I was working without a proper component system. Layout tweaks that should’ve taken seconds were taking minutes because I’m freestyling CSS instead of committing to a system. That’s adding drag I don’t need.
+Also did a deep dive on RSS feeds... wanted a tight Tesla stream for the tools page. Ended up bouncing through dead links and generic feeds. I have a working list now—Yahoo Finance, Seeking Alpha, MarketWatch feeds—but it’s clear I need an automated process for this. No more manual feed hunting.
+What’s next...
+Componentize the page layouts so I’m not wasting cycles on simple stuff.
+Spin up a curated RSS aggregator for TSLA and beyond... automated validation, no manual checks.
+Modularize these workflows... design stream, data stream, automation stream... no more linear grind.
+Clarity creates speed... speed creates leverage.
+"Clarity breeds momentum. Automation unleashes dominance."

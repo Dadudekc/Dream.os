@@ -1,0 +1,10 @@
+Devlog // 2025-03-16
+What’s the simplest way to get a user from login to dashboard without friction… and without trusting WordPress to handle it?
+Spent the last chunk of time deep-diving into the login flow for FreeRideInvestor. The front end was looking clean, but under the hood, it wasn’t doing much. No real handling, no error feedback, no user validation—just some forms pointing at wp-login.php and hoping for the best.
+It wasn’t gonna cut it.
+Rebuilt the system to actually process the forms in the template itself. Now it does proper nonce checks, custom error handling, and makes sure users get immediate feedback—whether they’re logging in, signing up, or resetting passwords. Added wp_create_user() on sign-up instead of relying on default WP behavior, which ignored the password field entirely. Also wired up wp_signon() for logins with a proper remember me flag, and got retrieve_password() in place for password resets.
+The biggest catch was the lack of nonces in the old forms. CSRF risk. Fixed that.
+Also realized WordPress by default ignores custom password fields in registration unless you build the backend logic... so, built that.
+What’s next...
+Testing this across user roles. Making sure redirects post-login respect permissions and prevent any weirdness.
+“Slow is smooth. Smooth is fast.”

@@ -1,0 +1,8 @@
+Devlog Update
+Ever hit that point where you're refactoring something and realize... yeah, this is gonna spiral if I don't clean up the structure now?
+That was today with the FreerideInvestor plugin. The core was solid—migrations, health checks, SQL runner, inline user edits—but it was all packed in tight. Some of the logic needed breathing room.
+Started with the database migrations. Refactored them into a more modular format, making it easier to scale. Tables are versioned, updates apply automatically, and missing tables trigger alerts. No manual intervention.
+Inline editing got a security pass—tightened up the AJAX handlers, added more sanitization. The SQL runner is still a question mark. Blocked obvious bad queries (DROP, DELETE, etc.), but I’m debating if I should lock it down harder or add a preset-only mode. Leaving that open-ended for now.
+The admin page is cleaner now, but the UI still feels clunky. It works, but there's friction. Might refactor the front end into something smoother later—depends on how much I care about UI in this project.
+Next: Might break some of this out into separate files, especially the AJAX handlers and query logs. It's not unmanageable yet, but I can feel the bloat creeping in. Also need to decide how much freedom I really want in that SQL runner... trade-offs.
+Feels good to push this forward... not perfect, but it's moving.

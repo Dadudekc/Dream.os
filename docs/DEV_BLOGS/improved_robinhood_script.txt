@@ -1,0 +1,13 @@
+Devlog | 03.15.25
+How much time do I lose revisiting work that should already be done?
+Spent most of today deep-diving the Robinhood authentication flow... again.
+Had to unwind a bunch of redundant login logic—two versions of the same function competing for attention. Sheriff challenge handling was fragmented. MFA workflows were inconsistent depending on where you looked. None of it was lining up clean... and it’s been costing time.
+I merged it all. One authentication function. Handles MFA, SMS, email, and the sheriff verification. Cleaned up the TOTP handling too—next step is automating it completely so I’m not sitting here typing codes manually every time the system spins up.
+Testing was a mess at first. Mock requests weren’t catching because the URLs didn’t match... typical small stuff that wastes an hour when you’re tired. Fixed that by centralizing all the URLs and mocks. Now they just import from a helper and stay consistent. Ran the pytest suite after and finally got some stability—still have a couple sheriff cases throwing errors, but the foundation is solid.
+Next up:
+Automate TOTP (no more human in the loop)
+CI pipeline to auto-test and lint the repo
+.env and config unification so I don’t get tripped up by missing environment variables when I shift machines
+The big takeaway—centralize. Don’t let code drift into duplicated effort. It’s the fastest way to stall out.
+“Discipline equals freedom.”
+— Jocko Willink

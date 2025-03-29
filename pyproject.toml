@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chat_mate"
+version = "0.1.0"
+description = "AI-Powered Community Management"
+readme = "README.md"
+requires-python = ">=3.6"
+authors = [
+    {name = "Victor", email = "info@example.com"}
+]
+
+dependencies = [
+    "PyQt5",
+    "requests",
+    "apscheduler",
+    "pylint",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-qt",
+    "jinja2",
+    "discord.py",
+    "selenium",
+    "undetected-chromedriver",
+    "setuptools",
+    "webdriver-manager",
+    "matplotlib"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "flake8",
+]
+
+[project.scripts]
+chat-mate = "interfaces.pyqt.__main__:main"
+
+[tool.setuptools]
+packages = ["core", "interfaces", "utils", "chatgpt_automation", "chat_mate"] 

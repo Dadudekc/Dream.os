@@ -1,0 +1,11 @@
+Devlog: Automating the Heavy Lifts
+How much energy do we waste on things that should’ve been automated months ago...?
+That’s been sitting in my head all day. I’ve been looking at these prediction workflows—realized I’m still manually stepping in where I shouldn’t be. Data exports... model retrains... syncing Discord with the site... It’s death by a thousand cuts. Quiet drains on time and focus.
+So I locked in and cleaned it up.
+Rebuilt the bot to run straight into MySQL... no more flat files, no more JSON shuffles just to get data onto the site. Predictions get stored directly in the database now. Automated exports are gone... it’s live. PHP on the Freeride Investor site pulls directly from that DB and spins up tables and charts on demand. Chart.js is handling the visuals... it’s simple, but it works. Leaderboards are running... prediction summaries are there... and it’s updating without me babysitting it.
+The Discord side’s synced... notifications go out when a new summary hits the site. No delay... no friction. It’s tight.
+What was tricky? Just time. Wiring up MySQL wasn’t hard, but making sure the workflows didn’t get bloated was where I had to slow down. Kept it lightweight... no unnecessary overhead.
+What’s next...?
+Fully automated model retraining. Right now, predictions are mostly mocked... but the system’s built for real data now. Daily retrains... rolling accuracy scores... and long-term performance tracking. Once that’s in, I’m flipping the switch on automated content generation. AI summaries... automated insights... reports that drop themselves.
+One step closer to getting out of my own way.
+"Systems are built to carry weight... but you have to put them in place first."

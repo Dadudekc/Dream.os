@@ -1,0 +1,12 @@
+Devlog — 2025-03-15
+“What’s the hidden cost of things you keep doing manually?”
+Been grinding through the Robinhood auth flow today... again.
+I thought I had the password + login flow tight, but the 2FA challenges are still breaking the loop. Doesn’t matter if I enter the code fast—Robinhood’s API kicks back 400s if the stars aren’t aligned. Debug logs help, but it’s tedious, and manually punching codes is a time sink I shouldn’t be tolerating anymore.
+Spent some time breaking down the whole login pipeline. Found a lot of redundant pieces... repeated logins, challenge code scattered in different spots, zero session caching. Basically forcing myself to re-login every time because I hadn’t paused to refactor. That’s on me.
+The tests are decent. Mocked up the sheriff challenges, standard MFA flows (SMS and email), but none of that fixes the bottleneck... because the real friction isn’t the test coverage—it’s me babysitting a flow that should run itself.
+Next up...
+I’m going to automate the code retrieval. Probably Twilio with a webhook dumping into Redis. Could go TOTP, but Robinhood’s stuck on SMS for now, so I’ll work with it. Once the code’s auto-pulled, I’ll wire it to push straight into the challenge response.
+And session caching... I’ve been avoiding it because of security handling, but the time loss isn’t worth it anymore. I’ll encrypt the tokens and cycle them clean.
+After that, centralize the whole login + challenge workflow so I’m not copy/pasting the same logic between test, dev, and live.
+The system’s bleeding time in places it shouldn’t... I’m closing that down now.
+“You won’t reach flow until you trust the system to move without you.”

@@ -1,0 +1,19 @@
+Devlog | 03.16.25
+Do you know how much energy gets lost when your system is half-manual and half-automated? I’ve been thinking about that all morning... because that’s basically where I’m at right now.
+Spent the last block of time ripping apart my TBoW tactic process for TSLA—wanted to get it clean before the open. The chart flipped faster than expected... price slammed down, then ripped right back up to $428 pre-market. RSI climbing, MACD crossing... I had to adjust the entire game plan on the fly.
+The friction? Manual everything.
+Pulling price levels.
+Reworking support/resistance.
+Reformatting HTML just to get the post site-ready.
+That’s where my time went. Could’ve been done in five minutes if it was automated... it took closer to thirty. And when you’re trying to trade and drop content in real-time, that lag is expensive.
+So today’s clarity was this—there’s no world where this works long-term without an automated pipeline.
+Real-time data feeds.
+Auto-gen TBoW posts with pre-built HTML structure.
+Live alert triggers that adjust strategy levels without me hand-keying anything.
+Audit pulled up more—content creation redundancy, fragmented workflows, scattered alerts. The system’s leaking energy at every transition point. None of it’s catastrophic, but it’s slow... and that’s enough to kill momentum.
+What’s next?
+Build the real-time data ingestion for market metrics.
+Sync it with an auto-post generator that outputs clean HTML.
+Layer in machine learning to refine TBoW tactics based on past trades.
+No chasing. Just building it out and plugging the holes.
+"Be like water, my friend."

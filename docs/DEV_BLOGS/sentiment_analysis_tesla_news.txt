@@ -1,0 +1,7 @@
+Devlog // 2025-03-16 // Sentiment Dashboard Drop
+How do you make raw data feel alive for the user?
+Been deep in sentiment analysis logs today... parsing through all the debug output from the API calls. Clean responses, but staring at rows of "Neutral," "Negative," and "Positive" doesn't mean much unless you can see it.
+So I spun up a quick front-end display... kept it simple. HTML, CSS, a little JS. Just a table for now—headlines on the left, sentiment color-coded on the right. Green for Positive, yellow for Neutral, red for Negative. Fast and readable... no fluff. It'll do until I decide if this data needs charts or deeper user interaction.
+What tripped me up wasn’t the data... it was how to present it in a way that doesn’t overwhelm people. I had to strip it back. Not every page needs a dashboard screaming for attention.
+Next... probably hook it up to live API data instead of hardcoded arrays. Thinking through how to modularize this so it plugs into FreeRide Investor without breaking anything else I’m testing.
+“Clarity comes from stripping away the noise.”

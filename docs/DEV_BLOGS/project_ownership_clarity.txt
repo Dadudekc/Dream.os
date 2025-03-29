@@ -1,0 +1,14 @@
+Devlog | 2025-03-15
+“What’s the difference between building systems... and actually being able to run them with your own hands?”
+That’s been sitting in my head tonight.
+I’ve built a lot... trading pipelines, automation loops, content engines. The machine looks good on the outside. But under the hood, there’s this gap. I’m realizing I still lean too hard on AI for execution—especially the basic stuff like code. And that’s a problem. Not because the AI isn’t fast or sharp... but because there’s friction when I can’t just do it myself. Small things... simple things... they stack up. And they slow me down.
+Today’s audit was surgical. Found three main things:
+Execution bottleneck—coding skills need leveling up.
+Cognitive switching—jumping between big-picture strategy and micro tasks without clear separation.
+Feedback loops—too much second-guessing if the system is mine or if I’m just piloting what the AI builds.
+I’m fixing it.
+Starting with 30 minutes a day of raw, hands-on coding... no AI. Building small MVPs solo each week. Locking in time blocks for strategy versus execution—no more blending the two. And I’m laying down strict lines on what AI does for me versus what I own, end to end.
+It’s about closing the loop between architect and builder... getting my hands back in the machine.
+What’s next?
+First solo code push happens this week. Might be clunky... might break. That’s fine. It’s mine.
+"The master has failed more times than the beginner has even tried."

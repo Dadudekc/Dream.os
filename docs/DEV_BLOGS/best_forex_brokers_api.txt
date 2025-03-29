@@ -1,0 +1,14 @@
+Devlog: Where am I leaking energy?
+That’s the question I’ve been sitting with today… because the leaks aren’t always obvious until you slow down and look at the system as a whole.
+I’ve been grinding through broker research for the trading bots—trying to make a clean call without getting stuck in analysis mode. Felt like a time sink for a while… going in circles on APIs and features that all start sounding the same after the third deep dive. Finally drew a line. FXCM or OANDA. Simple criteria: solid Python support, reliable REST APIs, and fast execution. No more back and forth. That loop is closed.
+From there, I went straight into tightening the build. Containerized the bots. Docker was overdue… now they’re isolated, deployable, and scalable without me having to manually babysit them. That alone cleared up a lot of clutter.
+Started mapping out the orchestration layer next—thinking Prefect or Airflow. It’s not live yet, but the goal is simple: centralize how bots, data, and reports flow, automate as much as possible… kill the manual hand-offs.
+One thing that’s been bothering me though… I don’t have real monitoring in place yet. So I mocked up the stack—Prometheus + Grafana to keep eyes on the bots. Need to build out the alerting next. No more waiting for something to break before I notice.
+Content was another spot where I was leaking energy… kept realizing I was rewriting the same stuff from scratch every time I dropped a devlog or update. Built out a few templates, wired them into Notion, and set up Trello to handle the scheduling. Should cut out some decision fatigue there.
+Next up is AI task prioritization. I’m spending way too much energy figuring out what to do next instead of just doing it. Motion might be the move there… or I’ll roll my own with OpenAI + Calendar. Either way, I need that layer in place before things scale too wide.
+What’s next…
+Get monitoring + alerts live.
+Finish the orchestration system.
+Start building the central dashboard so I’m not jumping between tools.
+Keep automating.
+“Slow down, look closer… that’s where the real speed comes from.”

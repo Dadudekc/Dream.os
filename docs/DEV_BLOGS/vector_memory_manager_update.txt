@@ -1,0 +1,12 @@
+Devlog // 2025-03-16
+What makes a system reliable... and when does it become overcomplicated?
+Been deep in the AI patch tracking and confidence systems today. Felt like one of those days where you’re doing heavy lifting on stuff that isn’t sexy, but it’s what makes the engine hum long-term...
+First, cleaned up AIModelManager—mainly the confidence flow. Now, before any patch gets the green light, we’re comparing it to the historical success rates. If the AI’s confidence didn’t improve, it doesn’t push forward. Simple, but powerful guardrail. The fallback logic is tight: Mistral → DeepSeek → OpenAI, and it only accepts if we get better signal. Had to fix some lazy error handling along the way... openai keys, subprocess calls, the usual suspects.
+Then spent time on AIConfidenceManager. This was heavier than expected. Had to rethink how scores and history patches were stored. Made sure every confidence score is tied to an actual outcome. If it passed, it gets remembered. If it failed, the system learns. No more patch duplication... no more second chances for patches that didn’t earn it.
+Also added patch application into PatchTrackingManager. Nothing fancy, but it logs every time something is applied... prepping for rollback and real patch management later. This piece felt clunky at first, but it’s stable now.
+What broke?
+The test coverage was fighting me. Mocking too many layers and chasing down attribute errors in the tests—mostly from patching methods that didn’t exist yet (or moved). Tracked those down, cleaned up the mocks... and fixed the over-counting of patch attempts. AI patch retries were looping more than they should’ve. Now they respect MAX_PATCH_ATTEMPTS.
+What’s next...
+Need to pull all this into AutoFixManager and get it syncing cleanly. Want the system to automatically rollback failed files but leave the wins untouched. Might start experimenting with letting it run loose on a test repo soon. Still thinking on it.
+Good momentum today, even if it was backend heavy.
+"Stability isn't sexy. It's the reason you finish the race."

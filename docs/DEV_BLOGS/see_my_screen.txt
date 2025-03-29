@@ -1,0 +1,16 @@
+Devlog 003 - "What happens when you remove the bottlenecks... and you’re still the bottleneck?"
+Been thinking about that a lot today.
+Spent the last few hours tearing apart my workflows… trading, automation, content systems—the whole stack. Found bottlenecks I knew were there… and some I didn’t want to admit.
+I’ll keep this one tight.
+What I worked on:
+Refactored the trading pipeline. Exit automation is priority now. The emotional overhead of manually managing trades is killing execution speed. I can follow my plan up until the part where I’m supposed to let winners run… and I just don’t. Solution: enforce trailing stops + rule-based exits inside the bot. Human out of the loop.
+Looked hard at the server traffic logs. Had a suspicious IP hammering admin-ajax.php and cron. Dug into it… probably LiteSpeed Cache, but I’m rate-limiting it anyway. Automated traffic management is going in. No more manual checks.
+The content flow’s clunky. Rewrote some stuff today… realized I shouldn’t have to. Building a tone framework and template system so I can drop posts or updates without thinking about the tone. Keep it raw, keep it real, but cut out the friction.
+What broke or was tricky:
+The server log analysis ate more time than I wanted. Still too manual. That’s getting automated this week.
+Realized I was splitting trade reviews and dev reflections across different notes… redundancy. That’s getting merged into one AI-powered feedback system. No more scatter.
+What’s next:
+Build the automated trade journal. Needs to track adherence vs. deviation. Behavior analytics… not just P&L.
+AI server traffic manager goes live by the end of the week.
+Finish the Blender auto-render pipeline. No more babysitting renders.
+"Discipline isn’t about control... it’s about removing choices you don’t need to make."

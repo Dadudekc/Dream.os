@@ -1,0 +1,14 @@
+Devlog: Where’s the Bottleneck?
+How many times do we get stuck because the system’s bloated… not because the idea’s bad, but because the execution’s messy?
+That’s been the theme this round.
+Been knee-deep in consolidating the backend of the trading and AI insight engine… Pulled apart a couple of WordPress plugins that were way too redundant. Same calls being made… over and over. Multiple logger traits floating around, files re-initializing the same classes… it was chaotic. Took a beat, stripped it back.
+Centralized the logger. Standardized the trait use. Cleaned up the plugin bootstrap—only loading once, no repeated definitions. Small moves, but they compound. Code feels tighter now… cleaner.
+Then I hit the API fetch layers. Finnhub, NewsAPI, OpenAI… everything had its own handler, but no real orchestration. Rebuilt the API manager to handle multi-service calls cleanly. Added retry logic. Caching where it makes sense. The goal is faster insights without draining API limits.
+Tricky part? Getting everything to play nice with WordPress. Most of this was Python-native before. Now it’s a hybrid—PHP handling the front, Python scraping and crunching in the background, MySQL for storage. Still messy, but it’s coming together.
+Next up…
+Hooking everything into MySQL clean so the WordPress front-end can pull insights in real time
+Building out cron jobs for auto-refresh cycles
+Prepping multi-ticker async fetches without nuking performance
+Feels like I’m finally carving out the execution layer I’ve been after. It’s slow... but it’s working.
+"The way to get started is to quit talking and begin doing."
+—Walt Disney

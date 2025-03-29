@@ -1,0 +1,16 @@
+Devlog // 2025-03-15
+Question I’m sitting with: How many execution delays am I tolerating without realizing it?
+Spent the morning deep in the weeds... setting up a new virtual environment for MeTuber. Straightforward stuff, but ran into a couple of annoying slowdowns that chewed up time.
+First, package installs threw errors because I had sklearn and skimage in the requirements file. Both deprecated. The fix was simple—swap them for scikit-learn and scikit-image—but it made me realize I’m still too reactive with dependency management. I'm catching problems after they break things, instead of building systems that catch them before they ever hit the install process.
+This feels small... but it’s friction. And if it’s happening here, it’s probably happening across my other systems too. Time and energy leaks I’m not tracking yet.
+Took a step back and audited the flow. It’s clear I need tighter control over the environments. No more chasing install errors. Next up:
+Automate dependency checks
+Lock package versions properly
+Build a pre-flight script that warns me about deprecated packages before I waste time installing them.
+Also thinking about trade execution—still too sequential in some cases. Needs to be fully parallel, reinforcement loops running in the background while the main strategy executes. That’s another layer of latency I can kill.
+What’s next...
+Parallelize trade testing
+Set up the AI pipeline to spin content off high-signal trade events
+Get the execution dashboard live to surface these inefficiencies as they happen, not days later.
+Every delay I eliminate is more speed, more clarity... and more space to build what matters.
+"Fix the small leaks. They’re the ones that sink the ship."

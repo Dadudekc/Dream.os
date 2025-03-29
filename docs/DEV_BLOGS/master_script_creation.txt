@@ -1,0 +1,29 @@
+Devlog // 2025-03-15
+“Where am I bleeding execution speed because I’m overcomplicating systems that should be self-healing?”
+Been deep inside system audits today... catching the areas where velocity is bleeding out—quietly, but consistently.
+Trading... automation... debugging... content push.
+All of it’s scaling, but not all of it’s converging the way I want.
+What I worked on:
+Locked in more of the AI DebuggingStack...
+Specifically tightened up DebuggingStrategy and RollbackManager to automate patch retries and rollbacks without needing me to click buttons.
+That took longer than it should have because of circular imports and fragmented data flows across modules.
+Cleaned up import issues that were breaking the run loop—lots of ModuleNotFoundError noise due to inconsistent relative paths in utils vs plugins.
+Rebuilt the DebuggerDashboard—the PyQt5 GUI’s finally handling patch application and rollbacks cleanly. Still a few edge cases where I need to harden the error handling, but it's progressing.
+Ran system scans across the Agents folder... found 17 files with import errors mostly tied to legacy learning_db calls and ace_tools missing from scope.
+Tracked, flagged, and started the process of rewiring those out.
+Pulled together a surgical breakdown on where I’m still operating in manual...
+Patch failures triggering manual rollback.
+Trade strategy losses not feeding back into auto-learning fast enough.
+Content generation not fully closing the loop between analytics and next-post iterations.
+What broke / what was tricky:
+The import path inconsistencies...
+utils vs plugins folder structure... and the fact that some files are still trying to call modules that either got renamed or haven’t been re-wired post-refactor.
+The system’s clean in theory, but in execution there’s still drift.
+DebuggingStrategy’s patch application logic was clunky... realized I wasn’t always passing the file path correctly, which botched a few patch runs. Fixed that.
+AI rollback and retry logic... still working out the failover when a rollback doesn’t restore cleanly. I’m thinking it needs a secondary backup layer or a git fallback.
+What’s next:
+Converge all error handling into one intelligent rollback agent—no more scattered logic.
+Tighten the AI debugging feedback loop so it self-trains without manual reinforcement.
+Fully automate content repurposing and distribution. Right now, the content engine's sharp but not fast enough.
+Get rid of any remaining manual triggers. Full automation. Full convergence.
+“Systems fail when they drift. Build tight. Build self-healing.”

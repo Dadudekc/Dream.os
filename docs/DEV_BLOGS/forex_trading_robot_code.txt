@@ -1,0 +1,10 @@
+Devlog: Commit or Drift?
+How much time do we lose sitting in the middle… overthinking the move instead of just making it?
+That’s where I was earlier—torn between machine learning, deep learning, and reinforcement learning for this forex bot. I kept circling back, but deep down I knew the answer… PPO. Reinforcement learning. It’s what makes sense for what I’m building. I want something adaptive… something that learns like I do.
+So I locked it in.
+Started mapping out the PPO environment—what data the bot sees, what actions it can take, and what rewards make sense. Tricky part’s going to be reward shaping… balancing profits with smart risk so the thing doesn’t YOLO itself into oblivion. Classic RL tradeoff.
+The other piece I dug into was backend flow. I need a way to display the bot’s stats live on the site. Not just “hey look, it trades”… but real performance data. PnL, win rate, equity curve. So I’m setting up a FastAPI backend that serves the data clean, and a frontend widget to show it in real time. Basic setup for now… but it’ll evolve.
+What’s next…
+Building the PPO environment is top priority… no more waiting. Then I’ll plug in a centralized logging system—probably PostgreSQL—and get some alerting in place so I don’t have to babysit it.
+The sooner I get this running, the sooner the system can learn on its own.
+"You don’t rise to the level of your goals… you fall to the level of your systems."

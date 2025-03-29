@@ -1,0 +1,16 @@
+Devlog | Where’s the drag in the system?
+Been asking myself that a lot today... Where’s the drag? Where’s the unnecessary friction? If I’m going to scale this system—trading, automation, content generation—I need to know exactly where I’m leaking time and energy.
+So... ran a full audit.
+First takeaway... the trading pipeline’s clean, but there’s still too much manual error handling baked into the code. It’s like every function is preparing for the worst instead of just flowing. Defensive programming is fine, but I’m duplicating checks all over the place. That’s slowing things down. Centralizing exception handling and path management is a must. No more chasing ghost paths like models\tsla_model.h5\TSLA_lstm_model.h5... yeah, that happened. Dumb mistake, but it costs time.
+Also realized the data pipelines are still running sequentially... no async, no parallelism. That’s a waste. Fetching data, scaling, generating sequences—all that can run in parallel. Right now, it’s bottlenecked. Easy fix once I set up asyncio and multiprocessing where it makes sense.
+Tests... 31 passed. Good coverage. But I’m still batch-running pytest manually. That’s done. CI/CD pipeline with coverage gates is next. Need to enforce the standard at commit, not after.
+On the content side... no streamlined flow from code to docs. I’m documenting after the fact, which means context switching, losing flow. Time to automate docs generation. Thinking mkdocs and mkdocstrings... simple, efficient. Maybe tie it into the CI pipeline too.
+The logging system is decent for now, but it’s siloed... training logs, prediction logs, no unified view. I need centralized telemetry—Grafana + Loki or ELK—to get system-level insights and catch problems before they hit.
+This is all about velocity... not just moving fast, but eliminating the drag that slows me down when things scale.
+What’s next...
+— Async and parallel process refactor
+— CI pipeline with coverage enforcement
+— Centralized logging
+— Auto docs generation to streamline the content flow
+One step at a time... but all steps point forward.
+"Amateurs wait for inspiration. The rest of us just get up and go to work."

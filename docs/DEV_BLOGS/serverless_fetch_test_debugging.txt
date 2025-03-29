@@ -1,0 +1,19 @@
+Devlog — 2025-01-13
+Question I’m sitting with... Why does friction always show up at the edges of scale?
+Spent the day in Azure land again... trying to tighten up the infrastructure for TradingRobotPlug2. Felt like I was wrestling a ghost most of the time.
+Every time I thought I was logged in, Azure kicked me back out. MFA loops... broken subscriptions... service principal setups that should’ve been simple but kept hitting walls.
+Kept seeing the same error—SubscriptionNotFound—even though the subscription was right there in the portal and showing as enabled. Over and over...
+Burned way too much time trying to get az storage account create to work, only to realize the session kept losing context.
+Got tired of the loop...
+Stepped back and broke it down...
+What’s really missing is a clean baseline setup.
+No more manual clicks. No more “am I logged in” guesswork. I need persistent service principals locked in, Bicep scripts to deploy infra in seconds, and a CI/CD pipe that enforces the state. This ad-hoc stuff? It’s done.
+On top of that, the serverless fetch function testing needs to shift out of notebooks. It’s messy. I need a tighter test harness, probably running inside GitHub Actions, and dockerized local mocks so I can iterate without chasing my tail.
+What’s next?
+Build and test the service principal for TradingRobotPlug2
+Get Bicep templates written for core infra—storage, RGs, MySQL Flexible Server
+Drop the first GitHub Actions pipeline for deploy + tests
+Clean up my local dev container to match Azure Functions runtime
+Centralize logs so I’m not hunting across five tools
+The goal is convergence... simple, repeatable, and fast.
+"Slow is smooth, smooth is fast."

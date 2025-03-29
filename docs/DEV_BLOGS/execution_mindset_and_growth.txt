@@ -1,0 +1,35 @@
+Devlog // 03.14.25
+“What’s the point of building if it doesn’t move the needle?”
+Been sitting with that one today.
+I’ve been in this loop—cleaning up my GitHub, thinking about jobs, trying to be ‘presentable’... but that’s not the move right now. It’s not leverage. It’s not velocity. I’m not here to be presentable. I’m here to execute.
+This session was surgical.
+I stepped back and audited everything... trading, automation, content.
+It’s clear where the drag is happening.
+Trading—confidence is shot. I blew the account last time out... still not settled from that.
+So I’m not forcing it. No more manual trades for now. I’ll spin up the MACD bot in paper mode and let it run... collect data... no emotion, just raw numbers.
+30 days. Then I decide if it’s worth scaling. Until then, trading is background noise.
+Automation—this is where the horsepower is.
+I’ve been throttling the social scraper... sending 20 messages a day when I could be sending 500. That’s done.
+The plan is to deploy the scraper across Twitter, LinkedIn, Reddit... max outreach, fully automated, rotating accounts and proxies. I’m layering in a CRM—probably Airtable or Notion—to track the leads, conversations, and conversions.
+Follow-ups? Automated. No manual chasing.
+This should’ve been running already...
+But I’m here now.
+Content—this is the missing piece.
+I keep knowing video is the move, but I’m not pushing it. That changes this week.
+I’m batch recording 1-hour sessions... cutting them into clips... automating subtitles and distribution.
+Twitter, YouTube Shorts, TikTok, LinkedIn... one system, not scattershot.
+Auto-engagement loops from the scraper will amplify it.
+Traffic goes straight into a funnel... lead magnet, email list, Discord, whatever I decide to run.
+I’m done playing passive here.
+And yeah... I’m productizing the automation services. No more one-offs unless they’re high-ticket. Scrapers, engagement bots, AI workflows—plug-and-play packages with instant checkout. Landing pages get done in the next 14 days. Goal is $1K/month baseline ASAP.
+What broke?
+Focus. I’ve been bleeding time on projects that aren’t compounding...
+GitHub polishing for jobs I don’t actually want.
+Manual trading that’s emotionally taxing.
+Random builds with no system convergence.
+What’s next?
+Locking in the outreach scraper + CRM first—48-hour window.
+Then deploy the MACD bot in paper mode.
+Then record video content and automate the distribution.
+It’s not about doing more... it’s about doing the right things relentlessly.
+"If you don’t control the system, the system controls you."

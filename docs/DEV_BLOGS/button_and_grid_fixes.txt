@@ -1,0 +1,18 @@
+Devlog // Systems Rebuild
+Ever wonder how much time gets wasted in micro-iterations?
+Yeah... me too.
+And today made that painfully clear.
+I’ve been hammering away at the "Our Services" section on the front page—trying to clean up the layout, get the buttons aligned, make the boxes not look... awkward. What started as a simple button alignment fix spiraled into a full breakdown of inefficiencies in how I’m building these components. Too many tiny cycles. Tweaking sizes by a few pixels here, shaving padding there... rinse, repeat.
+What broke?
+It wasn’t the code—it was the process.
+I realized I’ve been iterating reactively... solving for symptoms instead of stepping back and putting real systems in place. No design tokens. No atomic structure guiding things. Just tweaks on top of tweaks.
+So... I stripped it back.
+Rebuilt the service cards to a tighter, cleaner grid.
+Smaller boxes. Consistent buttons. Everything modular.
+Pulled out redundancies and locked in a standard. It’s not about “making it look nice.” It’s about systematizing decisions I don’t want to keep making.
+Next...
+Atomic design.
+Design tokens.
+And setting up a predictive validation pipeline so I’m not stuck doing this by hand every time something shifts.
+There’s velocity in simplifying the rules.
+"The system you build is the speed you live by."

@@ -1,0 +1,9 @@
+Devlog 03.16.25
+How often do I let small errors slip through because I'm moving too fast?
+Spent some time tracking down a bug in ai_model_manager.py. Pytest was flagging an IndentationError... simple, but it blocked a full chunk of tests. Seven errors... all pointing back to that one broken if statement on line 79. Just hanging there... waiting for a block that never came.
+Fixed it by closing out the method properly. The _generate_with_model function was unfinished—no handling for OpenAI, Mistral, or DeepSeek. Dropped in the actual API call for OpenAI, tied it to GPT-4, and wired in placeholders for Mistral and DeepSeek. Those will get swapped with the real hooks later, but for now, the structure’s solid.
+On the bright side... test collection is clean now. No more import errors cascading through the suite.
+What’s next?
+DeepSeek and Mistral integration. Right now, they’re stubs. I need them live and swapping in dynamically so the model manager actually has choices... not just OpenAI fallback.
+Every time I rush... I lose time later. Slowing down a little here saved me hours.
+"Slow is smooth... smooth is fast."

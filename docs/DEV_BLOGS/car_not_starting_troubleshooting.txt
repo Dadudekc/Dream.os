@@ -1,0 +1,21 @@
+Devlog // 0325
+"What bottleneck am I letting slip because I'm too in it to see it?"
+Quick drop...
+Spent a chunk of the day troubleshooting my Jeep—not trading systems, not bots, but actual cables and terminals. Lights were on, no crank, no click. Real simple problem on the surface... but it got me thinking.
+I’m still burning energy on stuff that should be handled by systems—whether it’s the Jeep or my automation layers. Too many things still need me on the front lines when I should be moving upstream... designing systems that solve these things before I even see them.
+That’s the bottleneck.
+I broke it down:
+Manual troubleshooting is wasting time.
+Context switching (jumping from life to systems audits without buffers) is costing focus.
+No Tier-1 AI diagnostics yet... across anything.
+No knowledge capture loop. I solve it, move on, forget the pattern.
+That’s not scalable.
+So, I mapped the next moves...
+Lock in Temporal Context Partitioning. No more jumping tasks without structure.
+Deploy AI-driven diagnostics on trading signals and automation scripts. If a bot breaks, it needs to tell me why, not wait for me to figure it out.
+Build a Knowledge Feedback Loop. Every lesson, every fix—fed back into the system.
+Prioritize with Dynamic Priority Matrices. Top leverage first, not loudest problem first.
+Draft Automated Diagnostic Protocols for all systems. Cars to code.
+What's next...
+Dialing in these frameworks and getting AI agents live on Tier-1 problem solving. System convergence is the goal... more autonomy, less firefighting.
+"Systems are built upstream... clarity is earned by stepping back."

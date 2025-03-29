@@ -1,0 +1,4274 @@
+{
+  "nodes": [
+    {
+      "id": "main",
+      "label": "main",
+      "group": "main"
+    },
+    {
+      "id": "core.bootstrap",
+      "label": "core.bootstrap",
+      "group": "core"
+    },
+    {
+      "id": "core.AgentDispatcher",
+      "label": "core.AgentDispatcher",
+      "group": "core"
+    },
+    {
+      "id": "core.DriverManager",
+      "label": "core.DriverManager",
+      "group": "core"
+    },
+    {
+      "id": "core.logging.factories.LoggerFactory",
+      "label": "core.logging.factories.LoggerFactory",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.DreamOsMainWindow",
+      "label": "interfaces.pyqt.DreamOsMainWindow",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.dreamscape_ui_logic",
+      "label": "interfaces.pyqt.dreamscape_ui_logic",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.IntegratedMainWindow",
+      "label": "interfaces.pyqt.IntegratedMainWindow",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.components.prompt_panel",
+      "label": "interfaces.pyqt.components.prompt_panel",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.components.logs_panel",
+      "label": "interfaces.pyqt.components.logs_panel",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.MainTabs",
+      "label": "interfaces.pyqt.tabs.MainTabs",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.PromptExecutionTab",
+      "label": "interfaces.pyqt.tabs.PromptExecutionTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.LogsTab",
+      "label": "interfaces.pyqt.tabs.LogsTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.ConfigurationTab",
+      "label": "interfaces.pyqt.tabs.ConfigurationTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.DreamscapeGenerationTab",
+      "label": "interfaces.pyqt.tabs.DreamscapeGenerationTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.services.config_service",
+      "label": "core.services.config_service",
+      "group": "core"
+    },
+    {
+      "id": "core.services.prompt_execution_service",
+      "label": "core.services.prompt_execution_service",
+      "group": "core"
+    },
+    {
+      "id": "utils.signal_dispatcher",
+      "label": "utils.signal_dispatcher",
+      "group": "utils"
+    },
+    {
+      "id": "core.services.fix_service",
+      "label": "core.services.fix_service",
+      "group": "core"
+    },
+    {
+      "id": "core.services.debug_service",
+      "label": "core.services.debug_service",
+      "group": "core"
+    },
+    {
+      "id": "core.services.rollback_service",
+      "label": "core.services.rollback_service",
+      "group": "core"
+    },
+    {
+      "id": "core.micro_factories.chat_factory",
+      "label": "core.micro_factories.chat_factory",
+      "group": "core"
+    },
+    {
+      "id": "core.refactor.CursorSessionManager",
+      "label": "core.refactor.CursorSessionManager",
+      "group": "core"
+    },
+    {
+      "id": "core.UnifiedLoggingAgent",
+      "label": "core.UnifiedLoggingAgent",
+      "group": "core"
+    },
+    {
+      "id": "core.UnifiedFeedbackMemory",
+      "label": "core.UnifiedFeedbackMemory",
+      "group": "core"
+    },
+    {
+      "id": "core.PathManager",
+      "label": "core.PathManager",
+      "group": "core"
+    },
+    {
+      "id": "social.SocialMediaManager",
+      "label": "social.SocialMediaManager",
+      "group": "social"
+    },
+    {
+      "id": "core.PromptEngine",
+      "label": "core.PromptEngine",
+      "group": "core"
+    },
+    {
+      "id": "core.ReinforcementEngine",
+      "label": "core.ReinforcementEngine",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.specialized_agents",
+      "label": "core.Agents.specialized_agents",
+      "group": "core"
+    },
+    {
+      "id": "core.logging.LoggingService",
+      "label": "core.logging.LoggingService",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.dreamscape_services",
+      "label": "interfaces.pyqt.dreamscape_services",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.chatgpt_automation.automation_engine",
+      "label": "core.chatgpt_automation.automation_engine",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.controllers.assistant_mode_controller",
+      "label": "core.chatgpt_automation.controllers.assistant_mode_controller",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.OpenAIClient",
+      "label": "core.chatgpt_automation.OpenAIClient",
+      "group": "core"
+    },
+    {
+      "id": "core.system.startup_validator",
+      "label": "core.system.startup_validator",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.full_sync_tab",
+      "label": "interfaces.pyqt.tabs.full_sync_tab",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.PromptCycleOrchestrator",
+      "label": "core.PromptCycleOrchestrator",
+      "group": "core"
+    },
+    {
+      "id": "utils.qasync_event_loop_manager",
+      "label": "utils.qasync_event_loop_manager",
+      "group": "utils"
+    },
+    {
+      "id": "utils.safe_json",
+      "label": "utils.safe_json",
+      "group": "utils"
+    },
+    {
+      "id": "core.services.service_registry",
+      "label": "core.services.service_registry",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.feedback_dashboard",
+      "label": "interfaces.pyqt.feedback_dashboard",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.components.discord_tab",
+      "label": "interfaces.pyqt.components.discord_tab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.SocialDashboardTab",
+      "label": "interfaces.pyqt.tabs.SocialDashboardTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.AIDE",
+      "label": "interfaces.pyqt.tabs.AIDE",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.meredith_tab",
+      "label": "interfaces.pyqt.tabs.meredith_tab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.SyncOpsTab",
+      "label": "interfaces.pyqt.tabs.SyncOpsTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.AletheiaPromptManager",
+      "label": "core.AletheiaPromptManager",
+      "group": "core"
+    },
+    {
+      "id": "core.PromptResponseHandler",
+      "label": "core.PromptResponseHandler",
+      "group": "core"
+    },
+    {
+      "id": "core.DiscordQueueProcessor",
+      "label": "core.DiscordQueueProcessor",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.components.dialogs.exclusions_dialog",
+      "label": "interfaces.pyqt.components.dialogs.exclusions_dialog",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.components.dialogs.discord_settings",
+      "label": "interfaces.pyqt.components.dialogs.discord_settings",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.components.dialogs.reinforcement_dialog",
+      "label": "interfaces.pyqt.components.dialogs.reinforcement_dialog",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "label": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator",
+      "label": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager",
+      "label": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.dreamscape_generation.UIManager",
+      "label": "interfaces.pyqt.tabs.dreamscape_generation.UIManager",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.services.git_integration_service",
+      "label": "core.services.git_integration_service",
+      "group": "core"
+    },
+    {
+      "id": "core.executors.cursor_executor",
+      "label": "core.executors.cursor_executor",
+      "group": "core"
+    },
+    {
+      "id": "core.executors.chatgpt_executor",
+      "label": "core.executors.chatgpt_executor",
+      "group": "core"
+    },
+    {
+      "id": "core.DiscordBatchDispatcher",
+      "label": "core.DiscordBatchDispatcher",
+      "group": "core"
+    },
+    {
+      "id": "core.ReinforcementEvaluator",
+      "label": "core.ReinforcementEvaluator",
+      "group": "core"
+    },
+    {
+      "id": "core.DriverSessionManager",
+      "label": "core.DriverSessionManager",
+      "group": "core"
+    },
+    {
+      "id": "core.testing.test_runner",
+      "label": "core.testing.test_runner",
+      "group": "core"
+    },
+    {
+      "id": "core.ProjectScanner",
+      "label": "core.ProjectScanner",
+      "group": "core"
+    },
+    {
+      "id": "core.ChatManager",
+      "label": "core.ChatManager",
+      "group": "core"
+    },
+    {
+      "id": "ARCHIVE.chat_engine_simple",
+      "label": "ARCHIVE.chat_engine_simple",
+      "group": "ARCHIVE"
+    },
+    {
+      "id": "content.AletheiaContentDispatcher",
+      "label": "content.AletheiaContentDispatcher",
+      "group": "content"
+    },
+    {
+      "id": "social.strategies.twitter_strategy",
+      "label": "social.strategies.twitter_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.linkedin_strategy",
+      "label": "social.strategies.linkedin_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.facebook_strategy",
+      "label": "social.strategies.facebook_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.instagram_strategy",
+      "label": "social.strategies.instagram_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.reddit_strategy",
+      "label": "social.strategies.reddit_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.stocktwits_strategy",
+      "label": "social.strategies.stocktwits_strategy",
+      "group": "social"
+    },
+    {
+      "id": "utils.cookie_manager",
+      "label": "utils.cookie_manager",
+      "group": "utils"
+    },
+    {
+      "id": "social.social_config",
+      "label": "social.social_config",
+      "group": "social"
+    },
+    {
+      "id": "social.log_writer",
+      "label": "social.log_writer",
+      "group": "social"
+    },
+    {
+      "id": "social.AIChatAgent",
+      "label": "social.AIChatAgent",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.base_platform_strategy",
+      "label": "social.strategies.base_platform_strategy",
+      "group": "social"
+    },
+    {
+      "id": "utils.SentimentAnalyzer",
+      "label": "utils.SentimentAnalyzer",
+      "group": "utils"
+    },
+    {
+      "id": "core.FileManager",
+      "label": "core.FileManager",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.ILoggingAgent",
+      "label": "interfaces.pyqt.ILoggingAgent",
+      "group": "interfaces"
+    },
+    {
+      "id": "utils.reinforcement_trainer",
+      "label": "utils.reinforcement_trainer",
+      "group": "utils"
+    },
+    {
+      "id": "core.logging.CompositeLogger",
+      "label": "core.logging.CompositeLogger",
+      "group": "core"
+    },
+    {
+      "id": "core.logging.ConsoleLogger",
+      "label": "core.logging.ConsoleLogger",
+      "group": "core"
+    },
+    {
+      "id": "core.AIOutputLogAnalyzer",
+      "label": "core.AIOutputLogAnalyzer",
+      "group": "core"
+    },
+    {
+      "id": "core.DiscordTemplateManager",
+      "label": "core.DiscordTemplateManager",
+      "group": "core"
+    },
+    {
+      "id": "core.AletheiaFeedbackLoopManager",
+      "label": "core.AletheiaFeedbackLoopManager",
+      "group": "core"
+    },
+    {
+      "id": "utils.rate_limit_manager",
+      "label": "utils.rate_limit_manager",
+      "group": "utils"
+    },
+    {
+      "id": "utils.json_paths",
+      "label": "utils.json_paths",
+      "group": "utils"
+    },
+    {
+      "id": "core.DiscordManager",
+      "label": "core.DiscordManager",
+      "group": "core"
+    },
+    {
+      "id": "core.EventMessageBuilder",
+      "label": "core.EventMessageBuilder",
+      "group": "core"
+    },
+    {
+      "id": "core.chat_engine.chat_scraper_service",
+      "label": "core.chat_engine.chat_scraper_service",
+      "group": "core"
+    },
+    {
+      "id": "core.chat_engine.discord_dispatcher",
+      "label": "core.chat_engine.discord_dispatcher",
+      "group": "core"
+    },
+    {
+      "id": "core.chat_engine.feedback_engine",
+      "label": "core.chat_engine.feedback_engine",
+      "group": "core"
+    },
+    {
+      "id": "core.services.dreamscape_generator_service",
+      "label": "core.services.dreamscape_generator_service",
+      "group": "core"
+    },
+    {
+      "id": "core.TemplateManager",
+      "label": "core.TemplateManager",
+      "group": "core"
+    },
+    {
+      "id": "core.config_base",
+      "label": "core.config_base",
+      "group": "core"
+    },
+    {
+      "id": "core.ConsoleLogger",
+      "label": "core.ConsoleLogger",
+      "group": "core"
+    },
+    {
+      "id": "core.CycleExecutionService",
+      "label": "core.CycleExecutionService",
+      "group": "core"
+    },
+    {
+      "id": "core.UnifiedDiscordService",
+      "label": "core.UnifiedDiscordService",
+      "group": "core"
+    },
+    {
+      "id": "core.logging.utils.AsyncDispatcher",
+      "label": "core.logging.utils.AsyncDispatcher",
+      "group": "core"
+    },
+    {
+      "id": "core.DiscordLogger",
+      "label": "core.DiscordLogger",
+      "group": "core"
+    },
+    {
+      "id": "core.EngagementAgent",
+      "label": "core.EngagementAgent",
+      "group": "core"
+    },
+    {
+      "id": "social.social_config_wrapper",
+      "label": "social.social_config_wrapper",
+      "group": "social"
+    },
+    {
+      "id": "social.TaskQueueManager",
+      "label": "social.TaskQueueManager",
+      "group": "social"
+    },
+    {
+      "id": "core.MemoryManager",
+      "label": "core.MemoryManager",
+      "group": "core"
+    },
+    {
+      "id": "memory_utils",
+      "label": "memory_utils",
+      "group": "memory_utils"
+    },
+    {
+      "id": "core.feedback",
+      "label": "core.feedback",
+      "group": "core"
+    },
+    {
+      "id": "core.FileLogger",
+      "label": "core.FileLogger",
+      "group": "core"
+    },
+    {
+      "id": "core.LoggerFactory",
+      "label": "core.LoggerFactory",
+      "group": "core"
+    },
+    {
+      "id": "core.reinforcement_tools",
+      "label": "core.reinforcement_tools",
+      "group": "core"
+    },
+    {
+      "id": "core.ReportExporter",
+      "label": "core.ReportExporter",
+      "group": "core"
+    },
+    {
+      "id": "core.ResilientPromptExecutor",
+      "label": "core.ResilientPromptExecutor",
+      "group": "core"
+    },
+    {
+      "id": "core.ThreadPoolManager",
+      "label": "core.ThreadPoolManager",
+      "group": "core"
+    },
+    {
+      "id": "core.ResponseHandler",
+      "label": "core.ResponseHandler",
+      "group": "core"
+    },
+    {
+      "id": "core.logging.services.ai_output_service",
+      "label": "core.logging.services.ai_output_service",
+      "group": "core"
+    },
+    {
+      "id": "core.service_container",
+      "label": "core.service_container",
+      "group": "core"
+    },
+    {
+      "id": "core.llm_backends.huggingface_backend",
+      "label": "core.llm_backends.huggingface_backend",
+      "group": "core"
+    },
+    {
+      "id": "core.llm_backends.ollama_backend",
+      "label": "core.llm_backends.ollama_backend",
+      "group": "core"
+    },
+    {
+      "id": "core.SystemHealthMonitor",
+      "label": "core.SystemHealthMonitor",
+      "group": "core"
+    },
+    {
+      "id": "core.TaskOrchestrator",
+      "label": "core.TaskOrchestrator",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.chat_scraper_agent",
+      "label": "core.Agents.chat_scraper_agent",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.base_agent",
+      "label": "core.Agents.base_agent",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.CursorAgentInterface",
+      "label": "core.Agents.CursorAgentInterface",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.DocAgent",
+      "label": "core.Agents.DocAgent",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.RefactorAgent",
+      "label": "core.Agents.RefactorAgent",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.ReinforcementEvaluator",
+      "label": "core.Agents.ReinforcementEvaluator",
+      "group": "core"
+    },
+    {
+      "id": "core.Agents.TestAgent",
+      "label": "core.Agents.TestAgent",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.config",
+      "label": "core.chatgpt_automation.config",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.ModelRegistry",
+      "label": "core.chatgpt_automation.ModelRegistry",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.local_llm_engine",
+      "label": "core.chatgpt_automation.local_llm_engine",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.driver_factory",
+      "label": "core.chatgpt_automation.driver_factory",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.setup_logging",
+      "label": "core.chatgpt_automation.setup_logging",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.controllers.assistant_orchestrator",
+      "label": "core.chatgpt_automation.controllers.assistant_orchestrator",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.controllers.automation_controller",
+      "label": "core.chatgpt_automation.controllers.automation_controller",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.controllers.cursor_dispatcher",
+      "label": "core.chatgpt_automation.controllers.cursor_dispatcher",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.controllers.prompt_loop_orchestrator",
+      "label": "core.chatgpt_automation.controllers.prompt_loop_orchestrator",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_gpt4",
+      "label": "core.chatgpt_automation.models.model_gpt4",
+      "group": "core"
+    },
+    {
+      "id": "chatgpt_automation.OpenAIClient",
+      "label": "chatgpt_automation.OpenAIClient",
+      "group": "chatgpt_automation"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_gpt4o",
+      "label": "core.chatgpt_automation.models.model_gpt4o",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_gpt4o_mini",
+      "label": "core.chatgpt_automation.models.model_gpt4o_mini",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_gpt4_5",
+      "label": "core.chatgpt_automation.models.model_gpt4_5",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_o1",
+      "label": "core.chatgpt_automation.models.model_o1",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_o3_mini",
+      "label": "core.chatgpt_automation.models.model_o3_mini",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_o3_mini_high",
+      "label": "core.chatgpt_automation.models.model_o3_mini_high",
+      "group": "core"
+    },
+    {
+      "id": "core.chatgpt_automation.models.model_template",
+      "label": "core.chatgpt_automation.models.model_template",
+      "group": "core"
+    },
+    {
+      "id": "core.chat_engine.chat_cycle_controller",
+      "label": "core.chat_engine.chat_cycle_controller",
+      "group": "core"
+    },
+    {
+      "id": "core.chat_engine.chat_engine_manager",
+      "label": "core.chat_engine.chat_engine_manager",
+      "group": "core"
+    },
+    {
+      "id": "core.chat_engine.gui_event_handler",
+      "label": "core.chat_engine.gui_event_handler",
+      "group": "core"
+    },
+    {
+      "id": "core.executors.base_executor",
+      "label": "core.executors.base_executor",
+      "group": "core"
+    },
+    {
+      "id": "core.micro_factories.dreamscape_factory",
+      "label": "core.micro_factories.dreamscape_factory",
+      "group": "core"
+    },
+    {
+      "id": "core.memory_utils",
+      "label": "core.memory_utils",
+      "group": "core"
+    },
+    {
+      "id": "core.pipelines.project_optimizer_agent",
+      "label": "core.pipelines.project_optimizer_agent",
+      "group": "core"
+    },
+    {
+      "id": "core.prompt_cycle.audit",
+      "label": "core.prompt_cycle.audit",
+      "group": "core"
+    },
+    {
+      "id": "utils",
+      "label": "utils",
+      "group": "utils"
+    },
+    {
+      "id": "core.prompt_cycle.memory",
+      "label": "core.prompt_cycle.memory",
+      "group": "core"
+    },
+    {
+      "id": "core.prompt_cycle.narrative",
+      "label": "core.prompt_cycle.narrative",
+      "group": "core"
+    },
+    {
+      "id": "core.prompt_cycle.scraping",
+      "label": "core.prompt_cycle.scraping",
+      "group": "core"
+    },
+    {
+      "id": "core.prompt_cycle.state",
+      "label": "core.prompt_cycle.state",
+      "group": "core"
+    },
+    {
+      "id": "core.prompt_cycle.utils",
+      "label": "core.prompt_cycle.utils",
+      "group": "core"
+    },
+    {
+      "id": "utils.chat_mate_config",
+      "label": "utils.chat_mate_config",
+      "group": "utils"
+    },
+    {
+      "id": "core.refactor.refactor_and_polish",
+      "label": "core.refactor.refactor_and_polish",
+      "group": "core"
+    },
+    {
+      "id": "core.refactor.task_refactor_engine",
+      "label": "core.refactor.task_refactor_engine",
+      "group": "core"
+    },
+    {
+      "id": "core.OpenAIPromptEngine",
+      "label": "core.OpenAIPromptEngine",
+      "group": "core"
+    },
+    {
+      "id": "core.services.chat_service",
+      "label": "core.services.chat_service",
+      "group": "core"
+    },
+    {
+      "id": "core.services.cursor_execution_service",
+      "label": "core.services.cursor_execution_service",
+      "group": "core"
+    },
+    {
+      "id": "core.refactor.cursor_dispatcher",
+      "label": "core.refactor.cursor_dispatcher",
+      "group": "core"
+    },
+    {
+      "id": "core.services.discord_service",
+      "label": "core.services.discord_service",
+      "group": "core"
+    },
+    {
+      "id": "core.services.full_sync_pipeline_runner",
+      "label": "core.services.full_sync_pipeline_runner",
+      "group": "core"
+    },
+    {
+      "id": "core.social.AIChatAgent",
+      "label": "core.social.AIChatAgent",
+      "group": "core"
+    },
+    {
+      "id": "social.reinforcement.ReinforcementEngine",
+      "label": "social.reinforcement.ReinforcementEngine",
+      "group": "social"
+    },
+    {
+      "id": "core.social.CommunityIntegrationManager",
+      "label": "core.social.CommunityIntegrationManager",
+      "group": "core"
+    },
+    {
+      "id": "social.strategies.tiktok_strategy",
+      "label": "social.strategies.tiktok_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.youtube_strategy",
+      "label": "social.strategies.youtube_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.UnifiedCommunityDashboard",
+      "label": "social.UnifiedCommunityDashboard",
+      "group": "social"
+    },
+    {
+      "id": "social.social_post_manager",
+      "label": "social.social_post_manager",
+      "group": "social"
+    },
+    {
+      "id": "social.UnifiedPostManager",
+      "label": "social.UnifiedPostManager",
+      "group": "social"
+    },
+    {
+      "id": "social.StrategyLoader",
+      "label": "social.StrategyLoader",
+      "group": "social"
+    },
+    {
+      "id": "core.social.community_integration",
+      "label": "core.social.community_integration",
+      "group": "core"
+    },
+    {
+      "id": "core.social.platform_login_manager",
+      "label": "core.social.platform_login_manager",
+      "group": "core"
+    },
+    {
+      "id": "social.strategies",
+      "label": "social.strategies",
+      "group": "social"
+    },
+    {
+      "id": "social.DriverSession",
+      "label": "social.DriverSession",
+      "group": "social"
+    },
+    {
+      "id": "utils.proxy_utils",
+      "label": "utils.proxy_utils",
+      "group": "utils"
+    },
+    {
+      "id": "utils.ua_utils",
+      "label": "utils.ua_utils",
+      "group": "utils"
+    },
+    {
+      "id": "core.social.social_config",
+      "label": "core.social.social_config",
+      "group": "core"
+    },
+    {
+      "id": "core.social.social_config_wrapper",
+      "label": "core.social.social_config_wrapper",
+      "group": "core"
+    },
+    {
+      "id": "core.social.social_post_manager",
+      "label": "core.social.social_post_manager",
+      "group": "core"
+    },
+    {
+      "id": "core.social.StrategyLoader",
+      "label": "core.social.StrategyLoader",
+      "group": "core"
+    },
+    {
+      "id": "core.social.TaskQueueManager",
+      "label": "core.social.TaskQueueManager",
+      "group": "core"
+    },
+    {
+      "id": "core.social.UnifiedCommunityDashboard",
+      "label": "core.social.UnifiedCommunityDashboard",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.twitter_strategy",
+      "label": "core.social.strategies.twitter_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.facebook_strategy",
+      "label": "core.social.strategies.facebook_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.instagram_strategy",
+      "label": "core.social.strategies.instagram_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.reddit_strategy",
+      "label": "core.social.strategies.reddit_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.stocktwits_strategy",
+      "label": "core.social.strategies.stocktwits_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.linkedin_strategy",
+      "label": "core.social.strategies.linkedin_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.log_writer",
+      "label": "core.social.log_writer",
+      "group": "core"
+    },
+    {
+      "id": "core.social.UnifiedPostManager",
+      "label": "core.social.UnifiedPostManager",
+      "group": "core"
+    },
+    {
+      "id": "core.social.logs.DriverSession",
+      "label": "core.social.logs.DriverSession",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.ai_strategy",
+      "label": "core.social.strategies.ai_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.BaseEngagementBot",
+      "label": "core.social.strategies.BaseEngagementBot",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.base_platform_strategy",
+      "label": "core.social.strategies.base_platform_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.community_scheduler",
+      "label": "core.social.strategies.community_scheduler",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.wordpress_strategy",
+      "label": "core.social.strategies.wordpress_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.context_db",
+      "label": "core.social.strategies.context_db",
+      "group": "core"
+    },
+    {
+      "id": "social.strategies.config_loader",
+      "label": "social.strategies.config_loader",
+      "group": "social"
+    },
+    {
+      "id": "core.social.strategies.tiktok_strategy",
+      "label": "core.social.strategies.tiktok_strategy",
+      "group": "core"
+    },
+    {
+      "id": "core.social.strategies.youtube_strategy",
+      "label": "core.social.strategies.youtube_strategy",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.bootstrap",
+      "label": "interfaces.pyqt.bootstrap",
+      "group": "interfaces"
+    },
+    {
+      "id": "utils.filesystem",
+      "label": "utils.filesystem",
+      "group": "utils"
+    },
+    {
+      "id": "utils.run_summary",
+      "label": "utils.run_summary",
+      "group": "utils"
+    },
+    {
+      "id": "interfaces.pyqt.dreamscape_gui",
+      "label": "interfaces.pyqt.dreamscape_gui",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.dreamscape.ContextMemoryManager",
+      "label": "core.dreamscape.ContextMemoryManager",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.GuiHelpers",
+      "label": "interfaces.pyqt.GuiHelpers",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.__main__",
+      "label": "interfaces.pyqt.__main__",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.components.community_dashboard_tab",
+      "label": "interfaces.pyqt.components.community_dashboard_tab",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.widgets.file_browser_widget",
+      "label": "interfaces.pyqt.widgets.file_browser_widget",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.cursor_execution_tab",
+      "label": "interfaces.pyqt.tabs.cursor_execution_tab",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.meredith.profile_scraper",
+      "label": "core.meredith.profile_scraper",
+      "group": "core"
+    },
+    {
+      "id": "core.meredith.resonance_scorer",
+      "label": "core.meredith.resonance_scorer",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.dreamscape_generation.EpisodeGenerator",
+      "label": "interfaces.pyqt.tabs.dreamscape_generation.EpisodeGenerator",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.templates.main_window",
+      "label": "interfaces.pyqt.templates.main_window",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.templates.SelfHealRunner",
+      "label": "interfaces.pyqt.templates.SelfHealRunner",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.services.OpenAIClient",
+      "label": "core.services.OpenAIClient",
+      "group": "core"
+    },
+    {
+      "id": "interfaces.pyqt.templates.TestAgent",
+      "label": "interfaces.pyqt.templates.TestAgent",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.pyqt.widgets.assistant_mode_toggle_widget",
+      "label": "interfaces.pyqt.widgets.assistant_mode_toggle_widget",
+      "group": "interfaces"
+    },
+    {
+      "id": "interfaces.web.dependencies",
+      "label": "interfaces.web.dependencies",
+      "group": "interfaces"
+    },
+    {
+      "id": "core.agents.chat_agent",
+      "label": "core.agents.chat_agent",
+      "group": "core"
+    },
+    {
+      "id": "core.memory.memory_manager",
+      "label": "core.memory.memory_manager",
+      "group": "core"
+    },
+    {
+      "id": "scripts.check_context_updates",
+      "label": "scripts.check_context_updates",
+      "group": "scripts"
+    },
+    {
+      "id": "scripts.dispatch_all_prompts",
+      "label": "scripts.dispatch_all_prompts",
+      "group": "scripts"
+    },
+    {
+      "id": "core.dispatchers.cursor_dispatcher",
+      "label": "core.dispatchers.cursor_dispatcher",
+      "group": "core"
+    },
+    {
+      "id": "scripts.run_dreamscape",
+      "label": "scripts.run_dreamscape",
+      "group": "scripts"
+    },
+    {
+      "id": "scripts.run_with_enhanced_driver",
+      "label": "scripts.run_with_enhanced_driver",
+      "group": "scripts"
+    },
+    {
+      "id": "social.CommunityIntegrationManager",
+      "label": "social.CommunityIntegrationManager",
+      "group": "social"
+    },
+    {
+      "id": "social.community_integration",
+      "label": "social.community_integration",
+      "group": "social"
+    },
+    {
+      "id": "social.platform_login_manager",
+      "label": "social.platform_login_manager",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.ai_strategy",
+      "label": "social.strategies.ai_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.BaseEngagementBot",
+      "label": "social.strategies.BaseEngagementBot",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.community_scheduler",
+      "label": "social.strategies.community_scheduler",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.wordpress_strategy",
+      "label": "social.strategies.wordpress_strategy",
+      "group": "social"
+    },
+    {
+      "id": "social.strategies.context_db",
+      "label": "social.strategies.context_db",
+      "group": "social"
+    },
+    {
+      "id": "tests.conftest",
+      "label": "tests.conftest",
+      "group": "tests"
+    },
+    {
+      "id": "tests.integration.test_community_integration",
+      "label": "tests.integration.test_community_integration",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_community_scheduler",
+      "label": "tests.test_community_scheduler",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_agent_dispatcher",
+      "label": "tests.test_agent_dispatcher",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_agent_dispatcher_integration",
+      "label": "tests.test_agent_dispatcher_integration",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_ai_chat_agent",
+      "label": "tests.test_ai_chat_agent",
+      "group": "tests"
+    },
+    {
+      "id": "social.ai.chat_agent",
+      "label": "social.ai.chat_agent",
+      "group": "social"
+    },
+    {
+      "id": "tests.test_ai_output_log_analyzer",
+      "label": "tests.test_ai_output_log_analyzer",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_ai_strategy",
+      "label": "tests.test_ai_strategy",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_aletheia_feedback_loop_manager",
+      "label": "tests.test_aletheia_feedback_loop_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_aletheia_prompt_manager",
+      "label": "tests.test_aletheia_prompt_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_app_buttons",
+      "label": "tests.test_app_buttons",
+      "group": "tests"
+    },
+    {
+      "id": "interfaces.pyqt.tabs.CursorExecutionTab",
+      "label": "interfaces.pyqt.tabs.CursorExecutionTab",
+      "group": "interfaces"
+    },
+    {
+      "id": "tests.test_async_event_flow",
+      "label": "tests.test_async_event_flow",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_ChatManager",
+      "label": "tests.test_ChatManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_chat_cycle_controller",
+      "label": "tests.test_chat_cycle_controller",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_chat_manager",
+      "label": "tests.test_chat_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_community_integration_manager",
+      "label": "tests.test_community_integration_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_cursor_session_manager",
+      "label": "tests.test_cursor_session_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_discord_manager",
+      "label": "tests.test_discord_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_discord_template_manager",
+      "label": "tests.test_discord_template_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_dreamscape_generation_tab",
+      "label": "tests.test_dreamscape_generation_tab",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_dreamscape_service",
+      "label": "tests.test_dreamscape_service",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_dreamscape_tab_migration",
+      "label": "tests.test_dreamscape_tab_migration",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_dreamscape_workflow",
+      "label": "tests.test_dreamscape_workflow",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_DriverManager",
+      "label": "tests.test_DriverManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_driver_manager",
+      "label": "tests.test_driver_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_engagement_agent",
+      "label": "tests.test_engagement_agent",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_enhanced_driver_manager",
+      "label": "tests.test_enhanced_driver_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_event_message_builder",
+      "label": "tests.test_event_message_builder",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_feedback_loop_manager",
+      "label": "tests.test_feedback_loop_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_FileManager",
+      "label": "tests.test_FileManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_file_manager",
+      "label": "tests.test_file_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_full_sync",
+      "label": "tests.test_full_sync",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_load_post_history_file_exists",
+      "label": "tests.test_load_post_history_file_exists",
+      "group": "tests"
+    },
+    {
+      "id": "social.data.post_history",
+      "label": "social.data.post_history",
+      "group": "social"
+    },
+    {
+      "id": "tests.test_MemoryManager",
+      "label": "tests.test_MemoryManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_memory_cycle",
+      "label": "tests.test_memory_cycle",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_narrative_analytics",
+      "label": "tests.test_narrative_analytics",
+      "group": "tests"
+    },
+    {
+      "id": "core.NarrativeAnalytics",
+      "label": "core.NarrativeAnalytics",
+      "group": "core"
+    },
+    {
+      "id": "tests.test_openai_client",
+      "label": "tests.test_openai_client",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_openai_prompt_engine",
+      "label": "tests.test_openai_prompt_engine",
+      "group": "tests"
+    },
+    {
+      "id": "core.config",
+      "label": "core.config",
+      "group": "core"
+    },
+    {
+      "id": "tests.test_PathManager",
+      "label": "tests.test_PathManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_post_history",
+      "label": "tests.test_post_history",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_PromptManager",
+      "label": "tests.test_PromptManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_prompt_cycle_manager",
+      "label": "tests.test_prompt_cycle_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_resilient_prompt_executor",
+      "label": "tests.test_resilient_prompt_executor",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_ResponseHandler",
+      "label": "tests.test_ResponseHandler",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_signal_dispatcher",
+      "label": "tests.test_signal_dispatcher",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_specialized_agents",
+      "label": "tests.test_specialized_agents",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_system_health_monitor",
+      "label": "tests.test_system_health_monitor",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_task_manager",
+      "label": "tests.test_task_manager",
+      "group": "tests"
+    },
+    {
+      "id": "core.TaskManager",
+      "label": "core.TaskManager",
+      "group": "core"
+    },
+    {
+      "id": "tests.test_TemplateManager",
+      "label": "tests.test_TemplateManager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_thread_pool_manager",
+      "label": "tests.test_thread_pool_manager",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_unified_discord_service",
+      "label": "tests.test_unified_discord_service",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_unified_dreamscape_generator",
+      "label": "tests.test_unified_dreamscape_generator",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_unified_feedback_memory",
+      "label": "tests.test_unified_feedback_memory",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_unified_logging_agent",
+      "label": "tests.test_unified_logging_agent",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_wordpress_strategy",
+      "label": "tests.test_wordpress_strategy",
+      "group": "tests"
+    },
+    {
+      "id": "tests.integration.test_platform_integration",
+      "label": "tests.integration.test_platform_integration",
+      "group": "tests"
+    },
+    {
+      "id": "tests.isolated.test_dreamscape_generation_tab",
+      "label": "tests.isolated.test_dreamscape_generation_tab",
+      "group": "tests"
+    },
+    {
+      "id": "chatgpt_automation.views.dreamscape_generation_tab",
+      "label": "chatgpt_automation.views.dreamscape_generation_tab",
+      "group": "chatgpt_automation"
+    },
+    {
+      "id": "tests.performance.test_performance",
+      "label": "tests.performance.test_performance",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_logging.test_async_dispatcher",
+      "label": "tests.test_logging.test_async_dispatcher",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_logging.test_composite_logger",
+      "label": "tests.test_logging.test_composite_logger",
+      "group": "tests"
+    },
+    {
+      "id": "tests.test_logging.test_logger_factory",
+      "label": "tests.test_logging.test_logger_factory",
+      "group": "tests"
+    },
+    {
+      "id": "tests.unit.test_dreamscape_generation_tab",
+      "label": "tests.unit.test_dreamscape_generation_tab",
+      "group": "tests"
+    },
+    {
+      "id": "utils.ai_output_logger",
+      "label": "utils.ai_output_logger",
+      "group": "utils"
+    },
+    {
+      "id": "utils.logging_utils",
+      "label": "utils.logging_utils",
+      "group": "utils"
+    },
+    {
+      "id": "core.logging.utils.setup",
+      "label": "core.logging.utils.setup",
+      "group": "core"
+    },
+    {
+      "id": "utils.prompt_tuner",
+      "label": "utils.prompt_tuner",
+      "group": "utils"
+    }
+  ],
+  "edges": [
+    {
+      "from": "main",
+      "to": "core.bootstrap"
+    },
+    {
+      "from": "main",
+      "to": "core.AgentDispatcher"
+    },
+    {
+      "from": "main",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "main",
+      "to": "core.logging.factories.LoggerFactory"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.DreamOsMainWindow"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.dreamscape_ui_logic"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.IntegratedMainWindow"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.components.prompt_panel"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.components.logs_panel"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.tabs.MainTabs"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.tabs.PromptExecutionTab"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.tabs.LogsTab"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.tabs.ConfigurationTab"
+    },
+    {
+      "from": "main",
+      "to": "interfaces.pyqt.tabs.DreamscapeGenerationTab"
+    },
+    {
+      "from": "main",
+      "to": "core.services.config_service"
+    },
+    {
+      "from": "main",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "main",
+      "to": "utils.signal_dispatcher"
+    },
+    {
+      "from": "main",
+      "to": "core.services.fix_service"
+    },
+    {
+      "from": "main",
+      "to": "core.services.debug_service"
+    },
+    {
+      "from": "main",
+      "to": "core.services.rollback_service"
+    },
+    {
+      "from": "main",
+      "to": "core.micro_factories.chat_factory"
+    },
+    {
+      "from": "main",
+      "to": "core.refactor.CursorSessionManager"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "core.UnifiedFeedbackMemory"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "social.SocialMediaManager"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "core.PromptEngine"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "core.AgentDispatcher",
+      "to": "core.Agents.specialized_agents"
+    },
+    {
+      "from": "core.logging.factories.LoggerFactory",
+      "to": "core.logging.LoggingService"
+    },
+    {
+      "from": "core.logging.factories.LoggerFactory",
+      "to": "core.bootstrap"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "interfaces.pyqt.tabs.MainTabs"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "interfaces.pyqt.dreamscape_ui_logic"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "utils.signal_dispatcher"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.chatgpt_automation.automation_engine"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.chatgpt_automation.controllers.assistant_mode_controller"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.system.startup_validator"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "interfaces.pyqt.tabs.full_sync_tab"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.micro_factories.chat_factory"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.PromptCycleOrchestrator"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "utils.qasync_event_loop_manager"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.refactor.CursorSessionManager"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "utils.safe_json"
+    },
+    {
+      "from": "interfaces.pyqt.DreamOsMainWindow",
+      "to": "core.services.service_registry"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_ui_logic",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "interfaces.pyqt.IntegratedMainWindow",
+      "to": "interfaces.pyqt.DreamOsMainWindow"
+    },
+    {
+      "from": "interfaces.pyqt.IntegratedMainWindow",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "interfaces.pyqt.IntegratedMainWindow",
+      "to": "interfaces.pyqt.feedback_dashboard"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.PromptExecutionTab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.DreamscapeGenerationTab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.components.discord_tab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.LogsTab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.ConfigurationTab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.SocialDashboardTab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.AIDE"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.meredith_tab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.MainTabs",
+      "to": "interfaces.pyqt.tabs.SyncOpsTab"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.PromptExecutionTab",
+      "to": "core.PromptCycleOrchestrator"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.PromptExecutionTab",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.PromptExecutionTab",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.PromptExecutionTab",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.LogsTab",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.ConfigurationTab",
+      "to": "interfaces.pyqt.components.dialogs.exclusions_dialog"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.ConfigurationTab",
+      "to": "interfaces.pyqt.components.dialogs.discord_settings"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.ConfigurationTab",
+      "to": "interfaces.pyqt.components.dialogs.reinforcement_dialog"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.DreamscapeGenerationTab",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.DreamscapeGenerationTab",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.DreamscapeGenerationTab",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.DreamscapeGenerationTab",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.UIManager"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.services.git_integration_service"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.executors.cursor_executor"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.executors.chatgpt_executor"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.PromptCycleOrchestrator"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.DiscordBatchDispatcher"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.ReinforcementEvaluator"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.DriverSessionManager"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.services.config_service"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.testing.test_runner"
+    },
+    {
+      "from": "core.services.prompt_execution_service",
+      "to": "core.ProjectScanner"
+    },
+    {
+      "from": "core.micro_factories.chat_factory",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "core.UnifiedLoggingAgent",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "core.UnifiedLoggingAgent",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.UnifiedLoggingAgent",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "core.UnifiedLoggingAgent",
+      "to": "utils.reinforcement_trainer"
+    },
+    {
+      "from": "core.UnifiedFeedbackMemory",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "core.UnifiedFeedbackMemory",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.UnifiedFeedbackMemory",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "core.PathManager",
+      "to": "core.bootstrap"
+    },
+    {
+      "from": "core.Agents.specialized_agents",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "core.Agents.specialized_agents",
+      "to": "core.logging.ConsoleLogger"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.UnifiedDiscordService"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "utils.filesystem"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "utils.run_summary"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.CycleExecutionService"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.TaskOrchestrator"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_services",
+      "to": "core.PromptCycleOrchestrator"
+    },
+    {
+      "from": "core.chatgpt_automation.automation_engine",
+      "to": "core.chatgpt_automation.config"
+    },
+    {
+      "from": "core.chatgpt_automation.automation_engine",
+      "to": "core.chatgpt_automation.ModelRegistry"
+    },
+    {
+      "from": "core.chatgpt_automation.automation_engine",
+      "to": "core.chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.automation_engine",
+      "to": "core.chatgpt_automation.local_llm_engine"
+    },
+    {
+      "from": "core.chatgpt_automation.automation_engine",
+      "to": "core.chatgpt_automation.driver_factory"
+    },
+    {
+      "from": "core.chatgpt_automation.OpenAIClient",
+      "to": "core.chatgpt_automation.setup_logging"
+    },
+    {
+      "from": "core.PromptCycleOrchestrator",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.service_container"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.micro_factories.dreamscape_factory"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.UnifiedDiscordService"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.CycleExecutionService"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.TaskOrchestrator"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "core.services.service_registry",
+      "to": "core.refactor.CursorSessionManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.SocialDashboardTab",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.AIDE",
+      "to": "interfaces.pyqt.widgets.file_browser_widget"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.AIDE",
+      "to": "interfaces.pyqt.GuiHelpers"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.AIDE",
+      "to": "core.chatgpt_automation.automation_engine"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.meredith_tab",
+      "to": "core.meredith.profile_scraper"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.meredith_tab",
+      "to": "core.meredith.resonance_scorer"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.SyncOpsTab",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.AletheiaPromptManager",
+      "to": "utils.json_paths"
+    },
+    {
+      "from": "core.AletheiaPromptManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.AletheiaPromptManager",
+      "to": "core.DiscordManager"
+    },
+    {
+      "from": "core.PromptResponseHandler",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "core.PromptResponseHandler",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "core.DiscordQueueProcessor",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "core.DiscordQueueProcessor",
+      "to": "core.UnifiedDiscordService"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "core.CycleExecutionService"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "core.TaskOrchestrator"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.UIManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator",
+      "to": "core.dreamscape.ContextMemoryManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator",
+      "to": "core.services.service_registry"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator",
+      "to": "core.services.dreamscape_generator_service"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager",
+      "to": "core.dreamscape.ContextMemoryManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.ContextManager",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.UIManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.services.git_integration_service",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.executors.cursor_executor",
+      "to": "core.executors.base_executor"
+    },
+    {
+      "from": "core.executors.cursor_executor",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.executors.chatgpt_executor",
+      "to": "core.executors.base_executor"
+    },
+    {
+      "from": "core.executors.chatgpt_executor",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.executors.chatgpt_executor",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.chat_engine.chat_scraper_service"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.chat_engine.discord_dispatcher"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.chat_engine.feedback_engine"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.refactor.CursorSessionManager"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.ChatManager",
+      "to": "core.services.dreamscape_generator_service"
+    },
+    {
+      "from": "ARCHIVE.chat_engine_simple",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "content.AletheiaContentDispatcher",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "content.AletheiaContentDispatcher",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "content.AletheiaContentDispatcher",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "content.AletheiaContentDispatcher",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "content.AletheiaContentDispatcher",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "content.AletheiaContentDispatcher",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "social.strategies.twitter_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.twitter_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.twitter_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.twitter_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.twitter_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.twitter_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.strategies.linkedin_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.linkedin_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.linkedin_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.linkedin_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.linkedin_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.facebook_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.facebook_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.facebook_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.facebook_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.facebook_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.instagram_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.instagram_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.instagram_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.instagram_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.instagram_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.reddit_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.reddit_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.reddit_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.reddit_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.reddit_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.reddit_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.strategies.stocktwits_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.stocktwits_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.stocktwits_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.stocktwits_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.stocktwits_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.strategies.stocktwits_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.social_config",
+      "to": "core.config_base"
+    },
+    {
+      "from": "social.social_config",
+      "to": "utils.rate_limit_manager"
+    },
+    {
+      "from": "social.AIChatAgent",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "social.AIChatAgent",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.AIChatAgent",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "social.AIChatAgent",
+      "to": "core.PromptEngine"
+    },
+    {
+      "from": "social.AIChatAgent",
+      "to": "social.reinforcement.ReinforcementEngine"
+    },
+    {
+      "from": "social.strategies.base_platform_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.base_platform_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.base_platform_strategy",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "social.strategies.base_platform_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.logging.CompositeLogger",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "core.logging.CompositeLogger",
+      "to": "core.logging.utils.AsyncDispatcher"
+    },
+    {
+      "from": "core.logging.CompositeLogger",
+      "to": "core.ConsoleLogger"
+    },
+    {
+      "from": "core.AIOutputLogAnalyzer",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.AIOutputLogAnalyzer",
+      "to": "core.DiscordTemplateManager"
+    },
+    {
+      "from": "core.AIOutputLogAnalyzer",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "core.AIOutputLogAnalyzer",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "core.AletheiaFeedbackLoopManager",
+      "to": "core.AIOutputLogAnalyzer"
+    },
+    {
+      "from": "core.AletheiaFeedbackLoopManager",
+      "to": "utils.rate_limit_manager"
+    },
+    {
+      "from": "core.AletheiaFeedbackLoopManager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "utils.json_paths",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.DiscordManager",
+      "to": "core.EventMessageBuilder"
+    },
+    {
+      "from": "core.DiscordManager",
+      "to": "utils.json_paths"
+    },
+    {
+      "from": "core.services.dreamscape_generator_service",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.services.dreamscape_generator_service",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "core.TemplateManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.TemplateManager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.config_base",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.ConsoleLogger",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "core.CycleExecutionService",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "core.CycleExecutionService",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "core.CycleExecutionService",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "core.CycleExecutionService",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "core.DiscordLogger",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "social.TaskQueueManager"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "core.AletheiaFeedbackLoopManager"
+    },
+    {
+      "from": "core.EngagementAgent",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "social.social_config_wrapper",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.TaskQueueManager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.MemoryManager",
+      "to": "memory_utils"
+    },
+    {
+      "from": "core.feedback",
+      "to": "core.UnifiedFeedbackMemory"
+    },
+    {
+      "from": "core.FileLogger",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "core.FileLogger",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.LoggerFactory",
+      "to": "core.logging.factories.LoggerFactory"
+    },
+    {
+      "from": "core.LoggerFactory",
+      "to": "core.ConsoleLogger"
+    },
+    {
+      "from": "core.reinforcement_tools",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "core.ReportExporter",
+      "to": "core.UnifiedDiscordService"
+    },
+    {
+      "from": "core.ResilientPromptExecutor",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "core.ResilientPromptExecutor",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "core.ResilientPromptExecutor",
+      "to": "core.ThreadPoolManager"
+    },
+    {
+      "from": "core.ThreadPoolManager",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "core.ResponseHandler",
+      "to": "core.logging.services.ai_output_service"
+    },
+    {
+      "from": "core.service_container",
+      "to": "core.PromptCycleOrchestrator"
+    },
+    {
+      "from": "core.service_container",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "core.service_container",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "core.service_container",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "core.service_container",
+      "to": "core.llm_backends.huggingface_backend"
+    },
+    {
+      "from": "core.service_container",
+      "to": "core.llm_backends.ollama_backend"
+    },
+    {
+      "from": "core.SystemHealthMonitor",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "core.SystemHealthMonitor",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "core.SystemHealthMonitor",
+      "to": "core.ThreadPoolManager"
+    },
+    {
+      "from": "core.TaskOrchestrator",
+      "to": "core.CycleExecutionService"
+    },
+    {
+      "from": "core.TaskOrchestrator",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "core.Agents.chat_scraper_agent",
+      "to": "core.Agents.base_agent"
+    },
+    {
+      "from": "core.Agents.chat_scraper_agent",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.Agents.CursorAgentInterface",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "core.Agents.DocAgent",
+      "to": "core.Agents.CursorAgentInterface"
+    },
+    {
+      "from": "core.Agents.RefactorAgent",
+      "to": "core.Agents.CursorAgentInterface"
+    },
+    {
+      "from": "core.Agents.ReinforcementEvaluator",
+      "to": "core.Agents.CursorAgentInterface"
+    },
+    {
+      "from": "core.Agents.TestAgent",
+      "to": "core.Agents.CursorAgentInterface"
+    },
+    {
+      "from": "core.chatgpt_automation.driver_factory",
+      "to": "core.chatgpt_automation.local_llm_engine"
+    },
+    {
+      "from": "core.chatgpt_automation.driver_factory",
+      "to": "core.chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.driver_factory",
+      "to": "core.chatgpt_automation.config"
+    },
+    {
+      "from": "core.chatgpt_automation.controllers.assistant_orchestrator",
+      "to": "core.chatgpt_automation.controllers.automation_controller"
+    },
+    {
+      "from": "core.chatgpt_automation.controllers.assistant_orchestrator",
+      "to": "core.chatgpt_automation.controllers.cursor_dispatcher"
+    },
+    {
+      "from": "core.chatgpt_automation.controllers.automation_controller",
+      "to": "core.chatgpt_automation.automation_engine"
+    },
+    {
+      "from": "core.chatgpt_automation.controllers.cursor_dispatcher",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.chatgpt_automation.controllers.prompt_loop_orchestrator",
+      "to": "core.chatgpt_automation.automation_engine"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_gpt4",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_gpt4o",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_gpt4o_mini",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_gpt4_5",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_o1",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_o3_mini",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_o3_mini_high",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chatgpt_automation.models.model_template",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "core.chat_engine.chat_cycle_controller",
+      "to": "core.chat_engine.chat_scraper_service"
+    },
+    {
+      "from": "core.chat_engine.chat_cycle_controller",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "core.chat_engine.chat_cycle_controller",
+      "to": "core.chat_engine.feedback_engine"
+    },
+    {
+      "from": "core.chat_engine.chat_cycle_controller",
+      "to": "core.chat_engine.discord_dispatcher"
+    },
+    {
+      "from": "core.chat_engine.chat_cycle_controller",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.chat_engine.chat_cycle_controller"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.chat_engine.chat_scraper_service"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.chat_engine.discord_dispatcher"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.chat_engine.feedback_engine"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "core.chat_engine.chat_engine_manager",
+      "to": "core.chat_engine.gui_event_handler"
+    },
+    {
+      "from": "core.micro_factories.dreamscape_factory",
+      "to": "core.memory_utils"
+    },
+    {
+      "from": "core.micro_factories.dreamscape_factory",
+      "to": "core.services.dreamscape_generator_service"
+    },
+    {
+      "from": "core.pipelines.project_optimizer_agent",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.pipelines.project_optimizer_agent",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "core.prompt_cycle.audit",
+      "to": "utils"
+    },
+    {
+      "from": "core.prompt_cycle.memory",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.prompt_cycle.narrative",
+      "to": "utils"
+    },
+    {
+      "from": "core.prompt_cycle.scraping",
+      "to": "utils"
+    },
+    {
+      "from": "core.prompt_cycle.state",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.prompt_cycle.utils",
+      "to": "utils.chat_mate_config"
+    },
+    {
+      "from": "core.refactor.refactor_and_polish",
+      "to": "core.refactor.task_refactor_engine"
+    },
+    {
+      "from": "core.refactor.refactor_and_polish",
+      "to": "core.OpenAIPromptEngine"
+    },
+    {
+      "from": "core.services.chat_service",
+      "to": "core.micro_factories.chat_factory"
+    },
+    {
+      "from": "core.services.cursor_execution_service",
+      "to": "core.refactor.cursor_dispatcher"
+    },
+    {
+      "from": "core.services.discord_service",
+      "to": "core.UnifiedDiscordService"
+    },
+    {
+      "from": "core.services.full_sync_pipeline_runner",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.services.full_sync_pipeline_runner",
+      "to": "core.refactor.cursor_dispatcher"
+    },
+    {
+      "from": "core.services.full_sync_pipeline_runner",
+      "to": "core.pipelines.project_optimizer_agent"
+    },
+    {
+      "from": "core.services.full_sync_pipeline_runner",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "core.social.AIChatAgent",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "core.social.AIChatAgent",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.AIChatAgent",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "core.social.AIChatAgent",
+      "to": "core.PromptEngine"
+    },
+    {
+      "from": "core.social.AIChatAgent",
+      "to": "social.reinforcement.ReinforcementEngine"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.tiktok_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.strategies.youtube_strategy"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.UnifiedCommunityDashboard"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.social_post_manager"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.UnifiedPostManager"
+    },
+    {
+      "from": "core.social.CommunityIntegrationManager",
+      "to": "social.StrategyLoader"
+    },
+    {
+      "from": "social.strategies.tiktok_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.tiktok_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.tiktok_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.tiktok_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.tiktok_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.tiktok_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.strategies.youtube_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.youtube_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "social.strategies.youtube_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.youtube_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.youtube_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.youtube_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "core.UnifiedFeedbackMemory"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.UnifiedCommunityDashboard",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "social.social_post_manager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.UnifiedPostManager",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.UnifiedPostManager",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.StrategyLoader",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.UnifiedCommunityDashboard"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.social_post_manager"
+    },
+    {
+      "from": "core.social.community_integration",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.platform_login_manager",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.platform_login_manager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.platform_login_manager",
+      "to": "social.strategies"
+    },
+    {
+      "from": "core.social.platform_login_manager",
+      "to": "social.DriverSession"
+    },
+    {
+      "from": "social.DriverSession",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "social.DriverSession",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.DriverSession",
+      "to": "utils.proxy_utils"
+    },
+    {
+      "from": "social.DriverSession",
+      "to": "utils.ua_utils"
+    },
+    {
+      "from": "core.social.social_config",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.social.social_config_wrapper",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "core.social.social_post_manager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.StrategyLoader",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.TaskQueueManager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.strategies.twitter_strategy"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.strategies.facebook_strategy"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.strategies.instagram_strategy"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.strategies.reddit_strategy"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "core.social.UnifiedCommunityDashboard",
+      "to": "core.social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.twitter_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.twitter_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.twitter_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.twitter_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.twitter_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.twitter_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.strategies.facebook_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.facebook_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.facebook_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.facebook_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.facebook_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.instagram_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.instagram_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.instagram_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.instagram_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.instagram_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.reddit_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.reddit_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.reddit_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.reddit_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.reddit_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.reddit_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.strategies.stocktwits_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.stocktwits_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.stocktwits_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.stocktwits_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.stocktwits_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.strategies.stocktwits_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.linkedin_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.linkedin_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.linkedin_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.linkedin_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.linkedin_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.UnifiedPostManager",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.UnifiedPostManager",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.logs.DriverSession",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.logs.DriverSession",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.logs.DriverSession",
+      "to": "utils.proxy_utils"
+    },
+    {
+      "from": "core.social.logs.DriverSession",
+      "to": "utils.ua_utils"
+    },
+    {
+      "from": "core.social.strategies.ai_strategy",
+      "to": "core.social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.BaseEngagementBot",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.BaseEngagementBot",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.BaseEngagementBot",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.BaseEngagementBot",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.base_platform_strategy",
+      "to": "core.social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.base_platform_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.strategies.base_platform_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.community_scheduler",
+      "to": "core.social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "core.social.strategies.community_scheduler",
+      "to": "core.social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.wordpress_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.wordpress_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.strategies.context_db",
+      "to": "social.strategies.config_loader"
+    },
+    {
+      "from": "core.social.strategies.tiktok_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.tiktok_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.tiktok_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.tiktok_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.tiktok_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.tiktok_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "core.social.strategies.youtube_strategy",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "core.social.strategies.youtube_strategy",
+      "to": "social.social_config"
+    },
+    {
+      "from": "core.social.strategies.youtube_strategy",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "core.social.strategies.youtube_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "core.social.strategies.youtube_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "core.social.strategies.youtube_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "interfaces.pyqt.bootstrap",
+      "to": "interfaces.pyqt.dreamscape_ui_logic"
+    },
+    {
+      "from": "interfaces.pyqt.bootstrap",
+      "to": "interfaces.pyqt.DreamOsMainWindow"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.DiscordManager"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.CycleExecutionService"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.TaskOrchestrator"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.services.discord_service"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "core.social.community_integration"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "interfaces.pyqt.DreamOsMainWindow"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "interfaces.pyqt.dreamscape_ui_logic"
+    },
+    {
+      "from": "interfaces.pyqt.dreamscape_gui",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "interfaces.pyqt.GuiHelpers",
+      "to": "core.chatgpt_automation.setup_logging"
+    },
+    {
+      "from": "interfaces.pyqt.__main__",
+      "to": "interfaces.pyqt.dreamscape_gui"
+    },
+    {
+      "from": "interfaces.pyqt.__main__",
+      "to": "core.logging.factories.LoggerFactory"
+    },
+    {
+      "from": "interfaces.pyqt.__main__",
+      "to": "core.micro_factories.chat_factory"
+    },
+    {
+      "from": "interfaces.pyqt.components.community_dashboard_tab",
+      "to": "social.UnifiedCommunityDashboard"
+    },
+    {
+      "from": "interfaces.pyqt.components.community_dashboard_tab",
+      "to": "core.social.CommunityIntegrationManager"
+    },
+    {
+      "from": "interfaces.pyqt.components.community_dashboard_tab",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "interfaces.pyqt.widgets.file_browser_widget",
+      "to": "interfaces.pyqt.GuiHelpers"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.cursor_execution_tab",
+      "to": "core.refactor.cursor_dispatcher"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.EpisodeGenerator",
+      "to": "core.dreamscape.ContextMemoryManager"
+    },
+    {
+      "from": "interfaces.pyqt.tabs.dreamscape_generation.EpisodeGenerator",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "interfaces.pyqt.templates.main_window",
+      "to": "core.chatgpt_automation.controllers.automation_controller"
+    },
+    {
+      "from": "interfaces.pyqt.templates.main_window",
+      "to": "interfaces.pyqt.GuiHelpers"
+    },
+    {
+      "from": "interfaces.pyqt.templates.SelfHealRunner",
+      "to": "interfaces.pyqt.GuiHelpers"
+    },
+    {
+      "from": "interfaces.pyqt.templates.SelfHealRunner",
+      "to": "core.services.OpenAIClient"
+    },
+    {
+      "from": "interfaces.pyqt.templates.TestAgent",
+      "to": "chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "interfaces.pyqt.widgets.assistant_mode_toggle_widget",
+      "to": "core.chatgpt_automation.controllers.assistant_mode_controller"
+    },
+    {
+      "from": "interfaces.web.dependencies",
+      "to": "core.agents.chat_agent"
+    },
+    {
+      "from": "interfaces.web.dependencies",
+      "to": "core.memory.memory_manager"
+    },
+    {
+      "from": "scripts.check_context_updates",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "scripts.dispatch_all_prompts",
+      "to": "core.dispatchers.cursor_dispatcher"
+    },
+    {
+      "from": "scripts.dispatch_all_prompts",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "scripts.run_dreamscape",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "scripts.run_with_enhanced_driver",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "scripts.run_with_enhanced_driver",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.tiktok_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.strategies.youtube_strategy"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.UnifiedCommunityDashboard"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.social_post_manager"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.UnifiedPostManager"
+    },
+    {
+      "from": "social.CommunityIntegrationManager",
+      "to": "social.StrategyLoader"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.strategies.twitter_strategy"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.strategies.facebook_strategy"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.strategies.reddit_strategy"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.strategies.stocktwits_strategy"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.strategies.linkedin_strategy"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.strategies.instagram_strategy"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.UnifiedCommunityDashboard"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.social_post_manager"
+    },
+    {
+      "from": "social.community_integration",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.platform_login_manager",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.platform_login_manager",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "social.platform_login_manager",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.platform_login_manager",
+      "to": "social.strategies"
+    },
+    {
+      "from": "social.platform_login_manager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "social.strategies.ai_strategy",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.BaseEngagementBot",
+      "to": "utils.cookie_manager"
+    },
+    {
+      "from": "social.strategies.BaseEngagementBot",
+      "to": "social.social_config_wrapper"
+    },
+    {
+      "from": "social.strategies.BaseEngagementBot",
+      "to": "social.log_writer"
+    },
+    {
+      "from": "social.strategies.BaseEngagementBot",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.BaseEngagementBot",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "social.strategies.community_scheduler",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "social.strategies.community_scheduler",
+      "to": "social.AIChatAgent"
+    },
+    {
+      "from": "social.strategies.wordpress_strategy",
+      "to": "social.strategies.base_platform_strategy"
+    },
+    {
+      "from": "social.strategies.wordpress_strategy",
+      "to": "utils.SentimentAnalyzer"
+    },
+    {
+      "from": "social.strategies.context_db",
+      "to": "social.strategies.config_loader"
+    },
+    {
+      "from": "tests.conftest",
+      "to": "core.services.prompt_execution_service"
+    },
+    {
+      "from": "tests.conftest",
+      "to": "core.services.discord_service"
+    },
+    {
+      "from": "tests.integration.test_community_integration",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "tests.integration.test_community_integration",
+      "to": "social.strategies.community_scheduler"
+    },
+    {
+      "from": "tests.integration.test_community_integration",
+      "to": "social.strategies.ai_strategy"
+    },
+    {
+      "from": "tests.test_community_scheduler",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "tests.test_community_scheduler",
+      "to": "social.strategies.community_scheduler"
+    },
+    {
+      "from": "tests.test_agent_dispatcher",
+      "to": "core.AgentDispatcher"
+    },
+    {
+      "from": "tests.test_agent_dispatcher_integration",
+      "to": "core.AgentDispatcher"
+    },
+    {
+      "from": "tests.test_ai_chat_agent",
+      "to": "social.ai.chat_agent"
+    },
+    {
+      "from": "tests.test_ai_output_log_analyzer",
+      "to": "core.AIOutputLogAnalyzer"
+    },
+    {
+      "from": "tests.test_ai_strategy",
+      "to": "social.strategies.ai_strategy"
+    },
+    {
+      "from": "tests.test_aletheia_feedback_loop_manager",
+      "to": "core.AletheiaFeedbackLoopManager"
+    },
+    {
+      "from": "tests.test_aletheia_prompt_manager",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "tests.test_app_buttons",
+      "to": "interfaces.pyqt.tabs.CursorExecutionTab"
+    },
+    {
+      "from": "tests.test_app_buttons",
+      "to": "interfaces.pyqt.tabs.ConfigurationTab"
+    },
+    {
+      "from": "tests.test_app_buttons",
+      "to": "interfaces.pyqt.tabs.LogsTab"
+    },
+    {
+      "from": "tests.test_app_buttons",
+      "to": "interfaces.pyqt.components.prompt_panel"
+    },
+    {
+      "from": "tests.test_app_buttons",
+      "to": "interfaces.pyqt.components.community_dashboard_tab"
+    },
+    {
+      "from": "tests.test_async_event_flow",
+      "to": "utils.signal_dispatcher"
+    },
+    {
+      "from": "tests.test_ChatManager",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "tests.test_ChatManager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "tests.test_chat_cycle_controller",
+      "to": "core.chat_engine.chat_cycle_controller"
+    },
+    {
+      "from": "tests.test_chat_manager",
+      "to": "core.ChatManager"
+    },
+    {
+      "from": "tests.test_community_integration_manager",
+      "to": "social.CommunityIntegrationManager"
+    },
+    {
+      "from": "tests.test_community_integration_manager",
+      "to": "social.strategies.youtube_strategy"
+    },
+    {
+      "from": "tests.test_community_integration_manager",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "tests.test_cursor_session_manager",
+      "to": "core.refactor.CursorSessionManager"
+    },
+    {
+      "from": "tests.test_discord_manager",
+      "to": "core.DiscordManager"
+    },
+    {
+      "from": "tests.test_discord_template_manager",
+      "to": "core.DiscordTemplateManager"
+    },
+    {
+      "from": "tests.test_dreamscape_generation_tab",
+      "to": "interfaces.pyqt.tabs.DreamscapeGenerationTab"
+    },
+    {
+      "from": "tests.test_dreamscape_service",
+      "to": "interfaces.pyqt.dreamscape_services"
+    },
+    {
+      "from": "tests.test_dreamscape_tab_migration",
+      "to": "interfaces.pyqt.tabs.DreamscapeGenerationTab"
+    },
+    {
+      "from": "tests.test_dreamscape_workflow",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "tests.test_DriverManager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "tests.test_driver_manager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "tests.test_engagement_agent",
+      "to": "core.EngagementAgent"
+    },
+    {
+      "from": "tests.test_enhanced_driver_manager",
+      "to": "core.DriverManager"
+    },
+    {
+      "from": "tests.test_event_message_builder",
+      "to": "core.EventMessageBuilder"
+    },
+    {
+      "from": "tests.test_feedback_loop_manager",
+      "to": "core.AletheiaFeedbackLoopManager"
+    },
+    {
+      "from": "tests.test_FileManager",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "tests.test_file_manager",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "tests.test_full_sync",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "tests.test_load_post_history_file_exists",
+      "to": "social.data.post_history"
+    },
+    {
+      "from": "tests.test_MemoryManager",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "tests.test_memory_cycle",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "tests.test_narrative_analytics",
+      "to": "core.NarrativeAnalytics"
+    },
+    {
+      "from": "tests.test_openai_client",
+      "to": "core.chatgpt_automation.OpenAIClient"
+    },
+    {
+      "from": "tests.test_openai_prompt_engine",
+      "to": "core.OpenAIPromptEngine"
+    },
+    {
+      "from": "tests.test_openai_prompt_engine",
+      "to": "core.config"
+    },
+    {
+      "from": "tests.test_PathManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "tests.test_post_history",
+      "to": "social.data.post_history"
+    },
+    {
+      "from": "tests.test_PromptManager",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.PromptCycleOrchestrator"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.AletheiaPromptManager"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.MemoryManager"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.ReinforcementEngine"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.FileManager"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.CycleExecutionService"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.PromptResponseHandler"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.DiscordQueueProcessor"
+    },
+    {
+      "from": "tests.test_prompt_cycle_manager",
+      "to": "core.TaskOrchestrator"
+    },
+    {
+      "from": "tests.test_resilient_prompt_executor",
+      "to": "core.ResilientPromptExecutor"
+    },
+    {
+      "from": "tests.test_ResponseHandler",
+      "to": "core.ResponseHandler"
+    },
+    {
+      "from": "tests.test_signal_dispatcher",
+      "to": "utils.signal_dispatcher"
+    },
+    {
+      "from": "tests.test_specialized_agents",
+      "to": "core.Agents.specialized_agents"
+    },
+    {
+      "from": "tests.test_system_health_monitor",
+      "to": "core.SystemHealthMonitor"
+    },
+    {
+      "from": "tests.test_task_manager",
+      "to": "core.TaskManager"
+    },
+    {
+      "from": "tests.test_TemplateManager",
+      "to": "core.TemplateManager"
+    },
+    {
+      "from": "tests.test_TemplateManager",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "tests.test_thread_pool_manager",
+      "to": "core.ThreadPoolManager"
+    },
+    {
+      "from": "tests.test_unified_discord_service",
+      "to": "core.UnifiedDiscordService"
+    },
+    {
+      "from": "tests.test_unified_dreamscape_generator",
+      "to": "interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator"
+    },
+    {
+      "from": "tests.test_unified_feedback_memory",
+      "to": "core.UnifiedFeedbackMemory"
+    },
+    {
+      "from": "tests.test_unified_logging_agent",
+      "to": "core.UnifiedLoggingAgent"
+    },
+    {
+      "from": "tests.test_wordpress_strategy",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "tests.integration.test_platform_integration",
+      "to": "social.CommunityIntegrationManager"
+    },
+    {
+      "from": "tests.integration.test_platform_integration",
+      "to": "social.strategies.youtube_strategy"
+    },
+    {
+      "from": "tests.integration.test_platform_integration",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "tests.integration.test_platform_integration",
+      "to": "social.strategies.ai_strategy"
+    },
+    {
+      "from": "tests.integration.test_platform_integration",
+      "to": "social.ai.chat_agent"
+    },
+    {
+      "from": "tests.isolated.test_dreamscape_generation_tab",
+      "to": "chatgpt_automation.views.dreamscape_generation_tab"
+    },
+    {
+      "from": "tests.performance.test_performance",
+      "to": "social.CommunityIntegrationManager"
+    },
+    {
+      "from": "tests.performance.test_performance",
+      "to": "social.strategies.youtube_strategy"
+    },
+    {
+      "from": "tests.performance.test_performance",
+      "to": "social.strategies.wordpress_strategy"
+    },
+    {
+      "from": "tests.performance.test_performance",
+      "to": "social.strategies.ai_strategy"
+    },
+    {
+      "from": "tests.test_logging.test_async_dispatcher",
+      "to": "core.logging.utils.AsyncDispatcher"
+    },
+    {
+      "from": "tests.test_logging.test_composite_logger",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "tests.test_logging.test_composite_logger",
+      "to": "core.ConsoleLogger"
+    },
+    {
+      "from": "tests.test_logging.test_composite_logger",
+      "to": "interfaces.pyqt.ILoggingAgent"
+    },
+    {
+      "from": "tests.test_logging.test_logger_factory",
+      "to": "core.logging.factories.LoggerFactory"
+    },
+    {
+      "from": "tests.test_logging.test_logger_factory",
+      "to": "core.ConsoleLogger"
+    },
+    {
+      "from": "tests.test_logging.test_logger_factory",
+      "to": "core.FileLogger"
+    },
+    {
+      "from": "tests.test_logging.test_logger_factory",
+      "to": "core.DiscordLogger"
+    },
+    {
+      "from": "tests.test_logging.test_logger_factory",
+      "to": "core.logging.CompositeLogger"
+    },
+    {
+      "from": "tests.unit.test_dreamscape_generation_tab",
+      "to": "interfaces.pyqt.tabs.DreamscapeGenerationTab"
+    },
+    {
+      "from": "utils.ai_output_logger",
+      "to": "core.PathManager"
+    },
+    {
+      "from": "utils.ai_output_logger",
+      "to": "utils.reinforcement_trainer"
+    },
+    {
+      "from": "utils.ai_output_logger",
+      "to": "core.logging.services.ai_output_service"
+    },
+    {
+      "from": "utils.logging_utils",
+      "to": "core.logging.utils.setup"
+    },
+    {
+      "from": "utils.prompt_tuner",
+      "to": "core.AletheiaPromptManager"
+    }
+  ]
+}

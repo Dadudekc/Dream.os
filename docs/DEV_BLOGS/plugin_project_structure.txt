@@ -1,0 +1,21 @@
+Devlog // 2025-03-16
+"What breaks first—the code or my patience?"
+Spent the last chunk of time debugging a brutal stack of errors across my WordPress plugins. Everything was fine... until it wasn’t. All my plugins basically died on load—front-end and back-end both throwing fatal errors.
+Main culprit? WordPress core functions like wp_create_nonce() and conditional query tags (is_feed(), is_singular(), etc.) were getting called way too early in the cycle... before WP was ready. The classic “query_vars on null” warning showed up everywhere. Then a fatal crash from an undefined constant: AUTOSAVE_INTERVAL. That one stopped everything cold.
+The bigger problem was some functions firing before WordPress had finished its query parsing. I’ve seen it before, but not this bad. Debug logs were lighting up like a Christmas tree.
+What worked:
+Added a forced definition for AUTOSAVE_INTERVAL to stop the script-loader crash.
+Made sure all asset enqueues, nonces, and query-dependent functions are hooked into the right places (wp_enqueue_scripts, wp_ajax_*, etc.).
+Blocked scripts from running during AJAX calls that don’t need them. Clean separation.
+Tightened up the fria_handle_upload() function to make sure user checks are done after WordPress is fully loaded.
+Cleaned up the database column checker to avoid redundant schema updates.
+What broke:
+Pretty much everything before that. Errors all over the place from functions being called too early.
+Some AJAX responses were blank because nonces weren’t getting generated properly.
+The wp_create_nonce() fatal was a red flag for a bigger load order issue I missed at first.
+What’s next:
+Still need to refactor the Python script integration. It’s functional, but fragile.
+Thinking about reworking how the AJAX upload handler returns data... it’s clunky.
+Might run another pass on admin notices and logging—too noisy right now.
+Feeling a little drained but getting through it. Small wins stack up.
+"You don’t rise to the level of your goals, you fall to the level of your systems."

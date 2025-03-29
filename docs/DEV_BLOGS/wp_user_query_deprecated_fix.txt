@@ -1,0 +1,12 @@
+Devlog: Clearing the Noise
+Ever wonder how much mental bandwidth gets drained by stuff you shouldn’t even be dealing with?
+That’s what hit me today...
+I was running some checks on the backend and noticed the logs were getting spammed—same deprecated warning over and over again. Nothing mission-critical, but enough noise to slow me down. It was one of those death-by-a-thousand-cuts situations... every time I looked, there it was, distracting me from the real work.
+The problem was the old WP_User_Query using the who argument... WordPress deprecated that a while back, and it’s been lingering in the system like technical debt that never got prioritized. So I ripped it out, replaced it with capability instead. Cleaned it up across the board.
+What made it tricky was realizing how often the query was running... no caching... no filters on non-critical logs... inefficient as hell. I set up Redis caching to handle that, and disabled unnecessary error displays in production. Logs still get written, but I’m not seeing them unless I need to.
+There’s still more to do—some plugins and themes need a full audit... but clearing this out gives me breathing room. The system runs leaner now. Faster. Less noise... more signal.
+Next up:
+Full code audit on the user management workflows
+Dial in real-time monitoring and alerts so I’m not wasting time chasing non-issues
+Keep scaling forward
+"Eliminate distractions... focus amplifies everything."

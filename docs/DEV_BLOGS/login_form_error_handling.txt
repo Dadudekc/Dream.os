@@ -1,0 +1,9 @@
+Devlog // FreeRide Membership Build
+What’s the simplest way to automate trust?
+Been deep in the membership system today... specifically, trying to figure out why the login flow was giving people issues. The old setup was functional but felt fragile. Too much reliance on manual admin input, and not enough system intelligence. I want FreeRide to run smooth without me constantly having to jump in.
+We broke down the flow and found a few gaps. Error handling was generic. Secure cookies weren’t set right. No debug logs to track why users couldn’t log in. It worked for me because I know the back end... but my friends? They just got stonewalled.
+Next step was clarity—better error messages, secure redirects, and logs so I’m not flying blind when someone hits a wall. That part’s cleaned up now.
+Then we mapped out what I should’ve built from the start... automation. Stripe webhook triggers that upgrade free users to premium the second they pay. No middleman, no manual updates. The roles handle themselves. Wrote the handler logic for the webhook, built out the routes, and mapped the upgrade/downgrade flow... if they cancel, they drop back to free. Clean, no drama.
+Next up is locking in the Stripe Checkout page, passing the user email straight into session metadata so the webhook can catch it and link it back to their account... no friction.
+The goal: FreeRide runs itself. I just build it and get out of the way.
+"Discipline equals freedom." — Jocko Willink

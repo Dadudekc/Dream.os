@@ -1,0 +1,11 @@
+Devlog — 03.02.25
+What’s the actual point of scaling if your systems aren’t tight? If the core isn’t optimized, speed becomes chaos...
+Been deep in the weeds today. Mainly tightening the lead gen system—scraper loops, Discord integration, and platform logins. On the surface, it was running. Underneath? Bottlenecks all over.
+Biggest friction point was Discord alerts. Leads were queuing fine, but they weren’t posting. Found out I was using .empty() on a deque. Rookie mistake... Should’ve been checking len(discord_message_queue) > 0. Fixed that. Clean.
+Next—login loops. Instagram was claiming it was logged in... it wasn’t. The detection was weak. URL checks are lazy. Rewrote the logic to key off actual UI elements—the profile icon specifically. Much stronger. That should stop the false positives.
+Stocktwits had similar issues. Login flow wasn’t consistent. I refactored detection there too.
+Also caught redundant scraping. Same keywords, same platforms... hitting rate limits, wasting cycles. Patched that by tightening the DB checks and adding proper deduping. It’s more surgical now.
+And Discord... had to cap message lengths under 4000 characters to prevent those silent 400 errors. Cleaned up the queue processor while I was there. That part feels solid now.
+What’s next?
+AI proposal drafts. Tired of manually tweaking each reply when the data is already there. Should be automated. It will be.
+“Precision first. Then scale.”

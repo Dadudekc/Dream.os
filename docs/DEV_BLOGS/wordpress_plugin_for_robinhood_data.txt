@@ -1,0 +1,8 @@
+Devlog // 2025-02-05
+What’s the simplest way to keep momentum when everything feels scattered?
+Been hammering through some backend work today... The goal was to parse a Robinhood PDF statement, extract the trading data, and get it running in Python so I can eventually drop it into a WordPress plugin.
+First pass was just brute-forcing the data out. Cleaned it up with pdfplumber, regular expressions, and piped everything into a DataFrame for sanity checks. Ran smooth once I sorted out which Python version I was actually using... Turns out juggling three installs isn’t a power move. Had to align everything back to Python 3.12 before the script would behave.
+What was tricky... the module install paths were a mess. Pdfplumber was showing installed but not loading because I was firing the wrong interpreter. Classic. Once I locked the environment down, everything clicked.
+The script is pulling portfolio value, interest earned, and a clean list of all buy/sell trades. 94 transactions parsed without a hitch. Solid baseline to work from.
+Next... thinking about layering in profit/loss calculations and visualizations. Then wrapping it up as a shortcode-driven plugin for WordPress. One step at a time.
+“Slow is smooth. Smooth is fast.”

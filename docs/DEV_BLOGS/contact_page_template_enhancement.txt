@@ -1,0 +1,11 @@
+Devlog: Where Are We Still Wasting Time?
+Been thinking about where time’s leaking out of the system... and how much of that’s just been me holding onto old workflows that don’t scale.
+Today was about cutting that out.
+I rebuilt the Contact page so it actually fits with the rest of the theme—clean, consistent... not looking like a patch job anymore. The "Get in Touch" section was way too small and awkward, so I widened everything, matched the spacing, and added a visual to balance it out. It’s simple but looks right now.
+But as I was working through it, I realized how much redundancy is baked into the setup. Forms waiting on Mailchimp APIs... stock data updates tied to manual triggers... same validation code copied across functions. It’s inefficient. That’s fine when you’re building in the open... but it doesn’t fly when you’re scaling systems.
+So I mapped out a cleanup:
+Centralizing validation... no more duplicated logic
+Parallelizing data fetching and form submissions... batch API calls, no more bottlenecks
+Laying groundwork for automated content generation... less time handcrafting, more time iterating
+Next up, I’m pushing to automate stock data updates and post meta... and wiring it straight into the content pipeline. If I can take me out of the loop, we gain speed... and clarity.
+"Speed is a byproduct of clarity. Get clear—then go fast."

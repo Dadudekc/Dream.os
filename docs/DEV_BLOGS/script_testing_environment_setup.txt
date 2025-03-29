@@ -1,0 +1,8 @@
+Devlog | 2025-03-16
+What makes a system feel intuitive instead of heavy? Been thinking about that while mapping the flow for the Tbow Tactic Generator...
+Spent the last block of time laying out the architecture. Clean, simple, no wasted movement. User uploads a chart... system scans for key levels—support, resistance, trendlines. It detects MACD curls, volume spikes, whatever we usually key in on when we’re planning Tbow tactics. Then it pulls in fresh market data... news, sentiment, pre-market gaps... all the context we use to make a solid call.
+The day trade plan it spits out? Entry, stop-loss, profit target... straightforward. No noise. Users can tweak the plan in real time. Want a tighter stop? Done. Want to push the risk/reward? Cool. It’ll adjust.
+Big thing was nailing down what matters. We aren’t overcomplicating the reads. No clutter—just the levels, the curls, the setups we trust. And making sure the GPT interacts like we do. Asks the right questions. Adjusts if something doesn’t fit.
+What broke? Nothing yet... but the challenge is keeping the chart analysis fast and accurate without drowning in indicators. It needs to feel like the same flow we run every day... or it’s not useful.
+Next is getting the first working version live. Image input > level detection > plan output. Then stress test it. If it’s slow, or if it calls bad levels, I’ll rip it apart and rebuild it tighter.
+“Simple is hard. Do it anyway.”

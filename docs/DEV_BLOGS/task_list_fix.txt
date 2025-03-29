@@ -1,0 +1,8 @@
+Devlog // 2025-03-16
+What’s the point of sorting tasks if they don’t actually move the needle? That’s what I kept thinking as I looked at the mess of priorities I’ve been dragging around...
+Today was about clarity... stripping things back to what actually matters and fixing the flow.
+I took the FreeRide Membership plugin task list and cleaned it up—sorted everything by priority and stage so I can focus on what’s high-impact first. No more clutter. Just a clear breakdown: what’s next and why. Switched it from messy notes to structured JSON... because, honestly, I’m tired of wasting time digging through noise.
+Nothing fancy. Just ruthless execution.
+What’s tricky about this stuff isn’t the data—it’s maintaining momentum when you’re in the weeds. But this kind of sorting helps me see the gaps faster... and close them.
+Next... I’ll knock out the high-priority pieces: core files, user management, Stripe integration. I’m not overthinking it. Just shipping.
+"Start where you are. Use what you have. Do what you can."

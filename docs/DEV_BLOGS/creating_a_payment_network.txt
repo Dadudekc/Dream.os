@@ -1,0 +1,13 @@
+Devlog: Consolidating Focus
+What’s the real cost of jumping between short-term cash grabs and long-term systems?
+I’ve been sitting with that.
+Today was about stripping things down… getting clear on where my energy’s leaking. I realized I’ve been splitting attention across too many directions—trying to build sustainable automation and, at the same time, running quick-hit affiliate plays that don’t have a real future. Both pull from the same energy pool. That’s a problem.
+So I started consolidating.
+Built a simple PyQt6 GUI for blasting emails. Quick. Dirty. Gets the job done. Not proud of the method... but it’s functional. If I’m gonna run high-risk plays, they need to be fast and automated. No time for manual effort.
+But the bigger insight today wasn’t the script... it was realizing I’m spending too much time piecing together tools without stepping back and designing the system. No more tool-chasing. Time to build backend-first, API-driven automations that can scale. Forget the front-end polish. Backend power... that’s the priority now.
+Next up...
+Draft the API layer for campaign control
+Segregate workflows—short-term, high-risk in the morning... long-term, scalable in the afternoon
+Build an autonomous loop for lead scraping, segmentation, and messaging
+I’m not here to chase volume. I’m here to build something that runs without me.
+“Slow is smooth. Smooth is fast.”

@@ -1,0 +1,12 @@
+Devlog // 2025-03-16
+"Where am I burning energy on things the system should be handling by itself?"
+That’s the question that hit me after breaking down my workflows today. I’ve been in the weeds... tweaking layouts, adjusting CSS, rewriting the same button styling five times. On the surface, it’s progress. Underneath, it’s a signal. I’m still too hands-on with things that should be automated... things that should already be modular and running clean without me.
+What I worked on today was mostly tightening up the UI—grid systems for content, making the layout breathe, getting rid of bloated styling. We cleaned up the “Tbow Tactics” section, separated it from the latest posts feed, and made the call-to-action buttons a lot sharper. Black with green text... clean, simple. And more importantly, consistent.
+But... I’m catching myself doing this stuff manually. That’s the bottleneck. If I’m dialing in CSS by hand, I’m not building the system that auto-generates it. So the conversation pivoted into a system audit—figuring out where things are fracturing. The big insight was clear: I need tighter compartmentalization and an AI-managed design framework. Components, not one-offs. Templates that flex based on inputs, not static pages I keep adjusting. Same with content. The pipeline should handle the layout... I just write.
+The tricky part is breaking the habit of tweaking small things instead of stepping back and retooling the system. It’s faster in the moment to fix spacing. It costs time long-term.
+Next up...
+Deploy a component-based design system so I’m not rebuilding the wheel every time I need a new section
+Lock in an AI-driven content-to-layout pipeline—so content slides into the system without me messing with format
+Implement a decision triage layer... Victor doesn’t need to choose button colors
+It’s time to accelerate... and let the machine handle itself.
+“You won’t outwork your own inefficiency. Fix the system. Then move.”

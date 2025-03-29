@@ -1,0 +1,9 @@
+Devlog // 2025-02-08
+Why do we keep hitting the same wall and not notice until we're halfway through patching it again?
+Been in the trenches today going through the FreerideInvestor AI Market News system. Layer by layer. Class files, handlers, the Discord bot... it’s a whole ecosystem at this point. And the deeper I go, the more I see that the weak points aren’t the logic—they’re in the handoffs. Nonce verification failures on AJAX, -1 responses... simple things causing friction. And yeah, it’s tedious, but these are the spots where momentum breaks if I don’t get ruthless.
+I spent time mapping out why the "No news found for this symbol" error kept surfacing. Turns out, it wasn’t just the data—it was the feedback loop. The user sees a blank wall, but under the hood, we’re getting vague error logs or nothing at all. So I rewired the logs, made them noisier, more human-readable, and forced them to spill context back to the front end.
+Also, opened up both logged-in and non-logged-in AJAX routes. No more assumptions about who's calling the API. And I added a debug mode—toggle it on, and you’ll see the raw guts of what's going on instead of a polite shrug.
+Right now... I’m not seeing hard performance hits from my shorter sleep cycles. Five hours, sometimes less, and I’m sharp. But I’m watching it. Could be passion, could be unsustainable. Either way, I’m squeezing everything I can out of these windows.
+Next up, I’m refactoring the template rendering—need clean modularity there, and I’m thinking of streamlining the shortcode pipeline too.
+For now... “If you can’t explain it simply, you don’t understand it well enough.”
+Back to work.

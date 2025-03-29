@@ -1,0 +1,16 @@
+Devlog // 003
+“Where am I burning energy that the system should be handling?”
+Been thinking about that all morning...
+I’ve been splitting focus—jumping between content builds, refining HTML/CSS layouts, and reworking styling to get everything feeling tight on FreeRideInvestor. The work itself wasn’t hard... but the redundancy hit me. I’m rebuilding the same structures twice, in two different ways. One version’s using grid containers, the other’s wrapped in ai-trade-plan components... both doing the same job. That’s friction. It slows me down and burns cycles I need for strategy.
+Then there’s the styling merge... took longer than it should. Manual tweaking of color variables, aligning design tokens by hand instead of locking in a proper system. Wasted energy. Should’ve been automated or at least standardized already.
+What’s clear is the execution layer isn’t streamlined. Too much manual input. I’m still doing work that AI agents or templates should be running on their own. There’s no feedback loop yet in either trading or content deployment... which means I’m always the one making the calls. That doesn’t scale.
+So...
+Here’s what’s next:
+Unify the content templates. Kill the redundancies. Build one system, not two.
+Finalize a design system. One source of truth for styles—no more manual merges.
+Automate content deployment. Markdown or Notion in, published out. End to end.
+Set up AI feedback loops in both trading and content... get the system learning, adapting, making decisions without me.
+Separate roles. I lead strategy. AI handles execution. Simple.
+This isn’t about scaling for someday... it’s about clearing the path today.
+"Efficiency is doing better what is already being done. Effectiveness is doing what should be done."
+— Peter Drucker

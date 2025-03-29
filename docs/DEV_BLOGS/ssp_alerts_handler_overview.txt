@@ -1,0 +1,19 @@
+Devlog // 2025-03-15
+"What’s slowing the system down, and why am I still the bottleneck?"
+Did a deep dive today on the alert handler I’ve been working through...
+The core logic’s solid—creating alerts, processing them, deactivating once they trigger... but it’s all still running on cron jobs inside WordPress. That’s not going to cut it. Feels like dragging a race car with a rope.
+What’s breaking?
+Two things...
+First, the whole process depends on cron timing—no real-time triggers. Second, the logs are just logs... they aren’t feeding anything back into the system to adapt. It’s passive.
+Every piece is doing its job, but they’re doing it in isolation... and I’m still the one tying it all together manually.
+So... here’s the shift:
+Moving the alert system off cron and into an event-driven pipeline—real-time data triggers or nothing.
+Serverless functions are next... AWS Lambda most likely. Fast, scalable, and out of WordPress.
+The logger’s getting plugged into an AI monitor. If something breaks, it’ll auto-adjust or at least flag me without waiting on me to dig.
+And I need a unified command layer. One place to control everything... trading signals, alert states, content generation triggers. No more scattered ops.
+What’s next?
+Build the event-driven system first... remove the cron job.
+Map out the serverless alert handling flow.
+Hook the logs into the AI feedback loop so the system can start making its own decisions at the edges.
+This is the convergence work... cutting out everything that makes me the friction point.
+“Velocity comes when you stop moving parts and start moving systems.”

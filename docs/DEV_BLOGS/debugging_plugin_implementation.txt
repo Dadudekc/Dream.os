@@ -1,0 +1,14 @@
+Devlog: Can precision and speed coexist without breaking the system?
+Been sitting with that question for most of today...
+Trying to push tighter execution without losing the flexibility I need in the system.
+Quick rundown on what I worked on...
+Refactored the FreerideInvestor plugin—condensed the entire flow into something cleaner, faster... stripped out the portfolio stuff I wasn't feeling. It's tighter now... less drag. Added historical data visualization and email alerts directly into the stock research dashboard. The goal was to give users a real sense of what’s happening without making them dig.
+Biggest thing I tackled was the sentiment analysis pipeline... it was getting messy. OpenAI was kicking back non-numeric scores... which broke the trade plan logic downstream. Reworked the prompts to force JSON outputs for the sentiment score... way cleaner now. No more parsing random text responses. Ran through a few symbols (TSLA, AAPL)... flow held up under pressure.
+Alerts system is live—at least the backend. Cron jobs are checking hourly against user-defined conditions (price/sentiment)... triggering emails when they hit. Feels good having a feedback loop that doesn't rely on me manually pushing updates.
+What broke...
+OpenAI’s inconsistent responses were the main warzone. Half the time it wanted to write essays when I just needed a float. Also had to wrestle with caching logic... some data wasn’t clearing as fast as I wanted when testing rapid requests. Cleaned up the transients and tightened the TTL.
+What’s next...
+Thinking about spinning this out into a second plugin... something built on the same backbone but pushing the analysis deeper for premium users. Maybe a custom OpenAI model... maybe a different angle altogether.
+I need to decide if it's worth building another layer or just making this thing smarter.
+Either way... keeping the execution fast and simple is the priority.
+"Discipline equals freedom... the tighter the system, the more room you have to move."

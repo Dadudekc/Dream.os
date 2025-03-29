@@ -1,0 +1,17 @@
+Devlog | 2025-03-16
+Introspective prompt: Where am I losing energy on things that should already be automated?
+Quick one...
+Spent time deploying a MySQL Flexible Server inside Azure... nothing fancy, just another backend piece for the trading bot stack. The goal was simple—get the data layer spun up and out of the way. But even in something that straightforward, I’m realizing how much energy gets bled on the in-betweens.
+Had to manually check deployment status, interpret Azure’s verbose outputs, then condense that into something actionable. Wasted time asking for the summary I should’ve gotten in the first place. That tiny loop exposed something bigger—I'm still handling too much micro-decisions across the system.
+It’s a focus leak... and at scale, that compounds.
+I ran an audit on the workflows off the back of that. Found the usual suspects:
+No single dashboard consolidating system status across trading, automation, and content streams
+AI isn’t compressing info as aggressively as it should
+Feedback loops between systems aren’t tight enough yet... no unified knowledge graph feeding real-time context
+So that’s the pivot.
+Rolling out AI-driven status monitors for Azure and the rest of the stack... feeding into a single dashboard.
+Switching all my AI comms into ultra-concise mode by default... zero bloat, drill-down only when I ask for it.
+Next step is weaving everything into a cross-domain knowledge graph... because this fragmentation is holding back convergence.
+This is the work...
+Nothing fancy, but it’s the grind that frees up bandwidth for bigger decisions later.
+"Do the work today that makes tomorrow inevitable."

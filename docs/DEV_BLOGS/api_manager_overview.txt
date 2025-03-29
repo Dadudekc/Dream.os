@@ -1,0 +1,12 @@
+Devlog: Where's the slowdown really coming from?
+Been thinking about that a lot today... how much of the drag is the work itself, and how much is stuff I’m unconsciously tolerating in the system.
+Did a deep dive on the API_Manager class... found two versions of the same system living side by side. One had better logging, the other had the full data pipeline buildout. Neither was clean. Merged them into one solid structure... cut out the duplicated logic, tightened up the caching, and added proper logging so I can actually see what’s going on when it runs.
+Then I stepped back and looked at the bigger problem...
+Everything was running serial. Every API call waits for the one before it to finish. That's killing the flow.
+So I mapped out a parallel pipeline... queuing up async calls instead of blocking the system. Same with sentiment analysis—right now it's doing OpenAI calls one by one on every news headline. That's... not gonna scale. Next step is batching those out or running a local model instead of farming every request out to OpenAI.
+Also flagged how brittle the API layer is... if one call fails, the whole process dies. No fallback, no fail-open pattern. That’s going on the fix list.
+What’s next is building out the reinforcement loop...
+Right now, the system makes suggestions based on hard thresholds—static rules. It needs to adapt... and I’m thinking RL or Bayesian optimization to drive that. Less hand-tuning... more learning by doing.
+Focusing hard on removing the friction points. Every piece that slows execution has to go.
+"Velocity isn’t about adding more... it’s about cutting what slows you down."
+Back in it tomorrow.

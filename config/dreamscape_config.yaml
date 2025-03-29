@@ -1,0 +1,65 @@
+ai:
+  frequency_penalty: 0.0
+  max_tokens: 2000
+  memory:
+    contexts:
+      dreamscape:
+        max_entries: 5000
+        min_score: -0.3
+      social:
+        max_entries: 2000
+        min_score: -0.5
+      workflow:
+        max_entries: 3000
+        min_score: -0.4
+    max_entries: 10000
+    min_score: -0.5
+    prune_threshold: 0.8
+  model: gpt-4
+  presence_penalty: 0.0
+  reinforcement:
+    decay_factor: 0.95
+    enabled: true
+    feedback_types:
+    - user
+    - automated
+    - metric
+    learning_rate: 0.01
+    min_samples: 100
+    score_weights:
+      automated: 0.8
+      metric: 0.6
+      user: 1.0
+    update_interval: 3600
+  stop_sequences: []
+  temperature: 0.7
+app:
+  debug: false
+  log_level: INFO
+  max_retries: 3
+  name: ChatMate
+  timeout: 30.0
+  version: 1.0.0
+security:
+  allowed_ips:
+  - 127.0.0.1
+  api_keys: {}
+  rate_limits:
+    api: 100
+    default: 60
+social:
+  discord:
+    allowed_roles: []
+    channels: []
+    prefix: '!'
+    token: ''
+  twitter:
+    access_secret: ''
+    access_token: ''
+    api_key: ''
+    api_secret: ''
+storage:
+  backup_count: 5
+  base_path: D:\overnight_scripts\chat_mate\data
+  compression: true
+  max_log_size: 10485760

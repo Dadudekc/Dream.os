@@ -1,0 +1,11 @@
+Devlog | 03.16.25 | TSLA Puts + Trailing Stop Strategy Build
+How do you stay patient when you exit clean… but watch the move keep going without you?
+That’s what hit me today.
+I caught a solid trade on TSLA. Entered puts around $352, took profits at $349. Textbook. But then it dumped another $8... straight to $341 after I got out. Felt that one. Not from a loss—more from knowing I left meat on the bone. I made 37% on the day. Locked in +$271. And I’m done early. That’s the win. But watching that move keep bleeding out? It pressed on me.
+So I did what I do after these moments... I broke it down. Built out a trailing stop strategy right after. If I’d trailed half the position, I would’ve doubled my profit. Simple as that.
+Logged the whole thing into the Tbow repository... full Python implementation. It calculates different exit scenarios—full exit at first target, full exit at final target, and 50/50 partial exit with trailing stops. Ran the sims. No fluff. Data backed. Clear that trailing is the better move if I want to catch bigger pieces without giving back profits.
+What’s next...
+Refine this into my playbook. Add ATR-based dynamic trailing and integrate it into the auto-trader I’m building for the plug.
+One trade at a time...
+One system at a time.
+"Discipline gets you in the game. Adaptation keeps you there."

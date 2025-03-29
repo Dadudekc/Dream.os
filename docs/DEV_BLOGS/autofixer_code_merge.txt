@@ -1,0 +1,9 @@
+Devlog // 2025-03-16
+"How do you know when to rewrite a system... and when to just tighten the screws?"
+Spent most of today hammering through the docstring generator again. Thought I had it dialed in, but it wasn’t picking up files that already had docstrings... even when they were clear as day at the top of the file. It kept rewriting them anyway, or worse, skipping logic that should’ve caught existing strings.
+The issue? My extract_existing_docstring() was too simplistic. It was looking for triple quotes but wasn’t handling edge cases where docstrings had spacing quirks or multi-line formats that broke the check. I reworked the parsing—added stricter conditions and made it less brittle. Also adjusted the logic for skip_existing to properly compare the new docstring against the existing one before deciding to update.
+Another hit: the OpenAI calls were failing silently on some runs. The old openai.ChatCompletion.create() is deprecated in the newer API versions. Didn’t catch that until I read the logs more carefully. Swapped the client over to the new openai v1.0+ approach, switched the instantiation, and handled retries cleaner.
+Extended main.py and debugging_strategy.py docs too. Clarified the automation flow, especially on patch validation and rollback. That whole cycle is cleaner now... less guesswork if something fails. It’s still fragile in spots, but getting better.
+Next up: rebuild the JSON module mapping so it actually records when docstrings are present and when they’re not. Right now, it just yells "No docstring found" on files that clearly have them... that’s a logic fail I need to tighten up.
+Small moves... but it’s stacking.
+"Persistence guarantees progression. Precision guarantees elevation."

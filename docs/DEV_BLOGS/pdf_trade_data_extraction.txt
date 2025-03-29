@@ -1,0 +1,11 @@
+Devlog | 03.16.2025
+“What’s the balance between precision and flexibility when parsing messy data?”
+Been grinding on parsing PDF broker statements again... specifically the ones that love throwing inconsistent formats and broken layouts at me.
+The focus today was tightening up section detection and improving trade extraction when headers vary or formatting breaks down.
+Started by building an enhanced section splitter. Instead of relying on one header match, I mapped out multiple regex patterns per section—catching stuff like “Account Activity” even when it’s labeled “Trade Activity” or something equally annoying. It’s basic right now, but functional... regex is doing the heavy lifting until I wire up an NLP pass later.
+On the extraction side, I added a list of regex patterns for each section. Some brokers wrap trades differently, so one pattern wasn’t cutting it. Now the system loops through different patterns, grabs what it can, and logs anything it misses... surprisingly, that’s cleaned up a lot. Still seeing some mismatches on edge cases, but it’s more stable than yesterday.
+What tripped me up...
+The headers. Some pages jam multiple sections together, and the line spacing is all over the place. Decided not to overengineer that yet—just logged the worst offenders for later.
+Next...
+Want to experiment with topic modeling to group sections dynamically. Might layer it in after the regex splitter. Also thinking about training a simple NER model to help extract trades when the regex hits a wall. We’ll see...
+"Be stubborn about your goals and flexible about your methods."

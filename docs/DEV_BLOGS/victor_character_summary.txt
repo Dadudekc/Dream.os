@@ -1,0 +1,16 @@
+Devlog // 0315
+"What’s the real cost of trying to do everything yourself?"
+Spent some time breaking down where my systems are bleeding energy... trading, automation, content—none of it is moving as fast as it should be. I’m carrying too much of the load manually, especially when switching between these modes. Context switching’s been killing my execution speed. One minute I’m tweaking a trading model... next I’m drafting narrative frameworks... and somewhere in there, automation scripts get halfway built and shelved.
+There’s no real convergence yet... not where I need it to be.
+The big insight:
+I’m burning energy keeping mental tabs on everything instead of building tools that manage that state for me. Context management needs to be externalized. I started mapping out how an AI-driven context manager would handle state shifts—task snapshots, last actions, next triggers... everything loaded on demand so I can switch focus without dropping momentum. That’s priority one.
+Content generation was another snag. I’m still writing world-building and lore from scratch every time. It’s not efficient. Pulled together a framework for modular content blocks—reusable assets, archetypes, narrative templates. That’ll speed things up... and free me up to focus on deeper thematic alignment rather than rebuilding scaffolding every time.
+On the automation side... feedback loops aren’t tight enough. Data’s fragmented—trading metrics here, automation logs there, content impact nowhere. No single place to assess what’s working and what’s lagging. Started drafting a unified dashboard... one interface that feeds me actionable signals in real time. No more flying blind.
+Tricky part’s going to be integrating the feedback loops and getting models to iterate faster without me handholding the process. I’m putting hyperparameter tuning on autopilot next... probably start testing reinforcement learning agents for live strategy adjustments after that.
+What’s next:
+Build the context management system.
+Stand up the modular content library and train a small LLM on my tone.
+Ship the unified dashboard MVP and get live signals flowing in.
+Automate strategy optimization for trading models.
+Feels like I’m finally zeroing in on where the bottlenecks live... just need to execute clean.
+"Discipline is remembering what you want."

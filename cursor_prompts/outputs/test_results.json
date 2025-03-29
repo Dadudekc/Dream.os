@@ -1,0 +1,751 @@
+[
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/MemoryManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/MemoryManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/AgentDispatcher.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/AletheiaPromptManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/bootstrap.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ChatManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/config.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/config_base.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ConsoleLogger.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/CycleExecutionService.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/DriverManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/DriverSessionManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/EngagementAgent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/feedback.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/FileLogger.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/FileManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/LoggerFactory.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/MemoryManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/memory_utils.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/NarrativeAnalytics.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/OpenAIPromptEngine.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/PathManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/PromptCycleOrchestrator.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/PromptResponseHandler.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ReinforcementEngine.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ReinforcementEvaluator.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ResilientPromptExecutor.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ResponseHandler.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/service_container.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/SystemHealthMonitor.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/TaskOrchestrator.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/TemplateManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/ThreadPoolManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/UnifiedFeedbackMemory.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/UnifiedLoggingAgent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/base_agent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/chat_scraper_agent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/CursorAgentInterface.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/DocAgent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/main.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/RefactorAgent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/refactoring_utils.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/ReinforcementEvaluator.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/Agents/specialized_agents.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/config.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/controllers/assistant_mode_controller.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/controllers/log_monitor_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/controllers/prompt_loop_orchestrator.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/controllers/speech_input_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/models/model_mistral.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/models/model_o3_mini.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/models/model_template.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chatgpt_automation/performance/ModelPerformanceTracker.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/chat_engine/chat_engine_manager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/config/config_manager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/executors/base_executor.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/executors/chatgpt_executor.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/executors/cursor_executor.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/llm_backends/huggingface_backend.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/llm_backends/ollama_backend.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/CompositeLogger.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/ConsoleLogger.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/LoggingService.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/factories/LoggerFactory.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/services/ai_output_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/utils/AsyncDispatcher.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/logging/utils/setup.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/meredith/profile_scraper.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/meredith/resonance_scorer.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/micro_factories/chat_factory.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/micro_factories/dreamscape_factory.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/pipelines/project_optimizer_agent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/prompt_cycle/audit.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/prompt_cycle/dialog.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/prompt_cycle/memory.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/prompt_cycle/narrative.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/prompt_cycle/scraping.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/prompt_cycle/state.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/refactor/refactor_and_polish.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/chat_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/config_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/cursor_execution_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/debug_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/discord_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/dreamscape_generator_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/DynamicContainer.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/fix_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/git_integration_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/rollback_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/service_registry.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/discord/DiscordBatchDispatcher.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/discord/DiscordLogger.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/discord/DiscordQueueProcessor.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/services/requirements/requirements_generator_service.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/AIChatAgent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/CommunityIntegrationManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/community_integration.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/social_config_wrapper.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/StrategyLoader.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/UnifiedCommunityDashboard.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/UnifiedPostManager.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/ai/chat_agent.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/data/post_history.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/strategies/ai_strategy.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/strategies/base_platform_strategy.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/strategies/community_scheduler.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  },
+  {
+    "success": true,
+    "output": "\n\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+    "file_tested": "core/social/strategies/wordpress_strategy.py",
+    "test_file": "cursor_prompts\\outputs\\generated_test.py",
+    "return_code": 0
+  }
+]

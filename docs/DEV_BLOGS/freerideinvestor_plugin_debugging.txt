@@ -1,0 +1,25 @@
+Devlog // FreerideInvestor // System Audit Pass
+"Where is my energy leaking... and why am I tolerating it?"
+Spent the last block doing a full teardown on the FreerideInvestor plugin—line by line, process by process. If you’ve ever built something that kept growing without stopping to audit it... yeah, you know how messy it can get.
+I’ve been duplicating effort in a lot of areas...
+Multiple API calls doing the same validation...
+Cron jobs running on autopilot without thinking about smarter triggers...
+The whole alert system? Passive. Could be event-driven. Should be.
+And OpenAI sentiment calls... I’m hitting those more than I need to because there’s no caching on headlines. Waste of time, waste of tokens. I knew it, but I didn’t stop to fix it.
+Until now.
+Also clocked that I’m manually triggering too much—trade plans, content... it’s reactive when it should be predictive.
+If I’m waiting to act, I’m already late.
+What broke?
+My focus.
+Too many contexts switching between code, data, content...
+Trying to build and run the system without the system running itself.
+What’s next...
+Unify all API handling under one client. Done right, this cuts the duplication by half.
+Move alerts to serverless functions and trigger off events.
+Get a local sentiment engine running—stop calling OpenAI for every damn headline.
+Start predicting which tickers get trade plans based on user data...
+Spin up a real monitoring layer—no more flying blind on cron jobs and alerts.
+And finally... automate the content loop. The AI should be pre-writing before I even think about it.
+This isn’t about polishing...
+It’s about accelerating.
+“First simplify. Then amplify.”

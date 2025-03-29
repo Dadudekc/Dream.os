@@ -1,0 +1,21 @@
+Devlog | 3.16.25
+FreeRideInvestor.com: Automation Workflow Audit + Azure Stack Decisions
+"What if the thing slowing you down isn’t the work... but the way you’re doing the work?"
+Been sitting with that today...
+Did a deep audit on the automation workflows I’m building for FreeRideInvestor... and the way I’m stacking services was adding way more drag than speed.
+Off the whip, I was leaning into Azure Logic Apps to spin up workflows—pulling in stock data, pushing out alerts, automating some backend stuff. It’s clean on the front end... drag and drop... but once I zoomed out, I realized I was stacking Azure Logic Apps and Azure Functions and WebJobs in places. It looked modular... but the reality was, it was fragmented. Too many moving parts. Too much manual setup between each system.
+That’s the bottleneck.
+And that’s on me.
+The audit laid it out clear:
+Functions can do most of what I’m running across three services... but with more control, less overhead, and it’ll scale cleaner.
+So, I’m cutting back.
+Stripping Logic Apps out of the core loops for now.
+Focusing on Azure Functions as the primary automation layer.
+One pipeline... not three.
+Next move is setting up CI/CD with GitHub Actions to automate deployments. No more pushing things manually. I need every edge I can find to move faster.
+Also looking at Azure API Management to clean up external API connections... simplify that layer and stop burning time on stuff that should already be systemized.
+This is the pivot...
+Get lean.
+Get faster.
+Build without drag.
+"Perfection is not when there’s nothing left to add… it’s when there’s nothing left to take away."

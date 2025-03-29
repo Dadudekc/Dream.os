@@ -1,0 +1,22 @@
+Devlog: Cutting Redundancy
+What’s the actual cost of holding on to systems that almost work?
+That was the question today...
+I dug into the trading strategy script—TSLA risk-managed play—and right away spotted the usual friction points...
+Hardcoded parameters everywhere. ATR multipliers, RSI thresholds, fixed moving average lengths... all needing manual tweaks every time the market shifts.
+Feels like fighting yesterday’s war with outdated tactics.
+Another thing that bugged me...
+Separate conditions for long and short entries... redundant. Same with the exits.
+It’s functional, but not scalable... and it slows down the system.
+The higher timeframe filter’s another bottleneck. Static. Manual.
+I’m thinking dynamic timeframes based on volatility make way more sense... but that’s for another pass.
+What broke?
+Nothing broke… but it’s clear the whole feedback loop is missing.
+No self-optimization.
+No automated adjustment based on performance.
+It’s just running in place unless I keep steering it... and that’s a time sink.
+What’s next?
+Building in AI-driven parameter adjustments... so I’m not constantly hand-tuning.
+Merging the entry/exit logic to keep it clean.
+And tightening the loop... letting the system learn, adapt, and adjust on its own.
+This feels like the work that unlocks everything else.
+“Speed isn’t the goal. Clarity is. Speed follows.”

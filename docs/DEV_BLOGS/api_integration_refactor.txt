@@ -1,0 +1,10 @@
+Devlog: Why does cleaning up always take longer than building?
+Spent the day deep in the Advanced Fintech Engine... stripping it back, figuring out why things felt clunky even though most of the core functions were already there.
+The main issue was namespace confusion and duplicate class declarations. I had files competing with each other—one inside the includes folder, another in the root... both trying to do the same thing. That killed execution and threw up constant "class not found" errors, even though the plugin was technically active.
+I cleaned all that up... consolidated the Advanced_Fintech_Engine class into a single, clean instance. Moved all the logic into one well-defined place. No more duplicate initializations... no more bloated declarations that didn't need to exist. It's funny... sometimes you think you're building something new, but the real progress is just untangling your own mess.
+Also tightened up how the plugin hooks into WordPress. Namespacing was part of the issue—WordPress doesn’t play nice with it unless you’re deliberate. Fixed the callback functions so they’re actually accessible in the WordPress action hooks.
+The OpenAI sentiment calls... still a bit noisy. They’re working, but I’m thinking about replacing or caching some of that to stop burning API credits on repeat data. That’s a tomorrow problem.
+What’s next…
+Refactor how API keys are loaded and managed. Might move toward an admin settings page so I’m not relying on constants. And probably need to add some better error handling if API calls fail… right now it’s just logging, but I want to make it more resilient.
+Feels like slow work... but it’s getting sharper.
+"Clarity comes from subtraction, not addition."

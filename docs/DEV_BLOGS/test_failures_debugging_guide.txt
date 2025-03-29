@@ -1,0 +1,10 @@
+Devlog // 003
+What’s the cost of chasing 100%?
+Spent today deep in test coverage... pushing hard to tighten up the data_fetch_utils module. Coverage jumped to 98% on the test suite, and I finally got 15/15 tests passing consistently. Clean runs, zero flake. But here’s the thing—it’s starting to feel like diminishing returns. Not on quality... on time.
+The core work was expanding the async tests. Finnhub metrics, Alpha Vantage, Polygon, Alpaca, NewsAPI... every major pipeline got new tests or stricter assertions. Mocked failures, timeouts, malformed payloads... all the chaos I could simulate in a single sitting. Even layered in fixed timestamps to kill off those timezone dtype mismatches. It was surgical. Every test I added pushed the reliability forward... but it also took more time than I wanted to spend on infra.
+What broke?
+Timezone handling was a headache. Pandas threw dtype mismatch errors when trying to compare datetime64[s] with datetime64[ns] after stripping the timezone info. Wasted too much time normalizing that across test cases. Async test speed is another problem. Running them sequentially is too slow... parallelization needs to happen. And mocking? I’m repeating the same boilerplate with aioresponses and patch. It works, but it’s messy. That’s on deck.
+What’s next...
+I’m moving off test coverage for now. It’s solid enough. The bigger play is optimizing execution velocity. Parallelizing tests, abstracting mock layers, and chaos testing the trade systems are next up. Once that’s dialed, I want to automate devlogs and commit workflows straight from CI outputs. No more context switching. Get the system thinking for me... not the other way around.
+“Eliminate the unnecessary, automate the essential, and focus all energy on scaling intelligence.”
+Onward.

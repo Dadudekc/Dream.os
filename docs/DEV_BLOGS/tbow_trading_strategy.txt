@@ -1,0 +1,26 @@
+Devlog: Where’s the Bottleneck?
+Been thinking about this a lot today…
+Where’s the actual bottleneck?
+Not the surface stuff… the real drag in the system that slows everything else down.
+Turns out—it’s everywhere, just small enough to hide in plain sight.
+Worked through a full audit of how I’m trading, building, and pushing content right now.
+It’s messy.
+Manual analysis, flipping between charts, building the TBOW post…
+Drafting copy, posting to socials, logging everything.
+Every piece works… but it’s not working together.
+That’s where time gets eaten.
+What broke?
+The old process.
+Or more like… I broke it on purpose.
+Too many duplicated tasks... too much manual energy spent on things AI can handle.
+It’s fine—because now I’m seeing exactly where to start cutting.
+What’s next...
+Build a real automation flow.
+Not just one-off scripts—an actual pipeline that connects trading setups to posts to marketing.
+AI writes the post, pushes to socials, tracks it.
+Data comes in, AI suggests the next trade... and loops it.
+Everything feeding back into itself.
+That’s the move.
+No more dragging the system…
+Time to let it run.
+"The system you build is only as fast as the part you refuse to fix."

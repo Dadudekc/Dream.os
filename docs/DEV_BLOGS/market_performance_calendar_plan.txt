@@ -1,0 +1,15 @@
+Devlog Update — TDD Loops & Execution Drag
+How much time do I actually spend building vs. just approving what’s obvious? That’s what today’s system audit made me really sit with... The way I’m running my own execution loops is still too manual. Too many “should I do this next?” moments when the answer is already clear. AI should be moving through milestones autonomously, not waiting for me to confirm every step.
+What was worked on
+Backend for the market performance calendar is up... Flask API, SQLite storage, and a clean TDD cycle for adding market days, fetching data, and running analytics.
+Analytics endpoint is pulling up/down day counts, longest streaks, and monthly summaries. This is foundational for pattern recognition and deeper market behavior tracking.
+Testing finally feels structured... but there was still some execution drag.
+What broke / What was tricky
+TDD flow got bottlenecked—not because of implementation, but because I’m still approving obvious next steps. Had to course-correct and let the system run itself.
+Flask doesn’t like adding new routes mid-run... hit a bug when trying to bolt analytics in after execution started. Fixed it by preloading all routes before test execution.
+Cognitive load is still high. I need to lock myself into strategy/review mode and let execution self-organize.
+What’s next
+Front-end development—FullCalendar integration, real-time updates from the backend.
+AI-driven TDD loops—Tests should generate, fail, improve, and iterate without human intervention until milestone review.
+Parallelizing execution—Trading, automation, and content systems need to evolve together, not sequentially.
+"You don’t rise to the level of your goals. You fall to the level of your systems."

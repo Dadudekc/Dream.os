@@ -1,0 +1,17 @@
+Devlog // AI Patch Systems + Debugging Stack Audit
+March 15, 2025
+What’s the actual source of drag right now?
+That was the question I kept circling back to as I dug through the AI patch workflows and debugging loops...
+I’ve been consolidating the AutoFixManager and the AI patch layers into one streamlined system. The goal is to get rid of the siloed modules and make sure the patching and debugging engines aren't operating in isolation. AIPatchReviewManager is now imported clean into the new unified AIPatchManager. The recursion and learning feedback loops are in place, but they aren’t fully autonomous yet. Right now, the retry mechanisms still need manual nudges if a fix fails—too much friction. That’s next.
+Found a ton of import errors in the logs—stuff like learning_db and agents missing, bad logger paths duplicating logs/logs/quick_fix_manager.log... classic. Spent too much time chasing those down. Circular dependencies creeping into some of the plugin agents too. Patched most of it, but the module hierarchy still needs refactoring to fully kill that off.
+Also flagged some trade bot issues. TBOW bots were tripping over missing dependencies like scipy and alpaca_trade_api. That’s a blocker for real-time trade execution... fixed that, but still not happy with how fragmented the execution model routing is between Mistral, DeepSeek, and OpenAI. That’ll need a routing layer so the best model gets picked dynamically.
+What’s working:
+Logging stack is finally initializing clean—at least on most runs.
+AutoFixManager can now handle patch fallback to learned fixes and AI LLM suggestions in one pass.
+ReviewManager is hooked in and pulling rankings from AIClient evals.
+Trading bots fire, but they’re still brittle when a module hiccups.
+Next:
+Tighten up AI debugging loops so retries are fully autonomous... no human in the loop.
+Unify model routing across trading, patching, and debugging. One decision engine.
+Spin up the AI content repurposing agent for cross-platform drops. That needs to be embedded in the main stack, not a separate task.
+“Speed doesn’t matter if you’re running in the wrong direction. Course-correct, then move.”

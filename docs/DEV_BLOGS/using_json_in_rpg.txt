@@ -1,0 +1,23 @@
+Devlog | March 15, 2025
+What’s the real cost of overbuilding before the system’s ready to handle it?
+Today was one of those days where the deeper I dug, the more I saw how messy things have gotten behind the curtain...
+I’ve been moving fast between trading, automation, and content workflows—stacking features, chasing velocity—but that speed is starting to show cracks.
+Spent a good chunk of time auditing the system end-to-end. It’s clear now...
+There’s too much weight sitting on WordPress. Cron jobs. AJAX requests. Data fetches that overlap between WordPress and Python. It’s all stacked in places that aren’t meant to carry this kind of load.
+The big choke points:
+Alert triggers are running on hourly cron... that’s not gonna cut it. Need real-time webhooks.
+Alpha Vantage and Finnhub are single points of failure. No fallback. No abstraction layer.
+Sentiment analysis through OpenAI is chewing up time with one-off calls instead of batch processing.
+The logging is all over the place... WordPress logs here, Python logs there. No unified system. No auto-detection on failures.
+Docs and project structures are being spun up manually every time. Should’ve automated that from day one.
+What broke me today was seeing how much time I’m losing to redundant tasks...
+Like fetching the same data in different places and relying on cron for things that need to happen now, not an hour from now.
+What’s next:
+Webhooks for alert triggers. Kill cron.
+Move alert processing into Python microservices, get WordPress out of the loop.
+Batch OpenAI calls and cache them aggressively. Redis, maybe.
+Centralize all logs. Elastic or something simple. Just needs to surface anomalies.
+Automate the doc generation pipeline—XML, JSON, PDF. No more manual exports.
+System convergence is the priority now...
+Tight loops. Clean triggers. No wasted motion.
+"If you don’t make time for maintenance, your system will make time for failure."

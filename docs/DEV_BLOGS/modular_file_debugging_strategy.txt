@@ -1,0 +1,20 @@
+Devlog // 0325
+“What’s the real cost of going modular when the thing already works?”
+Been sitting with that today... because that’s the wall I hit.
+I’m breaking down this first file—FreeRideInvestor—which works, but it’s huge. I know modularizing it is the right move long-term... easier to update, less cognitive load when things scale... but the thing is, after breaking it up into smaller files, it doesn’t work anymore.
+Somewhere in those pieces, one of them is wrong.
+And when I say wrong, I mean it’s throwing the whole system off... but it’s not obvious where.
+So I’m stuck in this loop of comparing the modular files to the original, piece by piece, trying to find which one broke the flow.
+What made this tricky was realizing I’ve been playing whack-a-mole—grabbing a file, checking it manually, testing it, then moving to the next. It’s reactive... and slow.
+I’m not here to move slow.
+Here’s what clicked:
+This can’t be about fixing files... it’s about validating the whole system, automating the checks, and letting the machine handle the low-level comparisons so I can stay focused on the architecture.
+Immediate next moves:
+Spin up a clean unit test suite for every module. No more “does it feel right”—binary results only.
+Automate diff checks between the original file and the modular versions... line by line, behavior by behavior.
+Clean up version control—branch per module, so I can trace exactly what’s changing without getting lost in commits.
+Map out the module relationships so I’m not carrying that in my head anymore.
+This isn’t about code.
+It’s about compression... getting leaner, sharper, and faster.
+"Do not pray for an easy life; pray for the strength to endure a difficult one."
+— Bruce Lee

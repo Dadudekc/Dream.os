@@ -1,0 +1,8 @@
+Devlog // 2025-03-16
+Why does every layer I automate end up exposing three more broken ones underneath?...
+Been deep inside the DebugAgent today—ran a full pass on the pre-debug auto-fix system... it technically works, but "works" is doing a lot of heavy lifting. The import fixer went rogue and mangled a bunch of test files... turning valid import statements into absolute garbage. Had to git restore everything back to clean because the fixes introduced more problems than they solved. Good call on the backups though... old me wouldn’t have planned ahead like that.
+I also caught an issue with the AST parsing implementation... realized regex wasn’t going to cut it for handling import corrections, so I started shifting over to AST-based fixes. Better precision. Less dumb replacements. It’s still brittle, but it’s moving.
+DebugAgent’s test suite ran... lots of failures. Some were expected, others were a little demoralizing. MockAgents failing because they didn’t have expected kwargs, ‘project_name’ mostly. Not a massive deal, but it's proof that I need to tighten up constructor consistency across base classes and mocks.
+Right now, the DebugAgent’s core loop feels like it’s pretending to be stable. There’s too much drift between what it thinks it’s doing and what it’s actually doing. Clean-up’s coming next... simplify the patch tracking system, make sure rollback and backup are airtight, and then hit the learning DB to make the fix recommendations smarter.
+One layer at a time... no shortcuts.
+“Build what outlives you... but debug like you live in the mess.”

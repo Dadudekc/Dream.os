@@ -1,0 +1,9 @@
+DEVLOG 03.14.25
+What’s the real cost of friction inside a system?
+Been thinking on that a lot today... friction isn’t always obvious until the system stalls. You feel it as delay, second-guessing, mental load stacking up where it shouldn’t. That’s what came up hard when I was looking over the circular import issue inside AgentBase and AIClient. Tight coupling that was never supposed to be tight. I let it slide because it was working “well enough”... until it wasn’t.
+The error was a symptom... circular dependencies between core agents, patch managers, and debugging strategies. Too many direct links. It’s slowing down isolated testing and killing the plug-and-play expansion I’m building for. So... the plan is to refactor AgentCore—isolate interfaces, apply dependency inversion, and stop everything from hardwiring itself into chaos.
+On the trading side... same kind of friction. MACD curl setups are clean when I’m manually validating them, but that’s the problem. I’m still in the loop when I shouldn’t be. AutoValidator Agent is next—confluence checks, trade readiness scoring, full validation before I even look at the screen. Trades need to run or fail without me babysitting them.
+Content flow’s another friction point... I’m writing raw, but it’s not scaling. AI isn’t drafting off my trade logs or project pushes yet. That’s leaving me stuck in repurposing loops—rewriting the same ideas for different platforms. Waste of time. Building the Content Mutation Engine and AutoNarrator Agent so the raw becomes infinite output. One build, everywhere.
+What’s next...
+Refactor the codebase, deploy AutoValidator, and get the unified memory bus online for the AI agents. That’s the move. Kill friction before it kills momentum.
+"Friction reveals where the system still depends on you. Fix it, or stay stuck."

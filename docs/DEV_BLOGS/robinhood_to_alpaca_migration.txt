@@ -1,0 +1,11 @@
+Devlog 03.16.25
+"How much technical debt is too much before it starts pulling execution velocity backwards?"
+Felt that one today...
+Spent the last block cleaning up some legacy code that’s been dragging—mostly the old Robinhood integration. It’s been throwing errors in the test suite...
+AttributeError: module 'trading_api_robinhood' has no attribute 'rh'
+—because rh doesn’t exist anymore. I killed that dependency weeks ago but didn’t circle back to gut the tests properly. Classic.
+I rebuilt CustomRobinhoodAPI with the missing methods (get_account, place_order) so the tests stop tripping over themselves... but honestly, this Robinhood stuff is living on borrowed time. Alpaca is where I’m going, full stop. The Robinhood API feels like dead weight.
+Also spun up a new automated refactoring script—this one's running on Ollama with mistral::latest instead of GPT-4... way more cost-efficient. It crawls through modified Python files, creates timestamped backups, and pipes them through the model for cleanup. Added retries, parallel processing if I want to scale it up later. Ran tests on it—solid so far. I’ll let it rip overnight and see what shakes out.
+Finished by merging the MarketData classes... cleaned up the API key handling so everything pulls from .env properly. That’s one less thing to babysit.
+Next up—full migration to Alpaca on the trade execution side. Gonna refactor TbowTacticAgent to work with the new stack, cleanly.
+"Speed is useless without direction."

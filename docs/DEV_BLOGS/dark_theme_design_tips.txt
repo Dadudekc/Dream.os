@@ -1,0 +1,19 @@
+Devlog — 2025-03-16
+Question I’m sitting with:
+Where am I leaking time in places that should already be automated?
+Been deep in refining the front end for the dev blog... the usual loop—layout tweaks, CSS passes, responsive testing. You know the drill. But about halfway through, it hit me: I’m still hand-tuning design components when they should already be modular... already automated... already self-correcting.
+Pulled back and did a full audit mid-build.
+The bottlenecks are pretty clear.
+Too much manual iteration on UI stuff that should be living inside a component library. No single source of truth for design tokens. Still missing an AI system that can spit out clean, adaptive layouts on demand. I’m chewing up cycles where I should be allocating them toward the core—alpha generation, automation pipelines, execution.
+So...
+Refined the table of contents into button-style nav.
+Cleaned up grid systems for both blog posts and the updates section.
+Brought the design system in tighter... but still more to do.
+The tricky part was keeping everything responsive without falling back into over-engineering.
+Felt myself slipping into that trap more than once today.
+What’s next:
+Build out a modular component library (Tailwind style or custom).
+Spin up an AI agent to handle CSS/UI generation... done manually for now, but that has to shift.
+Rebalance focus—70% trading systems, 30% content.
+The frontend is clean enough. Time to move.
+"Systems build themselves when you stop getting in their way."

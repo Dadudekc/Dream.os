@@ -1,0 +1,22 @@
+Devlog // 2025-03-16
+"What’s the real bottleneck here—my system... or me?"
+That’s been running through my head while tearing down what I’ve built so far.
+I ran a full audit of the trading bot and its architecture today. The raw takeaway? It works... but it’s not fast enough. Not responsive enough. Not self-sufficient enough.
+I’m still the bottleneck.
+The Robinhood API flow needs manual login. Every time. That friction breaks momentum, and it's not sustainable if I want to scale or automate beyond myself. Authentication has to be automated, clean, no touch. Azure Key Vault’s getting pulled into the stack next.
+The system’s polling data on a schedule... but it needs to be event-driven. Async, fast, reactive. Right now, it’s reactive on a timer, not on triggers. That means I’m late to trades I should be first on. Switching this to an event-driven core is priority.
+Database’s on SQLite... and I’m feeling it. It was fine to get rolling, but it can’t scale. It’s going to choke if I push it harder. Moving to Azure SQL or Postgres. Whichever plays nicer with async pipelines and lets me scale the backtests and live logs without breaking.
+And I’m still using a GUI to trigger things manually in PyQt... yeah, no. It was a good build for learning. Not for scaling. I’m ripping the GUI out and setting up API endpoints and dashboards instead. I want automation running... and monitoring that lets me see what I need, when I need it. No distractions.
+On the content side... I’m spending time writing logs manually when AI could be summarizing system actions for me. That’s wasted bandwidth. I’m building a pipeline to auto-generate devlogs from system events and logs. Same voice. Same insights. Less grind.
+What broke?
+My tolerance for redundant tasks.
+What’s tricky?
+Balancing precision and scale without breaking trust in the system.
+What’s next?
+Automate token refresh + Key Vault
+Move the bot core to event-driven async
+Migrate database and decouple reads/writes
+Drop the GUI, launch a clean dashboard
+Auto-gen logs from system actions... so I can stay focused on the build
+...
+“Speed doesn’t come from rushing. It comes from removing everything that slows you down.”

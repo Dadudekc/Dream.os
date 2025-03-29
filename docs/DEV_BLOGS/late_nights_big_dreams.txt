@@ -1,0 +1,15 @@
+DEVLOG // 2025-03-15
+"How much speed am I trading for stamina right now?"
+Running on 3 hours of sleep again... probably pushing late into the night. This is the life I chose, but today I stepped back for a minute to audit how I’m moving through it.
+Broke things down across trading, automation, and content builds. Spotted a few bottlenecks bleeding time and energy...
+Cognitive load is higher than it needs to be. Running on fumes forces more decisions to get through basic stuff, which slows me down where I should be surgical.
+Context switching is killing flow. Bouncing between trading calls, automation builds, and content threads with no clean transitions burns energy I need for execution.
+Running reactive instead of systemized. Too much of me deciding on the fly instead of letting systems handle that so I can stay focused.
+What’s next...
+Locking in a sleep recovery protocol. Minimum 6-hour cores every 48, plus 20-min resets when needed.
+Setting hard blocks for trading, builds, and content... no more overlap.
+Deploying AI-driven task management to prioritize without me thinking about it.
+Content gets modularized and automated. Drafts, edits, and posts move faster without draining me.
+Micro-recovery between sprints—breathwork, movement, resets.
+Feels surgical. Less chaos, more clarity. Not just moving fast... moving right.
+"Discipline is choosing between what you want now and what you want most."

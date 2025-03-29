@@ -1,0 +1,9 @@
+Devlog // 03-16-2025
+How strict is too strict when you’re building entry logic?
+Been helping my friend clean up his automated trading strategy in PineScript today... the plan was to build an SR + supply/demand system with scaling and dynamic stop losses, but it hit that classic wall—no trades. Like, not a single one.
+First instinct was the entry conditions. Too tight. We had layered EMA crosses, swing breakouts, volume thresholds, RSI filters, VWAP, and a 200 EMA trend filter. Great on paper... but no price action was ever getting through that gauntlet.
+We loosened it up. Simplified to basic conditions—just a swing high breakout + EMA alignment to start. Once that triggered, we checked if the strategy would even place trades. Still nothing.
+Dug deeper... the real kicker was risk calculation. The distance between entry and stop loss was too big sometimes, causing position sizes to go zero or negative. That silently killed trades without throwing an error. Swapped to fixed position sizing for testing, and boom... forced some entries every 10 candles just to make sure the strategy was alive. It was.
+Also added debug markers and labels to show when conditions fired. Visual confirmation helps more than I expected—seeing the flow on the chart made it easier to tweak.
+So now it’s triggering entries, but there’s more to clean up. The exits need better tuning, and the scaling logic still feels messy. But... progress. Got some trades printing. Next up is tightening the logic without strangling it.
+“Build it simple first. Complexity comes later.”

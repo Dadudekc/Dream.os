@@ -1,0 +1,12 @@
+Devlog // T-Bow Tactics Build
+March 16, 2025
+"How do you know when the system’s tight enough to trust without your input?"
+Been sitting with that. Still don’t have an answer... but we’re closer.
+Today was all logic. Hardwired focus on the fundamentals before we go live. I locked into three main things: live data, trade execution, and AI risk management. Goal was clear—test everything I can here before we pull live API triggers on your end.
+First, built out a mock system to simulate Alpaca’s market data feed. 100 candles, real intervals, synthetic noise layered in... close enough to give the logic a workout. Then we ran the T-Bow trade plan engine over it. Indicators pulled in clean: EMA stack, MACD, RSI, and Bollinger bands. No lag... no weird NaNs. That was the first checkpoint.
+Next was execution logic. We made sure trades only trigger inside the entry zone. Set up mock executions—if the price isn’t there, no trade fires. Ran both failed and forced scenarios. Execution’s tight. Nothing sketch slipped through.
+Then came the heavier lift... AI-driven risk management. Dynamic stop-loss based on ATR. Position sizing tied to risk percentage. Built it out, tested it across extreme conditions—bullish rips, bearish dumps, low-volatility chop. Position sizing flexes like it should. Stops respect volatility. No dumb sizing calls, no false safety.
+Red... green... refactor... repeated until clean.
+Next... we integrate live API trading on your end. That’s the handoff.
+This system’s almost where it needs to be. Automation’s close. Trust comes next.
+"Slow is smooth. Smooth is fast."

@@ -1,0 +1,28 @@
+Devlog | 2025-03-15
+What’s the actual cost of letting small inefficiencies slide?
+Been thinking about that a lot today...
+Ran through a deep audit of my ML testing workflows and automation loops. Figured out where I’m burning cycles and why some things feel slower than they should.
+It’s not speed I’m after—it’s frictionless motion. System convergence. No wasted movement.
+Here’s the breakdown...
+What I worked on:
+Cleaned up and expanded the ML stock predictor test suite
+Added new tests: failure handling, Streamlit edge cases, LSTM model save/load fail scenarios
+Integrated mock data pipelines for consistent unit testing
+Started plugging coverage gaps (80% overall now, but not where I want it yet)
+Reviewed error handling in prediction and training workflows... it’s messy
+Ran the pytest coverage tool, checked the logs... saw the cracks
+What broke / what was tricky:
+Tests failed because error messages in the code didn’t match what the tests expected... simple, but it dragged
+Redundant fixtures all over the place... had mock_logger and mock_data split across files. Cleaned some of it up, but I need a centralized fixture system
+Exception handling isn’t structured. No hierarchy, no custom exceptions... means the AI agents can’t self-diagnose without me babysitting
+CI/CD pipeline isn’t fully integrated with the tests yet... manual runs waste time
+Spent time in the weeds instead of building self-healing logic... a pattern I’m cutting off now
+What’s next:
+Centralize error messaging, get rid of inconsistencies
+Build a conftest.py to handle all fixtures, enforce DRY across the test suite
+Draft a Global Error Handler—custom exceptions, unified logging, clean propagation
+Auto-doc the system architecture... error types, model structure, test results. AI-readable, not human-dependent
+CI pipeline needs to read pytest failure logs and feed AI agents next actions... no more human debugging
+Once that’s done, I can focus on the trading pipeline AI observer
+Systems aren’t slow because they’re complex. They’re slow because they aren’t self-aware yet.
+"Do not waste energy on things that do not move you closer."

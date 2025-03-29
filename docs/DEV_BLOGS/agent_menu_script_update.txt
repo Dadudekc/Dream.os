@@ -1,0 +1,16 @@
+Devlog | 2025-03-15
+What’s the cost of friction when you don’t even notice it’s there?
+Did a deep systems audit today… peeled back a few layers I’ve been ignoring because things were “working.” That’s the trap, right? Something works, so you stop thinking about whether it should work that way.
+The agent menu in the automation suite was the first thing I looked at. On paper, clean… modular… but it’s way too manual. Every interaction spins up a decision loop I have to step into—fzf menus for days, redundant prompts, and input checks that I keep rewriting instead of consolidating. That stuff adds up... slow bleed on time and focus.
+I rewrote it into a more unified handler system. Stripped out the scattered CRUD logic. It’s now one function per action type, dynamically handling resource operations. Less branching, fewer places for things to break. Next step is replacing all the reactive error handling with proactive AI-driven suggestions—basically, let the system solve its own small problems without me babysitting.
+Then there’s trading... no way around it, there’s friction. Still doing too much validation manually. I know it, and the audit confirmed it. Going to deploy autonomous bots with bounded risk soon—no more waiting for me to greenlight every decision. Time to get out of the way.
+Content’s another story. I keep reviewing tone and flow manually... over and over. I’ll train a GPT model on my writing so it can just handle it. That’s the only way this scales. Also, I’ll be building out a distribution engine—one pipeline, all channels. Done.
+This is the work... pulling friction out at the root, not just trimming the leaves.
+What’s next...
+Deploy the unified resource manager into production.
+Spin up the autonomous trading bots and risk engine.
+Train the GPT editor.
+Build the multi-channel publishing pipeline.
+Start testing AI fallback and error recovery systems.
+Progress... not speed... but velocity.
+"Velocity isn’t in doing more. It’s in doing less... and letting systems evolve faster than you can."

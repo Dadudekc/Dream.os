@@ -1,0 +1,51 @@
+Here’s a clear and structured prompt you can use to guide your next steps in updating this file:
+Prompt for Updating FreerideInvestor AI Market News Plugin
+Objective:
+I need to debug and improve the FreerideInvestor AI Market News plugin to ensure that it:
+Successfully fetches market news from the Yahoo Finance API.
+Stores fetched news in the WordPress database (market_news table).
+Displays market news on both the admin dashboard and the frontend.
+Supports manual fetching via the admin panel.
+Provides a working API endpoint to retrieve market news via AJAX.
+Retains all functionality my dad previously built, especially caching and integrations with Discord and Mailchimp, unless absolutely necessary to remove.
+Fixes the current errors (e.g., missing function callbacks, invalid API responses, or caching issues).
+Current Issues:
+Function fetch_market_news_callback is not found.
+This function is referenced in add_action('wp_ajax_fetch_market_news_callback', 'fetch_market_news_callback') but doesn't exist in the main plugin file.
+I need to define this function and confirm that it properly calls fimn_fetch_market_news().
+API Key is missing or undefined.
+The plugin is using FIMN_API_KEY, which is defined as YAHOO_FINANCE_API_KEY.
+I need to confirm that YAHOO_FINANCE_API_KEY is correctly set in the WordPress configuration or replace it with a secure method of storing API keys.
+News fetch sometimes returns empty or invalid data.
+The API response check (if (!is_array($news_data) || empty($news_data['items']))) may not be handling errors properly.
+I need to add better error handling to debug failed fetch attempts.
+Caching could be interfering with updates.
+The get_transient() function in Market_News_Fetcher::get_sentiment() caches results for 24 hours (DAY_IN_SECONDS).
+If real-time news updates are needed, I may need to disable or modify caching.
+Admin fetch button might not be triggering correctly.
+Need to confirm fimn_fetch_market_news() runs when manually triggered via the admin panel.
+Database writes might be failing.
+The wpdb->insert() function checks for existing entries before adding new ones.
+I need to confirm that the UNIQUE KEY constraint (title, published_at) allows legitimate news articles to be saved.
+Plan of Action:
+Fix the missing function callback (fetch_market_news_callback).
+Add the function in the main plugin file and ensure it properly calls fimn_fetch_market_news().
+Ensure API key is properly loaded.
+Check if YAHOO_FINANCE_API_KEY is defined in wp-config.php or provide an alternative method to retrieve it.
+Improve error logging for API failures.
+Log full API responses when wp_remote_get() fails.
+If news_data is empty, display an admin notice.
+Decide on caching adjustments.
+If real-time news updates are required, remove get_transient() from the sentiment analysis.
+If caching remains, provide an option in settings to clear the cache.
+Verify manual fetch button in the admin panel.
+Ensure the fetch button correctly triggers fimn_fetch_market_news() and logs any errors.
+Check database inserts for failures.
+Add better debugging messages to track when and why news entries might not be stored.
+Final Steps:
+Test fetching news via AJAX.
+Check logs for remaining errors.
+Verify displayed news is up-to-date.
+Confirm Discord and Mailchimp integration still work.
+Deploy fixes and monitor performance.
+Would you like a revised version of the plugin with these fixes already implemented? 🚀

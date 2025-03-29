@@ -1,0 +1,22 @@
+Devlog 031625
+“Is the way I’m building this system creating leverage… or just adding noise?”
+That’s what’s been on my mind today.
+Spent most of the session auditing my whole workflow. Trading… content… backend systems… it’s all moving, but I can feel the drag. Too many parallel builds, too much manual. It’s not that I’m doing the wrong things—it’s that I’m doing too many of them at once without locking in the core.
+So here’s the breakdown of what I worked on...
+What Got Done
+Mapped out the TBOW Tactics structure. It’s clearer now—one playbook, no split focus between accounts. Forex and equities under one system.
+Made the decision… we’re restarting the FreerideInvestor challenge at $500. Funded by profits. Half the account stays in stocks, half moves to forex. Clean.
+Locked in that the Texas LLC has to happen. It’s not optional anymore. That’s been the mental bottleneck, and it’s costing me execution speed.
+Mapped out tax handling. The protocol is simple: pull 25% off every realized profit, stash it. Done.
+Pulled apart the content workflow. Right now it’s manual as hell… TBOW templates are in motion. Once they’re tight, everything speeds up.
+What Broke or Was Tricky
+Getting stuck in tax strategy loops. Wasted energy there. Trying to think through every scenario instead of just executing on a clean system.
+Brand visuals. I kept looping on TBOW logo revisions… until I realized it wasn’t about the logo. It was about clarity. Once I knew the system, the design didn’t matter as much.
+Split focus. Running two trading challenges at once sounded clean on paper. In practice, it split my attention. Fixed that by unifying them under one tactical plan.
+What’s Next
+LLC formation this week. Non-negotiable.
+Finalize the TBOW Playbook. Make it tight. No fluff, no new ideas sneaking in.
+Automate trade journaling and content drops. System > hustle.
+Focused execution on the $500 accounts. One plan. One focus. Full immersion.
+This is the convergence moment. Time to stop building in circles and move in straight lines.
+"Clarity comes from action, not thought."

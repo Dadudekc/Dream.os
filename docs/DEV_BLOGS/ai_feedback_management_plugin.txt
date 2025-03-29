@@ -1,0 +1,8 @@
+Devlog | Feb 10, 2025
+Ever ask yourself how many times you’ve seen the problem... but still miss the obvious fix?
+Been knee-deep in debugging the AI Analyzer module for the FreeRide Investor site. Everything seemed wired up right—sentiment analysis logs were clean... until they weren’t. Pages weren’t rendering, and logs were spitting out PHP fatal errors tied to storeAnalysisHistory().
+Turns out, I was passing an array to a function that wanted a string. Rookie mistake... but a good reminder that even clean data flows can break if you’re not double-checking types. Specifically, the extract_keywords() method was handing off $keywords (an array) instead of a string. Quick fix—implode() the array before logging it into the history table.
+Also added a better option: pushing the raw keyword array into the metadata so I’ve got more structured data to play with later... whether that’s for logs or future AI models.
+The hard part wasn’t the bug... it was slowing down enough to see it for what it was.
+What’s next: going to stress-test the analysis flow again and make sure nothing else breaks under load. Then back to refining the content display pipeline.
+"Fast is fine... but accuracy is everything."

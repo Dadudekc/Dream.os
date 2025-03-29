@@ -1,0 +1,10 @@
+Devlog // 2025-03-15
+How do you balance speed with precision... without letting one kill the other?
+That’s where my head’s been today.
+Spent the last stretch drilling into test automation. The mission was simple—automate unit test generation, make sure everything runs clean, and give myself a baseline to stop wasting time on repetitive manual testing. What we ended up with is a fully contained TestAutomationManager class. Runs tests, generates tests, enforces coverage, auto-refactors when it catches failures. All in one drop-in module. No extra files. Just plug and run.
+This wasn’t about fancy abstractions. It was about execution. Velocity. We cut it down to what actually gets results. Kept the interface clean so I can throw it into any project later without breaking flow. It’s portable... scalable... no dead weight.
+One tricky part was balancing introspection with AST parsing. Introspection gives you the function signatures you need for realistic test inputs, but it doesn’t always work in isolation. Ended up using both—AST for structural parsing, introspection for live function inspection. Feels solid now.
+Had to get strict about avoiding duplication too. It was tempting to overbuild, but I kept coming back to: what’s the fastest path to test coverage that doesn't rot over time?
+What’s next... probably wiring this into a CI/CD pipeline so tests hit automatically before merge. Might explore LLM-based refactors later, but only if it actually solves a problem, not just for the flex.
+Small win, but it moves the line forward.
+"Discipline is the bridge between goals and results."

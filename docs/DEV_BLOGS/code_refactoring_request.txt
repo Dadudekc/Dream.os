@@ -1,0 +1,13 @@
+Devlog // 2025-03-15
+How many layers of complexity can you add before the whole thing slows down?
+That’s the question I’ve been sitting with today...
+I spent most of this session ripping through the AgentProject. Merging, refactoring, tracking where the energy leaks are. There’s power in this system, but it’s getting diluted. Redundancies everywhere—AI models scattered across multiple modules, each doing overlapping things. AIClient, AIModelManager, PatchTrackingManager... all running their own game. Tightening that into a unified AI Execution Engine is the priority now. The goal is simple: convergence. One model system handling generation, validation, patching. Less drift. More force.
+Version control was a little painful. Git was throwing merge conflicts—mostly from untracked files clashing with stuff I had stashed away. Had to clean that up and make sure the commits were clean before pushing to origin. Pulled in the old files from a previous branch without breaking the newer builds. No casualties... but it was tedious.
+Another thing—refactor tests ran into encoding issues. Function extraction tripped on files that weren’t in UTF-8. Ended up building an encoding fallback system (utf-8, latin-1, cp1252). It’s solid now, parses without choking... but it slowed me down.
+Pulled together a RuleBasedReasoning engine too. Simple. Conditional pattern recognition, cause-effect logic... nothing fancy. Just laying more groundwork for automated decisions and self-improving patch reviews later.
+What’s next?
+Build out the AI Execution Engine. No more fragmented models.
+Auto Git commits + rollback tied to AI validation—manual git workflows are wasting cycles.
+Integrate MACD curl strategy signals directly into the reinforcement learning loop.
+Content pipeline... still lagging behind. Need AI to spin up content drops automatically from logs and data.
+"Clarity isn’t about knowing everything. It’s about knowing exactly where to apply force."

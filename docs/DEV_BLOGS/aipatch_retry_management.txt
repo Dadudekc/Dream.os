@@ -1,0 +1,10 @@
+Devlog // 2025-03-16
+What’s the real threshold for giving something another shot… and when do you call it?
+Spent some time today merging two versions of the AIPatchRetryManager… I had two competing ideas in play. One was simpler, more direct—confidence threshold check, retry if it clears the bar. The other was heavier on learning—more granular confidence updates, logging, and fallback logic. Ended up blending them.
+What worked:
+I’ve got a cleaner flow now. The retry logic factors in confidence gains from AI analysis, caps it to avoid false optimism, and only retries if it makes sense. Modified patches go through the pipeline, and success or failure feeds directly back into the learning DB. Small thing, but the logging hits the right beats… I’ll actually read these logs when debugging.
+What was tricky:
+Making sure I wasn’t just retrying for the sake of it. The temptation was there to over-engineer the fallback cycles. I kept the MAX_AI_PATCH_ATTEMPTS in but simplified the threshold logic. Confidence updates have to be earned, not padded.
+What’s next:
+Need to stress test this with some gnarly failed patches and see how the retry manager behaves in the wild. Might wire in a manual override for those edge cases where AI confidence just isn’t cutting it.
+“Measure twice, cut once… and sometimes, leave it on the workbench until it makes sense.”

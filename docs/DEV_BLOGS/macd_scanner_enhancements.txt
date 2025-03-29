@@ -1,0 +1,11 @@
+Devlog // MACD Curl Plugin Build
+What makes a scanner useful... and what makes it noise?
+Been thinking about that as I started breaking down the MACD Curl scanner into something leaner. Less click, more clarity. Today was about stripping it down and scaling it up at the same time.
+Started with the basic template I threw together in PHP... converted it into a full WordPress plugin. The goal is simple—scan for MACD Curl setups, but not the noisy ones... the monthly timeframe only. High signal, low clutter.
+Mapped out a proper folder structure. /inc for logic, /cron for auto scans, /templates for front-end rendering. Kept things modular. API handling, scanner functions, admin panel—clean separation.
+Tuned the API call to pull monthly data only. No dailies, no distractions. Reworked the logic to compare the latest MACD against the signal line and make sure it’s curling up, not just faking strength.
+Then layered in an AJAX handler so I can run live scans from the front-end without reloads. Kept it simple... enter a ticker, hit scan, get back a clear yes/no on the curl. Results show MACD, signal line, and the status in plain language.
+The tricky part? Making sure the previous month’s data anchors the curl check... catching momentum without false positives. Had to tweak the comparison logic for that.
+Next step is expanding it into a watchlist scanner... something that cycles through 10, 20 tickers on a schedule and fires alerts when there’s an A+ setup. Maybe push that to Slack or email... haven’t decided yet.
+For now, this core build feels clean.
+“Clarity isn’t what you add... it’s what you remove.”

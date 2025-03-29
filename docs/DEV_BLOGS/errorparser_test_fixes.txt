@@ -1,0 +1,9 @@
+Devlog | 2025-03-16
+What happens when you slow down and really look at the gaps in your code? Not just the obvious bugs... but the structural stuff—the places where things feel rushed or disconnected.
+Today was cleanup... consolidation.
+I had two different versions of the TradingAgent floating around—one that handled test mode cleanly, the other that was half-baked with credential handling all over the place. Both worked... kind of. But not in a way that felt aligned. I merged them into a single, clean flow. One agent that respects test_mode, loads env vars properly, and gives clear logs when Alpaca isn’t available. It’s now obvious when you're in sim mode versus live... no guessing.
+The solve_task() method got a tune-up too. It’s clearer what’s implemented and what’s not. No more mystery tasks.
+On top of that, I refactored the trade execution logic. Failures throw useful logs. Successes are crisp. The init flow checks your API creds and forces test mode if you're not set up right. Less risk. Better control.
+What broke? Nothing serious, but the mess of duplicate class definitions was a grind to work through... Felt tedious at times. Glad it’s clean now.
+What’s next... I need to wire in market data fetching—maybe alpha for now, or just use Alpaca’s data if the keys are there. Then I can look at strategy evaluation, but one thing at a time.
+"The first draft builds momentum. The refactor builds trust."

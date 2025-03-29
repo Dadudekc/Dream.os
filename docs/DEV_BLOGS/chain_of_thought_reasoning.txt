@@ -1,0 +1,14 @@
+Devlog — 03/15/2025
+Question I’m sitting with... How much time am I losing on decisions that should already be made?
+Spent a solid block today untangling where energy is leaking in this workflow...
+Started off trying to get the chain_of_thought_showcase deployed—kicked the tires on GCP, but the second I hit "add payment method," I was over it. Not spending time there if it’s not free and frictionless. That was a signal to pivot.
+Settled on Replit. It’s free, simple, and gets the job done for where this is right now. Ran through setting up the backend (FastAPI) and frontend (Streamlit). The tricky part was running both services side by side without spinning out. I had to mess with .replit and replit.nix to get multi-service hosting working cleanly. Once it clicked, it was smooth... but manual. Too manual.
+And that’s the pattern... too many manual loops.
+Decision fatigue on platforms, redundant steps uploading files, flipping between coding and infra when I should be deep in system builds. It’s costing speed.
+I ran an internal audit mid-process. What’s slowing me down isn’t complexity. It’s friction from not having locked-in frameworks: no decision trees, no auto-deploy pipelines, no enforced focus modes. That’s the next step.
+What’s next...
+Building out a tech stack playbook so I don’t waste another second choosing infra.
+Setting up a CI/CD pipeline from GitHub to Replit.
+Tightening the session structure—no more bouncing between modes.
+Once that’s in place, I can stop babysitting deployments and get back to deep system convergence... where the real work happens.
+"Systems don’t scale on hustle... they scale on clarity."

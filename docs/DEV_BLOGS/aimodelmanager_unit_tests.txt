@@ -1,0 +1,11 @@
+Devlog // 2025-03-16 // "Making It Click"
+How do you build something powerful... and still make it dead simple to use?
+Been sitting with that question while I hammer out this UI for the AI Debugger MVP. The backend's been solid for a minute—agents running, patching, journaling, all that—but when I wired it into PyQt5, it hit me... if I don’t intuitively get how to use this thing, what’s the point?
+So today was about stripping things back and forcing clarity.
+I pulled in the ProjectSetupTab, the ApplyFixTab, and the DebuggingOrchestratorTab I had already scaffolded... then added a ProjectContextTab to visualize the project structure JSON. That last one was a game-changer. Now I can load up the dependency map, search modules, and get a clean tree view of the project. Super basic, but super effective.
+The biggest trip-up? Forgetting to import QTreeWidgetItem... classic. Whole JSON context feature wouldn’t load because of one missing line. Fixed that, rebuilt the tree filter logic so I can drill down clean.
+After that, I rewired some flow on the Debugging Orchestrator... made the start session, document resolution, and summarize workflows a little smoother. Took out the unnecessary noise. If it doesn’t add speed, it’s out.
+What's next...
+Need to get the agents actively filling the Learning DB. No more passive data collection... it's gotta be automated. Thinking task queues, scheduled runs, maybe even a trigger off test failures. That’s where the learning loop tightens up.
+But for now... the UI’s functional, cleaner, and I’m starting to feel how this thing works in real time.
+“Clarity breeds speed.”

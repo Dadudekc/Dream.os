@@ -1,0 +1,24 @@
+Devlog: Where’s the Drag Coming From?
+Been asking myself that a lot lately...
+Where’s the drag in the system? What’s slowing me down?
+So... today was about clearing that up. Tightening the workflow.
+I’ve been juggling too much manually—posting, editing, tracking trades, running Discord, writing... trying to sound like me in everything...
+It’s been slowing things down.
+What we did was take a hard look at the entire process...
+What’s working, what’s wasting time, and what’s causing friction.
+Trade journaling is now getting logged automatically. No more trying to remember what I did two hours ago.
+I’ve set rules for “no trade” conditions—if it’s not a clean setup, I’m not touching it.
+That’s cut the noise down... a lot.
+Also, started building out a modular system for content—blocks I can reuse, instead of writing from scratch every time.
+I’ve been overthinking my voice... and wasting time reworking things that were already fine. Not doing that anymore. If the idea is solid, it ships.
+Discord onboarding is smoother now...
+People coming in won’t have to wait around to figure out what’s next... they’ll know.
+Next up is harvesting data from the Discord. If people are asking questions, that’s what we’re answering in future posts. Simple.
+The loop’s getting tighter.
+What’s next...
+Stacking out the content pipeline.
+Automating more of the pre-trade process.
+Refining how the systems interact... so I’m only stepping in where I need to.
+We’re getting there.
+“The system becomes clear when you stop adding things that don’t matter.”
+Let’s keep moving.

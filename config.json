@@ -1,0 +1,18 @@
+{
+    "max_tokens": 1000,
+    "temperature": 70,
+    "prompt_types": [
+      "General",
+      "Creative",
+      "Technical"
+    ],
+    "default_prompts": {
+      "General": "You are a helpful assistant.",
+      "Creative": "You are a creative writing assistant.",
+      "Technical": "You are a technical documentation assistant."
+    },
+    "app": {
+      "headless": false
+    }
+  }
+  

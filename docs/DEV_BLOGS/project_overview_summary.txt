@@ -1,0 +1,13 @@
+Devlog // 03.15.25
+What’s the point if it’s not moving the needle...?
+Been sitting with that question most of today. The effort’s been there—daytrading losses, thousands of lines of code—but the returns haven’t hit yet. I’m realizing part of it’s because I’ve been spread thin... juggling too many pieces without locking in one thing that actually converts.
+So I took a step back and audited where I’m burning time and what’s actually working.
+The FreeRideInvestor stock research plugin is live... that’s something. But right now, it’s capped at 25 requests because of the free Alpha Vantage API. That bottleneck’s killing user flow. I was debating whether to promote now or hold out for premium API access... decided I’m pushing it live as a beta, limit and all. No more waiting for perfect conditions.
+Built out a plan to run the plugin through MySQL caching. Makes sense since it’s hosted on WordPress—no Redis, no Mongo. Gonna store the first 25 stock requests in the database, then let users keep pulling those cached results the rest of the day.
+Basically gives us 25 stocks per day, not per user... but it’s a starting point. Better than nothing. I’ll cap it there for now and just be clear with users about the limits until I upgrade the backend.
+Also mapped out the content side... I’m not driving traffic yet. It’s been all word of mouth. That changes now. Setting up Discord drops, Twitch demos of the plugin in action, and drafting up a simple blog post to funnel people to the site. Might even throw together a lead magnet—probably an eBook about how I lost $14K trading and what I’d do differently... something raw, something useful.
+What broke?
+Mostly my own headspace around why I’m still doing this.
+But the system’s clearer now. Less scatter. More focus.
+Time to move.
+"Momentum isn't found in motion... it's found in focus."

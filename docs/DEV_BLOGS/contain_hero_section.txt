@@ -1,0 +1,18 @@
+Devlog: Automating the Flow... But At What Cost?
+Ever wonder if the automation we’re building is actually speeding things up... or if it’s just another layer of complexity?
+That’s been on my mind the whole time working through this.
+Spent today diving into the Tbow Tactics templates... trying to figure out why custom fields weren’t showing properly. Data was there... but half the time, the templates would just spit out "N/A" like nothing existed. Checked the code. Checked the field keys. Double-checked the post meta.
+Everything was technically working... but the flow felt clunky.
+It hit me—I'm spending more time filling out fields in the backend than I am just writing the damn analysis.
+So we started pivoting...
+Pulled in the real-time data fetchers we built. Finnhub. NewsAPI. Alpha Vantage. The plan was to automate the whole input process... no more manual entries.
+But I can already see where this gets messy...
+API requests stacking up... delays because we’re waiting on third parties... inconsistent responses when we just need fast, reliable outputs.
+So...
+Scrapped MeaningCloud for sentiment. Moving to OpenAI for the analysis. It’s still experimental. Not fully integrated yet, but the sentiment analysis is faster and more contextual already.
+Still not sure how far we push this before it becomes overkill, but it feels like the right direction.
+Next is tightening up the Mailchimp integration, finishing the intro course modules, and getting the email and newsletter automation ready for launch.
+All of this is about getting out of bottleneck purgatory. Build once. Let it run.
+But man... the build phase is always heavier than I expect.
+"What feels like chaos now is often just the early signs of clarity."
+Let's keep going.

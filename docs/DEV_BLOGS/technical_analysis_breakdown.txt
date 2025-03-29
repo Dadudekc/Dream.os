@@ -1,0 +1,29 @@
+Devlog |
+"Where’s the real friction in the system... and what happens when you actually fix it instead of patching it?"
+That’s where my head’s been today.
+I’ve been deep in this Freeride Investor Trading Journal build… and it’s been dragging more than it should. Not because it’s a hard project—because I let it sprawl. Too many layers, too many side convos, and too much backtracking. Every time I pushed forward on one version (Excel), I was already half-thinking about the PyQt5 app. Split energy. That’s not the move.
+So, I pulled back. Audit mode.
+Here’s the reality check...
+We’ve been looping on Excel tweaks when we should’ve locked the foundation earlier.
+I kept reopening discussions that should’ve been closed.
+Jumping between trading, automation, and content builds without closing loops burns time and clarity.
+I ran a system audit mid-build and it was clear:
+One deliverable at a time. Finalize before expanding.
+Simple. Not always easy.
+So the focus now is this:
+We’re finishing the Excel journal. Not another placeholder. A clean, polished, branded tool that traders can use right now.
+Trade log for stocks and options.
+Risk management calculators built-in.
+Dashboards with performance metrics and visuals.
+Reflections, analytics, the whole play.
+All inside Excel. Clean. Done.
+After that… we can talk PyQt5.
+What broke?
+I got caught up in too many micro-iterations instead of locking the system early. Energy was diluted... no way around that.
+What’s next?
+We finalize the Excel build.
+I draft a unified design doc so I’m not rethinking this on the fly again.
+Then we move, step by step.
+Finish the thing.
+Then scale it.
+"The system gets clear when you get clear. Finish before you expand."

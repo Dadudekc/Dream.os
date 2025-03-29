@@ -1,0 +1,10 @@
+Devlog // 2025-02-10
+What’s the point of overhauling something that already works?
+That’s been the question today... I spent way too much time chasing upgrades on the Market News Dashboard, thinking the new architecture would tighten things up. On paper, it made sense—integrate the News_Dashboard more cleanly, instantiate everything through the right singletons, streamline the fetches, run the AI analyzer smarter... but in practice? It broke more than it fixed.
+We had the fatal constructor error on AI_Analyzer—needed the settings object passed in, and I missed that on the first pass. Fixed that. Then the News_Delivery class blew up because it’s singleton-only, so it was throwing a fit when I tried to new it up instead of calling get_instance(). Cleaned that up too.
+But even after smoothing the instantiations, the frontend was a mess. Sentiment data and AI summaries weren’t showing. Buttons worked, but the grid felt dead. Pretty sure the issue was overengineering the flow instead of just letting the data breathe.
+So I reverted... back to the setup that worked. Kept it simple. Let the News_Dashboard handle rendering the news cards, wrapped it all in some clean inline styling for now. The cards display individually—each one in its own phase, its own rhythm. No fancy JS refresh, just direct rendering on symbol query. And honestly? It works. Sometimes you just need to stop tweaking and ship.
+What’s next...
+Refining the card layouts, probably moving to Tailwind classes instead of inline styles, and I need to tighten up the refresh flow if I want this scalable later. But for now? It’s live. And it works.
+"Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away."
+—Antoine de Saint-Exupéry

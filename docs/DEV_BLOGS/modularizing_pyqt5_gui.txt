@@ -1,0 +1,14 @@
+Devlog — Morning Push
+"How much of your time is spent moving things versus building things?"
+That's the question that hit me today... and the answer wasn't great.
+Most of this morning was cleaning up the repo. Renamed the local main branch back to master to stay consistent with the remote. It was a little messier than I wanted—tracking was out of sync, and I had to reset upstream branches manually. Pushed everything clean after that. Confirmed the branch is tracking the right remote, and the project structure is locked in.
+The big thing that stood out was how much time gets eaten by manual Git work... branch renames, pushes, remote syncs... it's just overhead. Necessary, but overhead.
+I also spotted redundancy in the folder structures... had both README.md and readme.md floating around (Windows doesn't care... GitHub does). Cleaned that up. Manual process again.
+What’s tricky here is realizing that a lot of these tasks are things that should already be automated. They're mechanical. They slow down actual execution.
+What's next is obvious...
+Automate the Git workflows.
+Get CI/CD pipelines online to handle testing and deployments without me pushing buttons.
+Discord updates automated through webhooks and GPT templates. No more manual morning summaries unless I feel like adding a personal note.
+The more this system runs itself, the faster I can move on builds that matter. Not bookkeeping.
+"Discipline equals freedom." —Jocko Willink
+Let me know if you want to tweak this or add your own closing thoughts before dropping it to Discord.

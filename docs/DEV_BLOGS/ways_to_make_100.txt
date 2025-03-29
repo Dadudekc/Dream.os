@@ -1,0 +1,13 @@
+Devlog // 03.15.2025
+Introspective question:
+"Where am I wasting time repeating steps that should already be automated?"
+Spent the last couple hours ripping apart my AI alerts system to figure out where the friction points are. If I’m serious about hitting $200/day passively, this thing can’t have any leaks... and it can’t need me holding its hand. That’s where I’m at.
+We mapped out the entire system... from the data fetch to signals, through to Discord alerts and onboarding subs. Clean structure...
+/src/ for the core scripts (fetch, analyze, send alerts)
+/config/ holds the keys and settings
+Logging and testing directories are in place so I’m not flying blind later
+Already dropped code for the fetch and analyze scripts—basic MACD curls, RSI, volume filters. Feels solid, but I’m not hyping anything yet. The next thing is moving this from a linear scheduler to an event-driven flow... async, multi-threaded, zero waiting on API responses. That’s one of the big inefficiencies I didn’t see until we dug in today.
+Also realizing how much time gets chewed up on content... replying, posting, explaining. It’s fine early on, but it’s not scalable. Next step is an AI auto-engagement bot to handle Twitter and Reddit replies... and DM flows for the new leads coming in. All automated. No more bottlenecks.
+On the subscriber side... there’s still lag. Stripe payments go through, but access delays kill momentum. Need webhooks in place and instant Discord onboarding. Fast feedback loops.
+Big takeaway... the system works. But it’s not fast enough. Not yet. I’ll fix that.
+“Speed matters. Build it, then make it faster.”

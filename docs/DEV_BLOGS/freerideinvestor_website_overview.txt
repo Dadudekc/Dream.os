@@ -1,0 +1,13 @@
+Devlog: Where’s the Energy Leaking?
+Been thinking a lot about this...
+Where’s the energy leaking? Not the obvious stuff... but the hidden friction points that slow things down when you're not paying attention.
+Today was all about digging into the system and getting real about where things are wasting time or draining focus. Pulled apart the workflows around trading, content, automation... and found some pretty obvious gaps once I stopped to look.
+First... the brand and vision weren’t codified cleanly anywhere. I kept re-explaining the same things—tone, color, purpose—every time I spun up content or systems. That’s fine when you’re figuring stuff out... but at this stage, it’s just burning cycles. Fixed that. Everything is going into a living document. Fast access. Zero ambiguity. One source of truth.
+Second... content creation was messy. Writing something for Discord... then tweaking it for Twitch... then rewriting it for the site. Way too manual. So now I’m working on modular content that feeds everywhere from one place. Build once... push everywhere. Way more scalable.
+Third... the goals were still a little high-level. Not useless... but not tied down to KPIs that actually drive decisions. So I broke them down into measurable pieces. Stuff I can track daily or weekly. Objective clarity instead of vibes.
+What’s next...
+Build out real-time audits on the workflows
+Spin up an AI knowledge base that can actually answer questions on the fly
+Keep removing decision fatigue and slowdowns wherever I find them
+Progress is happening. It’s not clean. It’s not perfect. But it’s moving. And I’ll take that every time.
+“Clarity isn’t a feeling... it’s a decision.”

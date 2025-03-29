@@ -1,0 +1,20 @@
+Devlog – 03.15.25
+What’s the trade-off between precision and speed... and where am I bleeding energy in the process?
+Been in the weeds dissecting my current workflow—trading automation, alert systems, data fetchers... the works. There’s a pattern that keeps surfacing: too much friction from repetitive code cycles and fragmented data streams. Every time I build something, I end up asking for a full code drop, then modularizing it after... but that process isn’t scalable. It’s burning cycles I shouldn’t be spending there.
+I hit a point where the whole system felt bloated—pulling from ten different APIs without prioritization... TSLA’s my focus, but I’m treating it the same as every other stock in the backend. That’s not smart. I’m crowding the database, running fetchers that don’t need to be active, and then manually validating everything because I’m not letting the system self-check.
+The database threw an error during alert table migrations... classic dbDelta with an incorrect index name because I rushed the schema. It was a reminder I need proper version-controlled migrations, not hand-spun SQL each time I iterate.
+Next move...
+Building an API orchestrator with failover and priority handling. TSLA will get its own data engine... WebSockets if I can swing it, cache layers where it makes sense, and let everything else operate in general pools. Alerts are getting rebuilt with proper migrations, robust indexing... clean.
+And the AI pipelines? They need to self-validate code and outputs before I touch them. I’m done being QA.
+What broke:
+Alert migrations.
+Cognitive load from constant manual reviews.
+API calls all over the map—no hierarchy.
+Trust gaps between output and execution.
+What’s next:
+Modularize fetchers, analyzers, alerts.
+TSLA-first data engine... streamlined.
+AI validator handling code QA.
+API router to prioritize and failover intelligently.
+“Slow is smooth. Smooth is fast.”
+Let’s move.

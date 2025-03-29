@@ -1,0 +1,15 @@
+Devlog // 2025-03-16
+"How much energy am I burning on things I should have automated by now?"
+That’s the question I kept circling back to today... and honestly, the answer stings a little.
+I’ve been deep in the UI layer, iterating on layouts for the Table of Contents—accordion, grid, cards, sidebar... and then scrapping all that because it wasn’t clean enough. It’s wild how easy it is to get caught in the loop of tweaking visuals when what I really need is a modular system that runs itself. The design decisions should have been templatized by now... fast prototypes, fast tests, fast commits.
+What worked: landed on a cleaner stacked list with icons, hover states, and a stripped-down CSS layer. Responsive, clean, and scalable. No fluff. Just functional UI that fits the brand and doesn't bottleneck the next moves.
+What broke: the iteration loops burned time I should’ve spent tightening the backend systems. There's still no AI pipeline managing content generation or front-end prototyping at scale. And I’m manually reviewing things that should be caught by visual regression tests... not great.
+What’s next:
+Build the JSON-driven content structure. Everything needs to flow through a structured data system.
+Create the modular design system (components + CSS). No more one-offs.
+Set up AI-assisted UI prototyping... or at least rig a Figma > Code pipeline to kill the decision lag.
+And start diverting more time back to the trading AI loops. That’s the whole point of this build—AI-driven execution at scale.
+Reminding myself...
+"Don’t waste precision energy on problems that systems can solve for you."
+Time to automate the edge.
+— Victor

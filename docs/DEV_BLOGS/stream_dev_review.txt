@@ -1,0 +1,14 @@
+Devlog // 2025-03-15
+“What happens when the system is almost right... but not quite?”
+Today was one of those days where I’m stuck between knowing exactly what I want—and not having the system give it to me without a fight...
+I spent most of this session pushing on the image generation side. Trying to get an AI to pull something from my head without over-explaining it every time... It’s a drag when you have to spell out every detail over and over. Feels like wasted cycles... mental energy I could be using elsewhere.
+The tricky part wasn’t the concept... the concept was clear. It was the back and forth. The iteration loops are way too long. I’m prompting, re-prompting, correcting. Multiply that by every workflow I touch—trading, automation, content generation—and it adds up fast. That’s energy I’m not getting back.
+What’s obvious now is I need a unified ontology—something that holds my aesthetic, logic, and system preferences... and I need it baked into everything. AI, prompts, systems... It’s like I’m operating across scattered islands when I should be running a connected network. That’s the inefficiency. That’s where things are bleeding.
+Next step...
+Lock in the ontology.
+Build a modular prompt engine so I’m not re-inventing the wheel every time I interact with the system.
+Move closer to persistent AI feedback loops... where it learns me. Not the other way around.
+Master dashboard... needs to happen sooner than later.
+It’s not about making the system work... it’s about making the system learn.
+Then we scale.
+“You don’t rise to the level of your goals. You fall to the level of your systems.”

@@ -1,0 +1,19 @@
+Devlog // Did I trust the plan, or did I try to outsmart it?
+Spent the morning deep in the trading cycle... had the Tbow Tactic mapped out—$400 resistance, $380 support, triggers dialed in, pre-market prep solid. I knew what I was supposed to do.
+But when the move happened, I got greedy. I held longer than I was supposed to. I averaged up into a winning trade, which was fine... until it wasn’t. Saw +$400 at one point... ended the trade with +$27 after almost going -$900. That’s execution failure. No excuses.
+This wasn’t about the market. It was me. Discipline broke. Plan wasn’t the problem—trust was. And when you trade small contracts in options, it’s all-in or all-out. No scaling. So every decision carries weight... and today, I made it heavy.
+Took a hard audit on the system after...
+Trading workflow: too manual. Too much in-the-moment decision fatigue.
+Execution: needs to be pre-programmed, no live adjustments unless they’re already prepped.
+Risk management: have to be religious about exits when I can’t scale out. Small wins > emotional holds.
+Content + trade review flow: scattered. Needs to converge into one feedback loop that runs without me forcing it.
+Built out a priority list for tightening it all up...
+Pre-market report automated.
+All-in, all-out rules codified for options.
+Trade logs + post-mortems structured, AI assisted.
+Content blocks built off the trades themselves. No extra bandwidth.
+Live accountability triggers when I’m in a trade... no emotional freelancing.
+System convergence is the goal. No wasted moves.
+I’m not here to predict. I’m here to execute.
+Tomorrow’s another chance to sharpen it.
+"Discipline is the bridge between goals and execution."

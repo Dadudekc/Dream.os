@@ -1,0 +1,24 @@
+Devlog: Where Is My Energy Actually Going?
+Been sitting with that question most of the day...
+Not just where my time’s going... but my energy... my focus...
+And this build exposed a few things I wasn’t fully seeing.
+What I worked on:
+I mapped out the backend architecture for the market scanner MVP... finally made the decision to Dockerize everything—backend, frontend, database... all running clean now. FastAPI is handling the API layer, Alpaca’s real-time trade data is flowing into MySQL, and the alert system’s prepped for triggering based on user-defined criteria.
+Clean pipeline... backend to database... database to frontend.
+It’s tight.
+Also made the call to integrate WordPress users through the REST API... no more redundant user tables. Simplifies everything.
+What broke / was tricky:
+Spent way too long second-guessing whether to use the existing WordPress database or spin up a separate one for the MVP...
+That indecision burned time and focus.
+It was one of those moments where you can feel energy leaking... because you’re holding too many options open.
+Finally just chose—WP users for authentication, separate schema for trading data.
+Done.
+Realized the old alert system was wasting cycles... polling when it should be event-driven.
+Refactored the logic... moving towards Redis Pub/Sub for real-time triggers.
+That’s the next push.
+What’s next:
+Finish wiring Redis into the event pipeline... get alerts firing the way they should.
+Start polishing the frontend... using a pre-built React admin template so I’m not losing time on layout.
+Keep simplifying... there’s still clutter in the workflow that’s slowing me down.
+If it’s not necessary... cut it.
+"The more you simplify, the faster you move."

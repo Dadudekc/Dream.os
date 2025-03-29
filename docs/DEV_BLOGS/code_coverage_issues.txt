@@ -1,0 +1,15 @@
+Devlog Drop // 2025-03-15
+You ever wonder how much drag we create just keeping things running... versus building what we actually want to build?
+Today was one of those days where I took a hard look at the mess under the hood.
+Spent most of the time tightening up the Discord bot system. Started by killing off hardcoded paths—those things creep in when you're moving fast. Rebuilt the config loader to dynamically pull from the right places... no more chasing missing tokens or broken env files. Feels cleaner now.
+Swapped out all the scattered logger setups and built a central one that actually works across everything... without breaking tests.
+Also set up a better structure on bot_instance.py. I was running into import issues because of how the bot was initialized—fixed it by abstracting the init function instead of exposing the bot instance directly. No more circular imports. Small move, big difference.
+Test coverage... still not where it should be. Had to keep rerunning pytest because of missing imports and broken test modules. Part of that's because I was flipping between multiple Python environments like an idiot. Cleaned that up, locked into one venv, and now it's stable.
+Noticed some redundancy with how configs and envs were being loaded across scripts. I'm going to build out a shared core config and logger module next. Sick of duplicating that logic.
+What’s next...
+Dockerize the environment so I stop wasting time debugging setups.
+CI pipeline for automated testing.
+Template out the HTML/CSS monologue drops so they're quick and clean.
+Build AI prompt templates for the reflective stuff—take the thinking out of the first pass so I can stay in edit mode.
+The goal is to get this system self-sufficient... zero friction between idea and execution.
+"Slow is smooth. Smooth is fast."

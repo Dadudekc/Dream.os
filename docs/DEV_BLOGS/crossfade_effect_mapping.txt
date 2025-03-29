@@ -1,0 +1,10 @@
+Devlog // Crossfader + Brake Effect Mapping
+"How precise do I need to be for this to feel right?"
+Spent today trying to dial in a crossfade effect inside VirtualDJ. The goal was pretty simple at first... hit a button, activate a brake effect on Deck A, and crossfade to Deck B in a way that feels smooth but also lets the break shine through for a second. The kind of movement you'd expect in a chopped-and-screwed mix, but tighter.
+First approach was basic... effect_active "brakeStart" and crossfader 100%. That worked to an extent. But the crossfade was hard-switching. No movement... just a jump. Not the vibe.
+Then I tried getting dynamic with repeat_start and incremental crossfader moves. crossfader +5% in cycles. On paper, solid. In practice... nothing. Crossfader didn't move. Spent way too long testing param_add, repeat_start, even param_boom for smooth fades. Still nothing. Turns out VirtualDJ isn't always friendly with those methods depending on the controller setup.
+Simplified it back to basics: trigger the brake effect and move the crossfader directly. But then came the next challenge... making it a toggle. First press should trigger the brake on Deck A and crossfade right. Second press? Trigger brakes on both decks and crossfade back to A. Real two-stage feel.
+The variable toggle works. var_equal 'xfade_state' 1 flips between states clean. The key was explicitly telling VirtualDJ which deck to trigger the effect on. deck 2 effect_active "brakeStart" instead of relying on the active deck. That was the fix.
+Tacked on a pitch_bend -15% just for Deck 2 to deepen the break feel on the second pass. Simple command... deck 2 pitch_bend -15%. Easy win.
+What's next... probably tightening the timing on the fade and looking at some controller mappings that don't ignore scripted crossfader moves. There's a gap there I want to close.
+"Precision is the difference between movement and control."

@@ -1,0 +1,7 @@
+Devlog 03/16/25
+What’s the trade-off between overbuilding flexibility and just locking in one solid system? Been thinking about that a lot today...
+I went deep on modularizing the patching system—finally carved out an apply_fix.py module that’s strictly focused on applying, testing, and verifying fixes. It’s no longer tangled inside debugger_core or debugging_strategy. Way cleaner now. It can handle rollback, re-run tests, and log error signatures... all without bloating the core loop.
+We also mapped out a structure for dynamic self-healing fixes. Think reusable, generic patches that can slot into any project and catch the low-hanging bugs. That’s going to be its own pipeline, but it’s starting to take shape.
+One of the messier parts was the patch application itself. The patch command on Windows is still shaky... ran into a couple failures where files didn’t exist or the unified diff wasn’t clean. I’m thinking we’ll need a backup method—maybe directly editing AST nodes or running an internal diff parser instead of shelling out. Not settled on that yet.
+Next up is full integration... getting apply_fix.py wired into the overnight cycle, and then expanding the pattern library for common bugs. After that, probably circling back to the UI layer—PyQt5 for now.
+“Clarity comes from execution, not more thinking.”

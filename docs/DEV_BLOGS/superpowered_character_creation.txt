@@ -1,0 +1,19 @@
+Devlog // 2025-03-15
+Question I’m sitting with: How much energy do I waste shifting gears without realizing it?
+Built out a full framework for a Superpowered TTRPG tonight. Spent a couple hours deep in it... mapping powers, origins, and systems. It was fun. But stepping back, I realized how easy it is to drift...
+Not just creatively, but mentally.
+I’m still running into a bottleneck when I pivot between systems. There’s this friction—like I’m losing focus every time I shift from creative to analytical. And that lag? It costs time I don’t have.
+Did a surgical audit on my workflows right after. Clear patterns:
+I’m managing too much manually.
+AI isn’t being delegated roles aggressively enough.
+I’m not enforcing transitions between deep work states... they’re just happening, and it’s messy.
+The TTRPG project itself? Solid groundwork... but without a pipeline to loop it back into my ecosystem (content, products, assets), it’s just sitting there.
+What broke?
+My energy flow. I’m wasting cycles shifting contexts without a protocol.
+And I’m not anchoring creative work to my core systems in trading, automation, or content.
+What’s next...
+Assigning clear AI roles: Context Manager, KPI Synthesizer, Content Repurposer.
+Designing a two-minute focus shift protocol so I can snap between modes clean.
+Building a creative output tracker—TTRPG is first up to get modularized and monetized.
+Time to tighten the loop... bring the pieces together faster... cleaner.
+"Flow isn’t about forcing more. It’s about removing what slows you down."

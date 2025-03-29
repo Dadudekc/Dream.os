@@ -1,0 +1,11 @@
+Devlog 1/3/25
+"Am I still slowing things down by doing too much by hand?"
+Quick drop... spent today tightening up the TSLA TBOW tactic. A lot of the focus was on getting a clean breakdown of the setup and then working through how to flow it across platforms. The thing that stood out? I’m still rewriting the same thing 4-5 times. Discord, Stocktwits, LinkedIn, the website... same message, but different tone. It’s burning way too much time and splitting focus.
+I’m realizing the process isn’t where it needs to be. Manual rewrites are fine at first, but not when you’re trying to move fast. We dug into what’s slowing things down—repetitive workflows, no modular templates, and no automated alerts for the setups I trade. I’m still watching for MACD curls by hand... and that’s dumb. I could have automated that a month ago.
+Wins today? We locked the TSLA breakout plan... $382.50 trigger, watching for volume + that MACD curl I always talk about. China sales up 12% adds the narrative fuel... now just need the chart to back it. Also started building a structure for modular TBOW templates so I’m not wasting cycles rebuilding every single time.
+Next...
+Script alerts for my core triggers (MACD curls, RSI ranges, Bollinger moves).
+Train AI to spin out platform-ready posts from one core idea.
+Build the full workflow from trade plan ➔ content ➔ post. No more context switching.
+Systemize the market context snapshot (QQQ, SPY) to speed up planning.
+“Clarity comes from removing the noise, not adding more.”

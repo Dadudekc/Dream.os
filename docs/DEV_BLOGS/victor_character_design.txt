@@ -1,0 +1,10 @@
+Devlog // 2025-03-15
+What happens when you decide you’re done relying on tools and start relying on yourself?
+That’s been on my mind today. I’ve been thinking about where I want to take this… not just the project, but the process. Spent a chunk of time breaking down my first coding goal—building a handwritten to-do list app. Not fancy. Not AI-assisted. Just me, the keyboard, and Python.
+Started from square one... again. Had to step back and really make sure I understood what each line of code is doing—not just memorizing it, but reading it like plain English. Functions, loops, lists... all the basics, but I made sure I wasn’t skipping steps. I slowed it down. Repetition without understanding is wasted time. I’m done wasting time.
+One thing that hit me hard was how much energy gets diluted when I’m juggling too many things at once. Context switching kills momentum. So... I’m setting tighter boundaries. Time-blocking deep work. Coding without distractions. This isn’t about building the app—it’s about building my system.
+What broke today?
+Mostly my own patterns. Realized I’ve been reactive, not strategic. Relying on what’s in front of me instead of building a process that feeds itself. That stops here. I’m setting up a knowledge base. Every session will have a log. What I learned. What I broke. What’s next.
+Next up...
+Lay out the skeleton of the app on paper. Functions first. No keyboard until I’m clear on structure. After that, it’s handwritten code. Clean. Simple. Mine.
+"You don’t rise to the level of your goals. You fall to the level of your systems."

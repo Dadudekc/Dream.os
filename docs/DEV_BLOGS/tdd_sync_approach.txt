@@ -1,0 +1,10 @@
+Devlog Entry - March 16, 2025
+How do you keep pushing forward when everything’s out of your control?
+Alright, so today’s been a mix of progress and setbacks... but that’s just how it goes, right?
+I’ve been working on the Audience Interaction Tracker—you know, the one that pulls data from Twitter to track key metrics like Likes, Comments, Shares, Views, CTR, and Engagement Rate. The idea is simple: pull the data, process it, and give me something meaningful to track how content's performing in real time.
+Started with the Twitter API—had to get the right keys set up, deal with authentication errors, and make sure everything was pulling the right metrics. The tricky part? Handling rate limits... I spent way too much time trying to figure out how to make retries work when Twitter slapped me with that 429 error. After playing around with exponential backoff and retries, I think I’ve finally got it dialed in. The system now waits, tries again, and keeps track of how many attempts it's made—so I don’t hit a wall and stall.
+The real challenge was making sure CTR and Engagement Rate calculations were on point. It’s all about pulling the right data, but the Twitter API doesn’t always give you what you need in an obvious way. Had to dig into the public and non-public metrics, remove some invalid parameters like impression_count and link_clicks, and adjust accordingly.
+Finally, got a clean run where the data’s flowing correctly. The metrics are looking good, though I still need to track link clicks accurately, but that’s a future challenge. The Engagement Rate is showing up at 2.53%, which isn’t bad, all things considered.
+What’s next? I’m thinking it’s time to set up the PDF report generator. I want weekly and monthly performance summaries, cleanly packaged. That’ll help me see the bigger picture and decide where to focus next. I’m aiming for autonomous test-driven development—so I’m ready to crank through multiple Red-Green-Refactor cycles without needing constant feedback.
+End of the day, it’s all about the small wins... The work’s moving forward, and that’s what matters.
+“Momentum is the key to everything. Once you’re moving, you can’t stop.”

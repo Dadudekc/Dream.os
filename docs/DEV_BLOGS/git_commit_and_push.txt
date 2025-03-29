@@ -1,0 +1,14 @@
+Devlog // TRP2 // 2025-03-15
+Ever catch yourself burning time on things that should already be automated?
+That’s where I’m at today...
+Spent the session tightening up some basics that honestly should’ve been handled by the system itself. A lot of manual git stuff—tracking deletions, staging, commits—slowing down flow. Small things, but they add up. Definitely feeling where the friction is... too much manual oversight in areas that should be automated by now.
+I also sketched the first pass of the project.json for TRP2. Laid out the modules, features, and goals to give the system clearer rails to run on. It’s the foundation for where I want to take this—self-organizing, AI-driven, clean. Feels surgical, but there’s still plenty to carve out.
+We did the README pass too... it’s solid, but I can already feel where it’s going to evolve. Especially once the CI/CD hooks and automated changelogs kick in.
+What broke?
+The realization that I’m still too involved in staging, reviewing, and documenting. That’s friction I can’t afford if I’m trying to scale execution velocity.
+What’s next...
+Pre-commit hooks, automated testing, and clean CI/CD enforcement.
+API governance and caching strategy—too much risk of redundant calls right now.
+Automating README and changelog generation off commits... the more this system speaks for itself, the faster I can move.
+Velocity follows clarity... and today sharpened that for me.
+“Speed is a byproduct of system trust.”

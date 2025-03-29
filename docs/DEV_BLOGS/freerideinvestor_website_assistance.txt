@@ -1,0 +1,19 @@
+Devlog // 2025-03-15
+"Where is my time leaking... and what’s actually moving the needle?"
+Been in the weeds today figuring out why some parts of this system feel clunky... like, why are simple things taking so long?
+I ran a full audit on the workflows—trading, automation, content. The big takeaway... too much fragmentation. I’m touching too many things that should be automated or system-driven by now.
+What I worked on:
+Cleaned up the blog and Tbow Tactics layout. The grids were all over the place... got them aligned. Tactics are cube-shaped now, side by side—clean and tight.
+Redesigned the Latest Articles section. More professional layout... less bloggy, more intentional.
+Rebuilt the hero image and logo concepts. Realized I’ve been overcomplicating them. Kept it simple this round—minimalist workspace vibes that actually feel like FreeRideInvestor.
+Broke down where time’s leaking... most of it’s in repeated tasks: content categorization, image generation, manual template edits. Dumb stuff, honestly.
+What broke or was tricky:
+The visual asset flow. DALL-E wasn’t hitting the theme until I stripped it down. Too much noise in earlier prompts.
+PHP templates were getting messy. Realized I need to modularize the components. Right now, it’s too much hands-on.
+Still no unified system for dev logs, trading insights, and journal reflections. I’m jumping between files and platforms.
+What’s next:
+Building out a unified schema for all content—dev logs, tactics, journals... everything. One structure, one pipeline.
+Laying out a prompt library for visuals. No more on-the-fly prompts that waste cycles.
+Automating content publishing and layout rendering. I’m thinking Notion + Zapier or just moving headless.
+System convergence is the focus... less friction, more flow.
+"Clarity breeds momentum. Systemization fuels velocity."

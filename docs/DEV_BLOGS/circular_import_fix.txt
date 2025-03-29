@@ -1,0 +1,18 @@
+Devlog | 2025-03-08
+“Where am I bleeding time... and where is my system leaking energy I don’t even notice?”
+That’s the question I’ve been sitting with today.
+Ran a full system audit on the AIIDE project and the workflows around it. Trading, automation, content—everything that’s supposed to converge... isn’t fully converging yet. I’m catching pockets of redundancy and energy drain. It’s subtle, but it compounds.
+The biggest friction right now is context switching. Trading mode, code mode, content mode... I keep shifting gears manually, and it’s slowing me down. The AI should be handling that. Context-switching should be automatic.
+Also noticed I’ve been prompting the AI way too much to stay in alignment with my tone. That’s a failure of the system, not me. There should be a daemon running, self-correcting, keeping things tight without me checking in.
+Then there’s content generation. Still too manual. I’m asking for posts when the system should just be spitting them out on its own. Zero-input. Ready to deploy. I’m done wasting cycles on stuff that should already be automated.
+AIIDE itself? Logs are noisy. Agents are spinning up in duplicates. Registry’s not enforcing singleton patterns. It’s cleanable... but it’s costing resources every time I run it.
+AIPatchRetryManager was supposed to handle fallback retries and patch validation—right now it’s not even active. That’s a problem.
+What’s next:
+Build a ContextSwitchManager to kill the friction between workflows.
+Deploy a MemoryAlignmentDaemon so I don’t have to manually check context.
+AutoContentAgent goes live... it writes, schedules, and pushes content without me.
+Refactor the AgentRegistry... no more duplicates.
+Fix AIPatchRetryManager and close the feedback loop for debugging.
+Lock in insights from content data so it feeds the system and scales itself.
+I’m not here to tweak. I’m here to converge.
+"Discipline is choosing between what you want now and what you want most."

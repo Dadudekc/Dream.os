@@ -1,0 +1,19 @@
+Devlog Drop
+Ever ask yourself how many times you can fix the same thing before realizing you’re stuck in a loop you created?
+That’s where I’m at right now...
+Spent the last round hammering on the test suite for the AI Agent project. Thought I had it stable—syntax was clean, tests were green. Ran pytest again today and everything lit up like a Christmas tree... triple-quoted strings hanging open, unmatched braces, indentation errors, and a pile of half-finished lines with FIXME placeholders still dangling.
+Brutal.
+What broke?
+Turns out I’d patched the same files before but never did a deep sweep. Was relying too much on quick fixes and trusting the last pass was good.
+It wasn’t.
+Every time I ran pytest, it was choking on things I’d meant to clean but left halfway. That’s on me.
+What’s tricky about this is the scale...
+Dozens of test files, all peppered with the same mistakes. Easy to miss one. Easier to keep repeating the same process and expect a different result.
+So I took a step back and wrote a script. A static checker to scan and auto-fix the common screw-ups—unterminated strings, malformed imports, missing indents. Not glamorous, but necessary.
+Ran it through the test suite. Cleaned up a lot. No magic bullet, but it tightens things up before pytest even gets a crack at it.
+Next up...
+Running the tests again.
+If it passes, great.
+If it doesn’t... we’re back in, manually clearing out the garbage.
+"Discipline equals freedom."
+— Jocko Willink

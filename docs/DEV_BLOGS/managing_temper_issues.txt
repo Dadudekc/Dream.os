@@ -1,0 +1,17 @@
+Devlog // 2025-03-16
+“Where am I leaking time in things that should already be automated?”
+Today was about tightening the fundamentals...
+Cloned a repo I needed—TBOWTactics—and got into the Models directory without much friction. But the fact that I’m still manually cloning, initializing Git, adding remotes, committing... it’s not a huge deal on a single run, but when you zoom out, that repetition adds up.
+Time dilution. That’s what it is.
+Started thinking about where my workflows are bloated. Trading, automation, content—it’s all moving, but not as fast or smooth as it could be. No AI-driven triggers yet. Still too many manual pushes, too many context switches.
+What broke? Nothing technical... but the process itself is bottlenecked.
+Too much human in the loop.
+What’s next?
+Automating the Git setup for all new repos.
+Getting AI handling more of the repetitive commits and pushes.
+Starting the CI/CD pipeline work.
+Moving from batch automation to event-driven systems, especially on the trading side.
+And pulling AI into content drafting... stop wasting energy on things an AI can frame out for me.
+Every move needs to push toward convergence...
+Every system tightening until it runs itself.
+"Discipline is choosing between what you want now and what you want most."

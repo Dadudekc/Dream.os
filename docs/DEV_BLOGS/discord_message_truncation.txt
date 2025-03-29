@@ -1,0 +1,11 @@
+Devlog // 2025-03-02
+What’s the point of building systems if they’re not evolving on their own?
+That question’s been hitting me all day... probably because I’ve been deep in the weeds tightening bolts that shouldn’t need constant adjusting. Spent most of the session today auditing the bot workflows and hammering through test coverage. The Discord bot finally passed a clean test suite—8 out of 8. Took a while to untangle some dumb fixtures and mocks. Pytest was throwing errors because I wasn’t patching dependencies clean enough. Mostly around mocker being missing... rookie oversight but that’s the game. Fixed it.
+On the scraper side... more of the same. Tightened up rate limit handling, but the exponential backoff is still annoying to test. Mocked out time.sleep() to speed that up—works but I don’t love it. Feels like a temp band-aid. Also realized I’m spending too much time re-checking for duplicate leads. SQLite’s been fine but I’m adding an in-memory deduplication check before it even hits the DB. Should save me some cycles.
+Where it really gets interesting... is realizing none of this is self-improving yet. The scrapers run, the bot posts, but there’s no feedback loop dialing the system in. No RL model weighting keywords. No conversion tracking. Just me, eyeballing things and course-correcting manually. That’s gotta shift. AI-powered optimization loops are next. Otherwise, I’m just pushing tasks down an infinite pipe.
+Next up:
+Refactor the message queuing to batch-send with asyncio.gather()
+Index timestamp and platform in leads.db for faster queries
+Start mapping out the reinforcement learning flow for keyword selection and trade signal evolution
+The system works... but it’s not awake yet.
+“Automation gets you speed. Intelligence gets you freedom.”

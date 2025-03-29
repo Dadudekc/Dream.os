@@ -1,0 +1,23 @@
+Devlog // TSLA Puts Play + Tbow Tactic Flow
+March 16, 2025
+What’s the signal I trust when things feel noisy?
+That was the question running through my head this morning...
+Dropped into TSLA premarket... watching that sharp move off the open. The first rip looked clean, textbook Tbow setup. Price popped through the upper band, RSI overheated, MACD curled north... all the usual signs. But then came the fade. Classic... no surprise there.
+First plan was the breakout long above $366.50. It teased that level, but the momentum dried out. Didn’t take it. Waited... watched the VWAP dip zone set up. Snagged puts after price cracked under VWAP and couldn’t reclaim. MACD rolled over hard around 10:10 AM. RSI bled out into mid 40s... bearish confirmation.
+I’m holding the puts for now. Key levels:
+VWAP is still resistance at $362.25
+Support at $358.50 is holding but weak
+Watching for a flush toward $355.00... but ready to exit if price reclaims $362+ with volume.
+What worked?
+Waiting for confirmation instead of forcing the first breakout
+Trusting the VWAP break
+Letting the MACD/RSI guide conviction... not emotions
+What was tricky?
+The initial volume was a head fake... looked stronger than it was
+Price hovered in no man’s land for a minute, testing my patience
+What’s next?
+Manage this put position tight
+See if we get the break of $358.50
+If not, take profit and reset
+Review the morning flow and clean up the Tbow tactic triggers for faster execution
+"Patience and precision over noise and impulse."

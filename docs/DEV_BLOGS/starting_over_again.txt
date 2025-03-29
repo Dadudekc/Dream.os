@@ -1,0 +1,13 @@
+Devlog | 2025-03-16
+"What’s the cost of trading without a system that protects you from yourself?"
+I’ve been sitting with that question all day... after wiping out my rent money in a trade that went sideways fast. The cycle almost broke me—again. But instead of quitting, I’m channeling that energy into building something that can keep me from making the same mistakes.
+The MACD curl bot is officially in motion. This week, the focus was getting the core strategy automated and tested. Everything runs locally—no cloud, no extra moving parts. Just me, my machine, and the code. We locked in the MACD crossover detection... ran it through multiple red-green-refactor cycles. Some false starts on the signals, but I worked through that by refining the test data and making sure we were catching actual crossovers, not noise.
+Got Alpaca’s API wired up next. Pulled the keys from an env file, built out the order execution, and ran mock tests since I can’t hit the live API from here. Everything’s passing on my end... and if it’s green on yours too, that’s one less variable I need to think about.
+Project structure’s clean:
+Config for keys
+Strategy for signals
+Execution for orders
+Bot loop that ties it all together
+Tests covering everything
+What’s next... risk management. Stop-loss, take-profit, position sizing. Without those, this thing’s just a reckless trigger bot. I need it dialed in so I’m not back here writing about blowing up my account.
+“Discipline is remembering what you want.”

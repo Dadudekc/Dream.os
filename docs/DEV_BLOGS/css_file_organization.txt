@@ -1,0 +1,11 @@
+Devlog Drop // 2025-03-15
+"What’s the cost of trying to build everything at once… instead of building the one thing that gets me further today?"
+Today was heavy on systems work… stripping out the bloat in the CSS and reworking the architecture into something modular, clean, and scalable. Feels like I’ve been stacking bricks without blueprinting the foundation tight enough… and that catches up fast when you’re spinning between trading, automation, and content workflows.
+The main focus was breaking down the site’s CSS into real modular components. Pulled apart the page layouts, buttons, grids… all the repeatables that were clogging up flow. Caught redundancies all over—grids, CTAs, nav patterns repeating under different classes. Waste of mental energy. Cleaned that up.
+Biggest friction? How deep the rabbit hole goes when you’re trying to retrofit modularity onto a project that wasn’t scoped that way from the jump. Kept slipping into “refactor the world” mode instead of shipping lean, atomic components. Snapped myself out of that.
+What’s next:
+Finalize the component library repo and automate style validation with pre-commit hooks.
+Build out an AI content generation pipeline to start spinning out posts without bottlenecking on design.
+Clean up trading system workflows… shifting toward AI-managed trade setups and risk adjustments.
+This work is surgical now. No more broad strokes.
+"Slow is smooth. Smooth is fast."

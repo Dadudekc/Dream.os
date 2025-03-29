@@ -1,0 +1,14 @@
+Devlog | 2025-03-15
+"Where am I duplicating effort and slowing things down without realizing it?"
+Been sitting with that question... and it’s becoming clearer the more I break down the systems.
+Today’s focus was dissecting the trading, automation, and content workflows. Clean cuts... surgical. There’s a lot of crossover where I thought things were streamlined but they’re not. Big one—I'm duplicating data between the trade journal DB and CPTs. It’s redundant. Wastes time and energy every time I log a trade, pull reports, or do anything actionable. That loop needs to tighten.
+Same thing on the forms. I’m running three parallel systems for Mailchimp, eBook delivery, and trade submissions... each one repeating the same validation logic, nonce checks, and error handling. It’s code clutter. Maintenance overhead. Makes me slower than I need to be.
+Also noticed... I’m still pushing eBook assets manually. Static links, no versioning, no automated delivery with expiry. It works, but it drags. Should be offloaded to S3/CDN with automated version control... the current system burns cycles I don’t have.
+What’s next:
+Collapse the trade journal into a single source of truth... no more duplication between DB and CPT.
+Build a unified form handler—one framework to rule all the submissions.
+Abstract all API calls (Mailchimp, etc.) into a central service.
+Automate asset deployment for eBooks... versioning, link expiry, the works.
+Then... real-time dashboards and AI-driven trade insights. That’s where this is going.
+The theme lately... is compressing cycles. Getting tighter. Less wasted motion.
+"Perfection isn’t when there’s nothing left to add. It’s when there’s nothing left to take away."

@@ -1,0 +1,16 @@
+DEVLOG 015
+What’s actually slowing me down... and where’s the friction I’m not seeing?
+Been breaking down the core systems today—trading, automation, content—and it’s clear there’s drift happening.
+I’m scaling projects in parallel, but they’re not converging.
+The trading systems are sharp in theory, but there’s lag in execution. I’m still leaning on manual validation with the MACD curl strategy, and that delay is killing efficiency. The backtesting logic is solid, but moving those insights into live trading isn’t seamless... yet. Reinforcement learning loops aren’t fully integrated into execution. They’re there, but passive. Need to push them active—continuous learning, live adaptation.
+On the automation side, workflows are clean but siloed. TradingRobotPlug is running... Focus Forge is its own thing... content ops are separate. And I can feel the energy loss from that. Automations are firing, but they aren’t feeding back into the system to self-optimize. Too much is still waiting on me to push the next move.
+Content generation... still too linear. One action = one output. It should be infinite outputs from one piece of work. Right now I’m still hand-holding some of it when I shouldn’t be. The viral loops need to be automated, split-tested, and self-adjusting.
+What’s next...
+Fully automate MACD curl detection + low-latency trade execution.
+Reinforcement learning needs to go live and start feeding on trade cycles.
+Merge all automations—no more siloed workflows.
+Build a system where every piece of content spawns infinite downstream assets automatically.
+AI-driven audience segmentation, so content’s dynamic to the user without me thinking about it.
+Systems need to converge. Everything feeds everything.
+One machine... not pieces.
+"If you remove friction, velocity becomes inevitable."

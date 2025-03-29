@@ -1,0 +1,21 @@
+Devlog // 003
+What's actually slowing me down right now? Where am I diluting focus, thinking it's refinement... but it's really friction?
+Spent way too much time today going back and forth on UI stuff...
+Tweaking colors... reworking grids... checking contrast...
+It felt necessary in the moment, but stepping back, I can see it’s not where my energy needs to be.
+The bottleneck isn't design—it’s not having a system to handle the design for me.
+What we worked through here was more of a systems diagnosis...
+I’ve been too deep in manual loops—rewriting components, adjusting layouts from scratch, when I should be building a component library and automating the deployment pipeline.
+No more one-off fixes... needs to be templates, patterns, and AI handling 80% of the heavy lifting.
+The big takeaway:
+I’m still acting as a one-man band when I should be building an orchestra.
+I laid out a plan to lock in a Figma-based design system, codify the HTML/CSS components, and set up a content → deploy pipeline so I’m not manually pushing anything.
+The blog needs to be on rails, leaving me free to focus on strategy and trading.
+Automation isn’t optional... not if I want real execution velocity.
+What’s next...
+Design system first. Get the tokens and components locked.
+Jamstack site pulling clean markdown.
+CI/CD pipeline running updates with no manual deploys.
+Once that’s running, I’ll loop back and audit the trading system for similar inefficiencies.
+I already know there are cracks... just haven’t looked at them yet.
+"The system becomes the strategy when the system works."

@@ -1,0 +1,10 @@
+Devlog // 2025-02-17
+What’s the cost of ignoring small bugs when they first show up?
+Been knee-deep in test failures today... mostly around the JournalAgent, DebuggerCore, and ReportManager. Small things stacking up in places they shouldn’t.
+First pass was fixing the CustomAgent instantiation. Tests were throwing TypeError because journal_directory wasn’t accepted as a kwarg. Turns out CustomAgent wasn’t supposed to be handling journal stuff anyway—swapped it for JournalAgent in the tests, re-ran, clean. Felt obvious in hindsight... but I let it linger.
+DebuggerCore was next. Missing static attributes like LEARNING_DB_FILE caused all sorts of AttributeError chaos. Added those directly into the core class—basic stuff like paths for learning DB and report archives. The tests started behaving after that, but it made me wonder why I hadn’t caught it earlier.
+The biggest headache though... Windows file locks. PermissionError all over report_manager.log in the ReportManager tests. Classic WinError 32. The logger was hanging onto the file and locking it up. Added logic to close and remove handlers after each log entry. Cleaned up tearDown in the tests to make sure nothing got left hanging. A bunch of extra try/excepts just to keep the suite moving without crashing on cleanup.
+On the assertion side—timestamp precision was killing me in the report save/load tests. Switched up the asserts to compare core values and ignore microsecond noise. Simple fix, but those are always the ones you kick yourself for missing.
+What’s next... probably a deeper audit on the report handling system. I’m still not loving how file locks and loggers are behaving. Could be a design smell I’ve been ignoring.
+But today was cleanup. Necessary work... and it’s setting the stage for speed later.
+"Slow is smooth. Smooth is fast."

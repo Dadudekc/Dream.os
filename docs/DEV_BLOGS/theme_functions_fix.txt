@@ -1,0 +1,18 @@
+Devlog // System Audit + CSS Refactor
+"Where is my energy getting diluted... and how do I tighten the loop?"
+That’s been the core question running through all of this. Today's audit made it obvious—I’m spending too much time context switching between high-leverage system builds and low-leverage frontend styling. I’ve been deep in CSS layouts, grid systems, post-specific styles... it’s clean, but it’s eating time that should be scaling out systems or trading workflows.
+What worked:
+We built out a conditional post-specific CSS pipeline. It’s flexible... lets me drop custom styles into posts without bloating the theme.
+Cleaned up the REST API endpoint for the trade journal. Still solid.
+Tightened the Discord invite cron jobs. Feels reliable now.
+What broke / what’s tricky:
+CSS got messy fast... tweaking grid templates and container queries across multiple breakpoints took way longer than it should.
+The cards aren’t rendering the way I want yet—alignment and consistent sizing need work.
+Doing these kinds of frontend iterations in WordPress feels sluggish. I’m repeating work because I haven’t systemized the component layer.
+What’s next:
+Shift the entire design system to Tailwind or ShadCN. No more custom CSS for basic components.
+Automate the trade journal insight loop. AI pulls the data... pushes analysis back into Discord.
+Tighten the CI/CD pipelines so I can get out of manual deploys.
+The bigger lesson... I need to stop building at ground level when I should be architecting from above.
+Systems. Then speed.
+"Discipline isn’t about forcing action... it’s about removing friction."

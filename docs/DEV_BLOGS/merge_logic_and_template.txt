@@ -1,0 +1,17 @@
+Devlog | March 15, 2025
+What’s the real cost of rework when you don’t have your systems tight?
+Spent the last stretch tearing through the Azure side... again. The goal was simple: spin up a clean, production-ready MySQL flexible server for TROOP—no frills, just the basics to get us out of the test lane and into real ops. I thought we had it dialed, but turns out Azure’s still got its quirks, and I was the one getting looped.
+Here’s the rundown...
+We were running the deployment through a shell script... pulling everything from the .env file. All solid in theory—parameters loaded, template validated, deployment kicked off. Then the usual: ServerNameAlreadyExists. Nothing surprising, but still frustrating. I already knew the problem... I’d deleted the test ones, but forgot the production naming clash. Azure doesn’t play nice when you try to reuse names right after a delete. Had to add a loop asking if we should wipe the existing one, confirm, and rerun the deployment.
+It worked... until it didn’t. Retry failed on the first pass because Azure was still holding onto the resource in the backend. Classic delay. I baked in a check, but it’s not as smooth as I want yet.
+Other thing that stood out... there’s too much manual confirmation happening. Still asking the system if I should delete resources. That’s dead weight. Need to move to declarative infra with Terraform or Pulumi so it’s a non-event. No more click yes, type yes, wait 5 mins... just declare state and let it sort itself.
+CI/CD needs a smarter state check too... conditionals that know when we’re trying to deploy over something that’s already there. This kind of thing slows the loop.
+The win? We got a clean deployment on the production resource group. TROOP-Production is live on its own MySQL flexible server now. It's not pretty yet, but it's there.
+What’s next...
+Shift to Terraform for infra as code
+Hook up proper CI/CD conditionals with GitHub Actions
+Start automating lifecycle management—resource creation/destruction shouldn’t require thinking
+Isolate content, trading, and infra workstreams... too much context switching this week
+Burned more cycles than I wanted on this... but the system’s teaching me what it needs.
+“Discipline equals freedom.”
+--- Jocko Willink

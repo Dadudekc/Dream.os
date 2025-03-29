@@ -1,0 +1,8 @@
+Devlog: Closing Loops on the Backtest Engine
+Ever wonder how many times you have to rewrite something before it finally clicks?... I’m starting to think the answer is “however many times it takes.”
+Today was about closing loops. The backtest engine for the trading bot has been fighting me for a while now—positions not resetting cleanly, exit signals getting misread... equity drifting in ways that didn’t make sense. One thing breaks, you fix it… but it pulls something else out of alignment. Classic.
+What worked today was stripping things back to basics... going modular on every decision point. Entry logic. Exit logic. Position resets. We tightened up how signals were processed, locked in the ATR-based stop-loss, and finally started seeing consistent behavior on multiple trade cycles. We also caught some silent errors with position tracking... the bot was sometimes holding -1 when it should’ve gone flat. Fixed it.
+There’s a real difference when you stop “adding features” and just make the thing work. We got clean test passes now on scenarios that were failing all last week... and the logs are finally showing what I expect to see.
+Next up... it’s scaling this into real multi-asset tests. Parallel data streams, maybe bring in some synthetic order book data just to stress it out. I’ll also be mapping the strategy logic back to the original Pinescript version… making sure we aren’t drifting from what made this setup profitable in the first place.
+Progress... slow... but it's progress.
+“Persistence guarantees that results are inevitable.”

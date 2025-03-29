@@ -1,0 +1,39 @@
+Devlog: What’s Slowing You Down Right Now?
+Legit question I’ve been sitting with...
+What’s the thing slowing me down right now... and how do I cut it?
+Spent the last stretch cleaning up some messy workflows around the FreeRideInvestor Essentials plugin.
+This was supposed to be a simple MVP... display some news, stock prices, sentiment data...
+But it got messy because I didn’t set up the right systems from the jump.
+The big drag?
+Manual everything.
+No version control.
+No clean separation between dev and production.
+API keys sitting in code...
+And yeah... I slipped... keys got exposed...
+Had to revoke and regenerate everything.
+It’s a waste of time... but it’s the tax you pay when you move fast and loose without guardrails.
+So I locked it down...
+Git repo set up.
+Keys moved into wp-config.php... but still thinking about better secrets management.
+Clean folder structure.
+Plugin is activating fine... shortcodes are rendering...
+News, stocks, sentiment... data’s flowing.
+What was tricky was realizing how much time I was losing just second-guessing basic stuff.
+Should I use a template? Shortcodes?
+Do I build it now or later?
+Does this even matter?
+I burned hours there...
+Next step is codifying decisions before I even get to work... so there’s no loop.
+Decide once... move.
+No back and forth.
+What’s next...
+Automated testing on API calls.
+Health checks with alerts.
+Build out a clean dashboard for real-time data...
+So it’s not just functional, but useful.
+Also thinking through a unified data layer so everything feeds into one brain, not scattered scripts.
+But yeah...
+Moving cleaner now.
+Faster too.
+"Discipline is the shortcut."
+Onward.

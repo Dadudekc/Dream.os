@@ -1,0 +1,9 @@
+Devlog // AI Market News Integration Rework
+How do you know when it's time to slow down and clean the system before scaling it?
+Spent most of today inside the Freeride Investor Market News flow... pulling it apart and rebuilding core pieces. The news fetcher was already doing the job—bringing in stories by symbol, parsing them—but the AI layer wasn’t hitting consistently. Half the fields were showing up blank on the front end... and it was killing the UX.
+Found the weak link in the AI_Analyzer class. We were calling OpenAI, but the responses weren’t getting validated tightly enough. Sometimes it’d return garbage or nothing, and we were just passing that straight into the database. No checks, no fallback defaults... rookie mistake on my part. Cleaned that up.
+Now, if sentiment or summary or impact scores don’t come back clean, it auto-defaults to something usable. Neutral sentiment. “Summary not available.” That sort of thing. Doesn’t break the display. Also, beefed up the logging so I can actually trace where it breaks without staring at a white screen wondering if the API glitched or if it’s just me.
+UI side... merged the old search template with the new card grid. Much cleaner now. Search by symbol is running tight, AJAX returns results fast, and all the fields populate—sentiment, impact score, risk, keywords... no more ghost fields.
+What’s next—dialing in the AI prompts. They’re good but not great yet. I need tighter sentiment trends across multiple articles and better keyword extraction. Right now, it’s surface-level... I want depth.
+Progress over perfection.
+"It’s not about doing more. It’s about doing it better."

@@ -1,0 +1,20 @@
+Devlog // 2025-03-16
+“What’s the cost of trying to do everything by hand?”
+Been sitting with that today...
+Most of the last build session was deep in the weeds of front-end structure. Cleaning up the Dev Blog page, the Tools Archive, and refactoring the CSS. It started simple—fixing the spacing at the bottom of the page. Then I realized... the system’s bloated. Inline styles everywhere, layout tweaks dragging on. Every adjustment slows the whole thing down.
+Manually pushing layout changes, rechecking responsiveness, hunting for inconsistencies... it’s a loop I keep running. And it’s killing velocity. This was supposed to be clean. Fluid. But the system’s not there yet.
+What worked—
+✅ Cleaned up the Dev Blog hero section
+✅ Got the grid interfaces structured
+✅ Fixed mobile stacking and spacing
+✅ Locked in the color consistency across sections
+What broke or got messy—
+⚠️ Inline styling... again
+⚠️ Wasted cycles adjusting margins and paddings that should’ve been standardized
+⚠️ Not enough automation on content updates—still hand-triggered deployments
+What’s next...
+I need to rip out all inline styles and move to a proper component-based system. Tailwind or Figma tokens, not sure yet... but the design system has to be modular and automated.
+Also need CI/CD in place to kill the manual deploy loop. AI’s already handling heavy lifting on other parts of the system... it should be pushing updates too.
+And I’m going to wire trading data into the front-end content—real-time insights, not static text. Everything in sync.
+This is convergence work. Pulling it all together. No more scattered systems.
+"Automation isn't just efficiency—it’s permission to think bigger."

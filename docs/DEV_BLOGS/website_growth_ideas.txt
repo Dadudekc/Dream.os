@@ -1,0 +1,14 @@
+Devlog: What’s Actually Slowing Me Down?
+Been asking myself this a lot today… where is the actual drag in my system? Not the obvious stuff like "I'm busy" or "there’s too much going on"… but the deeper bottlenecks. What’s slowing me down in execution, and where am I wasting energy without realizing it?
+So I ran the audit.
+Here’s the truth—there’s a lot of fragmentation. Trading workflows, automation pipelines, content generation… they’re all running, but they’re not running together. I’m jumping between tasks that should be integrated. It’s like moving parts of a machine manually when they should be syncing up on their own.
+We broke it down…
+Data flow was messy—still pulling stock data manually or in a piecemeal way, instead of piping it straight into the models and letting it flow out to the frontend. Fixable.
+Too many models doing the same job—ARIMA, neural nets, random forests… running them all without a clear system to measure which works best in real time. That’s draining resources and attention. Need a dynamic selection system that favors the best performer on the fly.
+Content generation is still a time suck—shouldn’t be manually writing summaries, predictions, or reports. AI can take that load. I’ve been sleeping on this.
+What broke?
+Honestly, my own workflow... realizing how many handoffs there still are between tasks. Each one of those is a drag on execution speed. Small, but they stack up.
+What’s next…
+Automating data pipelines, letting AI generate the boring content, and focusing on personalization—users should get predictions tailored to their strategies, not generic calls. Also consolidating the tech stack. Too many moving pieces right now.
+The goal is faster cycles… cleaner decisions… less manual anything.
+"Slow is smooth. Smooth is fast."

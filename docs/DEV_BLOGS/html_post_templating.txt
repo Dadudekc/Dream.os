@@ -1,0 +1,10 @@
+Devlog | Feb 8, 2025
+What’s the difference between tweaking a system... and overcomplicating it?
+That’s been the loop today. I spent hours working through the blog post template for FreeRideInvestor, trying to lock in a consistent style that I can use across all posts. The goal was simple: create a system that I can hand off to an LLM and trust it to keep the aesthetic on point—side borders, clean grid layouts, mobile-responsive, no guesswork.
+But it wasn’t simple.
+The side borders didn’t show up right. They either wrapped the whole section in a box when I just wanted a left border, or they disappeared completely. Turns out I’d been building off the wrong stylesheet half the time... so half the fixes weren’t landing because the foundation wasn’t what I thought it was.
+Once I got clear on that, things started moving. I merged the cleaner header and nav structure with the updated grid layouts from the _my-trading-journey.css file. Brought back the side borders—simple, left-only, no full outlines. Same thing with the grid items. I wanted them to look clean, no noise, just that consistent left line that anchors the content without boxing it in.
+Rebuilt one of the TSLA option reports in the new template and finally got a version that feels close to what I’m after. It’s modular now. Sections drop in clean, and I can swap out content without worrying about breaking the layout.
+Still a few things to tighten up... mainly around how we handle mobile breakpoints. But it’s 90% there.
+Next up... finalize this as a locked template. I need to be able to spin out posts like this without diving into the CSS every time.
+"Clarity comes from doing the work... not thinking about doing it."

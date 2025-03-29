@@ -1,0 +1,22 @@
+Devlog // 2025-03-15
+“Where am I slowing things down by overcomplicating what should already be systemized?”
+That’s the question I kept circling back to today...
+And I got the answer pretty fast once I looked at how messy the trading strategy process was starting to get.
+Spent the bulk of the session rebuilding the TSLA MACD + RSI strategy. It was already decent, but I wanted it to run clean, be tight on entries, and give me something I could hand off without needing to explain how to use it every time. Filtered out the noise—tightened RSI thresholds, added a volatility filter with Bollinger Bands, and dialed in ATR-based trailing stops. Took a while to get the triggers syncing right... but once it clicked, it clicked. Win rate’s up over 60%. Profit factor is holding above 2.7. That’s enough for me to call it solid for now.
+The real friction wasn’t the coding... it was the workflow.
+Too much time wasted switching contexts—writing Pine Script, writing dev notes, writing showcase pages... all manually.
+So I ran a quick audit on the process.
+The biggest gap? No system unifying strategy creation → documentation → deployment.
+That’s gotta change.
+The plan is simple now:
+Modular Pine Script components so I’m not rewriting entry/exit logic every time.
+A JSON schema for each strategy—one file powers dev blogs, showcase pages, and WP listings.
+Git + CI/CD so strategy updates trigger automatic content refreshes.
+Hypothesis-driven testing for strategy validation... remove the guesswork.
+This is what I mean by system convergence.
+Everything self-organizing toward one goal—speed and clarity.
+Next, I’ll wire up the strategy-to-content automation and get version control locked in.
+Once that’s live, pushing a new strategy will be as simple as committing a file and letting the system do its thing.
+No more bottlenecks.
+Just execution.
+"Discipline equals freedom."

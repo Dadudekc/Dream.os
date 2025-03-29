@@ -1,0 +1,22 @@
+Devlog: Are we really building systems that free us… or just adding more noise?
+Today was one of those days where I had to sit with that question...
+I’ve been all over the place lately, jumping between ideas, but I locked in on finishing this TSLA trading bot.
+I had to.
+Felt like it was getting in the way of everything else because I kept leaving it half-done.
+So here’s what went down...
+I spent most of the day debugging the bot. The core was solid, but I ran into a nasty issue with indicator calculations breaking—ADX and MACD were throwing negative dimensions errors. Classic case of not having enough data in the DataFrame for the rolling windows.
+Obvious in hindsight, but it was a mess to untangle in the moment.
+I added stricter checks to make sure the bot won’t even try to calculate if the data’s thin.
+Also caught a bug in backtesting where signals weren’t lining up with the positions. Had to go back through the logic... realized I was assuming the bot would reverse positions instantly without properly exiting. Rookie mistake, but I cleaned it up.
+The tests helped.
+I pushed hard on edge cases today—immediate stop losses, profit targets getting hit right after entry, all that.
+The backtest is holding up now... signals make sense... positions are clean.
+Logger’s tight. I’m getting the feedback I need when things move.
+Not gonna lie, I burned an hour and a half on Brawlhalla...
+Didn’t get my TBOW tactic out.
+Could’ve spent that time tightening things up or writing, but whatever...
+I’m back in the pocket now.
+Next step...
+Finish wiring the bot into a live feed and stop trading manually. I’m tired of being the bottleneck on my own execution.
+This bot needs to run without me babysitting it.
+“Discipline equals freedom... but only if you do the work to make it automatic.”

@@ -1,0 +1,19 @@
+Devlog // 031525
+“Where’s the energy going... and what’s actually moving the system forward?”
+Been asking myself that today.
+I took a step back and ran an audit on the workflows—trading, automation, content... all of it. Found a few leaks. Energy’s getting split too much between keeping v1 stable, thinking about v2, pushing out TBOW tactics, and still wanting to enjoy some downtime with my daughter over the holidays.
+And yeah... I’m doing the “one-man team” thing again. But the reality check? A lot of this should already be automated.
+What I worked on:
+Cleaned up the communication flow... we’re pausing v2 until after Christmas, zeroing in on stability with v1.
+Looked at the stock research tool... realized it needs a modular UI and a JSON-driven back end to auto-generate the trade plans and news. No reason to manually push that stuff anymore.
+Reframed how I’ll be handling execution blocks—morning deep work on the system, evenings for content or community (and that’s optional depending on energy).
+What was tricky...
+Context switching. Every time I tried to handle a “quick task” (like pushing out a TBOW tactic), it ended up fracturing the flow. It’s subtle, but it’s killing momentum. I need harder stops and clearer boundaries on what’s in play at any given time.
+What’s next...
+Build out the automated pipeline for the AI trade plans + news. JSON + API feeds + clean templates.
+Modularize the UI components for rapid iteration.
+Strip down the messaging... keep it simple, clear, and direct. No apologies. Just the work.
+Lock in energy block scheduling. Deep work stays sacred.
+Taking my hands off the throttle a bit, but keeping the plane in the air.
+“Discipline equals freedom.”
+Jocko’s right.

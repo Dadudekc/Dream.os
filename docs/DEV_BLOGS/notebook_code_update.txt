@@ -1,0 +1,10 @@
+Devlog: Cleaning Up the Friction
+What slows you down more… the stuff you don’t know, or the stuff you keep repeating?
+That’s what hit me today while working through some of the system audits and notebook updates. It’s not the complex stuff that drains energy… it’s the friction. The small things we let slide that eventually build up and slow the whole machine down.
+Cleaned up a ton of redundancy in the data exploration and model training notebooks. Modularized the templates so I’m not repeating the same fixes every time I spin up a new one. Small change… big time-saver. Also reworked the model training flow—finally got the data preprocessing and scaling into something more reusable. No more one-off scripts just to get models trained.
+The tricky part? Realizing how much time gets lost in manual validation and parameter tweaking. It’s like fighting the same battle over and over… until you finally automate the feedback loop and move on.
+What’s next:
+Building out an automated evaluation pipeline so models can self-check
+Integrating hyperparameter search (probably Optuna) to stop wasting cycles on guesswork
+Setting up a system map so everything is visible… no more hidden friction points
+“Velocity isn’t speed… it’s momentum without friction.”

@@ -1,0 +1,14 @@
+Devlog: Tightening the System
+What’s the real cost of letting small inefficiencies slide?
+That’s the question I kept circling back to today...
+I went deep into system audit mode—trading, automation, content flow… all of it. The bottlenecks were obvious once I slowed it down and looked at the friction points. Manual trading decisions... overcomplicated indicator setups... redundant cron jobs running in the background like silent energy drains.
+The TBOW setup works. We know that. But I’ve been too hands-on with it—still watching RSI, Bollinger Bands, MACD like a hawk when I should be automating entries and exits. The move today was solid—took 15% off the table, stuck to the plan. But that manual piece… it’s a bottleneck. Can’t scale speed or focus when I’m babysitting the charts.
+The content side had its own clutter. TBOW tactics were being updated manually. Too slow. No connection between the live trading insights and the front-facing content. That got addressed—working on making that dynamic and automated now so the site updates in real time, no extra energy wasted.
+Biggest pain point? The cron job that kept breaking because of a missing class. Took time to spot it... that’s time I shouldn’t be burning on code that’s supposed to just work. Cleaned up the redundant processes… centralizing data feeds next.
+What’s next…
+→ Automate the TBOW entries/exits completely
+→ Build the journaling system to auto-log trades
+→ Keep tightening the loops… less friction, more flow
+This is about execution speed now. Precision.
+Stacking small wins… no fluff.
+"Discipline is choosing between what you want now and what you want most."

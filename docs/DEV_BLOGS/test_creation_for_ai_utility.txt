@@ -1,0 +1,25 @@
+Devlog | 14 Feb 2025
+What’s the cost of moving fast if your foundation’s cracked?
+Today was a cleanup job...
+One of those sessions where you realize the tests aren’t just failing—they’re screaming at you.
+Pytest was flagging a ton of SyntaxError: unterminated string literal issues.
+I dug into it...
+Turns out the problem wasn’t logic. It was the triple quotes everywhere in the test files—messy docstrings, inconsistent formatting, weird quote stacking. Sloppy. Not intentional, but it added up. I ran grep -rn '"""' tests/ to surface everything. Brutal wall of noise... but helpful.
+I refactored the tests.
+Rewrote the docstrings cleanly.
+No fancy comments... just clarity.
+Rebuilt the TestAgentBase file to match the current structure—tight, direct. Got rid of the clutter.
+After that, circled back to pytest.
+It ran smoother but still exposed a few dead files.
+Found a ton of old, unnecessary scripts under _SRC FILES/—stuff I’d clearly outgrown. Deleted a whole batch. Git status showed me what was still lingering... and yeah, there was a lot.
+Ended up staging everything and prepped a full commit...
+Simple, clean message. Nothing overthought.
+Pushed it.
+Next up...
+I want to focus on getting the rollback system and patch manager fully synced with the AI confidence scorer.
+Right now, it’s fragmented.
+Feels like the pieces are solid... but the cohesion isn’t there yet.
+One system.
+No waste.
+That’s the mission.
+"Slow down. Cut deeper."

@@ -1,0 +1,24 @@
+Devlog: Is this friction necessary… or am I holding onto it?
+Been thinking about that a lot today.
+Where am I still choosing to carry weight that could be stripped out… automated… offloaded?
+Anyway. Here’s the update…
+Worked on structuring three TSLA blog posts. They’re clean… useful… each one hits a different level of trader maturity.
+One breaks down what “big size” even means on TSLA’s book…
+One’s about using the order book as a read tool, instead of chasing indicators…
+The last is a cheat sheet—straight to the point, setups included.
+Wrote them, then had to dive back in and wrap the HTML, linking them together, making sure they connect in a way that makes sense for someone binge-reading them. That’s the thing… if I’m dropping three posts in a day, they can’t be scattered. They need to flow. They need to work.
+But… here’s where I hit the wall.
+I’m still in the weeds on stuff that should’ve been automated already.
+Manual formatting… link checking… creating call-to-actions by hand.
+It’s not hard work.
+It’s distracting work.
+And the bigger issue… these posts are anchored to TSLA at very specific price levels.
+I’m realizing that locks me into a cycle—either rewrite or accept content decay.
+Neither of those is scalable.
+What’s next?
+Automate the content pipeline… I’ve said that before, but this is now a must.
+Build a live data layer for my posts so I’m not stuck updating numbers. The system should evolve as the price does.
+And I need a centralized place where my insights go first—one source of truth—then I can spin off blogs, tweets, vids… whatever.
+No more duplicate work.
+That’s it for now.
+"Simplify… not because it’s easy. Simplify because it’s the only way through."

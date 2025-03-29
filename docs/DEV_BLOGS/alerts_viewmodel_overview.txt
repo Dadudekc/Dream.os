@@ -1,0 +1,13 @@
+Devlog // 015
+What’s the real bottleneck... time, energy, or focus?
+Did a deep audit today... trading workflows, automation, and content systems. Been feeling the drag lately—like I’m moving but not at the velocity I want. Turns out, a lot of that comes from redundant loops I’ve built into the system. Stuff that made sense when I was scaling things manually... but now it’s costing time.
+The trading alerts were a good example. Every time I add, delete, or update an alert, the whole list reloads. Didn’t notice it at first because it’s quick on a small dataset... but scaling? It’ll choke. So the next move is to rip out the load cycles and replace them with event-driven updates—real-time pushes instead of polling. Should trim the fat.
+The automation pipeline’s another problem. I’ve been manually shuffling between tasks... trading, writing, system tweaks. It burns energy. No smart task orchestration yet, no dynamic prioritization. Just me deciding what feels urgent in the moment. That stops here. Laying out a priority queue system—AI-driven, resource-aware. If trading’s idle, the system should know to shift focus to content generation... without me having to call the play.
+Content generation’s still too sequential. Too manual. I’m drafting devlogs one at a time, building content modules by hand... so I’m setting up parallel pipelines to handle that. AI drafts the structure, I just refine. Should free me up for higher-level thinking.
+Next steps are clear:
+Swap loadAlerts() for publisher streams.
+Build the AI task prioritizer.
+Spin up a CPU/GPU resource governor to balance load across the board.
+Automate devlog drafts based on system telemetry.
+Feels good to spot the friction points. Even better knowing I can cut them out.
+“Speed isn’t about rushing. It’s about removing what slows you down.”

@@ -1,0 +1,8 @@
+Devlog // 03.16.25 // Late Push
+What’s the simplest version of this that still feels clean?
+That’s the question I kept asking myself today while trying to clean up the dashboard. Spent hours pulling apart the old layout… buttons jammed up on the left side of the screen, no sense of balance. Was driving me nuts.
+First move was stripping back the excess. Pulled all the widgets out of the sidebar and set up a proper grid—rows of 3. Just needed them to breathe. Centered the whole layout inside the container, full-width when it needs to be, but no more floating boxes like they’re afraid to step out into the open. The quick links stayed up top... felt like they earned that spot. Everything else fell in line once I got the flex + grid working.
+The CSS was its own fight. I wanted to keep the dark theme solid, no extra glow, no fluff... just crisp edges and enough contrast that Dad’s eye can run through it clean. Adjusted the color variables—dialed in the greens, pulled the greys back a bit so the tools pop but don’t scream.
+And yeah... half the reason it was stuck on the left was baked into the template structure itself. Once I gutted that, the whole thing freed up.
+Next? Pulling in live stock data through Yahoo Finance’s API... no clutter, just clean numbers and actionables. That’s the move tomorrow.
+“The work gets clearer when you stop trying to make it pretty before it makes sense.”

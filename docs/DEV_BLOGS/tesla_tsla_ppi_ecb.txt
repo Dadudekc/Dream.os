@@ -1,0 +1,17 @@
+Devlog: Cutting the Fat
+Do I really need to do this manually... or am I just stuck in an old loop?
+That’s the question that’s been in my head all day while I worked through this. Felt like I was carrying weight I didn’t have to carry… wasting energy on things that could be streamlined. So I went in, surgical.
+Cleaned up the trading process first.
+Risk management’s been too manual... tweaking stops, shifting targets on the fly… it adds up. I mapped out a better system where risk adjusts automatically based on predefined setups. MACD crossovers, VWAP positioning, EMA sentiment—it all clicks together. No more second-guessing… just clean triggers and exits.
+Next was macro event tracking. I’ve been manually watching for PPI drops, ECB moves… and it’s dumb. Too slow. I need those triggers feeding directly into my system… so I scoped out an automated event alert system. It’s next on deck.
+Content’s still been a time sink. Even with the structure I’ve built, I’ve been spending too much time rephrasing, polishing, turning raw info into posts. Today I laid out a tone-adaptive engine—one that reflects my voice without me rewriting everything. It’s not perfect yet… but it’s close.
+The tricky part?
+Making it all work together.
+I’ve got systems… but they aren’t speaking the same language yet. That’s the next battle—tying trading, alerts, and content into one tight loop. No silos. Just flow.
+What’s next…
+Build the unified dashboard.
+Integrate automated execution on trades.
+Hook up the event alerts.
+And finish the tone model so it writes while I move.
+One less thing to carry.
+"Discipline equals freedom… but automation buys it back."

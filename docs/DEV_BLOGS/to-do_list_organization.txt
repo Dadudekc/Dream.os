@@ -1,0 +1,22 @@
+Devlog | 2025-03-15
+“Where am I spending effort on the wrong layer of the stack?”
+Spent the day deep in testing workflows... mostly grinding through bottlenecks I should’ve cleared earlier. The models themselves aren’t the problem—it’s the structure around them that’s slowing me down.
+Ran multiple pytest passes across the anomaly detection and deep anomaly modules... same issues popping up:
+Shape mismatches
+Contamination edge cases
+Mock overcomplexity that doesn’t reflect real-world flow
+And every time, I’m losing cycles on environment quirks. Scapy complaining about missing WinPcap... predictable but annoying.
+The redundancy is what’s bugging me. Same functions getting rewritten in different places... tests duplicating logic instead of isolating it. The feedback loop’s not tight enough.
+I started breaking that apart:
+Pulled model training and prediction into clean utility layers
+Adding validation schemas next so the data stops blowing up the pipeline
+Dockerizing the test environment after this... no more “works on my machine” crap
+Kicked off an MLflow pipeline build to clean up the rest of the model training mess
+This week’s about killing noise... tightening loops... building in feedback systems that flag recurring issues before I have to think about them.
+Next:
+Ship the validation schema tonight
+Refactor test fixtures tomorrow
+Stand up the pipeline by end of week
+Auto-doc generation right after
+Clarity feels close. Time to clear the last of the fog.
+"The system becomes what you let through the filter."

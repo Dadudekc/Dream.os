@@ -1,0 +1,19 @@
+Devlog // Scaling the S/R Bot... Again
+Is it the system... or is it me overcomplicating the logic?
+Spent the last few hours trying to loosen up the S/R strategy so it actually pulls the trigger and makes trades... It was way too cautious. Original logic had it waiting on perfect EMA crossovers and breaks of swing highs/lows and volume spikes... No wonder it just stood there watching price action like a spectator.
+Started by stripping out the volume filter. Then the swing level breaks. Then even the strict crossover requirement. Just let it enter on simple EMA alignment—fast above slow for longs, slow above fast for shorts. Still nothing.
+So I went further.
+Added directional take-profits that actually factor long/short sides.
+Made sure it resets tracking variables after closing a trade—basic but easy to overlook.
+And yeah, it started triggering trades.
+But... the performance wasn’t there.
+Net profit looked soft.
+Sharpe and Sortino were trash.
+Profit factor was decent but didn’t feel convincing.
+Next pass I layered in an RSI filter and ADX confirmation. Trying to balance between getting enough entries and keeping them clean. Relaxed the RSI thresholds—longs allowed up to 60, shorts down to 40—and set ADX > 20 so it trades when there’s actual trend strength. Upped the trailing stop offset to give winners more breathing room. Risk/reward back to 2.0 for quicker exits.
+Now we’re seeing better engagement... More trades... More consistent scaling in when it should.
+Still not perfect, but the flow feels cleaner.
+What’s next...
+I need to tune the scaling factor and maybe revisit stop distance relative to ATR.
+Also debating adding time filters—keep it out of chop hours.
+“Slow is smooth, smooth is fast.”

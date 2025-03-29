@@ -1,0 +1,19 @@
+Devlog — 2025-03-15
+“Where does the real friction live—code, or the systems around it?”
+Been deep in testing cycles today...
+Anomaly detection, deep learning models, threat intelligence workflows... all ran the gauntlet. Some things hit clean. Others, not so much.
+The core anomaly detection models are stable now. The IsolationForest implementation is holding up. Edge case handling is tighter... finally caught some spots where shape validation was too loose, and fixed the inconsistencies with the scaler. Had to update the error messages to match reality, not assumptions.
+Deep anomaly detection? Different story.
+The autoencoder pipeline is where the bulk of the issues are living. Mock testing kept breaking because the expectations between the test cases and the actual method calls were diverging. Example: build_autoencoder() was getting deep=False in the implementation, but the mocks were expecting no deep param... obvious in hindsight.
+Also ran into a problem with detecting anomalies. The test mocked predictions but missed the fact that the .predict() call wasn’t returning the shape the system expected. That's on me... wasn’t enforcing enough structure in the mocks. Tightened it up. Injected shape-checking and consistent return types.
+Main module had some false positives in the tests too. String mismatches between print outputs—"Devices found" vs. "Found devices"—classic detail drag. Cleaned it.
+Biggest blocker? Feedback loops are still too slow. Manual validation and repetitive debugging cycles aren’t scalable.
+Not anymore.
+I’m setting up decorators to auto-validate model inputs and enforce schema consistency before anything runs. It'll catch shape issues, feature count mismatches, and non-fitted models before they throw.
+What's next...
+Shift fully into TDD. Build the production logic, then tests. No more back-and-forth patching.
+Create a Makefile to manage runs... testing, linting, and coverage, all in one command.
+Structured logging with JSON output, and probably Grafana + Loki later. Real observability.
+Pytest-watch for live feedback on code changes.
+Clearing the bottlenecks now... so I can focus on the signal, not the noise.
+"The work we ignore today becomes the friction we fight tomorrow."

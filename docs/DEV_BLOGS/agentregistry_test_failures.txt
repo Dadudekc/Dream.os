@@ -1,0 +1,21 @@
+Devlog Drop
+What happens when you’re sure you’re close... but the system keeps throwing smoke?
+Been sitting with that question most of the day.
+Today was heavy in the weeds with the AutoFixer and the AgentDispatcher unit tests.
+Got the AgentDispatcher tests running clean. At one point, 9 tests, 9 passes... felt good to see green across the board. But it took a few passes. Mocking out requests.post for external agents was the easy part. What tripped me was realizing the mock class ExternalAIAdapterMock wasn’t behaving the same way the actual adapter would during the test. The response wasn’t what I expected because I overrode too much... so I dialed it back. Let the base method do the heavy lifting... and it clicked.
+Then I pivoted to the AutoFixer tests.
+This one fought me.
+Errors everywhere.
+Turns out DebugAgentUtils was missing methods: parse_diff_suggestion and apply_diff_patch. And it wasn’t just missing—those methods weren’t implemented yet. Had to build them out from scratch.
+The diff parsing was fine once I decided on a structure... but the patching logic was a grind. I got stuck on file writes... didn’t want it to overwrite more than it should. Built in a backup/restore just in case.
+Ran the tests again...
+Still busted.
+Some were fine, but the LLM patch tests weren’t calling the right mocks. Took a minute, but after patching the DebugAgentUtils methods directly, it smoothed out. I’ll probably refactor how these utility functions are scoped—this can’t be the long-term setup.
+But the big takeaway today?
+Even when the core system feels solid, if the edges aren’t sharp, the whole thing drags.
+Clean edges. That’s the move.
+What’s next...
+Going to refactor DebugAgentUtils so it’s less tightly coupled.
+Run another pass on AutoFixer to handle corrupt files better.
+Might wire in a fallback if AI patching fails completely.
+"Slow is smooth... smooth is fast."

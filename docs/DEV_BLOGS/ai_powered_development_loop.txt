@@ -1,0 +1,11 @@
+Devlog // 3.16.25
+What bottleneck am I tolerating that’s slowing everything down?
+Spent the day stepping back and auditing the system. Hard to admit, but there’s still friction I’ve been ignoring... mostly in execution. Trading, automation, content—too many semi-manual loops that should’ve been closed by now.
+Replit’s been a time sink lately. Imports breaking... files not showing up... little things that break focus. I’m moving everything into a tighter config—pre-commit hooks, automated test suites, CI. No more manual fixes just to hit run.
+Content game is still carrying too much manual weight. The energy cost to drop announcements or posts in real time is stupid high. The plan: batch everything... use AI to auto-repurpose and schedule... let an engagement bot keep the floor warm when I’m locked in elsewhere.
+Trading system’s close, but not close enough. Still relying on manual confirms for entries. That has to go. Building out reinforcement learning loops so the system trains itself off my data. Entry/exit logic, risk control, execution—automated. Everything feeds back into the loop... smarter over time.
+Next up...
+Replit project cleanup, get CI live
+Content factory buildout, API hooks for Discord/Twitter
+Full trade execution automation with Alpaca + RL feedback
+"Every delay compounds... but so does velocity when you cut the drag."

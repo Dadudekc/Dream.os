@@ -1,0 +1,15 @@
+Devlog // 03.16.25
+How much time do I lose to small decisions that should already be systemized...?
+Today was about tightening the workflow around content drops—specifically captions. Spent way too much time in iteration loops that didn’t need to happen. Simple things like hashtags, tone checks, and formatting... should be locked by now. Instead, I found myself rechecking the same stuff I’ve already decided on. That’s a problem. It slows down the whole system and drags my energy into things that should be automated or at least streamlined.
+What worked:
+Rebuilt the caption structure to follow a cleaner template. Hooks first... world visual... protagonist action... internal conflict... then a CTA. That’s the pattern.
+Hashtags got sorted into logic-based placements, not vibes. Less thinking, more doing.
+What broke (or showed its cracks):
+Context switching is killing flow. Moving from caption to caption without a bigger picture map makes it feel fragmented.
+Manual decisions on micro-edits are still eating time. That needs to go.
+What’s next:
+Building a content continuity map... probably in Notion or Airtable. Everything tied to chapters, beats, tone.
+AI-driven hashtag generator to pull based on narrative context instead of me slotting them in manually.
+Batch process captions. No more one-offs. I need to think in parallel cycles if I’m serious about velocity.
+This isn’t about working harder... it’s about working smarter and getting out of my own way.
+"You can’t outrun chaos if you’re the one causing it."

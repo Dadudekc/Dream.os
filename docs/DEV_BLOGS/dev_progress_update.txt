@@ -1,0 +1,18 @@
+Devlog // 2025-02-12
+What’s the real measure of progress? Is it feature count, system stability… or how much sharper you feel moving through the process? Been thinking about that a lot today.
+Between yesterday and today, it was deep work mode. I’ve been refining core systems and workflows that honestly should’ve been cleaner from the start... but that’s how it goes.
+What got done...
+Overhauled the API Key Setup Script. What started as a simple config tool is now solid—color-coded terminal outputs with colorama, real-time key validation, and automatic retries baked in. Used python-dotenv's set_key to avoid manually hacking .env files. It’s tight.
+Laid out a full project plan for the AI API Signup Wizard. Flask backend, Celery for task queues, Selenium/Playwright for automation... plus AI layers for guidance and decision-making. Modular from the jump. There’s a clear roadmap: MVP, scaling, AI feedback loops. The tricky part ahead is making the AI adapt on the fly to each API’s quirks.
+Expanded the Wizards Directory. It’s turning into more than just scripts now... thinking ecosystem. Modular tools that can evolve without breaking the system.
+Cleaned up SelfEvolver tests. Documented better, handled edge cases, and smoothed out subprocess handling. It’s stable, but still feels like it’s evolving with every pass.
+Spent time merging and unifying AutoPostScheduler code. Had three different versions floating around... consolidated it all into one streamlined module. The logic is cleaner. All the unit tests pass. Learned (again) that merging isn’t just combining code—it’s rethinking the structure so it scales.
+Added new layers to the HashtagPerformanceTracker and Audience Interaction Tracker. Both now pull real-time data across platforms. API rate limits and quirks gave me a headache, but I worked through it... better error handling and retry strategies in place now.
+What was tricky...
+Handling multiple APIs and keeping things modular without creating a spaghetti mess. The balance between flexibility and control is a constant dance. Also... debugging subprocesses with AI suggestions in SelfEvolver—some of that logic needed more guardrails than I thought.
+What’s next...
+Automating token refresh flows (Instagram’s short-lived tokens are a pain).
+Building out the scheduling layer for automated data pulls.
+Drafting up a real-time dashboard to visualize all this hashtag and engagement data—thinking charts, heatmaps, actionable insights.
+Adding Git hooks for automated code checks before I push anything going forward.
+“Progress isn't always about speed. Sometimes it's about the precision of each move.”

@@ -1,0 +1,11 @@
+Devlog | 2025-03-16
+How much noise in the system is just a sign I’m close to the signal?
+Spent the last block working on the TSLA strategy updates... got RSI and MACD tweaked and reran the backtest to see how things stack up. The signals are firing—buy and sell points are showing up on the chart like they should. Clean enough for now.
+But there’s still this gap I’m feeling between signal generation and execution clarity. Some of the sell signals are hitting late... a couple of the buys look good, but I’m not fully convinced they’re optimized yet. It’s that middle ground between “working” and “working well.”
+Ran into a file path error earlier—simple, but annoying. Forgot about the escape sequence issue in the file path string. Fixed that with raw string formatting and moved on. Little things like that slow the flow... but only if I let them.
+Backtest results are in. Need to dig deeper into win rate, max drawdown, and risk-reward before I move this into anything automated. Signals look decent on paper... but I don’t trust paper.
+Next up...
+✅ Tighten the exit strategy rules.
+✅ Layer in more data to stress test this thing.
+✅ And figure out if I’m overfitting without realizing it.
+"The system isn’t broken... it’s just unfinished."

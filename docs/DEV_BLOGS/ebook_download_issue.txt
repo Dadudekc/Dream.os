@@ -1,0 +1,15 @@
+Devlog // 2025-03-15
+What’s the signal that tells you you’re building too many bottlenecks into your own system?
+Been sitting with that one today... because I realized I’ve let too many sequential processes pile up across trading, news analysis, and content automation. The machine’s slower than it should be. Slower than I need it to be.
+Here’s the rundown...
+Spent a chunk of time tearing apart the FreerideInvestor AI Market News plugin... reorganized the structure, cleaned up logging, and rebuilt the news fetch and AI analysis workflow. The architecture’s solid now—separate classes for fetch, analyze, deliver—but it’s too linear. Every news article goes through sentiment, keywords, summary, impact score, risk... one after the other. Slow. Slower than I realized until the system started choking on larger data pulls.
+Also found out that the WordPress plugin was crashing on bad autoloads. Kills the whole process when a class file is missing. Waste of time. I’m moving the logs off the file system and into a proper external service next—probably Datadog or Loggly. No more filesystem writing delays.
+The AI pipeline is doing too much in serial... need to batch the calls, parallelize sentiment and risk assessment... and let trading decisions happen asynchronously instead of waiting on full analysis. Speed kills in the markets. Lag kills me.
+On the content side, there’s too much manual intervention when alerts don’t fire. Looking at automating self-healing scripts for the WordPress plugin. It shouldn’t need me to babysit it.
+What’s next:
+Batch + parallelize the AI processes.
+Replace wp-cron with server-side cron jobs.
+Build self-healing + failover into the plugin.
+Productize the AI insights into an investor dashboard or alerts system... that’s overdue.
+Systems should move faster than me. That’s the bar.
+"Clarity is speed. Speed is freedom."

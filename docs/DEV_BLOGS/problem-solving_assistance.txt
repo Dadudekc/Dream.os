@@ -1,0 +1,7 @@
+Devlog // 2025-03-16
+"How do you stay committed to the big picture when your day-to-day feels like a $1 scramble?"
+Today was one of those reminder days... the 100 million dollar plan is still the mission—but the execution? Feels like I’m duct-taping $1 fixes together and hoping it holds long enough to get to the next step.
+Was troubleshooting an audio input issue... wasn’t even plugged into anything, but the mic was still picking up noise. It’s always the simple stuff that slows you down... things that shouldn’t be a problem, but they are. Just a reminder that the system—whether tech or life—always has another edge case waiting.
+Didn’t ship any code, didn’t test a new algo... just cleaned up the setup. Small moves. Still progress.
+Next—back to tightening workflows. Less friction, more flow.
+“You won’t always feel like you’re winning... but showing up is how you do.”

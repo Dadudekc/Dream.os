@@ -1,0 +1,8 @@
+Devlog: Cleaning Up the Core
+What’s the point of scaling if the foundation is bloated? Been asking myself that the last few hours...
+I spent today tearing through the backend of the fintech engine. Mostly cleaning house. The data pipelines were getting messy—too many APIs stacked on top of each other, half of them redundant... and honestly, it was slowing everything down more than I wanted to admit.
+Pulled out the third-party sentiment API completely... no point paying for something OpenAI can handle cleaner and faster. I reworked the sentiment fetch to run through GPT calls—simplified the whole layer. One less moving part to break.
+Also caught a few places where portfolio optimization jobs were running on autopilot... hourly triggers instead of event-driven logic. Switched that up. Now they only fire when conditions are right—makes the whole thing feel sharper. Less waste.
+What’s next... want to tighten up the risk management logic. Right now it’s too basic. I’m thinking dynamic stop losses based on volatility bands. Not over-complicating it... just making sure it reacts.
+The system’s getting lighter... feels good.
+"Simplicity is the ultimate sophistication."

@@ -1,0 +1,7 @@
+Devlog: Tightening Up the Trade Journal API
+What’s the point of shipping fast if the foundation’s cracked?
+Spent time today cleaning up the trade journal endpoint... finally locked down the permission checks. It was running with __return_true just to keep things moving, but that’s not a habit I want sticking around. Added a proper verify_nonce and current_user_can check... simple, but necessary. No point in building out features if security is still a placeholder.
+Pulled the reasoning and recommendations logic into their own functions... cleaner, easier to extend later when I bring in AI-driven feedback loops. I’ve been meaning to modularize this for a while... today was the day.
+What slowed me down—figuring out the cleanest way to structure the permissions while keeping the flow lightweight. The goal is always minimal friction for the end user, but you can’t cut corners on safety. Balancing that took longer than I expected.
+Next... API observability. I need to see what’s happening in real time... logs, request stats, failures... all of it. Can’t scale blind.
+“Fast is fine... but accuracy is final.”

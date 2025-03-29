@@ -1,0 +1,24 @@
+Devlog | 2025-03-15
+Question I’m sitting with:
+Am I building systems that truly run without me… or am I still holding on?
+Spent the day deep-diving on the automated test generator I’ve been building.
+Started as a basic script to pump out pytest templates… but the further I got in, the more I realized I was patching symptoms instead of engineering something that could scale without needing me in the loop.
+What I had worked—but it wasn’t smart.
+It threw MagicMock() everywhere, grabbed function signatures half-blind, and didn’t really learn from itself. Manual validations, constant tweaks… I was still in the system, dragging it forward.
+Rebuilt the entire thing into a single class.
+Cleaner, easier to move between projects, but more importantly—it’s structured to unify and self-organize across layers.
+Added parameter inference, dependency injection…
+Now it doesn’t just mock things randomly. It analyzes, predicts types, and auto-generates realistic inputs.
+Still defaulting to mocks when it can’t infer, but it’s sharper.
+I can see where to plug in reinforcement learning to make the test generator self-heal and self-fix when it hits failures.
+Also realized the trading automation and the test automation are still split.
+They’re running parallel, not converged.
+That’s a problem.
+System needs to be recursive—failures in one layer have to feed learning back into the others. Otherwise, it’s me duct-taping gaps.
+Not the move.
+Next up…
+Unify the pipelines.
+The trading bot, the test automation, the CI/CD—it all needs to be one recursive loop.
+If it breaks, it fixes itself. If it wins, it scales itself.
+I’m not building bots. I’m building systems that build themselves.
+"Don’t build to survive the day. Build to survive without you."

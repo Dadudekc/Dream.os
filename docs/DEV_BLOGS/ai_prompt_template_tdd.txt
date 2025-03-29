@@ -1,0 +1,27 @@
+Devlog // System Audit + Test Suite Refactor
+How many times do I need to hit the same bottleneck before I dissolve it?
+That’s what today’s work made me sit with.
+I’ve been stuck in this loop—tests running forever... scraping processes tangled up with the Discord bot... scattered configs biting me in the ass every time I scale something. I kept patching things, but never fully fixing the structure. That’s the trap—speed without convergence creates friction.
+So I stepped back and ran a full system audit.
+Here’s where I landed:
+What got worked on...
+Broke down the full test suite for overnight_sentiment_bot, platform_login_manager, and the DB handler.
+Refactored test cases to isolate all dependencies—mocked Discord, database calls, and Selenium drivers properly this time.
+Injected pytest-timeout to kill infinite loops dead.
+Created a fake async generator for run_multi_ticker_scraper so overnight_scraper_scheduler doesn’t hang.
+Refactored config handling. One Config instance, no more guessing where env vars are coming from.
+Did a full teardown of circular dependencies between the bot, scraper, and DB handler.
+What broke or was tricky...
+finbert was always returning Neutral. Turns out the patch on the model wasn’t wired right. Fixed the test mocks to align properly with the pipeline output.
+Discord embed colors were off by a few hex points—tightened the color mapping to standard Discord hex codes.
+overnight_scraper_scheduler needed a timeout guard... had to force a wait_for() to stop the infinite generator during testing.
+Patched load_cookies and wait_for_manual_login were throwing attribute errors—realized I was patching in the wrong namespace. Easy miss, stupid delay.
+What’s next...
+Break the scraper → database → bot pipeline into separate services. Fully event-driven.
+Redis cache layer for sentiment so the bot isn’t hammering the file system every command.
+Deploy an AI-based watchdog to restart failed services automatically. No more manual restarts.
+Start moving the test suite to parallel execution with pytest-xdist.
+The biggest shift?
+Stop chasing bugs.
+Build a system that hunts them for me.
+“Don’t get faster at fixing leaks. Build pipes that don’t break.”

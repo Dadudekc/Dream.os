@@ -1,0 +1,10 @@
+Devlog: Tightening the Autoloaders
+Ever wonder how much time gets wasted chasing your own mistakes? Not the big ones… the small, stupid ones. File names. Namespace mismatches. Stuff that shouldn't break things but always does.
+That's where today went.
+Been cleaning up the plugin structure… aligning file names, fixing autoloaders, sorting out where traits and classes live. It’s simple on paper. But when you’re knee-deep in PHP errors and autoloaders refusing to load, it’s just purgatory.
+The autoloader was fighting me because the file structure didn’t match the namespaces. Class names were out of sync with the files—Logger trait in the wrong folder, files like API_Manager that should’ve been class-api-manager.php... so it was failing silently until it wasn't. Every time I thought I had it, something else cracked open.
+Caught a fatal error trying to instantiate a trait… yeah. Rookie move. Traits can’t be instantiated, but that’s what happens when you’re wiring things fast and your mind's three steps ahead of your hands. Fixed that by removing the new Logger() call and just keeping it where it belongs: use Logger.
+Also refactored the autoloader to differentiate between classes and traits. Kept the directory structure clean… src for core logic, includes/traits for traits. Way easier to manage now.
+Next up... locking down the API Manager to make sure it's only handling orchestration and not getting bloated. I’ll probably wire up background jobs after that… get the automated data refreshes moving without me hitting a button.
+It’s always the small things that slow you down... but they add up. Knock them out early.
+“Fast is slow. Slow is smooth. Smooth is fast.”

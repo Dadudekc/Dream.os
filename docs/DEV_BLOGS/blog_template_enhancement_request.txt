@@ -1,0 +1,19 @@
+Devlog — March 15, 2025
+What’s the cost of doing something manually... when it should’ve been automated weeks ago?
+Been sitting with that one today.
+Went deep on the system audit... trading, automation, content flow.
+The loop is getting tighter, but there’s friction in places I shouldn’t be touching anymore.
+What stood out...
+I’m still manually structuring trading plans...
+Still babysitting CSS when the theme should be locked...
+Still repeating tone instructions to AI that should already know how I write.
+It’s small stuff... but small stuff compounds into wasted time.
+If I’m honest, it’s slowing the system down.
+So here’s where I’m pivoting:
+— Automating the tactical playbook generator. No more manual trade plan write-ups. The AI should handle the initial draft, based on data feeds... I just edit and execute.
+— Building a universal theme component library. No more adjusting margins and colors in the middle of a content build. One decision... everywhere.
+— Codifying content governance. Lock in tone, structure, and design rules... so AI outputs hit 90% without rewrites.
+— Setting up an immutable decision log. If I make a call, it’s the rule now. No more re-deciding.
+That’s the focus... convergence and velocity.
+No more energy leaks.
+"You can’t move fast if you keep grabbing the same rock."

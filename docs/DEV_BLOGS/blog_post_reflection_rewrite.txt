@@ -1,0 +1,11 @@
+Devlog Entry - March 16, 2025
+Ever find yourself overcomplicating something simple… and then realizing the problem wasn’t the code—it was how you were thinking about it?
+That was me today. Took a step back and cleaned up the FreeRide Projects plugin. I’ve been meaning to modularize it, but first I wanted a single script that just worked. The JSON loader used to be fine, then suddenly it wasn’t letting me upload or save data. Spent way too long second-guessing the logic before I just said screw it and ran full test-driven cycles to lock it down.
+Red-Green-Refactor on repeat.
+Failing tests.
+Passing code.
+Refactored the mess.
+Now the plugin creates the /projects page on activation, loads the projects from a JSON option, and lets me edit that JSON right in the admin. Added proper nonce verification, JSON validation, and even error logging to debug.log. No more blind spots when something breaks. If it chokes on bad JSON, it’ll tell me where and why. Should’ve done that from the jump.
+What’s next…
+I’ll break this into modules soon, wire up the REST API, and prep it for integration with my habit tracker. Not trying to overbuild it. Just making sure it works clean before I add the layers.
+"Refinement is the reward of repetition."

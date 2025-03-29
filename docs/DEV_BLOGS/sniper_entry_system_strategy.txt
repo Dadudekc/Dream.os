@@ -1,0 +1,30 @@
+Devlog // Sniper System Build
+03.15.25
+How much time do I lose rebuilding things that should already be modular?
+That’s what hit me today...
+Was working on the Sniper Entry System strategy in Pine.
+Mean reversion... Bollinger Bands... MACD curls... all the usual suspects.
+But halfway through, I realized I’m writing the same base components I’ve written a dozen times before.
+RSI logic. Bollinger Band structures. MACD slopes.
+It’s not complex, but it’s redundant...
+And every time I hit another type error or dumb operator logic bug, it slows me down.
+I’m still debugging reactively, when I should be building proactively.
+The VWAP issue was simple... I fed it volume instead of length because I didn’t have a clean framework set up.
+The operator bug? Parentheses—again.
+Wasted cycles.
+Not major... but enough to break flow.
+So here’s the takeaway...
+I need a modular PineScript framework.
+Components I can snap together without rewriting them every time.
+And I need an AI layer that checks syntax and logic before I run anything.
+I’m tired of catching simple stuff after the fact.
+Also... a parameter optimizer.
+Right now, tuning RSI thresholds and ATR stops is guesswork.
+I can automate that.
+If I’m serious about scaling this, I can’t afford manual calibration on every run.
+What’s next...
+Drafting the modular component library—indicators, entries, exits.
+Starting the AI prompt validator for Pine.
+Building out the Python-based hyperparameter tuner.
+Automation pipeline with performance alerts... so I know immediately if something breaks or underperforms.
+“Precision isn’t about adding more—it’s about removing friction.”

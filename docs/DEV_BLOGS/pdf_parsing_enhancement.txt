@@ -1,0 +1,11 @@
+Devlog // 2025-03-16 // Regex Fights and Parsing Breakthroughs
+What’s the point of precision if you’re aiming at the wrong target?
+That’s been the theme today. Spent the last few hours digging into my PDF trade parsing scripts. Thought I had everything dialed—tight regex, solid extraction, clean pipeline to MySQL... but the logs told a different story.
+The parser was skipping trades. Not a few... all of them.
+At first, I figured the issue was in the raw text pull—maybe pdfplumber was mangling the output, or spacing was throwing off the match. But it wasn’t that. The regex was fine... too fine, actually. I was matching line by line, assuming the format was consistent. It wasn’t. Headers, page numbers, and random fragments were baked into the same lines as trades. The pattern was brittle.
+So I stopped aiming so precisely.
+Rewrote the parsing logic to scan the entire page body, using finditer to pull trades no matter where they show up. Removed the filter that skipped lines without a known symbol—turns out I was filtering out valid trades because they didn’t start perfectly on a new line. Now, instead of forcing the structure, I let the regex find its footing inside the chaos.
+Got the trade extraction clean. The parser picks up multi-line, embedded trades now... and logs give me exactly what I want.
+What’s next—I'll stress test this parser on more statement formats, build out some unit tests, and tighten up the edge cases. Thinking about adding a more adaptive regex pattern next, something that can handle variations without breaking the flow.
+Progress. Not pretty, but it works.
+"Precision without perspective is wasted motion."

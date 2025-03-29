@@ -1,0 +1,24 @@
+DEVLOG // 2025-03-15
+How much friction am I willing to tolerate before it starts bleeding momentum?
+Today was about auditing my own systems... not fun, but necessary.
+I sat with the whole trading / automation / content pipeline and realized how much drag I’m carrying. Manual checks in trading strategies, redundant back-and-forth on content reviews, and way too much context-switching between Notion, GitHub, Discord... each one small, but together, they slow the whole thing down.
+What I worked on:
+Mapped the key bottlenecks across trading, automation, and content workflows.
+Scoped the highest leverage fixes:
+→ Auto-adaptive AI layers for trading strategies (no more hand-holding setups).
+→ CI/CD pipeline for bots—get code deployed without me having to think about it.
+→ Centralized control dashboard. One place. Live data. Real-time triggers.
+→ AI-powered content QA... to kill the revision cycles.
+→ Componentized design system so I’m not rebuilding the same block every time.
+What broke / what was tricky:
+Realizing the feedback loops in trading are still too manual. I’m trusting my instincts too much and not enough real-time metrics.
+Content pipeline is getting bloated. I’m spending hours tweaking flow that should be solved with modular design + AI reviews.
+The fragmentation between tools is the real bottleneck. Without unification, execution stays slow.
+What’s next:
+Build and test the adaptive trade logic... starting with TensorTrade or something custom.
+Launch CI/CD for bots this week. Docker + GitHub Actions → Cloud deployment.
+Spin up a unified dashboard—probably Grafana.
+Finalize the Figma components and CSS utility classes for the dev blog.
+Wire AI review into the content pipeline. No more hand-holding drafts.
+Progress isn’t flashy right now, but this is the hard reset I needed. Cutting fat. Speeding up.
+"The work doesn't need to be perfect. It needs to be in motion."

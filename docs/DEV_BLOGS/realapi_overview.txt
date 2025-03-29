@@ -1,0 +1,13 @@
+Devlog | 2025-03-15
+“How much time am I losing by keeping things in my head that should already live in the system?”
+Quick drop... Been running an audit on my workflows—trading, automation, content. This convo flagged something obvious I’ve been ignoring... too much time lost trying to remember instead of referencing. Little stuff like the name of the tool to run Python in PHP... should be instant, but I’m digging around in my head for it. That’s noise.
+What I realized is I’m still operating linearly when things should be modular by now... like, I’m asking a single-threaded question when I should be running parallel streams across the stack. Trading on one lane, automation on another, content builds ticking in the background... all cross-referencing, but not bottlenecking each other.
+Another snag... decision fatigue creeping in. Every time I have to choose how to run something—REST API or exec() for Python-PHP bridges—it slows me down. Solution’s simple: predefined defaults and decision trees. Systemize it. Done.
+What’s next...
+— Build out the SSOT (single source of truth). Glossary, SOPs, the whole map.
+— Implement session tags so I know where I am without thinking about it.
+— Frame prompts in modular chunks so everything flows parallel, not sequential.
+— Offload micro-decisions to AI agents where I can... no reason to burn cycles on low-skill calls.
+Velocity over everything right now...
+Need less friction, more flow.
+“Systems run better when they don’t rely on memory... and so do we.”

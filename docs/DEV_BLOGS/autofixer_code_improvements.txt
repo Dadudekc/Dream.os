@@ -1,0 +1,10 @@
+Devlog // AI Debug Stack Audit
+"What’s the real threshold where a system knows enough to trust itself?"
+Been deep in the trenches with the AI debugging stack the past couple days... refining the core AutoFixer and its connection points with DebugAgentUtils, AIModelManager, and AIConfidenceManager.
+Most of the work this cycle has been about tightening the feedback loops. The quick pattern-fix engine is solid, but AI-generated patches were sketchy until I reinforced DebugAgentUtils with real diff parsing and patch application. It’s now handling unified diff suggestions properly—backups in place, rollbacks when things fail. Had to drop in dummy functions at first, but that’s cleaned up now.
+Then AIModelManager... got that patched up to handle confidence scoring and fallback logic between Mistral, DeepSeek, and OpenAI GPT-4. Confidence scores are making decisions, not just vibes. Finally wired up save_model and load_model, because yeah, I realized I was flying blind on model state persistence.
+The unexpected bottleneck was AIConfidenceManager. Thought it was solid, but test runs surfaced missing store_patch logic and some sketchy returns. Ended up rewriting the confidence flow to guarantee high-confidence patches are tracked and suggested properly. Also locked in persistence—no more “why isn’t the JSON saving” moments.
+The test suite flagged every missing piece… but after a bunch of cleanup, we’re at 100% green except for one case that needed me to sync expected outputs with the actual confidence messages returned. It’s all in place now.
+What’s next? I’m pushing the LLM model integration to real inference calls. No more mocks. Also want to level up PatchTrackingManager so it doesn’t just store history but learns from failures. Real history, not a glorified log.
+For anyone building systems that self-heal... the thresholds matter. Don’t skip defining them. Don’t trust vague signals.
+“Systems that learn from failure evolve. Systems that ignore failure repeat it.”

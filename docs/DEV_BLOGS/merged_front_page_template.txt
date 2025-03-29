@@ -1,0 +1,16 @@
+Devlog // 03.15.2025
+Introspective Question:
+How much of my system is still running on me... and how much should be running without me?
+Been deep-diving today... trading, content workflows, automation—it's all showing cracks I can't ignore.
+The trading side's messy right now. I’m catching myself manually validating setups way too often... burning time I don't have. I was biased bearish, market went bullish, and I didn't pivot fast enough. Emotional drag there, not gonna lie. Overheld positions. Thought I could make Friday a revenge day... market proved otherwise.
+Content stuff? Same deal. Way too many loops where I'm redoing things I already solved. People asking for "match the theme" on HTML... again. That's on me for not locking in a component system. Gonna fix that.
+Automation? Underpowered. I’m still the one triggering everything... AI isn't doing enough heavy lifting on the real-time bias checks or content queue. That stops here.
+What broke
+The biggest thing? Holding trades past the plan. And my execution flow is too manual. I lost money and time today. No sugarcoating that.
+What’s next
+Automating trade plan validators with live data triggers.
+Locking in an Atomic Design system for content so there’s zero style drift.
+Scheduling everything—Discord, site drops, etc.—straight through Airtable + APIs.
+Building an AI assistant that calls me out when I’m veering emotional in trades.
+And Thursday... I’m closing out the trades early. No debate.
+“Discipline is remembering what you want.”

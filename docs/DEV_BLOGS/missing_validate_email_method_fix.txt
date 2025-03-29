@@ -1,0 +1,9 @@
+Devlog | 2025-03-16
+What’s the point of mocking something if it doesn’t even exist in the first place?
+Spent the day deep in testing the AIPatchRetryManager. Started simple—wanted to verify patch retries under different confidence thresholds... low confidence, successful retries, failed retries. On paper, clean. In code? Not so much.
+Mocked out AIConfidenceManager and AutoFixManager, expecting smooth sailing. But the mocks kept failing—get_confidence didn’t exist. Turns out, the method in the actual code is calculate_confidence... so the mocks were shooting blanks. Classic.
+Refactored the tests to patch the actual method names. Made sure I wasn’t patching instances but the classes themselves. That cleared up some of the noise. The dependency injection update in AIPatchRetryManager helped too—passing in managers instead of instantiating inside. Cleaner, more testable.
+What tripped me up was balancing mocks with dependency injection... I was mocking instance methods when I should’ve been focusing on the interfaces. Lesson learned.
+Tests are green now. Structure’s tight. Confidence scores and patch applications behaving as expected.
+Next up... wiring this into the broader AutoFix flow and stress-testing it with actual patch data from the failed runs queue. Need to see if it holds under volume.
+"Precision beats power, and timing beats speed."

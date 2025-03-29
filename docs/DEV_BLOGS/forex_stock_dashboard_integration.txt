@@ -1,0 +1,25 @@
+Devlog: Where’s the friction... and why am I letting it stay?
+Spent the last chunk of time tearing into the guts of the plugin...
+Not the fun parts—this was about clearing bottlenecks and cleaning up stuff I should’ve handled sooner.
+Found out I had two versions of the same plugin folder sitting on the server.
+One was the active build... the other was some backup copy I’d forgotten about.
+Both were loading... functions clashing... causing fatal errors in production.
+It was stupid, but it was costing time and focus. Killed the duplicate. Clean slate.
+Then it hit me...
+I’ve been letting a lot of redundant processes sit there.
+Hourly cron jobs running whether or not they need to.
+Multiple dashboards doing basically the same thing, just for different assets.
+Separate UIs... separate code... wasting time every time I need to change something.
+I’m consolidating everything now...
+One dashboard.
+One core system.
+One set of modular components for both stocks and forex.
+It’s already feeling lighter.
+Next up...
+Refactoring the plugin into something that can scale without me having to babysit it.
+Namespacing, autoloading... cutting the noise.
+And moving the alert system from hourly crons to event-driven triggers.
+Might tie in AI-predictive checks down the line, but first I want the basics working clean.
+One thing at a time...
+But the energy’s shifting.
+"If you can’t explain it simply, you don’t understand it well enough."

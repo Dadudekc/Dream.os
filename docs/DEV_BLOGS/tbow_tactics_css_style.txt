@@ -1,0 +1,11 @@
+Devlog: Cleaning the System
+What’s slowing me down right now…?
+That’s been the question on loop.
+I’ve been picking apart the workflows—trading, automation, content. It’s been messy… too many hand-offs, too much manual checking. I’m wasting time where it shouldn’t be wasted. That friction adds up fast.
+Today was about identifying bottlenecks and redundancies. Trading stood out first… too much overlap in the indicators I’m using. EMA, SMA, MACD… all pointing at the same thing, but making me double-check myself. That hesitation’s a killer. Need to strip it down to what matters, automate the execution, and let the system run.
+Same issue on the automation side… workflows that still need me to click a button, review a thing, double-confirm a task. Every time I step in, I slow things down. I’m building out AI-driven task management next… less oversight, more self-correction.
+Content was its own purgatory. Manual formatting, visuals taking up more time than they should. That’s getting automated. Templates, pre-built structures, and AI generating drafts that are 90% ready to go. The review loop’s tighter now… and cleaner.
+What’s next…
+Tie everything together. Fully integrate the systems so they talk to each other without me needing to mediate. This needs to move without me in the loop.
+One system… high speed… low drag.
+"Speed is a byproduct of clarity. Cut what doesn’t serve."

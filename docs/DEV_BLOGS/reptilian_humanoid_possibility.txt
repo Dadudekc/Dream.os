@@ -1,0 +1,23 @@
+Devlog // 2025-03-15
+"How do you know when something’s finally tight enough to trust—or when you’re just forcing it because you want it to be done?"
+Been deep in MACD Curl strategy implementation today... wanted to get this thing clean enough to run in BasicBot without me second-guessing it every time it fires.
+The core’s there now:
+MACD Histogram Curl logic, tested and working
+Clean trend confirmation off the 50 SMA
+Entry/exit logic with basic stop-loss and take-profit rules
+We ran red-green-refactor mode, wrote the tests, made sure everything passes. No skipped corners on that.
+But here’s the thing…
+The deeper I got into it, the more I saw we’re leaving money on the table by ignoring price action. Engulfing candles, hammer setups—they’re screaming at us in these curl spots, and I wasn’t listening.
+So next phase...
+I’m wiring in candlestick pattern confirmation.
+Bullish Engulfing + MACD Curl? That’s a different level of signal quality.
+Same with ATR-based stop loss instead of these flat percentages I’ve been lazy about. Adaptive risk. Smarter exits.
+Also clocked a big inefficiency in how I’m testing these strategies...
+Right now I’m hand-coding each one into its own testing setup. Dumb.
+I’m gonna build a universal strategy tester—drop in any logic, get the results, optimize on the fly. That’s the move.
+What’s next:
+Candlestick confirmations (Engulfing, Hammer, maybe some Doji work)
+ATR stop loss + dynamic take profit
+Start mapping out the universal tester and plug-in system
+Long-term... reinforcement learning for auto-optimizing strategy parameters. But first things first.
+"Don’t confuse movement with progress. Tighten the feedback loop and make every iteration mean something."

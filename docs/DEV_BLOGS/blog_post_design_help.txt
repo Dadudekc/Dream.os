@@ -1,0 +1,18 @@
+Devlog | 2025-03-15
+What’s slowing you down more than you realize?...
+Spent some time auditing the system today... took a hard look at where the energy is leaking. It’s clearer now that I’ve been doing way too much by hand—especially on the content side. Every time I tweak CSS, structure another blog post, or ask for adjustments in the layout... it’s time I’m not putting into the core builds or trading systems.
+The trading workflow’s also got friction points... analysis is still tied to manual thinking when it should be piped straight into automated reports and signals. Writing up insights and pushing them out shouldn’t be a separate process—it should be one flow, running itself.
+What I worked on:
+Cleaned up the blog layout for FreeRideInvestor.com... sections for market analysis, trading plans, and monetization strategies are set.
+Refined the CSS... but honestly, that’s a temporary fix. I need a component library and template system that just works—no more micro-managing the visuals.
+Ran a deep audit of the full system... flagged bottlenecks in content creation, trading report generation, and lack of automation between data → insights → delivery.
+What broke (or what’s tricky):
+The time dilution is real... there’s too much hands-on in tasks that should be automated or at least semi-autonomous.
+No centralized workflow yet. Everything’s still scattered across tools and manual steps. Slows everything down.
+What’s next:
+Building an AI-powered content generator... GPT fine-tuned on my voice to draft posts that are 80% publish-ready.
+CI/CD flow for content publishing... no more “test and tweak,” just push and it’s live.
+Automated trading reports tied to live data... plug in my strategy logic and let it run.
+Personal AI orchestrator agent... to handle workflows so I can focus on strategy, not operations.
+Speed is leverage... and I’m done moving slow.
+"The system you build today is the speed you move at tomorrow."

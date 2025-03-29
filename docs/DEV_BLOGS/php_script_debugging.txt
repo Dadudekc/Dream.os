@@ -1,0 +1,16 @@
+Devlog | 15-Mar-2025
+What’s the cost of leaving a system fragmented when it’s begging to converge?
+Spent most of today deep in the guts of the Freeride Investor plugin... cleaning up all the scattered pieces that were starting to slow me down.
+I’ve been seeing fatal errors popping up around the Alpha Vantage integration—turns out it was a sloppy nested ternary. PHP was complaining about unparenthesized logic... something simple, but those small things pile up when you’re moving fast. Fixed that. Wrapped the conditions properly. Now it’s clean.
+But the bigger realization? I’ve been handling error logging and debugging like it’s still 2022... reactive, fragmented, too manual. Debug logs weren’t catching what they needed because the system wasn’t really designed for observability. No real-time error tracking, no unified logs, and I was burning time chasing down ghosts instead of building. So I stepped back and mapped it out.
+What’s missing is a centralized flow—one pipeline for error handling, caching, rate limits, logging... everything. Right now, I’ve got bits of that logic copied across Finnhub, OpenAI, Alpha Vantage. It works, but it’s brittle. Maintenance is a drag. So I’m consolidating that into shared services.
+Also realizing the caching strategy’s too blunt. Transients are fine until they’re not. Going to move toward predictive cache invalidation... more adaptive, less guesswork.
+And then there’s the testing... or lack of it. Manual testing’s not cutting it anymore. Next step is automating the pipeline—unit tests, integration tests, mock API servers. CI/CD’s getting spun up after that.
+Last takeaway... AI-generated content (trade plans, sentiment scores) needs to get smarter. Personalization’s coming. User segmentation, behavioral feedback loops... more signal, less noise.
+Next:
+Set up real-time logging (thinking Sentry for now)
+CI/CD and test coverage (GitHub Actions to start)
+Build out the shared API service layer
+Start mapping the personalized content workflows
+"Automate the trivial. Predict the critical. Personalize the valuable."
+Let’s keep moving.

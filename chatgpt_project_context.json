@@ -1,0 +1,2309 @@
+{
+    "project_root": "D:\\overnight_scripts\\chat_mate",
+    "num_files_analyzed": 63,
+    "analysis_details": {
+        "auto_test_maker.py": {
+            "language": ".py",
+            "functions": [
+                "is_testable_python_file",
+                "run_cursor_test",
+                "append_log",
+                "main"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 4
+        },
+        "analyze_test_coverage.py": {
+            "language": ".py",
+            "functions": [
+                "parse_args",
+                "run_coverage_analysis",
+                "find_python_files",
+                "generate_mock_coverage_data",
+                "analyze_coverage_data",
+                "print_coverage_report",
+                "visualize_coverage",
+                "main"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 8
+        },
+        "overnight_prompt_queue.py": {
+            "language": ".py",
+            "functions": [
+                "load_calibrated_coords",
+                "save_calibrated_coords",
+                "calibrate_coordinate",
+                "focus_cursor_window",
+                "click_coordinate",
+                "type_prompt_and_send",
+                "wait_for_generation",
+                "retrieve_context",
+                "post_execution_review",
+                "run_prompt_queue",
+                "parse_args",
+                "main",
+                "__init__",
+                "output"
+            ],
+            "classes": {
+                "OutputHandler": {
+                    "methods": [
+                        "__init__",
+                        "output"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 16
+        },
+        "chat_mate.py": {
+            "language": ".py",
+            "functions": [
+                "setup_logging",
+                "get_driver",
+                "save_cookies",
+                "load_cookies",
+                "is_logged_in",
+                "force_model_in_url",
+                "get_chat_titles",
+                "send_prompt_to_chat",
+                "get_latest_response",
+                "generate_devlog",
+                "save_rough_draft",
+                "archive_chat",
+                "main"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 13
+        },
+        "generate_missing_tests.py": {
+            "language": ".py",
+            "functions": [
+                "parse_args",
+                "find_python_modules",
+                "find_existing_tests",
+                "analyze_module_content",
+                "generate_test_template",
+                "generate_test_with_ollama",
+                "create_test_file",
+                "run_tests",
+                "main"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 9
+        },
+        "overnight_test_generator.py": {
+            "language": ".py",
+            "functions": [
+                "is_test_file",
+                "contains_testable_code",
+                "find_python_files",
+                "get_missing_coverage_files",
+                "load_json_safe",
+                "save_json_safe",
+                "call_ollama",
+                "generate_test_prompt",
+                "generate_coverage_improved_test_prompt",
+                "run_test_generation",
+                "run_unittest",
+                "run_coverage_on_file",
+                "main"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 13
+        },
+        "core\\ChatManager.py": {
+            "language": ".py",
+            "functions": [
+                "sanitize_filename",
+                "__init__",
+                "_load_memory",
+                "start",
+                "send_prompt",
+                "get_all_chat_titles",
+                "execute_prompts_single_chat",
+                "analyze_execution_response",
+                "shutdown_driver",
+                "send_chat_prompt",
+                "switch_execution_mode",
+                "generate_dreamscape_episode",
+                "execute_prompt_cycle",
+                "queue_prompts",
+                "get_last_response",
+                "inject_context"
+            ],
+            "classes": {
+                "ChatManager": {
+                    "methods": [
+                        "__init__",
+                        "_load_memory",
+                        "start",
+                        "send_prompt",
+                        "get_all_chat_titles",
+                        "execute_prompts_single_chat",
+                        "analyze_execution_response",
+                        "shutdown_driver",
+                        "send_chat_prompt",
+                        "switch_execution_mode",
+                        "generate_dreamscape_episode",
+                        "execute_prompt_cycle",
+                        "queue_prompts",
+                        "get_last_response",
+                        "inject_context"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "IChatManager"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 31
+        },
+        "test_chat_mate.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "__call__",
+                "test_no_direct_import_of_interfaces",
+                "test_isolation_from_core_modules",
+                "setUp",
+                "tearDown",
+                "test_setup_logging",
+                "test_get_driver_with_cached_driver",
+                "test_get_driver_without_cached_driver",
+                "test_save_cookies_success",
+                "test_save_cookies_exception",
+                "test_load_cookies_file_not_found",
+                "test_load_cookies_success",
+                "test_load_cookies_exception",
+                "test_is_logged_in_success",
+                "test_is_logged_in_failure",
+                "test_force_model_in_url_main_page",
+                "test_force_model_in_url_chat_page",
+                "test_force_model_in_url_existing_model",
+                "test_force_model_in_url_custom_model",
+                "test_get_chat_titles_no_chats",
+                "test_get_chat_titles_with_exclusions",
+                "test_get_chat_titles_exception",
+                "test_send_prompt_to_chat_success",
+                "test_send_prompt_to_chat_exception",
+                "test_get_latest_response_no_messages",
+                "test_get_latest_response_message_stabilized",
+                "test_get_latest_response_edge_cases",
+                "test_get_latest_response_message_keeps_changing",
+                "test_get_latest_response_exception",
+                "test_generate_devlog",
+                "test_save_rough_draft",
+                "test_save_rough_draft_special_chars",
+                "test_archive_chat",
+                "test_main_already_logged_in",
+                "test_main_login_required",
+                "test_main_login_failed",
+                "test_send_discord_message",
+                "test_on_ready",
+                "test_force_model_in_url_edge_cases",
+                "test_send_prompt_to_chat_edge_cases",
+                "test_get_chat_titles_edge_cases",
+                "find_elements_special_chars",
+                "find_elements_multiple_messages",
+                "find_elements_side_effect"
+            ],
+            "classes": {
+                "TimeCounter": {
+                    "methods": [
+                        "__init__",
+                        "__call__"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                },
+                "TestCircularImportPrevention": {
+                    "methods": [
+                        "test_no_direct_import_of_interfaces",
+                        "test_isolation_from_core_modules"
+                    ],
+                    "docstring": "Tests specifically targeting potential circular import issues",
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                },
+                "TestChatMateCore": {
+                    "methods": [
+                        "setUp",
+                        "tearDown",
+                        "test_setup_logging",
+                        "test_get_driver_with_cached_driver",
+                        "test_get_driver_without_cached_driver",
+                        "test_save_cookies_success",
+                        "test_save_cookies_exception",
+                        "test_load_cookies_file_not_found",
+                        "test_load_cookies_success",
+                        "test_load_cookies_exception",
+                        "test_is_logged_in_success",
+                        "test_is_logged_in_failure",
+                        "test_force_model_in_url_main_page",
+                        "test_force_model_in_url_chat_page",
+                        "test_force_model_in_url_existing_model",
+                        "test_force_model_in_url_custom_model",
+                        "test_get_chat_titles_no_chats",
+                        "test_get_chat_titles_with_exclusions",
+                        "test_get_chat_titles_exception",
+                        "test_send_prompt_to_chat_success",
+                        "test_send_prompt_to_chat_exception",
+                        "test_get_latest_response_no_messages",
+                        "test_get_latest_response_message_stabilized",
+                        "test_get_latest_response_edge_cases",
+                        "test_get_latest_response_message_keeps_changing",
+                        "test_get_latest_response_exception",
+                        "test_generate_devlog",
+                        "test_save_rough_draft",
+                        "test_save_rough_draft_special_chars",
+                        "test_archive_chat",
+                        "test_main_already_logged_in",
+                        "test_main_login_required",
+                        "test_main_login_failed",
+                        "test_send_discord_message",
+                        "test_on_ready",
+                        "test_force_model_in_url_edge_cases",
+                        "test_send_prompt_to_chat_edge_cases",
+                        "test_get_chat_titles_edge_cases"
+                    ],
+                    "docstring": "Tests for the core functionality of chat_mate.py",
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 87
+        },
+        "core\\AletheiaPromptManager.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "load_all_memory_states",
+                "save_all_memory_states",
+                "start_conversation_cycle",
+                "end_conversation_cycle",
+                "record_conversation",
+                "get_prompt",
+                "load_conversation_memory",
+                "save_conversation_memory",
+                "load_cycle_memory",
+                "save_cycle_memory",
+                "_load_json_file",
+                "_merge_cycle_memory_updates",
+                "list_available_prompts",
+                "load_memory_state",
+                "save_memory_state",
+                "parse_memory_updates",
+                "_extract_memory_update_block",
+                "_merge_memory_updates",
+                "archive_episode",
+                "_log_memory_diff",
+                "review_memory_log",
+                "_async_save",
+                "save_task"
+            ],
+            "classes": {
+                "AletheiaPromptManager": {
+                    "methods": [
+                        "__init__",
+                        "load_all_memory_states",
+                        "save_all_memory_states",
+                        "start_conversation_cycle",
+                        "end_conversation_cycle",
+                        "record_conversation",
+                        "get_prompt",
+                        "load_conversation_memory",
+                        "save_conversation_memory",
+                        "load_cycle_memory",
+                        "save_cycle_memory",
+                        "_load_json_file",
+                        "_merge_cycle_memory_updates",
+                        "list_available_prompts",
+                        "load_memory_state",
+                        "save_memory_state",
+                        "parse_memory_updates",
+                        "_extract_memory_update_block",
+                        "_merge_memory_updates",
+                        "archive_episode",
+                        "_log_memory_diff",
+                        "review_memory_log",
+                        "_async_save"
+                    ],
+                    "docstring": "Aletheia - Autonomous Architect of Strategic Convergence.\n\nThis class handles:\n  - Template-based prompt generation using Jinja2\n  - Adaptive structured memory updates\n  - FULL SYNC integration with Victor.OS\n  - Auto-dispatch of Discord notifications on episode archiving\nManaged by Aletheia (Thea).",
+                    "base_classes": [
+                        "IPromptManager"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 47
+        },
+        "core\\IChatManager.py": {
+            "language": ".py",
+            "functions": [
+                "start",
+                "send_prompt",
+                "get_all_chat_titles",
+                "execute_prompts_single_chat",
+                "analyze_execution_response",
+                "shutdown_driver",
+                "send_chat_prompt",
+                "execute_prompt_cycle",
+                "queue_prompts",
+                "get_last_response",
+                "inject_context"
+            ],
+            "classes": {
+                "IChatManager": {
+                    "methods": [
+                        "start",
+                        "send_prompt",
+                        "get_all_chat_titles",
+                        "execute_prompts_single_chat",
+                        "analyze_execution_response",
+                        "shutdown_driver",
+                        "send_chat_prompt",
+                        "execute_prompt_cycle",
+                        "queue_prompts",
+                        "get_last_response",
+                        "inject_context"
+                    ],
+                    "docstring": "Interface for Chat Manager implementations with orchestration capabilities.",
+                    "base_classes": [
+                        "ABC"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 22
+        },
+        "core\\PromptCycleOrchestrator.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "set_chat_manager",
+                "execute_single_cycle",
+                "execute_multi_cycle",
+                "get_available_prompts",
+                "get_prompt",
+                "save_prompt",
+                "reset_prompts",
+                "shutdown"
+            ],
+            "classes": {
+                "PromptCycleOrchestrator": {
+                    "methods": [
+                        "__init__",
+                        "set_chat_manager",
+                        "execute_single_cycle",
+                        "execute_multi_cycle",
+                        "get_available_prompts",
+                        "get_prompt",
+                        "save_prompt",
+                        "reset_prompts",
+                        "shutdown"
+                    ],
+                    "docstring": "Orchestrates prompt cycles with injected chat management.",
+                    "base_classes": [
+                        "IPromptOrchestrator"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 18
+        },
+        "core\\service_container.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {
+                "ServiceContainer": {
+                    "methods": [],
+                    "docstring": "Container for service dependencies.",
+                    "base_classes": [
+                        "containers.DeclarativeContainer"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\chatgpt_automation\\OpenAIClient.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "_load_config",
+                "get_openai_driver",
+                "save_openai_cookies",
+                "load_openai_cookies",
+                "is_logged_in",
+                "boot",
+                "_assert_ready",
+                "login_openai",
+                "send_prompt_smoothly",
+                "get_chatgpt_response",
+                "get_full_response",
+                "process_prompt",
+                "get_full_response_for_debug",
+                "shutdown",
+                "_force_kill_chromedriver",
+                "closeEvent"
+            ],
+            "classes": {
+                "OpenAIClient": {
+                    "methods": [
+                        "__init__",
+                        "_load_config",
+                        "get_openai_driver",
+                        "save_openai_cookies",
+                        "load_openai_cookies",
+                        "is_logged_in",
+                        "boot",
+                        "_assert_ready",
+                        "login_openai",
+                        "send_prompt_smoothly",
+                        "get_chatgpt_response",
+                        "get_full_response",
+                        "process_prompt",
+                        "get_full_response_for_debug",
+                        "shutdown",
+                        "_force_kill_chromedriver",
+                        "closeEvent"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 34
+        },
+        "core\\chat_engine\\chat_cycle_controller.py": {
+            "language": ".py",
+            "functions": [
+                "sanitize_filename",
+                "__init__",
+                "append_output",
+                "start",
+                "process_chat",
+                "run_single_chat",
+                "retrieve_project_context",
+                "post_cycle_analysis",
+                "_save_prompt_response",
+                "_save_run_summary",
+                "shutdown"
+            ],
+            "classes": {
+                "ChatCycleController": {
+                    "methods": [
+                        "__init__",
+                        "append_output",
+                        "start",
+                        "process_chat",
+                        "run_single_chat",
+                        "retrieve_project_context",
+                        "post_cycle_analysis",
+                        "_save_prompt_response",
+                        "_save_run_summary",
+                        "shutdown"
+                    ],
+                    "docstring": "Master orchestrator for chat scraping, prompt cycles,\nmemory updates, and Discord dispatching.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 21
+        },
+        "core\\chat_engine\\chat_engine_manager.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "_load_memory",
+                "start",
+                "shutdown",
+                "shutdown_driver",
+                "send_prompt",
+                "get_all_chat_titles",
+                "execute_prompts_single_chat",
+                "analyze_execution_response",
+                "send_chat_prompt",
+                "switch_execution_mode",
+                "generate_dreamscape_episode",
+                "execute_prompt_cycle",
+                "queue_prompts",
+                "get_last_response",
+                "inject_context",
+                "run_cycle"
+            ],
+            "classes": {
+                "ChatEngineManager": {
+                    "methods": [
+                        "__init__",
+                        "_load_memory",
+                        "start",
+                        "shutdown",
+                        "shutdown_driver",
+                        "send_prompt",
+                        "get_all_chat_titles",
+                        "execute_prompts_single_chat",
+                        "analyze_execution_response",
+                        "send_chat_prompt",
+                        "switch_execution_mode",
+                        "generate_dreamscape_episode",
+                        "execute_prompt_cycle",
+                        "queue_prompts",
+                        "get_last_response",
+                        "inject_context",
+                        "run_cycle"
+                    ],
+                    "docstring": "Facade for managing the chat engine services.\nThis class coordinates the various components of the chat engine.",
+                    "base_classes": [
+                        "IChatManager"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 34
+        },
+        "core\\chat_engine\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\interfaces\\IDreamscapeService.py": {
+            "language": ".py",
+            "functions": [
+                "load_context_from_file",
+                "generate_context_from_memory",
+                "render_episode",
+                "save_episode",
+                "generate_episode_from_template",
+                "generate_episode_from_memory"
+            ],
+            "classes": {
+                "IDreamscapeService": {
+                    "methods": [
+                        "load_context_from_file",
+                        "generate_context_from_memory",
+                        "render_episode",
+                        "save_episode",
+                        "generate_episode_from_template",
+                        "generate_episode_from_memory"
+                    ],
+                    "docstring": "Interface for Dreamscape generation services.\nDefines standard methods for episode generation and rendering.",
+                    "base_classes": [
+                        "ABC"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 12
+        },
+        "core\\interfaces\\IPromptManager.py": {
+            "language": ".py",
+            "functions": [
+                "get_prompt",
+                "list_available_prompts",
+                "load_memory_state",
+                "save_memory_state",
+                "record_conversation",
+                "start_conversation_cycle",
+                "end_conversation_cycle"
+            ],
+            "classes": {
+                "IPromptManager": {
+                    "methods": [
+                        "get_prompt",
+                        "list_available_prompts",
+                        "load_memory_state",
+                        "save_memory_state",
+                        "record_conversation",
+                        "start_conversation_cycle",
+                        "end_conversation_cycle"
+                    ],
+                    "docstring": "Interface for prompt management services.\nDefines standard methods for prompt retrieval, storage and memory management.",
+                    "base_classes": [
+                        "ABC"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 14
+        },
+        "core\\interfaces\\IPromptOrchestrator.py": {
+            "language": ".py",
+            "functions": [
+                "set_chat_manager",
+                "execute_single_cycle",
+                "execute_multi_cycle",
+                "get_available_prompts",
+                "get_prompt",
+                "save_prompt",
+                "shutdown"
+            ],
+            "classes": {
+                "IPromptOrchestrator": {
+                    "methods": [
+                        "set_chat_manager",
+                        "execute_single_cycle",
+                        "execute_multi_cycle",
+                        "get_available_prompts",
+                        "get_prompt",
+                        "save_prompt",
+                        "shutdown"
+                    ],
+                    "docstring": "Interface for prompt cycle orchestration services.\nDefines standard methods for executing prompt cycles and managing prompts.",
+                    "base_classes": [
+                        "ABC"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 14
+        },
+        "core\\logging\\handlers\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\micro_factories\\chat_factory.py": {
+            "language": ".py",
+            "functions": [
+                "create_chat_manager"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 1
+        },
+        "core\\micro_factories\\dreamscape_factory.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "create",
+                "_resolve_output_dir",
+                "_resolve_memory_file",
+                "_load_or_initialize_memory"
+            ],
+            "classes": {
+                "DreamscapeFactory": {
+                    "methods": [
+                        "__init__",
+                        "create",
+                        "_resolve_output_dir",
+                        "_resolve_memory_file",
+                        "_load_or_initialize_memory"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 10
+        },
+        "core\\micro_factories\\orchestrator_factory.py": {
+            "language": ".py",
+            "functions": [
+                "create_orchestrator"
+            ],
+            "classes": {
+                "OrchestratorFactory": {
+                    "methods": [
+                        "create_orchestrator"
+                    ],
+                    "docstring": "Factory for creating PromptCycleOrchestrator instances.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 2
+        },
+        "core\\micro_factories\\prompt_factory.py": {
+            "language": ".py",
+            "functions": [
+                "create_prompt_manager"
+            ],
+            "classes": {
+                "PromptFactory": {
+                    "methods": [
+                        "create_prompt_manager"
+                    ],
+                    "docstring": "Factory for creating PromptManager instances.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 2
+        },
+        "core\\micro_factories\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\refactor\\CursorSessionManager.py": {
+            "language": ".py",
+            "functions": [
+                "_demo",
+                "__init__",
+                "_load_or_calibrate_coords",
+                "_save_calibrated_coords",
+                "_calibrate",
+                "queue_task",
+                "start_loop",
+                "stop_loop",
+                "accept_next_task",
+                "toggle_auto_accept",
+                "set_on_update_callback",
+                "build_prompt_batch",
+                "run_overnight_mode",
+                "_task_loop",
+                "_execute_task",
+                "_inject_context",
+                "_focus_cursor_window",
+                "_click_coordinate",
+                "_type_prompt_and_send",
+                "_wait_for_response",
+                "shutdown"
+            ],
+            "classes": {
+                "CursorSessionManager": {
+                    "methods": [
+                        "__init__",
+                        "_load_or_calibrate_coords",
+                        "_save_calibrated_coords",
+                        "_calibrate",
+                        "queue_task",
+                        "start_loop",
+                        "stop_loop",
+                        "accept_next_task",
+                        "toggle_auto_accept",
+                        "set_on_update_callback",
+                        "build_prompt_batch",
+                        "run_overnight_mode",
+                        "_task_loop",
+                        "_execute_task",
+                        "_inject_context",
+                        "_focus_cursor_window",
+                        "_click_coordinate",
+                        "_type_prompt_and_send",
+                        "_wait_for_response",
+                        "shutdown"
+                    ],
+                    "docstring": "Unified class that handles:\n  1) UI calibration for Cursor (prompt box + accept button)\n  2) Task queueing with auto/manual acceptance\n  3) Batch prompt building (optional)\n  4) Dynamic wait for 'Accept' detection\n  5) Execution history of tasks",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 41
+        },
+        "core\\refactor\\cursor_dispatcher.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "_create_timestamp",
+                "load_and_render",
+                "run_prompt",
+                "send_to_cursor",
+                "wait_for_cursor_edit",
+                "wait_for_cursor_edit_with_timeout",
+                "send_and_wait",
+                "run_tests",
+                "_create_test_file",
+                "_append_to_json",
+                "execute_prompt_sequence",
+                "git_commit_changes",
+                "install_git_hook"
+            ],
+            "classes": {
+                "CursorDispatcher": {
+                    "methods": [
+                        "__init__",
+                        "_create_timestamp",
+                        "load_and_render",
+                        "run_prompt",
+                        "send_to_cursor",
+                        "wait_for_cursor_edit",
+                        "wait_for_cursor_edit_with_timeout",
+                        "send_and_wait",
+                        "run_tests",
+                        "_create_test_file",
+                        "_append_to_json",
+                        "execute_prompt_sequence",
+                        "git_commit_changes",
+                        "install_git_hook"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 28
+        },
+        "core\\services\\chat_service.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "create_chat_manager",
+                "shutdown",
+                "is_running",
+                "get_chat_manager",
+                "get_chat_history",
+                "send_message",
+                "get_response",
+                "get_model",
+                "get_config",
+                "_get_driver_options",
+                "get_driver",
+                "_get_driver_service"
+            ],
+            "classes": {
+                "ChatService": {
+                    "methods": [
+                        "__init__",
+                        "create_chat_manager",
+                        "shutdown",
+                        "is_running",
+                        "get_chat_manager",
+                        "get_chat_history",
+                        "send_message",
+                        "get_response",
+                        "get_model",
+                        "get_config",
+                        "_get_driver_options",
+                        "get_driver",
+                        "_get_driver_service"
+                    ],
+                    "docstring": "Manages the lifecycle of the ChatManager and Selenium WebDriver\nfor chat execution. Provides helper methods to interact with\nthe chat interface, retrieve responses, and manage driver options.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 26
+        },
+        "core\\services\\dreamscape_generator_service.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "load_context_from_file",
+                "generate_context_from_memory",
+                "render_episode",
+                "save_episode",
+                "generate_episode_from_template",
+                "generate_episode_from_memory"
+            ],
+            "classes": {
+                "DreamscapeGenerationService": {
+                    "methods": [
+                        "__init__",
+                        "load_context_from_file",
+                        "generate_context_from_memory",
+                        "render_episode",
+                        "save_episode",
+                        "generate_episode_from_template",
+                        "generate_episode_from_memory"
+                    ],
+                    "docstring": "Backend-only service for generating Dreamscape episodes.\nSupports rendering from templates or raw memory injection.",
+                    "base_classes": [
+                        "IDreamscapeService"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 14
+        },
+        "core\\services\\output_handler.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "output",
+                "add_callback",
+                "remove_callback",
+                "info",
+                "warning",
+                "error",
+                "debug"
+            ],
+            "classes": {
+                "OutputHandler": {
+                    "methods": [
+                        "__init__",
+                        "output",
+                        "add_callback",
+                        "remove_callback",
+                        "info",
+                        "warning",
+                        "error",
+                        "debug"
+                    ],
+                    "docstring": "Centralized service for handling output across the system.\nSupports console output, logging, and optional GUI callbacks.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 16
+        },
+        "core\\services\\prompt_execution_service.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "_get_executor",
+                "execute_prompt_cycle",
+                "execute_prompts_single_chat",
+                "execute_prompts_concurrently",
+                "_execute_single_prompt_thread",
+                "_determine_wait_time",
+                "_post_process_jawbone_response",
+                "send_prompt",
+                "_fetch_response",
+                "wait_for_stable_response",
+                "get_prompt_insights",
+                "get_memory_summary",
+                "save_prompt",
+                "reset_prompts",
+                "get_available_prompts",
+                "get_prompt",
+                "_load_project_context",
+                "load_project_context",
+                "archive_files",
+                "clear_context_cache",
+                "shutdown"
+            ],
+            "classes": {
+                "ModelType": {
+                    "methods": [],
+                    "docstring": "Supported model types for prompt execution.",
+                    "base_classes": [
+                        "Enum"
+                    ]
+                },
+                "UnifiedPromptService": {
+                    "methods": [
+                        "__init__",
+                        "_get_executor",
+                        "execute_prompt_cycle",
+                        "execute_prompts_single_chat",
+                        "execute_prompts_concurrently",
+                        "_execute_single_prompt_thread",
+                        "_determine_wait_time",
+                        "_post_process_jawbone_response",
+                        "send_prompt",
+                        "_fetch_response",
+                        "wait_for_stable_response",
+                        "get_prompt_insights",
+                        "get_memory_summary",
+                        "save_prompt",
+                        "reset_prompts",
+                        "get_available_prompts",
+                        "get_prompt",
+                        "_load_project_context",
+                        "load_project_context",
+                        "archive_files",
+                        "clear_context_cache",
+                        "shutdown"
+                    ],
+                    "docstring": "A unified prompt service that combines:\n  - Asynchronous prompt execution via ChatGPT and Cursor executors,\n  - Synchronous prompt cycles using Selenium (with both sequential and concurrent flows),\n  - Orchestration for multi\u2013prompt async execution, Discord feedback, and reinforcement evaluation,\n  - Prompt management (caching, saving, resetting),\n  - Project context loading and file archiving,\n  - Coordinated shutdown of all components.",
+                    "base_classes": [
+                        "QObject"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 44
+        },
+        "core\\services\\service_registry.py": {
+            "language": ".py",
+            "functions": [
+                "create_config_service",
+                "create_logging_service",
+                "create_prompt_service",
+                "create_chat_service",
+                "create_discord_service",
+                "create_cursor_service",
+                "create_reinforcement_service",
+                "create_cycle_service",
+                "create_response_handler",
+                "create_task_orchestrator",
+                "create_dreamscape_generator",
+                "create_memory_service",
+                "create_template_manager",
+                "register_all_services",
+                "get_service",
+                "_create_empty_service",
+                "info",
+                "warning",
+                "error",
+                "debug",
+                "get",
+                "set",
+                "load",
+                "save",
+                "get_prompt",
+                "save_prompt",
+                "get_model",
+                "reset_to_defaults",
+                "load",
+                "save",
+                "get",
+                "set",
+                "clear",
+                "execute_prompts_single_chat",
+                "get_all_chat_titles",
+                "shutdown_driver",
+                "run",
+                "stop",
+                "send_message",
+                "send_file",
+                "send_template",
+                "get_status",
+                "auto_tune_prompts",
+                "apply_fix",
+                "rollback_changes",
+                "execute_prompt",
+                "debug_code",
+                "shutdown_all",
+                "__init__",
+                "register",
+                "get",
+                "validate_service_registry",
+                "_is_empty_service",
+                "_create_empty_service",
+                "initialize",
+                "_register_core_services",
+                "register_service",
+                "get_service",
+                "has_service",
+                "__init__",
+                "__getattr__",
+                "__init__",
+                "__getattr__"
+            ],
+            "classes": {
+                "LoggingService": {
+                    "methods": [
+                        "info",
+                        "warning",
+                        "error",
+                        "debug"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "ConfigService": {
+                    "methods": [
+                        "get",
+                        "set",
+                        "load",
+                        "save"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "UnifiedPromptService": {
+                    "methods": [
+                        "get_prompt",
+                        "save_prompt",
+                        "get_model",
+                        "reset_to_defaults"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "MemoryService": {
+                    "methods": [
+                        "load",
+                        "save",
+                        "get",
+                        "set",
+                        "clear"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "ChatService": {
+                    "methods": [
+                        "execute_prompts_single_chat",
+                        "get_all_chat_titles",
+                        "shutdown_driver"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "DiscordService": {
+                    "methods": [
+                        "run",
+                        "stop",
+                        "send_message",
+                        "send_file",
+                        "send_template",
+                        "get_status"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "ReinforcementService": {
+                    "methods": [
+                        "auto_tune_prompts",
+                        "apply_fix",
+                        "rollback_changes"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "CursorService": {
+                    "methods": [
+                        "execute_prompt",
+                        "debug_code",
+                        "shutdown_all"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "Protocol"
+                    ]
+                },
+                "ServiceRegistry": {
+                    "methods": [
+                        "__init__",
+                        "register",
+                        "get",
+                        "validate_service_registry",
+                        "_is_empty_service",
+                        "_create_empty_service",
+                        "initialize",
+                        "_register_core_services",
+                        "register_service",
+                        "get_service",
+                        "has_service"
+                    ],
+                    "docstring": "Central registry for managing and validating services.",
+                    "base_classes": []
+                },
+                "EmptyService": {
+                    "methods": [
+                        "__init__",
+                        "__getattr__"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 108
+        },
+        "core\\services\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\social\\community_integration.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "_initialize_strategies",
+                "_initialize_dashboard",
+                "_initialize_post_manager",
+                "analyze_community_health",
+                "generate_insights_and_recommendations",
+                "create_community_building_plan",
+                "identify_advocates",
+                "post_across_platforms",
+                "track_member_interaction",
+                "optimize_platform_strategies",
+                "generate_visualizations",
+                "run_daily_community_management"
+            ],
+            "classes": {
+                "CommunityIntegrationManager": {
+                    "methods": [
+                        "__init__",
+                        "_initialize_strategies",
+                        "_initialize_dashboard",
+                        "_initialize_post_manager",
+                        "analyze_community_health",
+                        "generate_insights_and_recommendations",
+                        "create_community_building_plan",
+                        "identify_advocates",
+                        "post_across_platforms",
+                        "track_member_interaction",
+                        "optimize_platform_strategies",
+                        "generate_visualizations",
+                        "run_daily_community_management"
+                    ],
+                    "docstring": "Integrates all social media platforms with the unified community dashboard.\n\nThis class serves as the main entry point for community management,\nconnecting platform-specific strategies with unified analytics and reporting.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 26
+        },
+        "core\\social\\log_writer.py": {
+            "language": ".py",
+            "functions": [
+                "write_json_log",
+                "log_login",
+                "log_post",
+                "log_error"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 4
+        },
+        "core\\social\\social_config_wrapper.py": {
+            "language": ".py",
+            "functions": [
+                "get_social_config"
+            ],
+            "classes": {},
+            "routes": [],
+            "complexity": 1
+        },
+        "core\\social\\ai\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\social\\data\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "core\\social\\strategies\\facebook_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "retry_on_failure",
+                "get_random_user_agent",
+                "start_scheduler",
+                "post_to_facebook",
+                "decorator_retry",
+                "__init__",
+                "_wait",
+                "get_driver",
+                "is_logged_in",
+                "login",
+                "post",
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "_log_followed_users",
+                "go_viral",
+                "run_daily_session",
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "adaptive_posting_strategy",
+                "analyze_comment_sentiment",
+                "reinforce_engagement",
+                "reward_top_followers",
+                "cross_platform_feedback_loop",
+                "run_feedback_loop",
+                "wrapper_retry"
+            ],
+            "classes": {
+                "FacebookBot": {
+                    "methods": [
+                        "__init__",
+                        "_wait",
+                        "get_driver",
+                        "is_logged_in",
+                        "login",
+                        "post"
+                    ],
+                    "docstring": "Automates Facebook login and posting.\nThis base class handles authentication and AI-powered post creation.",
+                    "base_classes": []
+                },
+                "FacebookEngagementBot": {
+                    "methods": [
+                        "like_posts",
+                        "comment_on_posts",
+                        "follow_users",
+                        "unfollow_non_returners",
+                        "_log_followed_users",
+                        "go_viral",
+                        "run_daily_session"
+                    ],
+                    "docstring": "Extends FacebookBot with essential community building functions:\n  - Like posts, comment, follow/unfollow users, and viral engagement.\n  - Maintains a FOLLOW_DB to track engagements.\n  - Runs daily engagement sessions.",
+                    "base_classes": [
+                        "FacebookBot"
+                    ]
+                },
+                "FacebookStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "get_random_user_agent",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_content",
+                        "run_daily_strategy_session",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "adaptive_posting_strategy",
+                        "analyze_comment_sentiment",
+                        "reinforce_engagement",
+                        "reward_top_followers",
+                        "cross_platform_feedback_loop",
+                        "run_feedback_loop"
+                    ],
+                    "docstring": "Centralized strategy class for managing Facebook automation and community building.\nExtends BasePlatformStrategy with Facebook-specific implementations.\nFeatures:\n  - Dynamic feedback loops with AI sentiment analysis\n  - Reinforcement loops using ChatGPT responses\n  - Reward system for top engaging followers\n  - Cross-platform feedback integration",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 76
+        },
+        "core\\social\\strategies\\instagram_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "retry_on_failure",
+                "get_random_mobile_user_agent",
+                "start_scheduler",
+                "post_to_instagram",
+                "decorator_retry",
+                "__init__",
+                "get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "create_post",
+                "like_posts",
+                "comment_on_posts",
+                "_gather_post_links",
+                "follow_users",
+                "unfollow_user",
+                "__init__",
+                "run_daily_session",
+                "generate_ai_comments",
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "_log_followed_users",
+                "go_viral",
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "analyze_comment_sentiment",
+                "reinforce_engagement",
+                "reward_top_engagers",
+                "cross_platform_feedback_loop",
+                "run_feedback_loop",
+                "wrapper_retry"
+            ],
+            "classes": {
+                "InstagramBot": {
+                    "methods": [
+                        "__init__",
+                        "get_driver",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "create_post",
+                        "like_posts",
+                        "comment_on_posts",
+                        "_gather_post_links",
+                        "follow_users",
+                        "unfollow_user"
+                    ],
+                    "docstring": "Automates Instagram login, posting, and engagement actions using Selenium.\nUses mobile emulation (Pixel 5) to enable posting via Instagram's mobile interface.",
+                    "base_classes": []
+                },
+                "InstagramEngagementBot": {
+                    "methods": [
+                        "__init__",
+                        "run_daily_session",
+                        "generate_ai_comments",
+                        "like_posts",
+                        "comment_on_posts",
+                        "follow_users",
+                        "unfollow_non_returners",
+                        "_log_followed_users",
+                        "go_viral"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                },
+                "InstagramStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_content",
+                        "run_daily_strategy_session",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "analyze_comment_sentiment",
+                        "reinforce_engagement",
+                        "reward_top_engagers",
+                        "cross_platform_feedback_loop",
+                        "run_feedback_loop"
+                    ],
+                    "docstring": "Centralized strategy class for Instagram automation and community building.\nExtends BasePlatformStrategy with Instagram-specific implementations.\nFeatures:\n  - Dynamic feedback loops with AI sentiment analysis\n  - Reinforcement loops using ChatGPT responses\n  - Reward system for top engaging followers\n  - Cross-platform feedback integration",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 86
+        },
+        "core\\social\\strategies\\stocktwits_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "login",
+                "is_logged_in",
+                "post",
+                "engage_community",
+                "_log_follow",
+                "unfollow_non_returners",
+                "run_daily_session",
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy",
+                "reinforce_engagement",
+                "reward_top_engagers",
+                "cross_platform_feedback_loop"
+            ],
+            "classes": {
+                "StocktwitsCommunityArchitect": {
+                    "methods": [
+                        "__init__",
+                        "login",
+                        "is_logged_in",
+                        "post",
+                        "engage_community",
+                        "_log_follow",
+                        "unfollow_non_returners",
+                        "run_daily_session"
+                    ],
+                    "docstring": "Stocktwits Community Builder:\nAutomates posts, engagement, and follower interactions with AI-generated content in Victor's authentic tone.",
+                    "base_classes": []
+                },
+                "StocktwitsStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_content",
+                        "run_daily_strategy_session",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "run_feedback_loop",
+                        "adaptive_posting_strategy",
+                        "reinforce_engagement",
+                        "reward_top_engagers",
+                        "cross_platform_feedback_loop"
+                    ],
+                    "docstring": "Centralized strategy class for Stocktwits automation and community building.\nExtends BasePlatformStrategy with Stocktwits-specific implementations.\nFeatures:\n  - Dynamic feedback loops with AI sentiment analysis\n  - Reinforcement loops using ChatGPT responses\n  - Reward system for top engaging followers\n  - Cross-platform feedback integration",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 56
+        },
+        "core\\social\\strategies\\twitter_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "login",
+                "is_logged_in",
+                "post_tweet",
+                "post_thread",
+                "_extract_tweet_id",
+                "engage_community",
+                "_follow_author",
+                "_log_follow",
+                "unfollow_non_returners",
+                "run_daily_session",
+                "post_thread",
+                "__init__",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "adaptive_posting_strategy",
+                "analyze_comment_sentiment",
+                "reinforce_engagement",
+                "reward_top_engagers",
+                "cross_platform_feedback_loop",
+                "run_feedback_loop",
+                "run_daily_strategy_session"
+            ],
+            "classes": {
+                "TwitterCommunityArchitect": {
+                    "methods": [
+                        "__init__",
+                        "login",
+                        "is_logged_in",
+                        "post_tweet",
+                        "post_thread",
+                        "_extract_tweet_id",
+                        "engage_community",
+                        "_follow_author",
+                        "_log_follow",
+                        "unfollow_non_returners",
+                        "run_daily_session",
+                        "post_thread"
+                    ],
+                    "docstring": "Ultimate Twitter Engagement Bot.\nCombines posting, commenting, following, and adaptive AI-powered interactions.",
+                    "base_classes": []
+                },
+                "TwitterStrategy": {
+                    "methods": [
+                        "__init__",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "adaptive_posting_strategy",
+                        "analyze_comment_sentiment",
+                        "reinforce_engagement",
+                        "reward_top_engagers",
+                        "cross_platform_feedback_loop",
+                        "run_feedback_loop",
+                        "run_daily_strategy_session"
+                    ],
+                    "docstring": "Centralized strategy class for Twitter automation and community building.\nExtends TwitterCommunityArchitect with:\n  - Dynamic feedback loops for engagement metrics analysis.\n  - AI sentiment analysis & reinforcement loops.\n  - Reward system for top engagers.\n  - Cross-platform feedback integration.",
+                    "base_classes": [
+                        "TwitterCommunityArchitect"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 46
+        },
+        "core\\social\\strategies\\wordpress_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "sync_youtube_video",
+                "moderate_comment",
+                "get_community_metrics",
+                "get_top_members",
+                "_load_community_data",
+                "_save_community_data",
+                "generate_engagement_report",
+                "track_member_interaction"
+            ],
+            "classes": {
+                "WordPressCommunityStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "sync_youtube_video",
+                        "moderate_comment",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "_load_community_data",
+                        "_save_community_data",
+                        "generate_engagement_report",
+                        "track_member_interaction"
+                    ],
+                    "docstring": "WordPress community strategy that integrates with YouTube for automated community building.\nFeatures:\n- Auto-syncs YouTube videos as WordPress posts\n- Manages comments across both platforms\n- Generates engagement reports\n- Handles community moderation\n- Creates automated responses",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 22
+        },
+        "cursor_prompts\\ollama_tests\\test_chat_mate.py": {
+            "language": ".py",
+            "functions": [
+                "test_placeholder"
+            ],
+            "classes": {
+                "PlaceholderTest": {
+                    "methods": [
+                        "test_placeholder"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 2
+        },
+        "cursor_prompts\\ollama_tests\\test_extract_unused_code_safely.py": {
+            "language": ".py",
+            "functions": [
+                "test_placeholder"
+            ],
+            "classes": {
+                "PlaceholderTest": {
+                    "methods": [
+                        "test_placeholder"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 2
+        },
+        "cursor_prompts\\ollama_tests\\test_generate_dependency_graph.py": {
+            "language": ".py",
+            "functions": [
+                "test_placeholder"
+            ],
+            "classes": {
+                "PlaceholderTest": {
+                    "methods": [
+                        "test_placeholder"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 2
+        },
+        "cursor_prompts\\ollama_tests\\test_ProjectScanner.py": {
+            "language": ".py",
+            "functions": [
+                "test_placeholder"
+            ],
+            "classes": {
+                "PlaceholderTest": {
+                    "methods": [
+                        "test_placeholder"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 2
+        },
+        "cursor_prompts\\outputs\\generated_test.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "interfaces\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "interfaces\\pyqt\\tabs\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "interfaces\\pyqt\\tabs\\dreamscape_generation\\ServiceInitializer.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "initialize_services",
+                "_inject_services",
+                "_initialize_core_services",
+                "_initialize_component_managers",
+                "_get_output_directory",
+                "_get_initialized_services"
+            ],
+            "classes": {
+                "ServiceInitializer": {
+                    "methods": [
+                        "__init__",
+                        "initialize_services",
+                        "_inject_services",
+                        "_initialize_core_services",
+                        "_initialize_component_managers",
+                        "_get_output_directory",
+                        "_get_initialized_services"
+                    ],
+                    "docstring": "ServiceInitializer encapsulates the initialization of all services required by\nthe DreamscapeGenerationTab. It handles:\n  - Injecting external services (or retrieving them from a ui_logic container).\n  - Initializing core services (CycleExecutionService, PromptResponseHandler, DiscordQueueProcessor,\n    TaskOrchestrator, DreamscapeEpisodeGenerator).\n  - Setting up component managers (TemplateManager, DreamscapeEpisodeGenerator, ContextManager, UIManager).\n  - Determining and ensuring the output directory exists.\n  \nAfter initialization, it returns a dictionary of initialized services and component managers.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 14
+        },
+        "social\\AIChatAgent.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "ask",
+                "_ask_openai",
+                "_ask_ollama",
+                "_build_prompt",
+                "_initialize_chat_thread",
+                "append_to_chat_thread",
+                "_log_interaction"
+            ],
+            "classes": {
+                "AIChatAgent": {
+                    "methods": [
+                        "__init__",
+                        "ask",
+                        "_ask_openai",
+                        "_ask_ollama",
+                        "_build_prompt",
+                        "_initialize_chat_thread",
+                        "append_to_chat_thread",
+                        "_log_interaction"
+                    ],
+                    "docstring": "AIChatAgent: Unified AI assistant optimized for context-rich, personalized interactions in Victor's voice.\nSupports OpenAI, local LLMs (Ollama), automatic ChatGPT thread creation, persistent memory logging, and fine-tuning dataset preparation.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 16
+        },
+        "social\\social_post_manager.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "post_next",
+                "post_all",
+                "enqueue_post",
+                "shutdown",
+                "post_to_platform"
+            ],
+            "classes": {
+                "SocialPostManager": {
+                    "methods": [
+                        "__init__",
+                        "post_next",
+                        "post_all",
+                        "enqueue_post",
+                        "shutdown"
+                    ],
+                    "docstring": "Manages posting of social media content across multiple platforms.\nSupports multi-threading for faster execution and centralized error handling.",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 11
+        },
+        "social\\TaskQueueManager.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "start",
+                "stop",
+                "add_task",
+                "_worker",
+                "queue_size",
+                "status",
+                "sample_task"
+            ],
+            "classes": {
+                "TaskQueueManager": {
+                    "methods": [
+                        "__init__",
+                        "start",
+                        "stop",
+                        "add_task",
+                        "_worker",
+                        "queue_size",
+                        "status"
+                    ],
+                    "docstring": "TaskQueueManager: A robust, priority-based task queue with threaded workers.\nThis manager supports:\n  - Prioritized task scheduling (lower value = higher priority)\n  - Delayed execution for rate-limiting or scheduling\n  - Configurable retries with exponential backoff\n  - Structured logging of task outcomes for feedback and reinforcement learning loops",
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 15
+        },
+        "social\\strategies\\context_db.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "create_tables",
+                "log_post",
+                "fetch_recent_posts",
+                "fetch_last_post_content",
+                "log_engagement",
+                "fetch_engagements_for_post",
+                "get_rate_limit",
+                "update_rate_limit",
+                "update_sentiment",
+                "close"
+            ],
+            "classes": {
+                "UnifiedContextEngine": {
+                    "methods": [
+                        "__init__",
+                        "create_tables",
+                        "log_post",
+                        "fetch_recent_posts",
+                        "fetch_last_post_content",
+                        "log_engagement",
+                        "fetch_engagements_for_post",
+                        "get_rate_limit",
+                        "update_rate_limit",
+                        "update_sentiment",
+                        "close"
+                    ],
+                    "docstring": null,
+                    "base_classes": []
+                }
+            },
+            "routes": [],
+            "complexity": 22
+        },
+        "social\\strategies\\linkedin_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "retry_on_failure",
+                "decorator_retry",
+                "__init__",
+                "_get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "_login_with_credentials",
+                "post",
+                "like_posts",
+                "comment_on_posts",
+                "follow_users",
+                "unfollow_non_returners",
+                "go_viral",
+                "_log_followed_users",
+                "_find_posts",
+                "_find_like_button",
+                "_find_comment_box",
+                "_find_profile_url",
+                "_find_follow_button",
+                "_find_unfollow_button",
+                "run_daily_session",
+                "__init__",
+                "is_logged_in",
+                "_login_with_credentials",
+                "post",
+                "_find_posts",
+                "_find_like_button",
+                "_find_comment_box",
+                "_find_profile_url",
+                "_find_follow_button",
+                "_find_unfollow_button",
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "get_random_user_agent",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "wrapper_retry"
+            ],
+            "classes": {
+                "BaseEngagementBot": {
+                    "methods": [
+                        "__init__",
+                        "_get_driver",
+                        "get_random_user_agent",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "_login_with_credentials",
+                        "post",
+                        "like_posts",
+                        "comment_on_posts",
+                        "follow_users",
+                        "unfollow_non_returners",
+                        "go_viral",
+                        "_log_followed_users",
+                        "_find_posts",
+                        "_find_like_button",
+                        "_find_comment_box",
+                        "_find_profile_url",
+                        "_find_follow_button",
+                        "_find_unfollow_button",
+                        "run_daily_session"
+                    ],
+                    "docstring": "A universal base class for social media engagement bots.\nProvides core community building functions:\n  - Login (with cookie & credential fallback)\n  - Post content (AI-generated if needed)\n  - Like, comment, follow, unfollow, viral engagement, and DM functionalities\n  - Daily session orchestration",
+                    "base_classes": [
+                        "ABC"
+                    ]
+                },
+                "LinkedInEngagementBot": {
+                    "methods": [
+                        "__init__",
+                        "is_logged_in",
+                        "_login_with_credentials",
+                        "post",
+                        "_find_posts",
+                        "_find_like_button",
+                        "_find_comment_box",
+                        "_find_profile_url",
+                        "_find_follow_button",
+                        "_find_unfollow_button"
+                    ],
+                    "docstring": "LinkedIn-specific implementation of BaseEngagementBot.\nImplements abstract methods using LinkedIn's DOM structure.",
+                    "base_classes": [
+                        "BaseEngagementBot"
+                    ]
+                },
+                "LinkedinStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "get_random_user_agent",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_content",
+                        "run_daily_strategy_session"
+                    ],
+                    "docstring": "Centralized strategy class for LinkedIn automation and community building.\nExtends BasePlatformStrategy with LinkedIn-specific implementations.\nFeatures:\n  - Dynamic feedback loops with AI sentiment analysis\n  - Reinforcement loops using ChatGPT responses\n  - Reward system for top engaging followers\n  - Cross-platform feedback integration",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 91
+        },
+        "social\\strategies\\reddit_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_content",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy"
+            ],
+            "classes": {
+                "RedditStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_content",
+                        "run_daily_strategy_session",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "run_feedback_loop",
+                        "adaptive_posting_strategy"
+                    ],
+                    "docstring": "Centralized strategy class for Reddit automation and community building.\nExtends BasePlatformStrategy with Reddit-specific implementations.\nFeatures:\n  - Dynamic feedback loops with AI sentiment analysis\n  - Reinforcement loops using ChatGPT responses\n  - Reward system for top engaging followers\n  - Cross-platform feedback integration",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 34
+        },
+        "social\\strategies\\tiktok_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_video",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy",
+                "update_trending_hashtags",
+                "reward_top_creators",
+                "cross_platform_feedback_loop"
+            ],
+            "classes": {
+                "TikTokStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_video",
+                        "run_daily_strategy_session",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "run_feedback_loop",
+                        "adaptive_posting_strategy",
+                        "update_trending_hashtags",
+                        "reward_top_creators",
+                        "cross_platform_feedback_loop"
+                    ],
+                    "docstring": "Centralized strategy class for TikTok automation and community building.\nExtends BasePlatformStrategy with TikTok-specific implementations.\nFeatures:\n  - Dynamic feedback loops with AI sentiment analysis\n  - Video content scheduling and posting\n  - Hashtag trend analysis and optimization\n  - Cross-platform content repurposing\n  - Engagement analytics and community growth tracking",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 40
+        },
+        "social\\strategies\\youtube_strategy.py": {
+            "language": ".py",
+            "functions": [
+                "__init__",
+                "initialize",
+                "cleanup",
+                "get_community_metrics",
+                "get_top_members",
+                "track_member_interaction",
+                "_get_driver",
+                "_wait",
+                "login",
+                "is_logged_in",
+                "post_video",
+                "run_daily_strategy_session",
+                "_load_feedback_data",
+                "_save_feedback_data",
+                "analyze_engagement_metrics",
+                "run_feedback_loop",
+                "adaptive_posting_strategy",
+                "reward_top_creators",
+                "cross_platform_feedback_loop"
+            ],
+            "classes": {
+                "YouTubeStrategy": {
+                    "methods": [
+                        "__init__",
+                        "initialize",
+                        "cleanup",
+                        "get_community_metrics",
+                        "get_top_members",
+                        "track_member_interaction",
+                        "_get_driver",
+                        "_wait",
+                        "login",
+                        "is_logged_in",
+                        "post_video",
+                        "run_daily_strategy_session",
+                        "_load_feedback_data",
+                        "_save_feedback_data",
+                        "analyze_engagement_metrics",
+                        "run_feedback_loop",
+                        "adaptive_posting_strategy",
+                        "reward_top_creators",
+                        "cross_platform_feedback_loop"
+                    ],
+                    "docstring": "Centralized strategy class for YouTube automation and community building.\nExtends BasePlatformStrategy with YouTube-specific implementations.\nFeatures:\n  - Video content management and scheduling\n  - Shorts creation and optimization\n  - Community post engagement\n  - Analytics tracking and optimization\n  - Cross-platform content distribution",
+                    "base_classes": [
+                        "BasePlatformStrategy"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 38
+        },
+        "tests\\test_memory_manager.py": {
+            "language": ".py",
+            "functions": [
+                "setUp",
+                "tearDown",
+                "test_set_get_memory_segment",
+                "test_delete_and_clear_segment",
+                "test_segment_size_and_keys",
+                "test_user_history_operations",
+                "test_narrative_generation",
+                "test_json_memory_update",
+                "test_initialize_and_export_conversation",
+                "test_stats_reporting"
+            ],
+            "classes": {
+                "TestMemoryManager": {
+                    "methods": [
+                        "setUp",
+                        "tearDown",
+                        "test_set_get_memory_segment",
+                        "test_delete_and_clear_segment",
+                        "test_segment_size_and_keys",
+                        "test_user_history_operations",
+                        "test_narrative_generation",
+                        "test_json_memory_update",
+                        "test_initialize_and_export_conversation",
+                        "test_stats_reporting"
+                    ],
+                    "docstring": null,
+                    "base_classes": [
+                        "unittest.TestCase"
+                    ]
+                }
+            },
+            "routes": [],
+            "complexity": 20
+        },
+        "tests\\test_youtube_strategy.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        },
+        "utils\\ai\\__init__.py": {
+            "language": ".py",
+            "functions": [],
+            "classes": {},
+            "routes": [],
+            "complexity": 0
+        }
+    }
+}

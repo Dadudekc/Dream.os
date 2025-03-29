@@ -1,0 +1,10 @@
+Devlog // 2025-03-15
+"How do you balance speed with clarity... without losing control of the build?"
+Today was about clarity... or at least, chasing it.
+I've been deep in system convergence work. Started isolating problem files in TBOWTactics—trying to get clean builds on both CLI and UI pipelines. Windows builds hit me with the usual friction... Combine module issues, actor isolation conflicts, missing type errors that, at this point, feel like they crawl out of nowhere. Most of it's just platform-specific misalignment. My goal was to tighten the workflow. Run CLI on Windows. Run UI on iOS. Two lanes, no drift.
+But the deeper I got, the more I realized... I'm spending too much time babysitting builds. Debugging in circles. What should be surgical is turning into churn. So I pivoted...
+Started sketching the AI debugger—ARBOR.
+Not just an idea. I want a system that runs while I go to work... comes back with a clean repo, fresh PRs, or at least a triage map I can act on. Computers fixing computers. I need that. Been building for too many hours without backup. If I can crack ARBOR, that's my backup.
+Next step... strip it all down. One file at a time. Start TDD on ARBOR in my environment. No extra tools, no waiting on deployment. Just raw build and test cycles... tight loops.
+Still, TBOWTactics needs to stay moving. Priority is locking the CLI. Once that's stable, I split my time.
+"Speed is nothing without direction. Pick a line, and move."

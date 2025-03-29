@@ -1,0 +1,19 @@
+Devlog | March 16, 2025
+"How much time do we actually waste by switching gears too often... and how fast could we move if we stopped?"
+Cleaned up a lot today... not the code, not the content—but the workflow itself.
+Realized I’ve been burning too much energy bouncing between builds, narrative, and strategy without enough separation. Every time I switch, I lose the thread. It costs focus, costs clarity.
+So I cut that out.
+Started blocking deep work into segments—trading, automation, content. One at a time. No more mixing streams. Already feeling cleaner.
+On the dev side...
+Spent time debugging TBOWTactics—dialed in configs for Windows and iOS builds. There were a few issues with the setup; took longer than I wanted, but they’re out of the way now. Documentation and JSON structure are tighter. No more second-guessing project state.
+Also roughed out the AI debugger concept...
+Not just theory—thinking through how it automates test-driven development and cuts the back-and-forth. This needs to be more than an idea. I’ll prototype something minimal next. Log scanning. Regression checks. Tight loops. Nothing fancy. Just less hand-holding and more flow.
+Content work...
+Cleaned the narrative drop. Modularized the structure for faster iteration next time—HTML/CSS templates are set up now. Feels good. But I burned too much time tweaking visuals I should’ve templated earlier. Won’t make that mistake again.
+What’s next...
+Finish task segmentation across all workflows.
+Build v1 of the AI debugger.
+Prototype-first, plan second.
+Keep modularizing.
+Stay focused.
+“Clarity comes when you stop trying to do everything at once.”

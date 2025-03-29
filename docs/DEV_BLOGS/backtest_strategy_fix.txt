@@ -1,0 +1,14 @@
+Devlog: Position Resets and System Bottlenecks
+Ever wonder how many times you need to fix the same problem before it sticks...?
+That was today.
+Been deep in the backtesting engine—again. The issue was position resets after exiting trades. You’d think that’s a basic thing... exit the trade, reset the position to zero, move on. But no. The bot kept holding positions way past the exit signals. Equity numbers were off, returns were skewed... the whole thing was lagging behind where it should be.
+So I stripped it down. Made it simple. On a SELL, the position resets... entry and exit prices update clean... no half-measures. It works now. Clean exits. Equity updates like it’s supposed to.
+After that... I dug into the strategy logic. Tightened up entry/exit rules—RSI, MACD, EMA, Bollinger. The signals are making more sense. The noise is lower. Risk management’s sharper too... ATR-based stops are in place, and I’m seeing more discipline in how trades flow.
+Also did a system audit… realized I’m spending too much time manually tweaking parameters. That’s not scalable. Need to automate optimization—thinking genetic algorithms or Bayesian search next. And the UI... yeah, it’s intuitive, but it’s too manual. Time to let the system handle more of the grunt work.
+What’s next...
+AI-driven parameter tuning
+Real-time data feeds (no more Yahoo Finance lag)
+Automation across the board... less human, more system
+The goal is simple: get this system to a point where I’m not babysitting it. It adapts on its own. Trades on its own. Learns on its own.
+One brick at a time.
+"Discipline is choosing between what you want now and what you want most."

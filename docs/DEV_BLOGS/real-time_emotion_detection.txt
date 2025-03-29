@@ -1,0 +1,9 @@
+Devlog: Streamlining While in the Fire
+How do you know when to keep building versus when to stop and cut things back to the essentials...?
+That’s where I’ve been sitting today.
+I was deep in the trenches trying to get this AI assistant up and running on the site… and realized I was over-complicating the whole thing. Too many moving parts, too many services pulling in different directions. It’s one of those moments where you think the complexity is necessary—until it’s not.
+I scrapped MonkeyLearn. Not worth it. It was supposed to make things easier, but it’s not free and doesn’t fit the flow. Switched over to VADER... simple, free, clean. No more chasing multiple APIs when one tool can do the job.
+The PHP-to-Python handoff was trickier than I expected. I’ve got scripts running, but balancing the file placement and making sure the endpoints aren’t exposed took some extra headspace. Hostinger’s file manager on mobile isn’t exactly a smooth ride, but it works. Just takes patience.
+Next up is tying the backend together tighter… no wasted movement. No scattered code. One pipeline. Then I’ll build out the front end—make it simple for people to drop a query and get an answer. Fast. I’m keeping the interface barebones until the core is tight.
+We’re close now… the skeleton is there. Just need to keep moving.
+“Simplicity is the ultimate sophistication.”

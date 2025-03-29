@@ -1,0 +1,14 @@
+Devlog // 03.16.25
+How much time are we losing trying to make things “clean” instead of making them work?
+Been in the weeds today refining the layout for the Tactic Plan, Journal Entries, and TBOW sections... and realized I’m burning cycles on things that should already be systematized. CSS iterations, layout tweaks—too much trial and error for stuff that should be plug-and-play by now.
+I ended up building out a more unified CSS framework. Consolidated spacing, color schemes, and grid logic across sections. It’s cleaner, but I’m noticing the process is still slow because I haven’t fully committed to a modular design system. Every component is still being made on the fly. That’s gotta shift.
+The Tactic Plan page got a full restructure... grid-based layout, sectioned strategy cards, and clear “what to watch” breakdowns. Feels tighter. Same treatment on the Journal Entry templates. But again, I’m manually formatting too much... need to automate the content-to-layout flow. JSON-driven content blocks are next on deck.
+Also spotted some context switching between strategy and execution slowing me down. Building while planning isn’t sustainable at this level of scale... Thinking about setting up more distinct AI roles—one focused on strategic direction, one handling straight-up execution. Divide and conquer.
+What’s next:
+Map out a JSON schema to drive all trade-related content (plans, journals, recaps).
+Lock in a utility-first CSS layer based on the design tokens I’m already using.
+Separate the Strategist vs. Executor AI tasks so I’m not doing both at once.
+Automate journal generation directly from trading data inputs.
+If I keep refining the same things manually, this never scales. Time to cut the drag.
+“Simplicity is the ultimate sophistication.”
+— Leonardo da Vinci

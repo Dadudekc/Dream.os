@@ -1,0 +1,16 @@
+Devlog // March 15, 2025
+Introspective Question:
+How much time am I still spending fixing the same problems, instead of building systems that fix themselves?
+Spent a chunk of time dissecting some recurring PHP errors on the FreeRideInvestor site...
+Most of it was low-level stuff—warnings about widgets with missing titles, deprecated function calls in WP_User_Query, and a fatal error tied to an undefined constant in the theme. Basically, things that shouldn’t be stealing my time at this point, but they are... because the system isn’t self-correcting yet.
+I’m still the bottleneck here.
+The biggest drag? Manually sifting through raw logs instead of having a proper monitoring setup that flags and fixes—or at least alerts me—before something escalates. It’s reactive. Not where I want to be.
+That became the pivot...
+This system needs to move from task-based automation to full convergence. Trading data, site health, content analytics—all feeding into one place, driving decisions without me in the middle. AI-assisted testing, error monitoring with tools like Sentry, self-healing scripts... the works.
+This is where I shift from reacting to architecting.
+Next up...
+Deploy Sentry for real-time error tracking.
+Refactor the legacy WordPress code—clean up deprecated calls, modularize, and kill technical debt.
+Start building the data pipeline that ties it all together.
+Keep pulling myself out of the loop.
+"You can’t move fast if you’re always stopping to fix your shoes."

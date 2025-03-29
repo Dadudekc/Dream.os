@@ -1,0 +1,7 @@
+Devlog // 03.16.25
+What makes a tool feel second nature instead of something you’re fighting with?
+Quick build tonight... messing around with VirtualDJ mappings. Wanted my number keys to act like hotcues—same feel as smacking a pad on a controller, but mapped to the keyboard. Simple enough, but it took a second to get the logic tight.
+Mapped keys 1-9... if the hotcue exists, it jumps there and plays from that point. If not, it drops a new cue. That way I’m not losing momentum during a mix... no second-guessing if something’s set or not. Press and it goes.
+The tricky part was making sure the flow stayed clean—sometimes VirtualDJ’s scripting feels a little abstract if you’re used to traditional code. Once I got the conditional in, it clicked. Added a shift function to delete cues too, in case I want to free something up on the fly.
+Next up... thinking about layering more complex actions. Maybe triggering loops off certain keys. Not sure yet. Keeping it simple for now.
+“Speed isn’t about rushing. It’s about removing what slows you down.”

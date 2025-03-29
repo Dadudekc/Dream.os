@@ -1,0 +1,15 @@
+Devlog // 03.16.25
+What’s the real cost of obsessing over the micro when the macro systems are starving?
+Spent most of today buried in CSS... untangling old redundancies and killing off an overlay that was throttling the hero section. Turns out there was a rogue ::after element throwing a blanket over the design. Subtle, but it was dimming everything—both visually and mentally. Cleaned it up, hard-disabled the overlay, and refactored the hero into a cleaner, component-driven block. Small stuff... but it was sucking cycles I didn’t realize I was bleeding.
+Also spotted some pattern drift—repeated nav menu structures, overlapping spacing utilities... the usual suspects when you’re moving fast without strict tokens or a design system pinned down. I’m patching that now. Pulled everything into a tighter utility-first structure. Less cognitive overhead, fewer side effects.
+That said, this whole thing exposed the bigger problem...
+Manual cycles.
+Wasted time debugging visuals when that energy should be pointed at automating content pipelines and scaling the AI backtesters for the trading stack.
+Next steps—
+Rolling in visual regression tools (Percy/Chromatic) to kill manual UI checks.
+Design tokens are getting locked in.
+And I’m shifting focus back to automating the content generation and spinning up trading signal systems.
+No more micromanaging CSS when the bigger moves are waiting.
+“Energy flows where attention goes.”
+Dialing the focus in.
+— Victor

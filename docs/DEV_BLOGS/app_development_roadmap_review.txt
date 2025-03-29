@@ -1,0 +1,23 @@
+Devlog 03.16.25
+Where is my time actually going... and how do I cut the noise?
+Been sitting with that one today...
+Juggling FreerideInvestor, TBOWTactics, and the Swift courses has been messier than it should be. The deeper I go, the more I’m seeing the same thing in different places—fractured workflows, redundant setups, time bleeding out of tasks that should already be automated or delegated...
+Right now, I’m inside Azure...
+I was on the portal earlier, moving through App Services, Quick Start Centers, Kubernetes tabs... trying to figure out where to drop in next without getting stuck in decision fatigue.
+I realized I’m at the point where I don’t need more information—I need systems that execute.
+What’s clear:
+FreerideInvestor and TBOWTactics don’t need separate Azure setups. Consolidated the plan there... one cloud architecture, resource groups split by project, shared services.
+I’m overbuilding in places. Some tasks just need to be outsourced. Content generation is the first cut—too much friction trying to design while I’m building APIs and managing cloud infrastructure.
+CI/CD is non-negotiable now. GitHub Actions is getting deployed across both projects... clean pipelines, automated testing, no more manual deploys.
+Swift learning stays focused... only working on the pieces that tie directly to app functionality. Everything else gets back-burnered or templated for now.
+The bottlenecks have been time, divided focus, and unnecessary manual tasks.
+Cutting those out.
+Streamlining the workflows.
+Every move from here needs to increase execution velocity.
+Next up...
+CI/CD pipeline live for FreerideInvestor
+App Service deployment (first API)
+Get Azure Monitor tuned for alerts
+Start delegating marketing assets for TBOWTactics
+Still moving... just sharpening the edge.
+"Slow is smooth. Smooth is fast."

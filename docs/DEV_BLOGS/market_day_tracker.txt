@@ -1,0 +1,15 @@
+Devlog // 2025-03-16
+What’s the real cost of doing things the “easy” way?
+I’ve been sitting with that question while breaking down the next iteration of FreerideInvestor... and I realized I was about to box myself in.
+At first, the plan was to keep portfolio tracking manual—something simple inside WordPress, quick and easy. But the more I thought about it, the more I saw the trap. Manual input is friction... and friction compounds. I don’t want to be stuck in a system where I’m babysitting data entry when I could be focused on building. Worse, trying to bolt automation onto that later is a recipe for messy, redundant workflows. That’s not how I want to scale.
+So, pivot. Reconstructing the system from scratch... clean, convergent.
+What’s getting automated right now is the market data side. Flask is going to handle that completely—pulling in market data automatically, storing it, and running analytics without me lifting a finger. I won’t have to think about it. It’s a small win, but it clears cognitive load.
+The portfolio tracking? Still manual. On purpose. That’s the piece I want to stay hands-on with for now. I’m leaving the door open for full automation later, but I’m not forcing it. It’s manual where I need clarity, automated where it makes sense.
+What was tricky today was realizing how easy it is to get seduced by the “done-for-you” path... plugins, WordPress forms, the fast build. But if I’m serious about this, Flask has to be the core. Clean API-first architecture, with WordPress as just the frontend. Otherwise, I’m just building technical debt with fancy UX on top.
+What’s next...
+Centralize everything in Flask—no split logic.
+Set up scheduled market data fetches (cron jobs incoming).
+Build out caching so I’m not hammering external APIs.
+And start laying down the portfolio analytics endpoint for drawdowns, holdings, etc.
+Not going for "perfect"—just convergent.
+"Clarity is found when you remove what doesn’t belong."

@@ -1,0 +1,9 @@
+Devlog // Vlog Forge Build
+Feb 10, 2025
+What’s the real priority when everything feels like a priority?
+Been sitting with that... and today, I decided to lock in on one thing: vlog integration. No more bouncing around features. Just focus.
+We wrapped the architecture outline for Vlog Forge. That felt good—clean, simple, does the job. But mock-ups don’t build themselves, so I dove into the setup.
+Started laying the foundation... PyQt for the frontend. Flask running in the backend. Kept it lean. Right now, there’s a basic window with a label and an upload button... no frills. Flask spins up and responds—simple health check route just to prove it’s alive.
+Next up is OBS file handling... making sure it plays nice with different recording formats and eventually hooks into YouTube’s API for automated uploads. That’ll be its own beast... but we’ll get there.
+One brick at a time.
+"Success is a few simple disciplines, practiced every day."

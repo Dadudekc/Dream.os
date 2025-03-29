@@ -1,0 +1,11 @@
+Devlog: How much energy are you leaking without realizing it?
+Been thinking about bandwidth today… not just time, but actual mental and emotional energy. How much gets drained before we even notice?
+Had to step back and look at where I’m losing focus… and it’s clear. Personal stuff… hard convos… things that don’t directly move the system forward. I hit a point where it’s not sustainable. Doesn’t matter how dialed in my trading is or how clean the automation scripts are—if I’m drained from side battles, it all slows down.
+So I started working on a boundary system today. Simple… clear… direct. Wrote out a basic script for tough convos so I’m not burning cycles figuring it out every time. Set some rules for when I engage and when I don’t. And if someone crosses the line… there’s a pre-built response that protects my headspace. No more letting things pile up until they explode.
+What was tricky? Honestly… recognizing how reactive I’ve been. I’ve been letting things hit me when they happen, instead of building systems that prevent it in the first place. That’s a hole in the stack… and it’s on me to fix it.
+What’s next…
+Deploy these boundaries in real-time.
+Lock in strict time windows for any non-core stuff.
+And keep building out ways to automate my energy, not just my code.
+Protect the system… protect the flow.
+"You’ll never control the external... but you can control what gets through the gate."

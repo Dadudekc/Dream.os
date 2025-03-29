@@ -1,0 +1,10 @@
+Devlog: Removing What Slows You Down
+Ever wonder how much energy gets wasted just keeping things duct-taped together?
+Yeah... me too.
+Been deep in the FreerideInvestor build—refining, stripping out dead weight, pushing toward something tighter. This one was about finding where time was bleeding out... and closing it.
+First thing I hit was the API key chaos. They were all over the place—hardcoded here, manually dropped in there. Felt like babysitting secrets instead of building systems. Fixed that by centralizing the whole flow. One place. Clean. No more hand-holding.
+The bigger mess was the PHP/Python link. The system was still tied together with shell_exec() calls... brittle as hell. Every time WordPress had to kick off a script, it was like holding my breath and hoping it didn’t choke. So I ripped that out. Python’s getting refactored into its own microservice... lightweight REST API, decoupled, no more waiting on WordPress to keep up. Should’ve done this months ago.
+And WP Cron... don’t get me started. Running time-sensitive tasks on page loads? That’s purgatory. Moved the heavy lifting to an external queue with Redis. Immediate gain in reliability... cleaner execution windows. Finally feels like the system can breathe.
+What’s next is caching AI outputs—sentiment analysis, trade plans... no reason to burn tokens on repeat calls. Redis handles that now. Thinking ahead, unified monitoring is on deck... I need to see everything at a glance or I’m flying blind.
+This wasn’t a fun sprint... but it was a necessary one.
+"Speed isn't about going fast... it's about cutting what slows you down."

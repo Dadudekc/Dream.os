@@ -1,0 +1,14 @@
+Devlog Drop
+What’s the point of building something scalable if the foundation’s brittle?
+That’s been the vibe today. Thought I had a clean structure with the FreerideInvestor plugin... turned out namespace conflicts and autoloading were slipping through cracks I should’ve caught earlier.
+Spent most of the block sorting the News_Delivery logic. The class wasn’t loading. Fatal error was throwing the whole system off on init. Classic PHP nuance... namespaces need to be clean and tight. No whitespace, no second chances.
+Here’s the rundown...
+Reviewed the freerideinvestor-market-news.php core. Found the autoload wasn’t parsing namespaces correctly. Stripped out the freerideinvestortheme\ part in the spl_autoload_register. That got the loader back on track.
+Cleaned up class-news-delivery.php. Namespace declarations needed to be the first thing in the file. No buffer, no comments. No mercy.
+Updated the plugin boot function... explicitly called freerideinvestortheme\News_Delivery. PHP wasn’t guessing right—had to be explicit.
+Double-checked the file paths... made sure all classes are in /includes/ as expected. Miss that, and the autoloader falls on its face.
+Cleared cache, deactivated, reactivated. No drama... finally.
+What’s next?
+Need to stress test the Mailchimp dispatch. It’s working in theory. I want to see it hold up under a queue of articles. Discord alerts are solid now, but I might rebuild them to use async later... time permitting.
+Quote of the day:
+"Slow is smooth. Smooth is fast."

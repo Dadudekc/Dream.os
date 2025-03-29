@@ -1,0 +1,10 @@
+Devlog // Modular Analyzer Build
+What’s the simplest version of modular that doesn’t collapse under its own weight?
+Spent some time today pulling apart the Python Project Analyzer and rebuilding it into something cleaner... modular, with a real structure behind it. I was tired of everything being jammed into a single script. If I’m scaling it, it needs to be predictable. It needs to breathe.
+Split it into three core modules:
+analyzer_core.py does the heavy lifting... parsing the files, extracting all the classes, functions, imports, constants. Nothing fancy—just fast and solid.
+db_manager.py handles SQLite. Straightforward insertions, single source of truth... no YAML dumps sitting around waiting to rot.
+gui.py is where I wired up the PyQt5 interface. You pick a directory, hit analyze, and it pushes results straight into a table and the DB. Clean.
+Nothing really broke... but I had to think through how much logic should sit in the GUI versus the core. Didn’t want the GUI doing too much. That’s usually where things get messy fast.
+Next up... I’ll probably make the analysis async. Right now, on big codebases, the GUI locks up until the job’s done. That’s annoying. Also thinking about letting it query the DB for past runs instead of reprocessing every time.
+“Simple scales. Complex fails.”

@@ -1,0 +1,9 @@
+Devlog: Cutting Weight
+What’s the cost of complexity?
+That’s been sitting with me today... Going through the CSS, it was obvious—too much was jammed into one place. No structure. No separation. Just bulk. And bulk slows things down.
+So I started cutting... Modularizing the CSS into base, components, layouts, pages, responsive, and utilities. Took the full file and split it in half first—just to give myself some breathing room. Then, piece by piece, I assigned sections where they made sense. Styles that were bloating one page now live in their own files. Cleaner... easier to scale... less to hold in my head.
+Ran into a bit of a snag with the tables. The styles weren’t applying at first... realized I had to clean up the markup so the classes could actually hook into the table.css properly. Quick fix, but a reminder—doesn’t matter how good your CSS is if the structure isn’t tight.
+Also rebuilt the post layout... stripped out the inline styles and tied everything back to the global variables. Had to align the table designs with the rest of the theme colors so it wasn’t clashing. Not sexy work... but necessary.
+Next is automating these templates. Getting the dev blogs, tasks, and updates running off repeatable components. No more hand-coding each post. The goal is to write the content, press go, and let the system handle the layout.
+Cleaner system... cleaner mind.
+"Simplicity is the ultimate sophistication."

@@ -1,0 +1,14 @@
+Devlog: Where’s the Bottleneck?
+Ever ask yourself... where’s the real bottleneck?
+Not just in the system... but in you?
+That’s where I’ve been today.
+Worked on packaging the ChainOfThoughtReasoner into an API... turned it into a clean FastAPI service. Simple endpoint, takes a task, runs the whole reasoning chain... spits back an answer. Should’ve shipped it last week honestly... but here we are.
+The tricky part wasn’t the code... it was me.
+Holding trades too long. Letting bias creep in. Ignoring the system I built to protect me.
+TSLA ripped to $470 while I held puts... after all the data told me to cut at $455.
+That hit harder than it should’ve.
+So I took the L... stepped back... coded.
+Next up...
+Refactor the Ollama CLI into an async API call. It’s slowing down the reasoning loop and I can’t have that. Also building out hard stop triggers on trades... automate the exits, take myself out of the equation. The point is to trust the system. I need to hold myself to that.
+Momentum’s building... just need to get out of my own way.
+“Discipline equals freedom.”

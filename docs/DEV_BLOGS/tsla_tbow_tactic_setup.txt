@@ -1,0 +1,17 @@
+Devlog // 2025-03-16
+"Am I really tracking the moves that matter... or just logging activity?"
+Solid work today... finally got around to tightening up my trade journal flow.
+Been overdue.
+Started with a deep dive into the recent TSLA trades. Ran through every entry and exit, pulled the P&L, and made sure the numbers were clean—fees included. There was a little back-and-forth... caught myself almost glossing over some plays, but I stepped back and cleaned it up. Accuracy over speed.
+The calls and puts? Mixed bag. Quick scalps had potential, but a couple exits were early. Not mad about it—cutting fast has been protecting capital. Still, there's room to hold for more. Noticed the $4.30 sell was textbook.
+Definitely need more of that.
+Built out two HTML frameworks today...
+One for trade analysis reports, the other for my daily plans. Kept them clean... modular... easy to plug new data into. There was a glitch pairing buys and sells with P&L calculations, but I worked through it. Rewrote parts of the matching logic and reran the numbers until they checked out. We're good now.
+Finished it up by laying out a trading plan for TSLA tomorrow...
+Bullish lean, but not blindly. Breakout level is $337.50. That’s the line. Below $335, I flip and scalp puts.
+Holding the $450 call for now...
+No FOMO...
+Just execution.
+Next up...
+Want to automate more of this. Get the P&L calculations and journal entries triggered off my orders. Less manual, more flow.
+"Discipline bridges the gap between goals and accomplishment."

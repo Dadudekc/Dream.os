@@ -1,0 +1,14 @@
+Devlog: How Do You Stay Patient When the Work Feels Endless?
+I’ve been thinking about that a lot today...
+Between cleaning up the trading bot’s backtesting logic and taking a hard look at my own trading discipline, patience is the thing I keep circling back to. It’s easy to get caught in this loop of wanting things to move faster... but that’s not how this works.
+What I worked on today:
+I tightened up the indicator calculations on the bot... EMA, RSI, MACD... all of them were throwing errors when there wasn’t enough data. Fixed that by adding validation checks upfront—no more negative dimensions breaking the loop. Also got the backtest logic more solid... handling stop losses and profit targets better, especially in volatile conditions.
+On the personal side... I took a $130 account and managed a 14% gain today trading TSLA. Not huge, but it’s a win... and it’s disciplined. I’m scaling back the size when I’m trading at work. That’s non-negotiable now.
+What broke... or what was tricky:
+Friday was a mess. Phone died mid-trade, and I lost more than I planned to because I couldn’t get out. That’s still in the back of my head. Not gonna lie... it threw me off. The biggest lesson? Overexposing myself at work is reckless. So now I’m building out a fail-safe... backup device, alerts in place... can’t afford those kinds of mistakes anymore.
+Also... juggling trading, bot development, and content isn’t clean right now. Need to automate more of the content side so I can stay focused on what moves the needle.
+What’s next:
+More edge case testing on the bot... make sure it’s bulletproof before I go live.
+Clean up the content workflow... set up templates so the TBOW Tactics and updates don’t eat my time.
+Start prepping for live execution... that’s coming sooner than I thought.
+“Discipline isn’t about feeling ready... it’s about showing up ready.”

@@ -1,0 +1,11 @@
+Devlog - TROOP Infra Buildout // 2025-03-15
+“What’s the difference between learning how to do a thing… and learning how to make sure it always gets done?”
+Been thinking about that while setting up TROOP’s new architecture on Azure. There’s a line where you stop memorizing the clicks and commands—and start building systems that run clean, so you don’t have to keep touching the same problems.
+Today was that kind of work.
+I spun up a new resource group for TROOP on Azure… cleaned up some of the naming issues that were starting to sprawl. Consolidated things so the TradingRobotPlug and TROOP projects aren’t stepping on each other anymore. Had to make a call between public vs private MySQL Flexible Servers—went private for TROOP since it’s going to house core data.
+Ran into validation errors on the deployment templates. Classic mismatch between the parameters and what the templates actually expect... felt like a dumb mistake, but it’s the kind of thing that happens when you’re moving fast and not running automated checks yet.
+Realized that was the signal—time to stop doing these things manually.
+Next up: building out a GitHub Actions pipeline to handle the ARM template deployments automatically. No more CLI trial and error. Pre-deployment validation scripts are on deck too... gonna wire in schema checks so we catch the dumb stuff before it trips anything downstream.
+The bigger shift? Starting to lean into self-organizing systems. TROOP isn’t just scripts anymore—it’s the control layer for the ops I want running on their own.
+“Build what you want to run… then build it so it runs without you.”
+Back to it.

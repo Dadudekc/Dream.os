@@ -1,0 +1,9 @@
+Devlog: Building the Scanner Backbone
+How much system load is self-inflicted... and how much is just sloppy architecture we haven’t cleaned up yet?
+Been sitting with that.
+Today was about getting the Real-Time Market Scanner into something usable. It’s basic right now… we’re pulling data from Alpaca’s WebSocket, dropping trades into MySQL. Real-time feeds on our terms. We’re not trusting third parties to hold state for us… we’re the middleman now. Feels cleaner.
+But… writing everything to MySQL directly? That was a choke point. Heavy. I could feel the lag stacking as more tickers came in. So I built a pipeline where Redis acts as a short-term cache… then MySQL gets periodic writes in batches. Way faster. Less DB lock hell.
+The scanner logic itself is tight, but the alert system was rough at first. I started with a dumb loop that checked user rules against incoming data... but that died fast under load. So we shifted to async processing. Each user's criteria runs independently now, and it’s already making a difference. Less waiting… more doing.
+What’s next is getting real-time push alerts working—probably WebSockets or Firebase for now. I want alerts firing the moment criteria are hit… not five seconds later. No lag.
+This whole thing is moving closer to what I had in mind. Faster. Cleaner. More scalable.
+“Speed isn’t reckless. It’s refined focus.”

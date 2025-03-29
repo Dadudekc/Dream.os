@@ -1,0 +1,10 @@
+Devlog 003 - 3/16/25
+What does it really mean to simplify complexity... without losing power?
+Spent most of the day leveling up the trading bot. Cleaned up the structure, pulled everything into environment configs so no keys are hardcoded anymore. Everything breathes out of the .env now... way more professional, and honestly something I should've done earlier. Rookie moves cost time. Lesson noted.
+I brought in Unusual Whales options flow data—it's solid. Stripped it down to just what I need: top trades, clear signals, no noise. Added embeds across the board so everything spits out clean inside Discord. No walls of text. Just the info. Trade executions are running through Alpaca webhooks now... the buy/sell commands hit instantly. Feels tight.
+Sentiment scoring with GPT-4 is in... pulling news, summarizing, scoring from -100 to +100. It's working, but I want to sharpen the prompt logic later—there's room to get more precise reads on volatility catalysts.
+Biggest grind? Getting logging dialed in. Easy to skip when you're flying, but it caught me in the loop... I lost track of some errors until I wired it up properly. Logs now output exactly where things choke... no guessing.
+What's next...
+Thinking about adding real-time breakout alerts, maybe even a dashboard for portfolio health. Visual feedback is missing right now, and I need faster insight when scaling positions.
+"Discipline is choosing between what you want now and what you want most."
+—Abraham Lincoln

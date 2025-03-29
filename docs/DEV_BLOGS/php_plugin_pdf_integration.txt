@@ -1,0 +1,17 @@
+Devlog // 2025-03-16
+“Where is the system still leaking time?”
+Been deep in the weeds today... combing through the FreerideInvestor build, trying to spot where the workflows are slowing me down. Pretty surgical audit—trading, automation, content generation. All of it.
+What I’m seeing is this:
+The API requests are stacking up...
+Every time I fetch stock data, run sentiment, or pull a trade plan from OpenAI, I’m hitting separate calls. That’s killing velocity. Feels small at first, but over time... it adds up.
+Also, the alert system—too much overhead. It’s checking each alert like it’s on an island... instead of batching them together. That needs to change.
+And the logging... it’s everywhere. Every request, every action. I don’t need that level of noise. Not in production.
+What was tricky:
+Balancing detailed logs for debugging without choking system performance. Plus, figuring out how aggressive I can go with caching before it starts feeling stale for users.
+What’s next:
+Consolidate API calls—get data, sentiment, and plans in one hit where I can
+Batch process alert checks so I’m not wasting cycles
+Cut the log spam... move to async or external storage
+Crank up caching for historical data and sentiment... keep it lean
+Time to clear out the noise and speed things up.
+"Slow is smooth. Smooth is fast."

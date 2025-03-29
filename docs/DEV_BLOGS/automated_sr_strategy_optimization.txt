@@ -1,0 +1,8 @@
+Devlog // Did I overthink the entry conditions... or did I underthink the exits?
+Cleaned up a lot today.
+Started by refining that trade analyzer plugin. Got the PHP sorted so it pulls results from the Python script and displays them on-page. Hooked up a shortcode so we can drop it into any WordPress template now. Then we built out the template itself... simple, clean, does the job. It’s ready for front-facing use. The stats rendering works, but I might tweak the formatting later if it bugs me.
+Then shifted gears back into the Pine Script strategy. That thing was dead... no trades triggering. Not even a whisper. Looked at what his code was doing and realized: the entry conditions were tight—maybe too tight. On top of that, the position sizing logic wasn’t realistic for execution. Fixed the entry triggers by adding a buffer on the swing levels, hard-coded a clean contract size to test, and reworked scaling so it actually builds instead of overwriting.
+Stop-loss and take-profit exits are now explicit. No guesswork. Alerts fire clean. It’s triggering trades. Finally.
+What’s next...
+I’ll run the Pine Script through some historicals to see how it handles different volatility setups. Might layer in trailing stops if I feel spicy. On the plugin side, we’ll probably start piping in Alpaca data soon.
+“Progress isn’t always loud. Sometimes it’s just showing up, fixing what’s broken, and getting back to work.”

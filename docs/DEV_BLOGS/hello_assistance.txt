@@ -1,0 +1,15 @@
+Devlog // Mar 15
+"Where’s the edge between iteration and dilution?"
+Been feeling that heavy this week. Every time I loop through these builds, I’m asking if I’m cutting deeper or just spinning. Today was one of those days...
+What I worked on:
+Ripped through the architecture on TBOWTactics... The whole stack was tied up in SwiftUI and Combine, which made no sense for where I’m running this—CLI builds, tight feedback loops, no room for module errors. Spent most of the session stripping that down, refactoring the core into a clean CLI-safe system. No UI dependencies, no async Combine pipelines choking execution. Just straight data in, decision logic, and actionable outputs.
+Refactored NetworkManager, StockResearchViewModel, and AlertService. They’re all running off callback-based protocols now... Combine is out of the picture in CLI. Big step for untangling this.
+Also modularized HistoricalStockData and StockPrediction so there’s no more redundancy... multiple versions floating across files were causing build ambiguity. Cleaned that up.
+What broke / what was tricky:
+SwiftUI and XCTest are dead weight in the current run. Still got lingering test files that throw errors at build, but they’re sectioned out now. Not planning to wire those back in until I switch contexts.
+Biggest drag? Emotional energy burn from manual builds... caught myself re-running too many swiftc commands with the same structural issues. Should’ve just split out the Core architecture sooner. Lesson there.
+What’s next:
+Automating AI-driven decision loops... I need a daemon pulling stock data, generating predictions, and moving them into action queues. No more human-in-the-loop unless it’s override territory.
+Standing up a content pipeline that drafts devlogs automatically based on system events... I’m dropping way too many insights that should be captured in real time.
+Scrapping UI dependencies from anything running CLI. Might rebuild a separate UI shell later, but not now.
+"Speed isn’t how fast you move—it’s how much you subtract between decision and action."

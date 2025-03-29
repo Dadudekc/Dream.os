@@ -1,0 +1,21 @@
+Devlog: Modularized the Strategy… Backtest Loop Tightened
+Ever wonder how much energy we burn fighting the same battle twice… just because we didn’t take the time to break the system down?
+That’s where I was today. In it.
+I’ve been grinding through the trading bot backtests… over and over… same loop. Enter a trade, set stops, watch it fail. Then manually adjust. Rerun. Manual. Rerun. It’s been this quiet kind of purgatory… not chaotic, just stuck.
+So I took a step back and modularized the whole thing.
+Broke out the entry, exit, and risk management logic into separate processes
+Cleaned up redundant ATR and indicator recalculations
+Simplified the backtest loop… no more clunky position handling buried in conditional logic
+Cached everything I could so the system runs faster
+Got the logger calling entries and exits cleanly so I’m not blind during execution
+It’s not sexy work… but it’s clean now. The system makes decisions faster. Positions enter and exit when they’re supposed to. And I’m not spending my time fighting spaghetti code.
+Still had a couple of annoyances…
+Some position exits weren’t triggering right away because the logic was tangled in signal checks instead of actual price triggers. Fixed that by making sure the profit target and stop loss are evaluated independently of the entry signals.
+What’s next?
+Building out parallel processing so I can run multiple strategies and datasets in sync
+Automating the backtest optimization loop… no more manual tweaking
+Then… live testing a clean pipeline with proper risk management
+I want to trust the system before it trades real money again.
+Progress feels slow… but it’s real.
+"Clarity comes from action, not thought."
+Time to keep moving.

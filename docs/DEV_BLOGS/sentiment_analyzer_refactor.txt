@@ -1,0 +1,12 @@
+Devlog – 2025-03-15
+How do you know when it’s time to stop forcing a system to work… and start building around it instead?
+Been deep in the Robinhood auth flow the past few days. It’s been rough... Every time I think I’m close, I hit another wall. Their API is a moving target. The MFA workflow requires manual input... I tried building delays into the system so I could catch the verification SMS in time—but even with that, the API just loops back to "workflow_status_internal_pending" after I submit the code.
+Tried hitting the verification endpoint directly. Still no luck. 403s and 404s. At this point, I'm convinced the architecture isn’t built for full automation anymore... at least not with the tools they’re exposing.
+On the side, started cleaning up env management—tired of retyping creds every time I spin up the scripts. Getting those locked in as session variables helped, but that’s duct tape. The real fix is swapping out this entire pipeline. Robinhood’s out. Time to move to Alpaca or IBKR and rebuild the auth system from scratch... persistent token management, no manual flow, no delays. Just execute.
+I’m also seeing how much time slips away debugging in production instead of creating systems that self-heal. That’s gotta change.
+What’s next:
+Migrate to an automation-native broker.
+Set up persistent auth and refresh cycles.
+Automate the devlog process so these reflections get baked into the system.
+Right now, this system is 90% there... but that last 10% is where the execution bottlenecks live. Time to clear them.
+"Velocity is not about doing more. It’s about doing less of what slows you down."

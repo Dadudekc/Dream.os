@@ -1,0 +1,17 @@
+Devlog // 2025-03-16
+What’s the real drag on system speed... and why am I still letting it happen?
+Did a deep dive today on my workflows... trading, automation, content—everything.
+What stood out?
+The system's bloated in places I knew but hadn’t prioritized... especially around real-time data fetches and form handling. Been relying too much on synchronous AJAX calls to pull stock data, which slows things down more than I like to admit. Every time I’m waiting on an external API, that’s wasted time... both for the system and for me. Energy dilution.
+Same thing with the alert system. Too manual. Too many points where I’m expecting myself—or someone else—to input data, validate, and confirm conditions. It works... but it’s slow, and I’m after speed and convergence right now.
+Rendering is another slow point. The system re-renders everything even if 90% of the data hasn’t changed. I know better. I’ve seen this. Haven’t fixed it yet.
+What broke? Nothing...
+But what’s tricky is realizing these aren’t hard fixes. They’re just stacked in a backlog I haven’t cut through. The work is all there... it's on me to kill redundancy and get smarter about how I move data and process flow.
+What’s next...
+Caching stock data.
+Running web workers for background processing.
+Refactoring the alert forms with pre-fills and AI-based suggestions.
+Switching to component-based rendering, probably React or Vue.
+Adding predictive error handling to stop wasting time on surface-level alerts.
+The system has to move faster... and smarter. That’s the only priority right now.
+"Clarity comes from doing the work... not thinking about it."

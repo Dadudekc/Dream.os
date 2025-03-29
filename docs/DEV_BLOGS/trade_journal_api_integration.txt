@@ -1,0 +1,14 @@
+Devlog // 03.15.25
+What’s the real cost of doing things manually... and how fast can I cut that cost down to zero?
+Spent the day building out the Trade Journal admin side... pagination, filters, inline editing, CSV exports. It's clean and works, but I’m catching myself falling into an old pattern—overbuilding interfaces before locking in backend automation. Feels like polishing dashboards when the data isn’t moving fast enough under the hood.
+The core workflow is solid... but there’s friction. Right now, trades are still submitted manually through the REST endpoint or dropped in through the admin. That needs to die fast. No reason I should be entering trades by hand when I’ve got broker APIs that can stream everything in real time.
+Biggest bottleneck is the gap between trade execution and data analysis. Without a live data pipe from Alpaca or Robinhood (when they decide to act right), I’m stuck in input mode instead of feedback mode. That’s a problem. Strategy refinement happens in the feedback loop... not the input.
+Another thing... the current system writes trades to both the custom database table and optionally to WordPress posts. That’s redundant. I’m scrapping the post generation unless it’s for publishing something public. Database is the source of truth. Full stop.
+Next move is clear:
+Stand up a Python/FastAPI service as the central automation hub... Alpaca integration first.
+Start feeding data directly into the journal table without me touching anything.
+Build out a lightweight analytics layer that starts surfacing insights automatically... winning strategies, bad entries, all of it.
+Wrap that in automated testing so I’m not spending cycles on bug hunts.
+The focus now is convergence... making sure everything flows into itself without me needing to push it along.
+“Discipline is choosing between what you want now and what you want most.”
+Back to it...

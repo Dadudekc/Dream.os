@@ -1,0 +1,13 @@
+Devlog | 2025-03-16
+What’s the actual cost of friction... and how much of it am I still tolerating in my systems?
+Been deep in it today... unpacking where time and energy are leaking. It's becoming clear that managing code across files, chats, and different formats has been creating unnecessary friction. Manual processes... manual uploads... manual PDF compilations just to get everything in one place. Feels like I’m fighting for control over things that should already be automated.
+I’ve been trying to move the full project—every line of code, every file—into a single PDF. Not just for reference but so an LLM can ingest it and give me back something tight in one response. Zip archives? Clunky. Extracting, uploading? Slows everything down. I don’t have time for that.
+Realized I’m still tolerating bottlenecks that could’ve been eliminated with better system design. No CI pipeline to auto-generate docs... no automated reporting on the full codebase... no dynamic interface to query the system directly. I’m building an AI-driven system but still dragging manual processes around behind it.
+What broke today? Not the code—just the way I’m approaching convergence. I was trying to jam all the pieces into a static PDF when what I really need is a living, breathing system that keeps everything in sync without me touching it. The vision is bigger than documentation. It’s about real-time access... streamlined execution... zero drag.
+What’s next...
+CI pipeline for automated docs
+One-click system state reports
+Centralized code aggregation for real-time LLM querying
+Kill every manual step that doesn’t add leverage
+The goal is system self-organization. Nothing else.
+"The system becomes the strategy when friction is no longer tolerated."

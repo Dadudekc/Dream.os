@@ -1,0 +1,14 @@
+Devlog — 03.15.25
+“Where am I bleeding time... and what needs to be cut so the system can breathe?”
+Spent time breaking down my workflows... trading, automation, content builds... and it’s clear where the energy is leaking.
+I’ve got too many things running parallel without enough convergence. Manual backtests... scattered deployments on Hostinger... learning AWS and Azure at the same time without a clear ROI focus. It’s slowing the whole machine down.
+The trading systems are still too reliant on me to trigger things... no automation yet on backtesting or model deployment. If I’m not pushing it, it doesn’t move. That’s not how this should work.
+Content generation’s another one. Right now, it’s reactionary... no automated pipeline for drafts, no system for feedback loops. I’m spending too much time thinking about what to write instead of pushing content that builds the next piece of the system.
+So the move is:
+Automate the trading workflows first... backtests, model pushes, monitoring.
+Migrate FreeRideInvestor off Hostinger... AWS or bust.
+Stand up AI for content drafts... take 60% of the lift off my brain.
+Kill split focus. It’s AWS, MLOps, CI/CD... no more Azure detours unless there’s a direct payoff.
+Next two weeks are about setting up pipelines that move whether I’m watching them or not.
+Cut the noise... focus on velocity.
+"Discipline is the bridge between goals and accomplishment."

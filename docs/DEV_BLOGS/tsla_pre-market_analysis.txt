@@ -1,0 +1,11 @@
+Devlog | 2025-03-16
+"How do you stay objective when the market’s throwing noise at you from every angle?"
+Been sitting with that question while dialing in today’s TSLA intraday trade plan. The goal was simple—build a high-probability setup and stay mechanical, no bias, no narratives.
+Pre-market had TSLA grinding under VWAP, volume light, RSI oversold. Not much of a story there... but the order book was showing a heavy bid wall at $386.40. Noticed MACD trying to curl but still under the signal line. Weak, but maybe a reversal spot if it flushed early.
+Mapped out two setups:
+VWAP rejection short off $387.80-$388.50. Clean trigger if it can’t reclaim VWAP, with stops just above $389. Targeted the liquidity shelf around $386.40 and a stretch down to $385.
+Oversold bounce long if it cracked $386 clean and buyers absorbed. Same liquidity zone—tight stop under $385, profit targets back toward $387.50 or VWAP reclaim.
+What was tricky? Timing. Expected volatility in the first 30 mins post-open... but TSLA’s been grinding slower lately, even on volume. Had to stay patient, watch for confirmation, not force it.
+What’s next... I’ll keep refining the risk management piece. Locking in consistent 2:1 setups is fine, but I’m seeing room to improve how I handle fakeouts, especially around VWAP tests.
+“Discipline is the bridge between goals and accomplishment.”
+— Jim Rohn

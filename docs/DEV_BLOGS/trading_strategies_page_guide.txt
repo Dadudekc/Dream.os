@@ -1,0 +1,11 @@
+Devlog: Tightening the Workflow
+Ever wonder how much time slips through the cracks just trying to make things “work”... instead of making them work better?
+That’s where I’ve been this past stretch. Heavy in the trenches, cleaning up a lot of backend chaos—simple things that shouldn’t have been taking this long... but they were.
+Been pushing through the custom fields issue that’s been slowing up the Tbow Tactics flow. Kept hitting a wall there... so I started laying out a fallback plan. If I can’t get the field system streamlined in time for the Small Account Challenge, I’m just gonna force the display through single.php like I’ve been doing for the devlogs. Not pretty... but it works. And working is the priority right now.
+Also got Mailchimp finally hooked up. Took longer than it should’ve. Some of that’s on me for overcomplicating the integration... some of it’s just Mailchimp being Mailchimp. Either way, the contact form and subscription flow are live. Clean and simple.
+While I was at it, made time to refactor the strategy pages. Set up the archive query to automatically pull posts from the 'strategies' category. No more hand-coding each one... just publish and it flows into the page.
+Still, there’s a lot to do. The tools page is next... gonna build out the first live tool this week and tighten the grid design. We’ll test a new layout there. I want everything feeling seamless and purposeful.
+I’ve got a lot of projects moving... but FreeRideInvestor is back at the top of my list. Using it as the platform to show exactly what I can do on the dev side... and making it clean enough to scale.
+Like Sam Altman said—
+"Build fast. Break stuff."
+That’s the energy right now.

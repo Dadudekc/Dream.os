@@ -1,0 +1,12 @@
+Devlog Drop
+Prompted by today’s system audit and workflows convo.
+How much friction am I tolerating just because the system still works... but not the way it should?
+Been sitting with that one.
+Today was a hard audit... I pulled apart where the workflow is leaking time and energy. No surprise, the invite process was one of them. We’ve been using Discord links that expire or break at the worst times. No more. Locked in a permanent invite link, and I’m putting a bot on deck to monitor and automate invite generation if we ever need dynamic links. That closes a stupid loop I should’ve shut months ago.
+The bigger problem showed itself when I looked at how chaotic the conversation flow has been. Switching between casual and execution without snapping into mode. It’s slowing me down. So, I’m implementing a Session Primer—every work block kicks off with clear objectives, time caps, and the specific deliverable. That’s going to cut the drag in half. No more bouncing between thought streams.
+Content flow? Still not where I want it. Right now, there’s no structured pipeline—ideas happen when I’m in them... but I’m not batching or systematizing how they move from concept to publish. Going to set up a Kanban board to lock that in. Batch blocks for deep work are on the schedule.
+Trading logs... same thing. I need auto-logging and AI tagging so I’m not wasting cycles post-session. It should already be sorted and waiting for me in review.
+What broke today? My patience with tolerating inefficiencies I’ve normalized.
+What’s next? Implementing the priority actions—Session Primer, Invite Bot, Content Kanban, Auto-Logging.
+One thing at a time... but no drift.
+"You don’t need more time. You need to decide."

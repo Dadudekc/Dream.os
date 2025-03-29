@@ -1,0 +1,12 @@
+Devlog | 02.22.25 | StockTwits Sentiment Scraper
+What’s the real bottleneck—scraping the data or making sense of it once you have it?
+Been deep in the weeds trying to pull real-time sentiment data from StockTwits... not placeholders... actual user messages I can run analysis on. Got Selenium running in non-headless mode to help debug. It’s clear that the platform is loaded with dynamic elements and JS-rendered content, so basic scraping just isn’t gonna cut it.
+I wired up the login flow so it detects when I’m in and flips over to the symbol page. That part works. It scrolls, it waits, it tries to extract sentiment...
+But here’s the rub—zero data on extraction. No messages found. Either StockTwits has upped their anti-scraping game or the HTML structure has shifted and I’m chasing shadows.
+Took a step back and merged two approaches:
+The direct DOM scraping I was trying earlier.
+Combined with the old RichTextMessage_body__ selector and BeautifulSoup post-processing. Now it pulls messages, timestamps, and runs them through both TextBlob and VADER for sentiment scoring. Even got some basic database structure going to hold onto sentiment snapshots.
+The tricky part? Ensuring the scroll loads enough data before I analyze. That’s always the balance... speed vs. depth.
+Next—tighten up the scrolling logic. Thinking about throwing in Selenium Wire or even intercepting JS network calls if this stalls out. Still need to test with more tickers... TSLA's just the sandbox.
+One step at a time...
+"The obstacle in the path becomes the path. Never forget, within every obstacle is an opportunity to improve our condition."

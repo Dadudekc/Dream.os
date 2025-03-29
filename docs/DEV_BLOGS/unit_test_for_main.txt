@@ -1,0 +1,25 @@
+Devlog: Day 3
+"How do you move fast without breaking the thing you’re building to last?"
+Today was a light one...
+Had to pick up extra hours at work and streamed late... energy wasn’t 100%, but still made it count.
+Cleaned up the repo structure...
+Renamed the local branch from main to master to align it with the remote.
+Got the tracking setup right... master now properly tracks origin/master.
+Pushed the latest modularization updates—tests, setup.py, project restructuring—all in.
+Verified remote branch alignment. That part’s clean.
+Test coverage? Sitting at 96% across the bots.
+Finally feels like the systems are getting tight.
+On the trading side...
+First day back on the charts this year.
+Closed out 41% on the $100 account—
+…not starting from $91 like I thought.
+It’s official now...
+Winner for the year... but the restart just began.
+We’re not blowing it this time.
+Next...
+— Clean up any lingering main branch refs
+— Start testing the pipeline. Make sure sync and CI flow
+— Keep refining the test suite
+— Need to loop back on the LSTMModelTrainer merge, but that’s for tomorrow...
+"Most people waste time trying to go faster...
+Focus on removing what slows you down."

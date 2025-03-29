@@ -1,0 +1,25 @@
+Devlog – 2025-03-15
+“What’s the actual cost of bottlenecks I let linger?”
+Spent the day digging into the TradingRobotPlug project… looking for cracks, figuring out why things feel slower than they should.
+I asked for a system audit, but the answers weren’t surprising—just things I’ve been putting off.
+The biggest bottleneck?
+Too much manual work where there should be automation.
+Training models, testing predictions, spinning up Streamlit… I’m still running things in pieces when they should be handled through a single CLI or task runner.
+That fragmentation is burning cycles I can’t afford anymore.
+Logging was another one… realized I’ve duplicated logger setups across scripts. That’s stupid. Fixed in 10 mins if I sit down and centralize it.
+Another thing—no CI/CD pipeline.
+I’m manually testing every time I push.
+Not scalable.
+Not what TROOP needs if this thing’s ever going to be self-organizing.
+So where are we now?
+TradingRobotPlug’s machine learning flow is stable, but inefficient.
+CLI interface is functional, but redundant.
+Model lifecycle is too hands-on.
+No orchestrator tying it together. Yet.
+What’s next…
+Build out a unified CLI with Typer or something lightweight.
+Docker Compose to spin up the full environment—models, APIs, Streamlit.
+CI pipeline to automate testing and deployment.
+Look at MLflow or a lean custom registry to manage models. TROOP needs this.
+This all folds back into the bigger goal: TROOP as a self-organizing system that runs without me babysitting it.
+“…You can’t move fast if you’re the bottleneck.”

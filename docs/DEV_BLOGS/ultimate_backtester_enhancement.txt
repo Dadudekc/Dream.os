@@ -1,0 +1,20 @@
+Devlog // 2025-03-16
+What’s the point of a backtester if it locks you into a single strategy or flow? That’s been on my mind most of today... the idea of systems needing to stay modular if I want them to scale without me constantly refactoring every few weeks.
+I’ve been working through the core backtester module... stripping out anything hard-coded, making it composable. It’s not just about running RSIMACD anymore. I want a plug-and-play engine—something I can drop any strategy into, whether it’s classic row-by-row, signal-based, or full-on Backtrader simulations.
+Here’s where we landed...
+Refactored backtester.py into a pure module. No CLI, no inline fetch logic, no forced workflows.
+BacktestRunner now runs any strategy that subclasses BaseStrategy. You pass it your strategy class... it runs.
+Added optional indicator unification via AllIndicatorsUnifier... not locked in, just a switch.
+The data fetch layer is fully async and leverages DataOrchestrator. No duplication. Fetch once, combine, done.
+Clean separation between the runner, the strategy logic, and performance evaluation (ClassicBacktester or your own).
+No more "run_backtester()" function... if I want to run something, I import the runner and plug in.
+Wrote a full test suite on top... mocked DataOrchestrator, validated no-data conditions, trade logs, and performance metrics. It’s clean. Pytest green. The framework's there now to scale strategy testing without rebuilding the engine every time.
+Tricky parts...
+Handling empty data gracefully without breaking the runner flow.
+Keeping Backtrader and ClassicBacktester logic separate but accessible from the same runner.
+Making sure strategies don’t depend on indicators unless they explicitly need them. Flexibility over rigidity.
+What’s next...
+Build out more strategy classes to slot into the runner (MACD crossover, SMA mean reversion, etc.).
+Batch test multiple symbols at once. Right now, it’s a single symbol per run.
+Maybe add results serialization... could use clean JSON logs of every backtest.
+“Clarity comes from execution, not thought.”

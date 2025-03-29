@@ -1,0 +1,13 @@
+Devlog — March 15, 2025
+"What’s the point of speed if the system can’t think?"
+Spent most of the day pulling apart the trading logic and the AI flow to figure out where the system’s bleeding time and decision-making power... and yeah, there were a few obvious hits.
+First... Alpha Vantage is still the bottleneck. The API fallback worked, but the switch over to yfinance was reactive... not surgical. I rewired the fetch logic to move from sequential to parallel calls. Primary, fallback, and yfinance all fire at once now... whoever shows up first wins. Cut latency by a chunk right there.
+Second issue... data normalization. Yfinance and Alpha Vantage are two different beasts, and merging their outputs was getting messy... I built a standard schema right after fetch, so everything downstream runs cleaner. One less place for stupid bugs to hide.
+On the AI side... I rewrote the prompt system for sentiment and trade plans. The old one was decent, but v1 had better agents—momentum and mean-reversion thinking that we somehow left behind. Brought that back, added chain-of-thought reasoning, so the AI walks through each decision step by step... not just for me, but so the system can explain itself. Every decision is now its own audit trail.
+Still missing the real feedback loop. Sentiment scores and reasoning need to feed directly into trade execution... not just spit out a plan for me to read. That’s next.
+Biggest takeaway today... precision beats complexity.
+Next up:
+Build the dynamic risk engine that flexes with volatility and sentiment
+Automate the AI reasoning logs into a vector DB... turn past decisions into future training
+Start modular prompt testing... optimize everything
+"Discipline is remembering what you want."

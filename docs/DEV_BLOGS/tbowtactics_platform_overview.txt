@@ -1,0 +1,17 @@
+Devlog: 03.16.25
+Question I’m sitting with:
+How much of my system is actually accelerating me... and how much is slowing me down?
+Pulled back today and did a full audit of the workflows across trading, automation, and content generation. Needed to get surgical about where time and energy are bleeding out... and yeah, there’s a few choke points I wasn’t seeing while I was in the middle of the build.
+First thing—there’s too much dependency on external APIs... and I’m hitting rate limits more than I should be. Every time the system makes a redundant call to Alpha Vantage or OpenAI for the same data... that’s wasted time, wasted calls, and ultimately wasted headspace. I’ve been caching on a surface level, but not deep enough. That’s a priority fix.
+The other thing that surfaced... I’m overcomplicating my service layers. There’s no reason data fetching, trade plan generation, and alerts are living in separate silos. I’m consolidating them. One service, one flow... less handoffs, less lag.
+Content generation is another pain point. It’s too manual. Even when the AI is generating the trade plans, I’m still the one pushing the button every time. That doesn’t scale. I’m setting up automated triggers based on market conditions... so the AI can just do the work when it needs to happen, without me babysitting.
+What was tricky?
+Getting honest about the redundancies. Some of these workflows I built because they felt right in the moment... but stepping back, they’re adding friction. Also, figuring out how to balance automation with control. Letting the system run itself without feeling like I’m losing the reins—that’s always a tension.
+What’s next...
+Implement deep caching for stock data and trade plans
+Consolidate services into one streamlined flow
+Automate content generation triggers
+Spin up a rule-based engine for trades—no more manual execution
+Build out the centralized control dashboard to manage it all in real time
+Biggest shift... moving from reactive to proactive. Systems that anticipate instead of respond.
+"Speed is a byproduct of clarity."

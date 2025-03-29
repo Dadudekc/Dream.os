@@ -1,0 +1,9 @@
+Devlog // 2025-03-16
+"Where am I still wasting energy on things the system should be handling for me?"
+Did a deep dive on the Table of Contents component today. Cleaned up the CSS... spacing was off, the hierarchy wasn’t clear, and everything felt crammed together. Fixed the layout, added smoother transitions, and tightened up the hover states. It looks cleaner now—less noise, more structure.
+But the bigger takeaway wasn’t the UI... it was the workflow.
+I’m still in the weeds tweaking front-end details when I should be upstream, building systems that make these tweaks unnecessary. I’m handling tactical stuff where the AI or automated agents could—and should—own it. That’s bandwidth I need for bigger plays.
+Did a full audit on my workflows after that. Spotted a lot of reactive loops... tasks that should be nested inside macros or automated pipelines. Too much direct involvement on things I’ve already systemized elsewhere. Time to converge.
+Next move is to push preemptive structures—clearer briefs, tighter constraints—so I’m not revisiting the same decision spaces over and over. Also kicking off a componentization sprint... UI, content, narrative frameworks... all modular, all scalable. Once that’s in motion, I can hand off more to the agents and focus on system convergence.
+We’re getting closer.
+"Slow is smooth. Smooth is fast."

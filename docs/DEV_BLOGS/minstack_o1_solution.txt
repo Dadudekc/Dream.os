@@ -1,0 +1,23 @@
+Devlog // Audit + Skill Tree Mapping
+What’s the skill I’m actually working on right now?
+Been sitting with that... not just the task at hand, but the underlying metaskill. Pattern I’m seeing is: I’m not just building systems or strategies, I’m rewiring how I manage attention and execution in real time.
+Today was heavy on clarity. Ran a full system audit—trading, automation, content flow. Looked at where I’m losing energy, time, momentum.
+Some stuff was obvious... others hit harder once it was all mapped out.
+Here’s the breakdown:
+What I Worked On
+Deep system audit of my entire workflow
+Pulled apart bottlenecks, redundancies, and inefficiencies
+Mapped out the current skill tree... but not just projects—me, as a system
+Focused on where energy and time are leaking and what needs immediate cleanup
+What Broke (or Got Tricky)
+Found out I’m overcomplicating reflection cycles... spending too much time thinking about optimizing instead of executing
+Trading workflow still has manual pieces I haven’t let go of—alerts, journaling, scanning... slowing me down
+Cognitive fatigue from shifting contexts too often—trading, writing, content, meta-reflection all stacked without clear lines
+What’s Next
+Automate trade alerts and journaling in-session
+Collapse all workflows into a single source of truth
+Time-box reflection cycles... non-negotiable
+Parallelize content production—ideation, draft, publish, all moving without me bottlenecking every piece
+Set up deep work blocks that don’t overlap... no more task bleed
+Execute top 3 priorities in the next 14 days to hit convergence velocity
+"Most people overestimate what they can do in a day and underestimate what they can do in a year."

@@ -1,0 +1,23 @@
+Devlog | 2025-03-15
+"Where is the system bleeding time... and why am I still manually connecting the dots?"
+Did a deep dive today... looked at where my workflows are dragging, and the verdict is clear.
+I’m burning too much time stitching pieces together by hand... tactical playbooks, frontend components, and content drops.
+It’s all solid work... but it’s costing me execution velocity.
+The whole loop—from market signal to actionable strategy—is still getting bottlenecked in manual prep.
+What I worked on:
+Mapped out the redundancies across trading, automation, and content builds.
+Broke down the CSS and frontend structures... realized I’ve been duplicating components instead of systemizing them.
+Took apart the trading process... every playbook and strategy update is still a manual lift. The intel is sharp... but converting it into something the system can push out in real-time? Not there yet.
+What broke / What was tricky:
+The biggest drag is me being in the loop for every decision-to-content cycle.
+There’s no autonomous pipeline spitting out trade plans or tactics dynamically from live data.
+CSS component structure is bloated... repeating code because there’s no central component library.
+Content generation is stuck in manual mode... HTML/CSS builds instead of parametric templates.
+What’s next:
+Build an autonomous trading playbook generator... live data in, JSON-based strategy out.
+Refactor the frontend—centralize components, probably move to a modular system (React or Svelte... still deciding).
+Spin up parameterized templates for all tactical content so I’m not hand-coding every post.
+Set up a full CI/CD pipeline for frontend and content pushes—zero manual deployment.
+This needs to move fast. I’m capping too much execution speed manually bridging these pieces...
+"Speed is not the goal... alignment is."
+Let’s tighten it up.

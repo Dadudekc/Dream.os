@@ -1,0 +1,11 @@
+Devlog 013 - Jan 3, 2025
+What’s the tradeoff between reinventing a system… and knowing when to move on?
+Been deep in the trenches today trying to force Robinhood’s MFA and device verification to play nice with the automation stack. At first, I thought I could brute-force my way through it—custom API calls, handling 403 responses, automating the challenge responses. Did the full circuit… manual verification workflows, SMS prompts, retry loops… everything. Even wired in some retry logic to keep re-attempting after manual approval in the app.
+But here’s the hard truth… the code never came.
+Robinhood’s security stack threw up a wall—workflow_status_internal_pending—and no matter what angle I hit it from, the system just sat there waiting. No SMS. No code. Just... waiting for me to approve it in-app. That’s where the bottleneck showed up. I’m burning cycles chasing endpoints and verification flows when the smarter move is just to step back and architect this clean.
+What broke? Time. Energy. Focus.
+Trying to muscle through their API isn’t the win condition here. It’s not scalable. Robinhood doesn’t want me automating this, and I’m not about to build a brittle system that breaks every other week. The smarter path is migrating to brokers that are API-first—Alpaca, IBKR—brokers that let me focus on the core systems, not patching someone else’s black box.
+What’s next...
+Refactor the automation pipeline for broker-agnostic support. Implement persistent session vaulting so I don’t keep triggering “new device” flows. Draft a convergence map to track where trading, content, and AI are crossing wires so the system can start self-organizing.
+I’m done chasing the wrong bottlenecks.
+“Don’t waste movement where the system can move for you.”

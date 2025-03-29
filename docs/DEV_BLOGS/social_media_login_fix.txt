@@ -1,0 +1,11 @@
+DEVLOG 031525
+What’s the one bottleneck that’s quietly draining your time... but you keep pushing it off because it “works for now”?
+That was me with the social login flows. They were serviceable—until they weren’t. Manual checks, cookies expiring, browser sessions breaking at the worst times... all of it compounding into unnecessary friction.
+Today was about clearing that out.
+I refactored the login automation for Instagram and Stocktwits. Instagram now hits the direct login endpoint with the right next parameter baked in. It waits until we’re routed back to either the explore page or the homepage—clean and reliable. Stocktwits is hitting the signin page directly instead of hopping through their landing... smoother handoff, fewer failure points.
+Tightened up the session detection functions too. It’s not perfect yet—still relying on URL checks instead of DOM triggers in a few places—but it’s better. Less manual confirmation. Still needs a persistent session monitor... that’s probably next.
+Biggest realization? Every platform was being handled in isolation. Redundant logic everywhere. The next push is consolidating all this into one dynamic login handler... kill the repetition, parallelize the flow, get it off my mental stack.
+I can feel the energy shift when there’s less manual garbage to manage...
+More focus. More flow.
+Onward.
+"Velocity isn’t just speed—it’s how smooth the path is."

@@ -1,0 +1,16 @@
+Devlog // 2025-03-16
+How deep should the AI's understanding of the system be before it earns the keys to drive repairs on its own?
+Been sitting with that question while hammering out the pieces for the debugger. There’s a gap between AI that spits out code and AI that understands the nuance of the project... structure, context, failure states, dependencies. If it’s going to act like an autonomous operator, it needs more than pattern matching. It needs context.
+Spent most of today deep diving into the test suite. Ran pytest on the ai_patch_review_manager tests... 6 tests collected, 4 passed, 2 failed. The failures were expected—they’re tied to PatchTrackingManager not having an apply_patch() method. I knew that was missing. The bigger issue was when I pulled up the broader test summary... 36 fails out of 213. And most of them trace back to foundational gaps. Core components either missing or stubs not being deep enough to satisfy the calls.
+Started mapping out a priority list to get the debugger back in the game and helping automate these test recoveries:
+MockAgent needs to handle project_name in its constructor. This is breaking basic initialization tests.
+AgentRegistry is missing importlib. Sloppy. Fixed.
+AgentDispatcher is throwing TypeErrors because the forecasting agent isn’t registered. Either register it or stub it clean.
+PatchTrackingManager needs apply_patch() implemented... even if it’s dumb for now, we need it in there.
+patch_review_manager wasn’t importing right. Tweaked the imports. Made sure it’s included in __init__.py.
+AIModelManager needed confidence_manager wired in. That’s sorted.
+The DebuggerRunner isn’t instantiating fixer and parser. That’s next up.
+Also laid out a more advanced ProjectContextAnalyzer... it scans the whole project, maps dependencies, grabs docstrings, and outputs JSON context maps. This is the kind of meta-layer the AI needs to make better calls when it’s patching things autonomously. Not just react... but understand where it’s operating.
+What’s tricky right now is that the AI can’t debug itself until I finish laying the groundwork... and the tests aren’t passing because the AI isn’t debugging them. It’s a feedback loop. Gotta grind through this part manually, but every piece I add gets me closer to stepping back.
+What’s next... finish wiring in the stubs, mock what I need to pass the unit tests, and get the debugger running in parallel on the rest. Once the foundation’s solid, I can let it iterate.
+“Slow is smooth... smooth is fast.”

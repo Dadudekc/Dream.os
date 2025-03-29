@@ -1,0 +1,10 @@
+Devlog | 16-Mar-2025
+What happens when you step back and ask... am I overcomplicating this?
+Been deep in the FreeRide Projects plugin today... cleaning house. The original plan was to manage project uploads through JSON files with some validation via Python. Solid idea on paper. In practice? Messy. JSON wasn’t getting read consistently. Validation logic scattered. Function redeclaration errors popping up like weeds.
+I stripped it back. Simplified.
+Refactored the core plugin to read directly from a single jsons/ directory. No uploads. Just drop your files in the folder, and it’ll scan, validate, and display. It hits the Python validation script for each file and logs out any issues. Cleaner flow... less to break.
+Took a minute to squash a nasty Cannot redeclare display_freeride_projects() bug. Simple fix... wrapped the function in a function_exists() check. Should’ve done that from the start.
+Built out a template page to pull both the projects grid and a resume/portfolio view—both running on shortcodes. Just needed a place to see everything in one view. Kept it light. The data’s there... not gonna pretty it up until I’m sure it’s running clean.
+What’s next...
+I’ll wire in some conditional styling, maybe get a simple D3 chart for tech stacks and skills pulled straight from the JSON. But for now? It works.
+"Slow down. Simplify. Execute."

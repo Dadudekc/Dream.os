@@ -1,0 +1,27 @@
+Devlog // 03.16.25
+Am I diluting my focus chasing fixes that shouldn’t even hit my desk?
+Spent today untangling something small... but it exposed a bigger problem.
+I was inside the Get in Touch section of the site... just cleaning up the Email Us layout. That email address was breaking out of its box and it looked sloppy. Fixed that with some CSS—word-wrap, padding, etc. Pretty standard. Dropped the phone number in the Call Us block too: 832 604 0434. Simple.
+But halfway through, I’m realizing...
+Why am I even in the weeds on this?
+It’s low-leverage. Manual. These aren’t moves that push the system toward convergence.
+This is where energy gets diffused.
+What’s breaking is workflow alignment.
+No component-driven UI framework yet, so I’m repeating tiny fixes by hand.
+No AI handling static content updates... I’m keying them in.
+No clear priority funnel... so I’m letting reactive tasks hijack my execution flow.
+System audit confirmed it...
+I need to get ruthless about what’s worth my time.
+Component library. AI handling the dumb stuff.
+Decisions made through a real priority matrix.
+That’s the shift.
+What’s next...
+Spin up a component-driven design system (Tailwind, maybe React components).
+Automate static content updates from a CMS layer and pipe it everywhere.
+Formalize the task priority funnel. No more getting pulled off track.
+QA automation for UI so I’m not eyeballing boxes in Chrome DevTools at 2AM.
+...
+One step at a time, but each step has to move the entire system forward.
+No wasted motion.
+“Focus is not saying yes to the things that matter. It’s saying no to everything else.”
+Let’s get back to it.

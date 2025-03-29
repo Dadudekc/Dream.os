@@ -1,0 +1,16 @@
+Devlog // 2025-02-13
+What does it actually take to move from building “an agent” to building a system of agents that can manage themselves? Been sitting with that question today…
+I pulled AgentActor out of the test environment and started wiring it up to the larger project. Up to this point, AgentActor was just running in isolation, passing tests in its little sandbox. That’s fine... but I’m aiming for a lot more than “fine.” So, I’ve started laying the groundwork for integrating it into the bigger system—thinking ahead to how this scales when we have dozens of agents running tasks independently.
+Also updated the TTDD plan to reflect the shift. We’re not just building an AI agent anymore—we’re building a framework that can load, dispatch, and manage a repository of specialized agents. Content Automation. Trading Bots. Debugging Agents. Each handling their own workflows, each registered and controlled through AgentDispatcher.
+What worked:
+We hammered out AgentActor and nailed the Content Automation integration. Tests are green.
+Got a clear directory structure for modular agents and plugins.
+Cleaned up the dispatcher so it dynamically loads agents from /plugins and manages tasks with proper rate limiting.
+What was tricky:
+The MagicMock behavior in tests was throwing me for a loop… had to drop it in favor of a FakeToolServer to make sure the tests were legit.
+Fine-tuning the AgentDispatcher logic so it’s not just passing tasks, but doing it intelligently. That’s ongoing.
+Next:
+Deciding whether to push Vlog Forge Content Automation first, or Tbow Tactics Trading Bot. Both have legs... just a matter of priority.
+Might start refining task prioritization in AgentDispatcher while I think it through.
+Progress feels real. Not hyped. Just... real.
+“The best way out is always through.”

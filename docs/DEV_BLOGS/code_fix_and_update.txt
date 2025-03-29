@@ -1,0 +1,13 @@
+Devlog // 2025-03-16
+How do you balance system simplicity with flexibility... without ending up in a complexity trap?
+Been sitting with that today while refactoring the AgentDispatcher. What started as a simple routing layer for internal AI agents turned into a bigger conversation about extending the system to support external third-party AI models. I wanted the dispatcher to feel modular but stay clean—no bloat, no tangled logic.
+Here’s the update...
+I refactored the core AgentDispatcher to auto-discover agents that inherit from AgentBase. It sweeps through the agents package, instantiates anything that fits, and registers them automatically. That cleaned up a lot of manual overhead. Everything's normalized to lowercase keys to avoid weird bugs where names mismatch.
+But the main lift today was wiring in support for external AI models—third-party stuff that lives outside the system. I went with an adapter pattern. Built out ExternalAIAdapter, which wraps API calls from external models and exposes them through the same interface as internal agents. That way, the dispatcher doesn’t care if it’s routing a task to something local or an external endpoint. It just works.
+Got the dispatcher clean, flexible, and battle-ready... but it wasn’t without hiccups. Sorting out auto-discovery without accidentally registering stuff it shouldn’t was annoying at first. Had to be careful not to pull in AgentBase itself or misfire on things that weren’t agents. Logging helped... seeing what gets registered in real-time makes a difference.
+The test suite caught a couple misses early—mocked out the external API calls and ran through the dispatcher’s flow. Made sure internal agents, external adapters, and error handling all behave like they should. Nothing fancy there, just covering the edges.
+What’s next...
+I’ll probably take a pass at improving config management for external adapters. Right now, API keys and endpoints are hardcoded in the test, which is fine for the mock—but I’ll need something cleaner for live.
+Anyway... solid progress. Simple, flexible... and no complexity trap yet.
+"Slow is smooth. Smooth is fast."
+—V

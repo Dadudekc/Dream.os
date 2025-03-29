@@ -1,0 +1,17 @@
+Devlog // Network Scanner Build
+How do you know when you’re actually moving forward… and not just moving in circles?
+Been wrestling with that question today. Took a hard look at where time and energy have been leaking out of the system. Turns out... it’s mostly context switching and manual stuff I should’ve killed off a while ago.
+So here’s the rundown...
+Finally cleaned up the AnomalyDetectionModel—locked down shape validation across the board. That was a major source of false assumptions in testing. Deep anomaly detection is holding now... autoencoders working as expected, error thresholds are tight. Tests are passing clean.
+Pytest coverage hit 81%... but the bottleneck isn’t code right now—it’s workflow.
+Spent too long doing things manually. Running tests by hand, writing LinkedIn posts from scratch, and pushing commits without any safeguards... broke flow way more than I realized. Sat down and mapped it out. Pulled together a list of optimizations... unified CLI for dev tasks, CI pipelines, and AI-generated content that stays synced with the actual build progress. No more fractured workflows. No more wasted effort.
+The focus now is convergence... aligning the scanner as a modular, scalable tool—enterprise ready, cloud compatible. But the real priority?
+Velocity. Removing friction.
+The system needs to start building itself.
+What’s next...
+Build out the unified CLI
+Set up pre-commit hooks for linting + auto-testing
+Start the AI pipeline to auto-draft content from commits
+Containerize the project for clean test environments
+The work’s getting sharper.
+“Precision is power. Focus is freedom.”

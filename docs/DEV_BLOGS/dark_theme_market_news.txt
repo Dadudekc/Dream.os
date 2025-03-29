@@ -1,0 +1,9 @@
+Devlog // 2025-03-16
+What’s the balance between giving users flexibility and keeping things tight behind the scenes? That’s where I spent the last chunk of today...
+Started by cleaning up the Market News Dashboard layout. Finally pushed FreeRideInvestor’s dark theme into the news cards—grid layout, minimal, responsive... the whole vibe’s consistent now. Rounded corners, hover effects, all of it is dialed in.
+But the real friction was under the hood.
+The news fetcher was locked into static symbols—AAPL, TSLA, etc. Not good enough. I reworked the fetch logic to accept any symbol, or a comma-separated list. Now users can punch in whatever they want—no limits. The query dynamically builds for single or multiple tickers... or just gives them everything if they type "all".
+Had to sort out a couple tricky spots in the News_Dashboard class too. The frontend rendering logic wasn’t flexible enough... only pulling from hard-coded values. Rebuilt that function to parse user inputs properly, whether they’re asking for a single stock or five. SQL queries are clean. Conditionals are tight.
+Still have to decide how I want to handle pagination for large queries... but that’s not today.
+What’s next—hooking this deeper into the backend fetch queue. Right now it’s still manual, but I want users to set up their own custom feeds... fully automated.
+“Simple systems scale. Flexible systems survive.”

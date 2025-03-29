@@ -1,0 +1,14 @@
+Devlog // 2025-03-16
+What’s the balance between simplicity and real-world integration when you move from mock data to live execution?
+Spent today replacing the mock data in the trading system with live market feeds from Alpaca. No more simulated candles... pulling actual minute bars in real time, clean and structured for immediate analysis.
+The old mock function was fine for stress tests and theory-crafting, but it was time to get the system grounded in live conditions. Wrote a fetch_live_data() function that hits Alpaca’s REST API and pulls the latest 100 bars—defaults to AAPL for now, but easily adjustable. Used the environment variables for API keys to keep it clean.
+The technical indicators—EMA, MACD, RSI, Bollinger Bands—all worked as expected on live data. No surprises there. Had to be careful with the DataFrame structure coming back from Alpaca... datetime indexing tripped me up for a second. It was returning UTC by default, which threw off a few things until I explicitly handled it. Small thing, but could’ve caused bigger issues if I let it slide.
+The dynamic stop-loss got a tweak... tied it into a simplified ATR calculation based on rolling standard deviation. Cleaned up the risk management flow—stop loss adjusts to volatility, and position size flexes based on account risk percentage. Nothing flashy, just fundamentals executed tight.
+Did a stress test pass with extreme bullish, bearish, and flat market scenarios. No major red flags. Position sizing feels conservative... probably need to push it harder in future tests, but for now, it’s solid.
+What’s next...
+Automating the order execution via Alpaca
+Exception handling (connection issues, rate limits—haven’t touched that yet)
+More aggressive testing on position sizing and slippage assumptions
+Eventually tie in notifications, maybe Discord alerts
+Keeping it moving.
+“Systems are built one clean function at a time.”

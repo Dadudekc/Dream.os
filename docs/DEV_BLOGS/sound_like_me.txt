@@ -1,0 +1,12 @@
+Devlog: Cutting the Fat
+Ever ask yourself... how much time are you wasting on stuff that shouldn’t even be a problem?
+That’s where I was today.
+I stepped back and realized I’m still doing too much manually... too many redundant loops in the trading flows, too much overhead keeping APIs stitched together, and way too much time spent tweaking blog templates for updates that should be automated by now.
+What I worked on...
+Stripped back the trading pipeline. Cleaned up the API stack—consolidated the data feeds so I’m not hitting three sources for the same numbers. Shifted away from cron jobs... real-time event-driven triggers are next in line. Feels way tighter already.
+Content side... finally ditched the static HTML updates. Rebuilt the WordPress template so it pulls straight from dynamic fields. Now, when I drop a devlog or an update, I’m not reworking code every time. One source... clean output.
+What broke...
+The old systems weren’t designed for this speed. Cron jobs choking on faster data. API calls stepping on each other... latency stacking up. Realized I was wasting cycles fetching data I already had... that was a wake-up call.
+What’s next...
+Real-time portfolio optimization... no more waiting on a schedule. Every trade decision on demand, minute by minute. Building the pipeline so content and data flow together... nothing manual unless it’s high-level calls.
+"Speed is not the absence of friction... it’s the mastery of flow."

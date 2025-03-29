@@ -1,0 +1,25 @@
+Devlog: Where’s the Energy Getting Stuck?
+Been thinking a lot about where energy leaks in the system...
+How much time gets wasted micromanaging stuff I shouldn’t even be touching at this point.
+The patterns are showing up everywhere—code, trading workflows, content cycles...
+Too many manual loops slowing things down.
+Today I took the PHP shortcode handler I built last week and stripped it back.
+Refactored it into something cleaner... modular... but more importantly, something I won’t need to babysit.
+It’s got caching now to cut back on repeat API calls...
+Added dynamic sections so I can choose what gets rendered without rewriting code every time...
+Hooked in a logger for better error handling without me having to hunt things down manually later.
+It’s starting to feel more like a system that runs without me holding its hand.
+What was tricky—
+Realizing how much time I’ve been burning context switching between trading models... automation builds... content workflows.
+They’re all connected, but they’re not talking to each other yet.
+Still feels like I’m the middleman...
+That’s gotta change.
+What’s next—
+I’m laying out a unified data layer.
+One pipeline that moves data across everything—
+Trading signals feed content.
+Content feedback loops into strategy.
+No more silos.
+No more context switches.
+Systems that run... and learn... without me.
+"Velocity isn’t about moving faster... it’s about moving cleaner."

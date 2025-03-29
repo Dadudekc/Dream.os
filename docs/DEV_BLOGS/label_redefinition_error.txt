@@ -1,0 +1,15 @@
+Devlog — 2025-03-15
+“What’s the point of getting surgical if you lose sight of why you’re cutting in the first place?”
+Been deep in the assembly hole today... tighter loops, lower-level optimizations, but I had to check myself halfway through. Stepping through every single rep movsb cycle in GDB made me realize—sometimes precision becomes its own bottleneck. I’m chasing granularity, but at the cost of speed. Need to stay aware of that tradeoff.
+The session started with tightening up the replay.asm... reading timestamp + float records, building out make_timestamp_string and make_price_string, shaving off syscalls. Moved from multiple writes to single buffered writes per line—cleaner, faster. Got the string building routines solid. No bugs there...
+But debugging at the register level ate time.
+GDB’s fine when you need it, but living in stepi gets old fast. I caught myself redoing the same breakpoints, hunting down the same memory moves. Redundant cycles. Waste of energy.
+I need automation around this... scripts for compile/link/run... maybe AI-assisted watchpoints. No reason to be doing this by hand anymore.
+What’s next—
+Writing automation around the build/debug loop.
+AI tools running alongside GDB, helping flag issues before I dig for them.
+And zooming out. Tying this low-level optimization back into the bigger system.
+Why am I refining the replay in isolation? Where does this fit in the trading flow? Those are the real questions.
+The deeper I go, the more I need a map.
+Otherwise, I’m just digging.
+"Speed is not the enemy of precision... stagnation is."

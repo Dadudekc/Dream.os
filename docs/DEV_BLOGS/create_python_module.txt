@@ -1,0 +1,12 @@
+Devlog // 2025-03-15
+What’s the actual threshold where AI helps me move faster versus where it’s just making me softer?
+Been thinking about that a lot today while breaking down my workflows. The patterns are getting clearer... but there’s friction I need to clear out if I want real velocity.
+The biggest thing I worked on was auditing where time and energy are bleeding out across my systems—specifically in coding, trading automations, and content builds. It’s messy when I’m flipping between learning Python from scratch, experimenting with AI to fill the gaps, and then wondering if I’m relying too much on outside help. That loop’s draining.
+There’s no protocol for when to go manual versus when to go full AI assist. It’s all seat-of-the-pants right now... and that’s where focus dies. So I mapped out a binary rule set to tighten that up. Simple: if the task’s below a certain threshold and doesn’t build mastery, AI takes it. If it’s critical skill-building or high leverage, I do it by hand first, then scale with AI.
+Also realized most of the projects I’ve been spinning up aren’t feeding the bigger system. They’re one-offs... so I’m drafting a tiered project roadmap. Tier 1’s trading automations. Data ingestion bots. Strategy backtesters. I need those running clean before anything else. Tier 2 is content automation—template engines and an auto-publish flow. Then Tier 3 is where I get weird with AI agents and dashboards.
+Knowledge capture’s still weak. I’m losing insights because they’re not being logged or systematized. That’s on me. Starting a weekly audit—dumping reflections and strategies into a structured knowledge base. PARA or Johnny Decimal... haven’t decided which. I’ll test both.
+What’s next...
+Finalizing the AI-human engagement protocol tonight.
+Mapping out Tier 1 projects over the next 48 hours.
+First knowledge audit by end of the week.
+“Clarity isn’t found. It’s built.”

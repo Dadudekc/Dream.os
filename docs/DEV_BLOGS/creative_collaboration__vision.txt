@@ -1,0 +1,11 @@
+Devlog 3/15/25
+“Where am I leaking the most energy?”
+That’s been sitting in my head all day... and honestly, after breaking it down, it’s pretty clear.
+I’ve been splitting my focus way too much. Twitch, Discord, coding, day trading, AI builds... all running in parallel but not converging the way I need them to. It’s not even the workload—it’s the fragmentation. Too much context switching, not enough deep work.
+Spent time today analyzing my workflows... realized the biggest bottleneck isn’t the tools or the skills—it’s me not having a single, centralized system to manage everything. No single source of truth. I’m holding too much in my head and in too many random chats.
+Also... caught myself looping through validation cycles. Jumping into streams, flexing points, lurking, making sure I’m seen... and for what? It’s a distraction from execution. If I’m honest, that’s energy I need to pull back and redirect.
+What’s tricky is balancing networking with getting sh*t done. I get why I’m doing it—but it’s time to tighten it up.
+Next steps...
+— Build the SSOT (Notion workspace starts today... everything funnels there). — Define core roles for the crew (trading, AI R&D, content/documentation, community lead). — Lock in dedicated “office hours” for Twitch/Discord... no more open loops. — Set up an AI-first workflow for coding and trading. No more scattered LeetCode grinds. Targeted, structured progression only. — Build the content loop. One input, multi-output. Efficient. Clean.
+I’m done leaking energy on things that don’t move this forward.
+"High-velocity systems don’t rush... they flow."

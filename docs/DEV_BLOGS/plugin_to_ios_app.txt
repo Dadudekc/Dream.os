@@ -1,0 +1,14 @@
+Devlog // 003
+“Where am I overworking the system when I should be letting it work for me?”
+Been in a systems audit headspace... looking at where things are bloated, redundant, or just burning energy unnecessarily. The focus right now is tightening up the TBOWTactics iOS build.
+We walked through the app structure, broke down the API flows, and mapped out the data pipelines. Realized there’s a lot of duplicated effort... pulling data from Alpha Vantage, OpenAI, Finnhub... then reprocessing and sending it to multiple components, sometimes for the same task. Not efficient.
+The UI triggers ViewModel calls... which triggers Services... which hit APIs... which process data... and then loop back. Sounds clean in theory, but in practice, the async flows are too linear. Waiting for one piece of data before moving on slows everything down. It doesn’t scale.
+Also, alerts are still too static. Fixed thresholds don’t adapt when the market shifts. I want the system to figure out when it should be watching something tighter... and when it should chill. The human brain shouldn’t be babysitting this.
+Next move—
+Build a unified data layer to streamline API calls. One call, one clean result.
+Implement AI-driven dynamic alert thresholds. No more hardcoding values.
+Parallelize data fetching + trade plan generation. These don’t need to queue up anymore.
+Cache more aggressively. I’m tired of paying OpenAI for the same trade plan twice.
+The goal is simple... less noise, more signal.
+Less heavy lifting from me... more from the system.
+"Clarity comes when you stop feeding the chaos."

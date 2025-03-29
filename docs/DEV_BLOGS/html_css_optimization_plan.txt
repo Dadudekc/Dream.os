@@ -1,0 +1,24 @@
+Devlog // 2025-03-15
+"Where is my time and energy leaking... and what’s the fastest way to seal it?"
+Been sitting with that question today... did a full system audit on my workflows—trading, content, automation. Honestly, I’m bleeding focus in places I shouldn’t be.
+Here’s what shook out:
+What I worked on:
+Broke down where I’m spending time. The answer? Too much on stuff that doesn’t move the needle.
+Manual trade journaling.
+Micro-tweaks to content structure (HTML, CSS) when I should be batching and automating.
+Daily content posting instead of building a 30-day pipeline.
+Community stuff I could’ve offloaded to bots weeks ago.
+Got clear on one thing: I need a Central Command Dashboard... one spot where trades, content, and community metrics live. If it’s not in front of me, it doesn’t exist.
+What was tricky:
+The realization that I’m still acting like an operator in places where I should be designing systems.
+It’s hard to let go of the day-to-day when you’re used to grinding everything out yourself... but that’s slowing the whole thing down.
+Also, friction around monetization testing—haven’t set up proper A/B pipelines yet, so I’m guessing more than I should be.
+What’s next:
+Building the dashboard (Notion or Airtable as a base for now).
+Automating trade journaling and tagging, with AI analysis feeding back into strategy updates.
+Automating content batching and distribution—TikTok, IG, YT Shorts.
+Discord onboarding flow is getting handed off to bots.
+Monetization A/B testing gets automated... no more guesswork.
+This next sprint is about stripping friction.
+Velocity over everything.
+"You don’t rise to the level of your goals. You fall to the level of your systems."

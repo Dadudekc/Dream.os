@@ -1,0 +1,8 @@
+Devlog Entry 2: Why Do I Keep Thinking I Have to Understand Everything Before Moving?
+Today was one of those deep-dive days where I realized I’m wasting time trying to master things I don’t need to master right now...
+Spent hours wrestling with an assembly-based market replay engine. The goal was simple: build something low-level and fast to replay historical data for strategy testing. But instead of moving the system forward, I got stuck debugging segmentation faults, chasing syntax errors, and basically copy-pasting assembly code that I barely understand at this point. It was slow... and honestly, it didn’t move the needle on FreeRide Investor.
+What I did figure out was where I’m bleeding time and focus. Building in assembly was a rabbit hole. It’s overkill for what I actually need. The priority is high-speed testing and data pipelines for FreeRide. Python (or Rust if I want to flex later) will handle that just fine. No reason to stay in the weeds.
+The system isn’t converging because I’m not forcing the workflows to line up. Trading, automation, content... they’re all running in silos. That’s on me.
+Next, I’m pivoting. I’ll focus on getting a backtesting pipeline running in Python, plug it into the FreeRide stack, and get AI generating the reports and content off the data. That’s leverage. That’s the move.
+When I come back to this... it’s about convergence and execution. Not getting lost in side quests.
+“Clarity comes from doing the work… not thinking about it.”

@@ -1,0 +1,21 @@
+Devlog // 2025-03-15
+"Where is my time getting diluted?"
+That’s the question I’ve been sitting with today... and after digging through the code, the workflows, and the way things are stitched together, the answer’s clearer than I wanted it to be.
+Too much manual work. Too many redundant checks. Too many places where I’m handling things that AI or automation could already be taking off my plate.
+Here’s the rundown...
+What I worked on:
+Did a full audit of the WordPress theme and systems behind the trade journal... the form, the REST API, the way reasoning gets generated.
+Traced the admin menu lag... found a bunch of enqueue functions crossing wires and REST endpoints doing too much heavy lifting.
+Dug into why the trade journaling system still depends on manual inputs. The REST API works, but it’s bottlenecked by me (or users) submitting trades instead of pulling data automatically.
+What broke / what was tricky:
+Realized ensure_table_exists() is running every time an API call hits... total waste of resources. It should be in an activation hook, not clogging the pipeline.
+Frontend and admin scripts are loaded without discrimination... slowing down the WP Admin dashboard when it shouldn’t be.
+Content distribution (Discord invites, cheatsheets, TBOWTactics) is still a manual hustle. Nothing wrong with that—until it’s burning hours I could be spending building or refining.
+What’s next:
+Move DB table creation into a proper register_activation_hook()... clean that up first.
+Separate admin vs. frontend asset loading... slim down admin load immediately.
+Build an auto trade journaling system pulling in data straight from brokers... this is high priority.
+Automate Discord content pushes... invites, cheatsheets, tactics. I need a bot or webhook handling that flow.
+Start prototyping AI-generated reasoning for trades... no more static steps. This needs to adapt based on real trade data.
+"Systems don’t scale if they depend on your willpower... they scale when you let go of control and let them run."
+Back to it.

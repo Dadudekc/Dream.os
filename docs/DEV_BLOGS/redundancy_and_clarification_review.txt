@@ -1,0 +1,15 @@
+Devlog // 2025-03-15
+What’s slowing me down right now?
+That’s the question I kept circling today... I’ve been moving fast, but there’s been this drag I couldn’t put my finger on. So I sat down and audited the system... trading workflows, automation pipelines, content generation—the whole stack.
+Turns out, I’ve been splitting energy across too many fronts without realizing it. TradingRobotPlug and TBOWTactics are both pulling from the same brainspace... building similar components in isolation when they should be feeding off the same core. Same with the monetization side. I’ve been trying to build out e-books, plugins, and ads in parallel... no clear priority, no validation. It’s diffused.
+What broke?
+Focus. Task switching. I’ve been jumping between coding sprints, content design, and Discord structure without batching properly... and that’s killing flow.
+What’s tricky?
+Automating decision-making without adding more overhead. I need AI running the workflows, not another checklist I have to manage.
+What’s next?
+— Build a shared FreeRideCore library to unify all the common components. No more duplicated code.
+— Set up Prefect (leaning toward it over Airflow) to automate task orchestration. Batch work. Get back time.
+— Simplify monetization... start with a free e-book that feeds into the Discord. Validate, then scale.
+— Modular sprint starts with TradingRobotPlug’s API layer. Tight, focused, done.
+I’ll keep this one short. Systems are converging... but only if I stay ruthless about cutting out the drag.
+“Clarity comes from action, not thought.”

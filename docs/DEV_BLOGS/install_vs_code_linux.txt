@@ -1,0 +1,20 @@
+DEVLOG 031525 // Linux Pain, Cursor Installed, and System Bottlenecks
+What’s the energy cost of fixing the same problem twice?
+Asking because I burned most of today solving things I shouldn’t have to anymore…
+Started out thinking I’d get Cursor installed and running on the Linux box. Simple.
+But it wasn’t.
+The Linux container on ChromeOS threw a NEED_UPDATE error out the gate… so half the time was eaten troubleshooting penguin just to get the terminal stable again. No amount of copy/pasting matters if you can’t open the damn shell.
+Had to manually nuke the environment and rebuild. Clean reset. Time burn... but necessary.
+Once that was stable, Cursor downloaded fine, but running the AppImage hit missing libnss3 dependencies.
+More patches…
+Installed libnss3, libnspr4, and a few other pieces, then finally got the AppImage to launch.
+Cursor works. But the path to getting it live was messy.
+Real talk... too much time wasted on environment fixes. This isn’t where the energy should be going.
+So I ran an audit on the whole system mid-process.
+Realized: the friction at the OS layer is draining velocity.
+Trading bots need to be cloud-based. Content automation needs to be systemized. Local dev has to be frictionless, or it’s not worth my time.
+A Chromebook isn’t the problem… it’s not having a zero-downtime pipeline for my tools.
+Fixing that next. Dedicated Linux workstation or cloud VM with my dotfiles baked in, dev tools prepped, and AI-assisted deployment ready to rip.
+Cursor’s up though… and running clean now.
+Next step is setting up the AI loops for both trading and content distribution. Cursor’s where I’ll build it, but the system needs to run itself. No excuses.
+“Process doesn’t fail. Process repeats until it breaks through.”

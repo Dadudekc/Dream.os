@@ -1,0 +1,11 @@
+Devlog // 2025-03-15
+“What bottlenecks am I not seeing because I’m too deep in the weeds?”
+Spent today laying the groundwork for FreeRideInvestor—the Discord bot that’s gonna tie into my trading systems. Downloaded DiscordPHP through Composer... nothing fancy there. Then I dug into the Discord Developer Portal to pull the bot token and get it ready for action. Clean setup, but even small steps like permissions make me realize how fast cognitive load creeps in.
+I caught myself wasting time manually picking permissions instead of systematizing it. It’s a small thing, but multiplied over every tool and bot I spin up, it’s a drag I don’t need. I need templates... decisions codified and off my plate.
+Also noticed that I’m still working feature-first, not system-first. It’s easy to chase “let’s get the bot running” instead of stepping back and mapping how FreeRideInvestor feeds into the entire trading and content feedback loop. That’s where this needs to go... no more one-off builds.
+What’s next:
+Build a role/permission template so I stop wasting time clicking boxes.
+Draft the system map: how this bot connects signals ➔ alerts ➔ user action ➔ content ➔ data loops.
+Get a SSOT going so I’m not hunting for docs or making repeat decisions.
+The goal is AI-driven, self-organizing systems... but first I need to clear the friction points I’m still tolerating.
+“Precision cuts through chaos.”

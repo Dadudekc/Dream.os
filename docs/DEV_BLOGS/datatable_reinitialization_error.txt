@@ -1,0 +1,14 @@
+Devlog | 03.16.25
+What’s the cleanest way to handle reinitialization without bloating the system?
+Quick one today... ran into that classic DataTable error—Cannot reinitialize DataTable—while working on the tradeTable. I’ve seen it before, but it’s one of those things that creeps back in when you’re wiring up AJAX calls or refreshing data without thinking about state management.
+The issue was simple. The table was getting initialized more than once... and DataTables doesn’t like that. The fix was either to check if the table was already initialized before firing .DataTable()—or just destroy the instance and spin it up again clean.
+I went with the check first:
+javascript
+Copy
+Edit
+if (!$.fn.DataTable.isDataTable('#tradeTable')) {
+    $('#tradeTable').DataTable();
+}
+Cleaner... less risk of breaking event bindings. Destroy and reinit is a backup if I need it later.
+What’s next—tighten up how I’m handling redraws when data updates. Might set up a lightweight state flag or rethink the render flow... keeping things lean.
+"Simplicity is the ultimate sophistication."

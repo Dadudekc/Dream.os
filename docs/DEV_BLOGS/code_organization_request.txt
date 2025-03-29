@@ -1,0 +1,9 @@
+Devlog: Closing Loops
+What’s the actual bottleneck... the code or me?
+Spent today deep in cleanup mode. The plugin was bloated... redundant logic everywhere, and it was slowing things down more than I realized. A lot of what I thought was "just working" was masking inefficiencies. So I scrapped a bunch of the old structure and rebuilt it from scratch... kept only what made sense.
+Composer is handling autoloading now. No more hand-coding paths, no more weird namespace issues breaking everything at runtime. That was a huge time sink. Clean, PSR-4 compliant, finally. Feels lighter already.
+The API Manager and Shortcodes are consolidated... trimmed the fat. They're running lean, less duplication, more direct communication between modules. No more "where does this live again?" loops. Logging is tighter. Debug mode is in place... easier to spot where things fail, and why.
+One thing that was messing with me: caching. I had it in three different places... inconsistent TTLs, conflicting logic. That’s cleaned up. Transients only. No more patchwork.
+What’s next... UI/UX. Gutenberg blocks... thinking through how to make the data visual. Static dashboards are dead... it’s gotta feel alive. That's the next push.
+"Discipline equals freedom."
+—Jocko Willink

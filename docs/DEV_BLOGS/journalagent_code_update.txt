@@ -1,0 +1,7 @@
+Devlog // March 16, 2025
+What’s the signal in the noise when a system throws 7 errors but passes 189 tests? And more importantly… what’s it telling me about where to focus?
+Been deep in debugging hell today... working through the AI patching pipeline, refactoring core model management, and burning time in pytest runs. A lot of this session was getting the AIModelManager cleaned up. I rewrote the fallback flow—Mistral, DeepSeek, then OpenAI—and got the error signature hashing locked in. Tightened the confidence scoring checks too. The function flow makes sense now... the logic is clearer.
+But I hit a wall with an indentation error on line 79. A dumb one—an if without a block after it. Classic fatigue move. Caught it after running the tests and seeing 7 collect errors blowing up half the suite. Feels like momentum stalls hard on tiny syntax stuff, but it's part of the deal. Code doesn't care how tired you are.
+On the testing side, finished wiring up unit tests for AIPatchRetryManager and AIPatchOptimizer. Mocking confidence_manager and patch_tracker calls kept me in the weeds for a minute, but they’re solid now. Confidence scores are behaving, retries are triggering properly, and the refine patch loops aren't spiraling. Clean.
+Next is killing the last of those syntax issues... then re-running tests until zero errors show up. Might be time to pause, clear my head, and hit it again tomorrow.
+"Slow is smooth. Smooth is fast."

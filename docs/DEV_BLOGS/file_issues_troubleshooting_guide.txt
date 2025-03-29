@@ -1,0 +1,10 @@
+Devlog | March 15, 2025
+What’s slowing me down that I’m not seeing yet?
+Spent the last chunk of time hammering at file issues… permissions, log viewing, cache clearing… basic stuff, but it turned into an unexpected time sink. The system wasn’t giving me any clear signals about what was breaking. No error messages, no logs screaming for attention… just things not working. That’s where the problem really is. The blind spots.
+I dug into the WordPress backend for FreeRideInvestor and refactored two pieces:
+Clear Cache Tool: Added error handling, debugging hooks, and made it capable of flagging itself when something’s off. It’s more self-healing now. If cache clearing fails, it logs it and doesn’t leave me guessing.
+Log Viewer: Same deal. Tightened up the error handling so if the log file doesn’t exist or something breaks, I get a heads-up. It clears itself clean now when I tell it to, and it won’t sit there silent if something's wrong.
+What stood out today is how much manual checking I’m still doing. Too much human in the loop. That’s a drag on velocity...
+Next move: setting up automated health checks... so this doesn’t keep happening. Permission issues, cache, logs—if they drift, I need AI to catch it before I’m stuck losing another 30 minutes to basic ops. Long-term, I want a unified dashboard where everything reports in... trading systems, automation, site health, content queue... all of it.
+Less fire-fighting, more building.
+"Discipline equals freedom." – Jocko Willink

@@ -1,0 +1,8 @@
+Devlog | 2025-03-16
+What’s the cost of ignoring small warnings until they turn into real problems?
+Spent today tracking down an issue in my TSLA Risk Managed Strategy... the code was there, but TradingView wasn’t running it. No errors, no clues—just the dreaded “Script could not be translated from: null.” Classic.
+Turns out, the Pine Script was still written in v5. Didn’t seem like a big deal at first, but version 6 changes how strategy.exit() works... and if you’re not careful with your trailing stops and limit parameters, it just won’t compile. Spent more time than I should’ve making sure those exit conditions were bulletproof.
+Fixed the trailing stop logic... had to swap trail_offset for trail_points and get the math right with absolute price levels. Simple stuff, but it’s always the small things that break flow. Cleaned up the entry conditions too while I was in there. Nothing fancy—just making sure the logic’s tight.
+It’s running clean now. No errors. Feels good.
+Next, I’m thinking about adding some dynamic ATR-based stops or maybe an ADX filter to cut down the noise... but not today. Today was about closing the loop on something I let sit too long.
+"If you don’t face the small fires, you’ll never be ready for the wildfire."

@@ -1,0 +1,14 @@
+Devlog — 2025-03-15
+Ever wonder how much of your own momentum gets drained by chasing perfection instead of building process?
+That’s where I landed today... feeling that push-pull between tightening up systems and just shipping. It’s easy to get caught in loops—refactoring, testing, rewriting templates—trying to perfect something before it’s even functional. Spent too long in that space.
+Here’s what got done.
+I went deep on debugging the Twitch and Discord bots. The event handlers were flaky, and there was some inconsistency with mocking the nick property on the TwitchBot tests. Couldn’t patch a read-only property without rewriting half the test structure... ended up restructuring how I test the event logic instead of wasting more time. It’s cleaner now—still not perfect, but it runs.
+Started working on the AI Code Builder overhaul. The goal’s still the same: build an autonomous debugging and code generation loop that can take broken functions and keep improving them until they work. Right now, it’s still too human-dependent. I need to implement a recursive feedback loop where the AI runs tests, analyzes the errors, and generates fixes without waiting on me to prompt it each time. That’ll be the next big system upgrade.
+Also built out project JSONs for each repo... started thinking about how those files could fuel automation—like AI agents pulling from them to generate commit messages, documentation, and maybe even new project skeletons. Could be huge for velocity if I get it right.
+Reflected on the year so far. Last year was inconsistent... the lack of discipline hurt. Made a plan this morning to work smarter. No more chasing dopamine from the shiny stuff. Just reps.
+What’s next...
+Tighten up the AI Code Builder debugger loop
+Finish test coverage on the bots
+Build the Ops Dashboard to track everything in real time
+“Consistency carves paths that talent alone can’t reach.”
+Let’s keep carving.

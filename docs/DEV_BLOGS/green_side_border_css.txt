@@ -1,0 +1,8 @@
+Devlog // 10:41 AM
+How much design do you actually need before the build starts slowing down?
+I’ve been reworking the FreeRide Investor UI... dialing in the Exit Criteria section. Right now, there’s this glowing green box wrapping around the content. Feels too boxed-in... doesn’t match the flow I’m going for. I want it cleaner. Less of a container, more of a directional cue.
+The goal is to turn that full border into a side border—something that feels like a structural line rather than a box. We’re moving toward simplicity. Less visual noise, more focus on the info.
+Tweaked the CSS to strip the full border... swapped it for a left-side line. Green, same tone, but only on the edge. It’s subtle, but the layout breathes better now.
+Still debating if I want a right-side line instead... but for now, this works.
+Next up... cleaning the spacing and seeing how this flows on desktop vs mobile. I need this UI to stay light.
+"Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away."

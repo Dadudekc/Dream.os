@@ -1,0 +1,1185 @@
+[
+  {
+    "file": "core\\AgentDispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\AgentDispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\AIOutputLogAnalyzer.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\AIOutputLogAnalyzer.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 7349: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\AletheiaFeedbackLoopManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\AletheiaFeedbackLoopManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1596: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\AletheiaPromptManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\AletheiaPromptManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\bootstrap.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\bootstrap.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ChatManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ChatManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\config.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\config.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\config_base.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\config_base.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ConsoleLogger.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ConsoleLogger.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\CycleExecutionService.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\CycleExecutionService.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\DriverManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\DriverManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\DriverSessionManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\DriverSessionManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\EngagementAgent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\EngagementAgent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\EventMessageBuilder.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\EventMessageBuilder.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 3950: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\feedback.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\feedback.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\FileLogger.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\FileLogger.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\FileManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\FileManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\LoggerFactory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\LoggerFactory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\MemoryManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\MemoryManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\memory_utils.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\memory_utils.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\NarrativeAnalytics.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\NarrativeAnalytics.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\OpenAIPromptEngine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\OpenAIPromptEngine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\PathManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\PathManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\PromptCycleOrchestrator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\PromptCycleOrchestrator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\PromptEngine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\PromptEngine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 4408: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\PromptResponseHandler.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\PromptResponseHandler.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ReinforcementEngine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ReinforcementEngine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ReinforcementEvaluator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ReinforcementEvaluator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\reinforcement_tools.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\reinforcement_tools.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1029: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ReportExporter.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ReportExporter.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1328: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ResilientPromptExecutor.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ResilientPromptExecutor.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ResponseHandler.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ResponseHandler.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\service_container.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\service_container.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\SystemHealthMonitor.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\SystemHealthMonitor.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\TaskManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\TaskManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1682: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\TaskOrchestrator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\TaskOrchestrator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\TemplateManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\TemplateManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\ThreadPoolManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\ThreadPoolManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\UnifiedDiscordService.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\UnifiedDiscordService.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 3921: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\UnifiedFeedbackMemory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\UnifiedFeedbackMemory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\UnifiedLoggingAgent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\UnifiedLoggingAgent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\AgentDispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\AgentDispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 4101: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\base_agent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\base_agent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\chat_scraper_agent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\chat_scraper_agent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\CursorAgentInterface.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\CursorAgentInterface.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\DocAgent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\DocAgent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\main.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\main.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\RefactorAgent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\RefactorAgent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\refactoring_utils.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\refactoring_utils.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\ReinforcementEvaluator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\ReinforcementEvaluator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\specialized_agents.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\specialized_agents.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\Agents\\TestAgent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\Agents\\TestAgent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\automation_engine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\automation_engine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 4568: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\bot_worker.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\bot_worker.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x90 in position 1983: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\config.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\config.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\driver_factory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\driver_factory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 883: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\local_llm_engine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\local_llm_engine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 939: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\ModelRegistry.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\ModelRegistry.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 838: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\OpenAIClient.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\OpenAIClient.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2215: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\PostProcessValidator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\PostProcessValidator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1323: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\setup_chromedriver.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\setup_chromedriver.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 6414: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\setup_logging.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\setup_logging.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2162: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\assistant_mode_controller.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\assistant_mode_controller.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\assistant_orchestrator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\assistant_orchestrator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x81 in position 2565: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\assistant_parser.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\assistant_parser.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 819: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\automation_controller.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\automation_controller.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 660: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\cursor_dispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\cursor_dispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1089: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\log_monitor_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\log_monitor_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\prompt_loop_orchestrator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\prompt_loop_orchestrator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\controllers\\speech_input_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\controllers\\speech_input_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_gpt4.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_gpt4.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1100: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_gpt4o.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_gpt4o.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1188: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_gpt4o_mini.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_gpt4o_mini.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1092: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_gpt4_5.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_gpt4_5.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1211: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_mistral.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_mistral.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_o1.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_o1.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1041: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_o3_mini.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_o3_mini.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_o3_mini_high.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_o3_mini_high.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1186: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\models\\model_template.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\models\\model_template.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\performance\\ModelPerformanceTracker.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\performance\\ModelPerformanceTracker.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chatgpt_automation\\watchers\\ModelFolderWatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chatgpt_automation\\watchers\\ModelFolderWatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 2076: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chat_engine\\chat_cycle_controller.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chat_engine\\chat_cycle_controller.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 3360: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chat_engine\\chat_engine_manager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chat_engine\\chat_engine_manager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chat_engine\\chat_scraper_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chat_engine\\chat_scraper_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1536: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chat_engine\\discord_dispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chat_engine\\discord_dispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2472: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chat_engine\\feedback_engine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chat_engine\\feedback_engine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1393: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\chat_engine\\gui_event_handler.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\chat_engine\\gui_event_handler.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 872: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\config\\config_manager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\config\\config_manager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\dreamscape\\ContextMemoryManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\dreamscape\\ContextMemoryManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1465: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\dreamscape\\TemplateRenderer.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\dreamscape\\TemplateRenderer.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1350: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\executors\\base_executor.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\executors\\base_executor.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\executors\\chatgpt_executor.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\executors\\chatgpt_executor.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\executors\\cursor_executor.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\executors\\cursor_executor.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\llm_backends\\huggingface_backend.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\llm_backends\\huggingface_backend.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\llm_backends\\ollama_backend.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\llm_backends\\ollama_backend.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\CompositeLogger.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\CompositeLogger.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\ConsoleLogger.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\ConsoleLogger.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\LoggingService.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\LoggingService.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\factories\\LoggerFactory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\factories\\LoggerFactory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\services\\ai_output_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\services\\ai_output_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\utils\\AsyncDispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\utils\\AsyncDispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\logging\\utils\\setup.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\logging\\utils\\setup.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\meredith\\profile_scraper.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\meredith\\profile_scraper.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\meredith\\resonance_scorer.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\meredith\\resonance_scorer.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\micro_factories\\chat_factory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\micro_factories\\chat_factory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\micro_factories\\dreamscape_factory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\micro_factories\\dreamscape_factory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\pipelines\\project_optimizer_agent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\pipelines\\project_optimizer_agent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\audit.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\audit.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\dialog.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\dialog.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\memory.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\memory.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\narrative.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\narrative.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\scraping.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\scraping.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\state.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\state.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\prompt_cycle\\utils.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\prompt_cycle\\utils.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1415: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\refactor\\CursorSessionManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\refactor\\CursorSessionManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 1050: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\refactor\\cursor_dispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\refactor\\cursor_dispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 4075: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\refactor\\refactor_and_polish.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\refactor\\refactor_and_polish.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\refactor\\task_refactor_engine.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\refactor\\task_refactor_engine.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 3323: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\chat_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\chat_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\config_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\config_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\cursor_execution_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\cursor_execution_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\debug_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\debug_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\discord_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\discord_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\dreamscape_generator_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\dreamscape_generator_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\DynamicContainer.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\DynamicContainer.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\fix_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\fix_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\full_sync_pipeline_runner.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\full_sync_pipeline_runner.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 2094: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\git_integration_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\git_integration_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\prompt_execution_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\prompt_execution_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 8207: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\rollback_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\rollback_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\service_registry.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\service_registry.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\discord\\DiscordBatchDispatcher.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\discord\\DiscordBatchDispatcher.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\discord\\DiscordLogger.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\discord\\DiscordLogger.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\discord\\DiscordManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\discord\\DiscordManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 5146: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\discord\\DiscordQueueProcessor.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\discord\\DiscordQueueProcessor.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\discord\\DiscordTemplateManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\discord\\DiscordTemplateManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2961: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\services\\requirements\\requirements_generator_service.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\services\\requirements\\requirements_generator_service.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\AIChatAgent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\AIChatAgent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\CommunityIntegrationManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\CommunityIntegrationManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\community_integration.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\community_integration.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\log_writer.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\log_writer.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 3777: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\platform_login_manager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\platform_login_manager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1194: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\social_config.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\social_config.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 4120: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\social_config_wrapper.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\social_config_wrapper.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\social_post_db.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\social_post_db.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 3056: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\social_post_manager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\social_post_manager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 4312: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\StrategyLoader.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\StrategyLoader.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\TaskQueueManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\TaskQueueManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1493: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\UnifiedCommunityDashboard.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\UnifiedCommunityDashboard.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\UnifiedPostManager.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\UnifiedPostManager.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\ai\\chat_agent.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\ai\\chat_agent.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\data\\post_history.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\data\\post_history.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\logs\\DriverSession.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\logs\\DriverSession.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2121: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\ai_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\ai_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\BaseEngagementBot.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\BaseEngagementBot.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 4415: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\base_platform_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\base_platform_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\community_scheduler.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\community_scheduler.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\config_loader.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\config_loader.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 899: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\context_db.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\context_db.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 925: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\facebook_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\facebook_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 3475: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\instagram_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\instagram_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 1561: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\linkedin_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\linkedin_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 4203: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\reddit_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\reddit_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 7059: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\stocktwits_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\stocktwits_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2754: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\tiktok_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\tiktok_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 8431: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\twitter_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\twitter_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 2431: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\wordpress_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\wordpress_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nINFO:CursorDispatcher:\\u2705 Files prepared for Cursor execution:\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.py\nINFO:CursorDispatcher:- D:\\overnight_scripts\\chat_mate\\cursor_prompts\\outputs\\generated_test.prompt.md\nINFO:CursorDispatcher:\\u2728 Test prompt prepared and sent to Cursor\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't encode character '\\u21aa' in position 1: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\social\\strategies\\youtube_strategy.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\social\\strategies\\youtube_strategy.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x8f in position 9076: character maps to <undefined>",
+    "returncode": 1
+  },
+  {
+    "file": "core\\system\\startup_validator.py",
+    "success": false,
+    "zero_tests": false,
+    "output": "INFO:CursorDispatcher:CursorDispatcher initialized at: D:\\overnight_scripts\\chat_mate\\templates\\prompt_templates\nINFO:CursorDispatcher:\\U0001f9ea Generating tests for: core\\system\\startup_validator.py\nINFO:CursorDispatcher:\\U0001f4dd Reading target file and preparing test prompt...\nERROR:CursorDispatcher:Error in test generation mode: 'charmap' codec can't decode byte 0x9d in position 973: character maps to <undefined>",
+    "returncode": 1
+  }
+]

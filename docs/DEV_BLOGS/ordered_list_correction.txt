@@ -1,0 +1,15 @@
+Devlog – 2025-03-15
+"How much time do we lose hunting ghosts because the system isn’t telling us the truth fast enough?"
+Been deep in audit mode today... mostly chasing down inefficiencies in the anomaly detection and deep learning tests. This wasn’t about building new features—it was about figuring out why things are slow, inconsistent, or just plain messy under the hood.
+The test runs were noisy. Eight failures out of 47 tests... and not the kind that teach you anything right away. Reproducibility was off. Random states were scattered. Anomalies flagged in tests were inconsistent. Isolation Forest thinks it’s funny to return 3 anomalies when I capped contamination at 5%. Technically it’s doing its job... but that variance? Slows the feedback loop down.
+Also spotted a pattern—too much time spent parsing test logs manually. Every pytest run gives me a wall of output I have to skim... and it’s burning cycles. That’s a bottleneck. Should have an automated test triage tool pulling out key failures and surfacing exactly where I need to look. Added to the stack.
+Mocking was another mess... especially in deep anomaly detection. Mocked out Model.predict() but realized there’s no clear contract on what shape comes back. That breaks assumptions downstream and turns into brittle tests. Interface contracts need to be tighter. That’s on me.
+Encrypted traffic analysis? Still placeholder. I was tempted to get clever, but I pulled back. For now, heuristic-based—simple and direct. ML can wait until the core system is clean.
+What’s next...
+Automating test failure summaries
+Locking in random states globally
+Centralized validation layer (pydantic or clean custom validators)
+Tightening interfaces, less guesswork
+Fuzzing the vuln scanner inputs... because CVE matching is only as good as the crap you throw at it
+The goal isn’t to make it perfect. It’s to make it honest... and fast enough to tell me when it’s broken.
+"Speed happens when clarity becomes your default."

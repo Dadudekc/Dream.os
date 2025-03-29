@@ -1,0 +1,23 @@
+Devlog // Sniper System Audit + Build Flow
+"What’s the point of a sniper system if the shots aren’t clean?"
+That’s the question I kept circling back to today.
+Been deep inside the system audit and reworking the Sniper Entry logic—trading side, automation, and content all tied up in the same bottleneck.
+It’s convergence or chaos at this point... and I’m not here for chaos.
+Worked on
+Rebuilt the Pine Script for Sniper Entries... focusing on the MACD curl, not just the crossover. Needed to catch the momentum shift as it happens, not after.
+Refined the entry logic... Bollinger Bands + RSI + MACD all aligned.
+Started mapping how the VWAP and EMA8 are handling exits and trailing stops. Clean rules—no guessing.
+Updated the WordPress front page to focus on the Sniper System. The messaging was too general. Tightened it up. The strategy is the story.
+Ran a system audit... called out where time’s leaking. Too many manual loops... strategy tweaks, content revisions, even execution.
+Outlined the signal → execution pipeline. Node.js sitting between Pine Script alerts and broker/Discord actions. No more middleman Victor.
+What broke / was tricky
+Pine Script logic kept drifting... strict filters killed signals, loosening them flooded trades. Needed balance.
+The MACD curl detection... had to get surgical about how I measure slope and rate of change—made it work.
+Realized the content system wasn’t aligned with the builds. eBook says one thing, website another. Not anymore.
+What’s next
+Finalize the Sniper System source doc. Lock the rules in.
+Build the Python optimizer to iterate strategy parameters without me.
+Spin up the Node.js signal execution layer—this is the backbone of the automation.
+Drop the Sniper eBook as a proper CTA on the site... aligned with the builds, not fluff.
+Weekly KPI reviews... system feeds system.
+"Slow is smooth. Smooth is fast."

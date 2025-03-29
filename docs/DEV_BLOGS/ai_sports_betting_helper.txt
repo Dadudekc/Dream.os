@@ -1,0 +1,16 @@
+Devlog Drop
+What’s the failure point that slows down everything else?
+That’s the question I’ve been sitting with while stress-testing the Social Media Manager build today. The answer isn’t flashy—it’s the testing layer. Pytest loops, hanging processes, timeouts that aren’t enforced... all dragging out execution time and making every iteration slower than it needs to be.
+I spent the last cycle breaking down where the energy leaks were happening. A few things stood out...
+First, the tests. Pytest was running forever because I hadn’t put timeouts in place. Some of the bots—overnight sentiment, platform logins—weren’t respecting async time controls. Selenium drivers hung open... network calls without hard stops. Basic stuff, but it cost me hours.
+Second, config management is a mess when environment variables aren’t set up right. That alone tripped half the tests before they even started. I need better failsafes here. Right now, I’m working on a self-validating config loader that just stops everything cold if a critical var is missing, instead of waiting for the bot to break halfway through.
+Third, logging. I thought I had this handled. Turns out, I’m still digging through raw logs too often. So I’m sketching an AI-powered log parser that’ll hand me just the root causes and possible fixes. No more digging.
+On the scraper side... still getting hit with MySQL auth errors because of the caching_sha2_password nonsense. I’ll either force legacy auth or swap out the connector. That’s still cooking.
+What’s next?
+Implement pytest timeouts across the board.
+Add network call time limits.
+Build an env var checker and config validator.
+Set up log rotation and automated error summaries.
+Harden the scrapers with retry logic and fallback caches.
+Not sexy work. But it’s the stuff that scales.
+"Speed is a byproduct of stability. No chaos... no drag."

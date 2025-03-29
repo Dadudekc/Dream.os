@@ -1,0 +1,17 @@
+Devlog // March 16, 2025
+"Where am I still making things harder than they need to be?"
+Been in the weeds today with the front page layout... specifically the post grid for the latest TBOW Tactics. Wanted to get five posts up instead of three and keep it clean. Simple enough, but it wasn’t. The grid was acting up—cards weren’t lining up, spacing felt off, and responsiveness wasn’t snapping into place like I wanted.
+A lot of the pain came from the fact that the system was still too manual. I’m tweaking CSS values, testing layouts by hand, cross-checking device views... and it’s burning cycles that should be going into strategy design or system building. It’s a pattern I keep running into—manual fixes slowing down the broader flow.
+What actually helped:
+Swapped the grid to auto-fit with a tighter minmax constraint.
+Added flex behavior to the post cards so the buttons stay pinned at the bottom no matter how messy the excerpt lengths are.
+Cleaned up a few hover states that felt clunky.
+But all of this reinforced the bigger problem... I’m still not converging design, dev, and automation. Every time I touch layout, I’m reminded how far I am from true self-organization in the system. Need a design token system locked in. Need AI handling post generation from strategy logs. Need component-driven everything. The time leaks are adding up.
+What’s next...
+Hook up visual regression testing so I’m not wasting time spot-checking layouts.
+Draft the design tokens and sync ‘em from Figma to code—non-negotiable now.
+Start prototyping an AI pipeline to push TBOW tactic posts automatically.
+This should’ve happened already.
+One thing at a time.
+"Efficiency is doing better what is already being done. Effectiveness is doing what needs to be done."
+– Peter Drucker

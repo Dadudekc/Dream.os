@@ -1,0 +1,17 @@
+Devlog | 2025-03-15
+Question I’m sitting with tonight:
+Where is my time and energy getting diluted... and what systems do I need to kill that drift?
+Did a deep audit today.
+Trading workflows... automation... content generation... I’m holding it all in my head and manually gluing parts together. That’s the bottleneck. There’s no centralized brain in the system yet. I’ve got logic split between Python and PHP, and I’m updating the same rules in two places. It’s slow. And stupid.
+Right now, tactics get published as static WordPress posts. The data’s not bad—but the flow is brittle. Cron jobs are running on a timer instead of being triggered by actual market moves... That’s time lag I can’t justify. Also, I’m manually writing out the context for each tactic. It’s costing me more energy than I thought.
+The AI is sitting right there... and I’m not letting it take over narrative generation. That’s getting fixed.
+What broke?
+Clarity broke. I let things drift into redundancy. Two codebases. No unified data layer. No event-driven triggers. Each of those fractures is slowing execution.
+What’s next...
+Move everything into a Python microservice (probably FastAPI).
+Central data ingestion... caching in Redis or PostgreSQL.
+Real-time triggers... Webhooks or AWS Lambda depending on speed.
+AI-driven context + objectives for every tactic post.
+Rebuild risk and position sizing with dynamic conviction scores.
+No more dual pipelines... One brain. One flow.
+"Clarity isn’t found. It’s built... one decision at a time."

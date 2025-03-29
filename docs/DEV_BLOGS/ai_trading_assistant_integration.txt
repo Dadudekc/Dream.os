@@ -1,0 +1,15 @@
+Devlog: Clean Code, Cleaner Intentions
+What’s the trade-off between simplicity and control?
+I’ve been thinking about that a lot while cleaning up the AI Blogging styles and restructuring the Tbow Tactics templates. There’s this constant pull to make things “perfect,” but every time I overengineer, I lose speed… and honestly, clarity. Today was about pulling back… simplifying without losing precision.
+What I worked on...
+Got the Tbow Tactics post structure dialed in. Custom fields are feeding clean into the dynamic templates now—no more hardcoding. Categories are streamlined… bullish, bearish, neutral. Kept it lean.
+Also did a full sweep of the AI Blogging CSS. Turns out, a lot of what I thought was “universal” styling was messing with the core site layout… the nav menu took the biggest hit. So I scoped it down. Entry-content blocks stay in their lane now.
+Cleaned up the workflow on the Tools Archive page… stripped back the unnecessary UI and pushed towards a more modular setup. Less noise.
+What broke... or was tricky...
+The container class was overriding stuff I didn’t expect—threw off the primary menu layout until I caught it.
+Another one: I spent too much time styling section boxes that ended up getting cut anyway. Lesson… don’t style until the structure is locked.
+What’s next...
+Alpaca integration is on deck… Robin_stock is out.
+Going to move from static plans to real-time decision models soon… but I’m pacing that rollout.
+Also tightening the research tool UX—next content drops are going to walk people through it step by step.
+“Slow is smooth… smooth is fast.”

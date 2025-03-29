@@ -1,0 +1,152 @@
+Here's the updated test file with deprecated indexing issues fixed and improved assertions:
+Fixes & Enhancements:
+✅ Replaced [0] indexing with .iloc[0] to future-proof against Pandas updates.
+✅ Improved assertions to check for not df.empty before accessing values.
+✅ Ensured DataFrame column presence before accessing values.
+Updated Test File (test_finnhub_fetcher.py)
+python
+Copy
+Edit
+import pytest
+import aiohttp
+from unittest.mock import AsyncMock, patch
+import sys
+from pathlib import Path
+
+# Add project root to sys.path to locate the data_fetch_utils module
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.append(str(PROJECT_ROOT))  # Fix: Ensure data/ is included
+
+from Utilities.data_fetchers.finnhub_fetcher import FinnhubFetcher
+import pandas as pd
+
+@pytest.fixture
+def fetcher():
+    """Fixture to create an instance of FinnhubFetcher."""
+    return FinnhubFetcher(logger=None)  # Mock logger for testing
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_stock_data_success(mock_get, fetcher):
+    """Test successful stock data retrieval from Finnhub."""
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.json.return_value = {
+        "t": 1640995200,  # Example timestamp
+        "o": 100,
+        "h": 105,
+        "l": 98,
+        "c": 102,
+        "pc": 100,
+        "d": 2,
+        "dp": 2,
+        "v": 1500
+    }
+    mock_get.return_value.__aenter__.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_stock_data_async("AAPL", session)
+
+    assert not df.empty
+    assert "open" in df.columns
+    assert df["open"].iloc[0] == 100  # Use .iloc[0] instead of [0] to avoid future Pandas warnings
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_stock_data_empty_response(mock_get, fetcher):
+    """Test handling of empty response from Finnhub API."""
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.json.return_value = {}  # No stock data
+    mock_get.return_value.__aenter__.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_stock_data_async("TSLA", session)
+
+    assert df.empty  # Should return an empty DataFrame
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_stock_data_error_status(mock_get, fetcher):
+    """Test handling of non-200 status codes from Finnhub API."""
+    mock_response = AsyncMock()
+    mock_response.status = 400
+    mock_response.text.return_value = "Bad Request"
+    mock_get.return_value.__aenter__.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_stock_data_async("MSFT", session)
+
+    assert df.empty  # Should return an empty DataFrame
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_stock_data_exception_handling(mock_get, fetcher):
+    """Test exception handling when API request fails."""
+    mock_get.side_effect = Exception("Network error")
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_stock_data_async("GOOGL", session)
+
+    assert df.empty  # Should return an empty DataFrame
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_financial_metrics_success(mock_get, fetcher):
+    """Test successful retrieval of financial metrics from Finnhub."""
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.json.return_value = {
+        "metric": {
+            "52WeekHigh": 150,
+            "52WeekLow": 80,
+            "MarketCapitalization": 500000000,
+            "P/E": 15
+        }
+    }
+    mock_get.return_value.__aenter__.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_financial_metrics_async("AAPL", session)
+
+    assert not df.empty
+    assert "52WeekHigh" in df.columns
+    assert df["52WeekHigh"].iloc[0] == 150  # Fixed .iloc[0] instead of [0]
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_financial_metrics_empty_response(mock_get, fetcher):
+    """Test handling of empty response for financial metrics."""
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.json.return_value = {"metric": {}}
+    mock_get.return_value.__aenter__.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_financial_metrics_async("AAPL", session)
+
+    assert df.empty  # Should return an empty DataFrame
+
+@pytest.mark.asyncio
+@patch("aiohttp.ClientSession.get")
+async def test_fetch_financial_metrics_error_status(mock_get, fetcher):
+    """Test handling of non-200 status codes for financial metrics."""
+    mock_response = AsyncMock()
+    mock_response.status = 400
+    mock_response.text.return_value = "Bad Request"
+    mock_get.return_value.__aenter__.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        df = await fetcher.fetch_financial_metrics_async("MSFT", session)
+
+    assert df.empty  # Should return an empty DataFrame
+Summary of Fixes & Improvements
+✅ Fixed Deprecated Indexing: df["open"].iloc[0] instead of df["open"][0]
+✅ Ensured No DataFrame Errors: Checked .empty before accessing values
+✅ Kept All Tests Clean & Maintainable
+Now, run the tests again to ensure all warnings are gone:
+bash
+Copy
+Edit
+pytest tests/test_finnhub_fetcher.py
+🔥 You're now at 100% optimized tests! 🚀 Let me know if you need further tweaks.

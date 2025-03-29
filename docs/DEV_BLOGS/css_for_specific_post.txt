@@ -1,0 +1,18 @@
+Devlog Drop
+Moonlighting... or Diluting?
+How much time am I losing to micro-decisions that should already be solved?
+That’s the question tonight...
+Spent a chunk of time today reviewing a CSS file I already liked... debating if it needed tweaks, renaming it, figuring out where it fits in the folder structure... then second-guessing that.
+It’s not a huge deal in the moment—but that’s the trap. Those little 5-10 minute pauses add up when they stack across content, trading, automation...
+It’s drift. And drift is slow death when you’re trying to move fast.
+What’s tricky is, I know the system needs to be more automated... but I’m still doing too much manually.
+Naming files. Choosing folders. Deciding layouts. Reading and breaking down info that AI should be chewing through for me already.
+It’s friction I can’t afford to keep tolerating.
+What I’m working on next:
+Codifying a full content deployment SOP
+Setting up decision trees to eliminate these micro-decisions
+Automating content digestion, especially devlog summaries
+Moving styling into a CSS utility framework, so I’m not reinventing anything
+Centralizing all design tokens so I’m not tweaking the same variables in five places
+The faster I can offload these decisions, the more energy I can keep for building.
+“Move fast... but never blindly.”

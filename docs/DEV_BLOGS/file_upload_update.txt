@@ -1,0 +1,13 @@
+Devlog | 03.16.2025
+What’s the difference between data working and data flowing?
+Spent the last block untangling why the Trade Analyzer was parsing files just fine, but the data wasn’t making it to the page... classic “it works, but it doesn’t” kind of day. Debug logs were clean. trade_results.json had everything it needed. But nothing was rendering.
+Turns out, the Python script was mixing logs with JSON output, so the JSON was getting messy on the PHP side. Fixed that by trimming the noise—cut everything before the first [ in the PHP handler. Clean JSON going forward. Solid.
+Next problem... getting the data to actually show up in the front-end. It was passing through wp_localize_script, but timing was off. Front-end wasn’t picking it up reliably. Made sure everything was running in the right order and added a few sanity checks in trade-visualizer.js. Also forced cache-busting on the scripts so I wasn’t chasing ghost updates.
+Got DataTables rendering clean now. Profit/Loss chart is solid. Pie chart's pulling trade counts per symbol. Front-end upload works, data flows, and no refresh needed after upload... feels clean.
+Still thinking about pushing this into the database for more persistent reporting, but for now... JSON is doing its job.
+What’s next:
+Tidy up the Python scripts... pure JSON output, no noise
+Add nonces to secure uploads
+Maybe refactor the admin stats view... it's clunky
+Progress isn’t always the big wins. Sometimes it’s cutting through the noise.
+"Slow is smooth. Smooth is fast."

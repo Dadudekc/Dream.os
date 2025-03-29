@@ -1,0 +1,10 @@
+Devlog: Where’s the Bottleneck?
+Ever catch yourself wondering... how much time am I bleeding chasing problems I shouldn’t be dealing with?
+That’s where I was today. Felt like I was spending more energy just getting the system to run than building anything new. Bouncing between Python installs, broken environments... wasted cycles. I kept activating freeride_env but still ended up running scripts through the wrong interpreter. One was Anaconda, another was Python 3.13... packages installed in one, missing in the other. It was messy.
+So I stripped it down... cut the noise.
+Tore out the redundancies and committed to one unified environment. freeride_env is now the single source of truth. No more guessing which Python is in charge... no more fixing the same errors twice.
+There’s still work ahead.
+The pipeline isn’t fully automated yet—generating blogs is still a manual trigger. No recursive feedback loop yet either... data isn’t informing the prompts or improving itself. That’s the next push: automate the triggers, close the loop, and get this thing learning on its own.
+But today was about clarity.
+Simplify the system... cut the excess... get back to building.
+“Slow is smooth... smooth is fast.”

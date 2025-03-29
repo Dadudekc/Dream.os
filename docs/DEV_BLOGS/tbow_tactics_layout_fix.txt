@@ -1,0 +1,32 @@
+Devlog // 2025-03-15
+Question I’m sitting with: How do I strip complexity without stripping power?
+Worked through the core structure of the Freeride Investor plugin today...
+Trying to get real about how it determines volatility... and realizing it doesn’t. Not directly anyway.
+Right now, it’s more like:
+Fetch price history (30 days of closes).
+Grab news, run sentiment through OpenAI.
+Generate a trade plan that implies risk...
+But nowhere does it run volatility as an explicit, reliable metric.
+That’s a hole.
+One that’s been low-key slowing things down.
+Without clear volatility measures (std dev, ATR, etc.), the trade plans are still operating on vibes... not precision.
+The system’s bloated too...
+functions.php is doing way too much—post types, taxonomies, crons, AI calls... it’s a mess.
+I mapped out the bottlenecks:
+Redundant post types
+Cron jobs that can’t be trusted
+Hardcoded AI prompts
+No central task manager
+Feels like death by a thousand cuts.
+So...
+Time to modularize.
+Split post type registration into something dynamic.
+Spin up an external queue for task handling (WordPress cron isn’t it).
+And get a proper volatility engine running... something that feeds into the AI prompts clean.
+I want a system that tells me—at a glance—what’s hot, what’s risky, and what’s worth ignoring.
+What’s next:
+Building the volatility module (log returns, standard deviation, cache it).
+Refactoring post types—stop duplicating code, stop wasting time.
+Laying the groundwork for an external task queue.
+If I can get these three locked in, everything else accelerates.
+"Clarity isn’t found—it’s built. One decision at a time."
