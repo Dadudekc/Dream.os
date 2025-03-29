@@ -1,0 +1,59 @@
+[
+  {
+    "timestamp": "2025-03-21T18:17:06.897916",
+    "action": "like",
+    "target": {
+      "id": "reddit_post_1",
+      "content": "Sample reddit post 1",
+      "author": "user_1"
+    },
+    "platform": "reddit"
+  },
+  {
+    "timestamp": "2025-03-21T18:17:08.286154",
+    "action": "like",
+    "target": {
+      "id": "reddit_post_9",
+      "content": "Sample reddit post 9",
+      "author": "user_9"
+    },
+    "platform": "reddit"
+  },
+  {
+    "timestamp": "2025-03-21T18:17:10.075775",
+    "action": "like",
+    "target": {
+      "id": "reddit_post_12",
+      "content": "Sample reddit post 12",
+      "author": "user_12"
+    },
+    "platform": "reddit"
+  },
+  {
+    "timestamp": "2025-03-21T18:17:17.738256",
+    "action": "comment",
+    "target": {
+      "id": "reddit_post_6",
+      "content": "Sample reddit post 6",
+      "author": "user_6"
+    },
+    "platform": "reddit",
+    "content": "Saving this for future reference."
+  },
+  {
+    "timestamp": "2025-03-21T18:17:24.118067",
+    "action": "follow",
+    "target": {
+      "user": "user_12"
+    },
+    "platform": "reddit"
+  },
+  {
+    "timestamp": "2025-03-21T18:17:26.640359",
+    "action": "follow",
+    "target": {
+      "user": "user_17"
+    },
+    "platform": "reddit"
+  }
+]

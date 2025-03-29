@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+{
+  "name": "fullsync_pipeline",
+  "description": "Full Sync Mode execution pipeline: strategy to commit with test+UX+refactor loop",
+  "stages": [
+    {
+      "id": "01-strategy-to-code",
+      "template": "01strategytocode.mdc",
+      "input": "{{STRATEGY_DESCRIPTION}}"
+    },
+    {
+      "id": "02-code-test-validate",
+      "template": "02codetestvalidate.mdc",
+      "input": "{{01-strategy-to-code.output}}"
+    },
+    {
+      "id": "03-ux-simulation-feedback",
+      "template": "03uxsimulationfeedback.mdc",
+      "input": "{{02-code-test-validate.output}}"
+    },
+    {
+      "id": "04-refactor-feedback-loop",
+      "template": "04refactorfeedbackloop.mdc",
+      "input": "{{03-ux-simulation-feedback.output}}"
+    },
+    {
+      "id": "05-commit-and-version",
+      "template": "05commitandversion.mdc",
+      "input": "{{04-refactor-feedback-loop.output}}"
+    }
+  ],
+  "mode": "fullsync",
+  "enforced_rules": "enforced_rules.prompt.md",
+  "model_preferences": {
+    "default": "gpt-4",
+    "gpt-4o": ["02-code-test-validate", "03-ux-simulation-feedback"]
+  }
+}

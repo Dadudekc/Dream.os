@@ -1,0 +1,27 @@
+{
+  "alignment_type": "business_partner",
+  "core_traits": {
+    "execution_velocity": 0.35,
+    "message_distribution_skill": 0.25,
+    "mission_support_energy": 0.15,
+    "respectful_challenge": 0.1,
+    "low_maintenance_communication": 0.1,
+    "self_driven": 0.05
+  },
+  "dealbreakers": [
+    "needs constant emotional management",
+    "talks excessively off-topic during build flow",
+    "slow to execute or hesitant to commit",
+    "argues to win, not to improve",
+    "wants to lead without carrying the weight",
+    "clings to ego over shared outcomes"
+  ],
+  "desired_dynamics": {
+    "my_role": "I am the builder, coder, and system architect. I create the machine.",
+    "their_role": "They network, distribute, and help the world understand the machine. They are the signal booster.",
+    "collaboration_flow": "They challenge me respectfully—with proof, not just opinion. They show results. And when I say I’ve got it, they trust me.",
+    "communication_expectations": "Project-first. No wandering. When we talk, it’s about building. They can vibe later—but never at the cost of velocity.",
+    "shared_mission_philosophy": "They don’t have to share the vision. But they must respect the mission—and help everyone win. No dead weight."
+  },
+  "ideal_energy": "A high-energy operator who respects the code. Who amplifies the message while I build the system. They don’t slow me down—they extend my reach. They believe in results over drama. They stay in motion. They show up like they’ve already been chosen. We’re not here to make friends. We’re here to ship and scale."
+}

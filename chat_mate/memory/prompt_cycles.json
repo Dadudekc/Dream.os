@@ -1,0 +1,12 @@
+{
+    "version": 1,
+    "cycles": {
+        "cycle_1": {
+            "type": "system_startup",
+            "start_time": "2025-03-21T10:38:41.685776+00:00",
+            "conversations": [],
+            "memory_state_version": 1
+        }
+    },
+    "last_cycle_id": 1
+}

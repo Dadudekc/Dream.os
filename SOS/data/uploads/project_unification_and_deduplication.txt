@@ -1,0 +1,54 @@
+Issue Identified:
+The error FileNotFoundError: [Errno 2] No such file or directory: 'D:\\AgentProject\\logs\\logs\\ai_client.log' indicates that the LOG_DIR path is being incorrectly assigned, causing the logs/ directory to be duplicated.
+🔹 Root Cause:
+Your LOG_DIR definition in AIClient.py uses a relative path:
+python
+Copy
+Edit
+LOG_DIR = "logs"
+This works only if the script is executed from the root project directory. However, if the script runs from another location (like a module import), LOG_DIR might be evaluated incorrectly.
+✅ Fix: Ensure a Proper Absolute Log Path
+Modify AIClient.py to ensure that LOG_DIR always points to the correct absolute path.
+🔧 Updated Code for AIClient.py
+python
+Copy
+Edit
+import os
+import json
+import logging
+import hashlib
+import asyncio
+import sys
+from typing import Optional, Dict, Any
+
+# Add project root directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
+# Import necessary modules
+from utils.LoggerManager import LoggerManager
+from utils.plugins.PatchTrackingManager import PatchTrackingManager
+from utils.plugins.AIAssistance.AIConfidenceManager import AIConfidenceManager
+from utils.plugins.AIModelManager import AIModelManager
+from utils.plugins.Monitoring.PerformanceMonitor import PerformanceMonitor
+from utils.plugins.AgentMemory import AgentMemory
+from Agents.core.AgentBase import AgentBase
+from Agents.AgentRegistry import AgentRegistry
+
+# ✅ Fix: Ensure logs directory is absolute
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+LOG_DIR = os.path.join(PROJECT_ROOT, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)  # Ensure directory exists
+
+# ✅ Fix: Correct log file path
+logger = LoggerManager(log_file=os.path.join(LOG_DIR, "ai_client.log")).get_logger()
+🔹 Why This Fix Works:
+✅ Ensures LOG_DIR always resolves correctly to the project's logs/ directory.
+✅ Prevents path duplication (logs/logs/ai_client.log), which caused the error.
+✅ Creates the logs folder if it doesn’t exist, avoiding missing directory issues.
+🚀 Next Steps
+Apply this fix to AIClient.py and re-run MainWindow.py:
+sh
+Copy
+Edit
+& d:/AgentProject/venv/Scripts/python.exe d:/AgentProject/GUI/MainWindow.py
+If similar errors occur for other logging files, update their paths using the same approach. 🚀

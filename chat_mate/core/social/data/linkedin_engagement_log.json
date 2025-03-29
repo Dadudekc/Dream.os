@@ -1,0 +1,71 @@
+[
+  {
+    "timestamp": "2025-03-21T18:16:34.003130",
+    "action": "like",
+    "target": {
+      "id": "linkedin_post_13",
+      "content": "Sample linkedin post 13",
+      "author": "user_13"
+    },
+    "platform": "linkedin"
+  },
+  {
+    "timestamp": "2025-03-21T18:16:36.104033",
+    "action": "like",
+    "target": {
+      "id": "linkedin_post_10",
+      "content": "Sample linkedin post 10",
+      "author": "user_10"
+    },
+    "platform": "linkedin"
+  },
+  {
+    "timestamp": "2025-03-21T18:16:45.764786",
+    "action": "comment",
+    "target": {
+      "id": "linkedin_post_16",
+      "content": "Sample linkedin post 16",
+      "author": "user_16"
+    },
+    "platform": "linkedin",
+    "content": "This is exactly what I needed to see today."
+  },
+  {
+    "timestamp": "2025-03-21T18:16:53.587856",
+    "action": "follow",
+    "target": {
+      "user": "user_4"
+    },
+    "platform": "linkedin"
+  },
+  {
+    "timestamp": "2025-03-21T18:23:22.533764",
+    "action": "like",
+    "target": {
+      "id": "linkedin_post_13",
+      "content": "Sample linkedin post 13",
+      "author": "user_13"
+    },
+    "platform": "linkedin"
+  },
+  {
+    "timestamp": "2025-03-21T18:23:25.132125",
+    "action": "like",
+    "target": {
+      "id": "linkedin_post_6",
+      "content": "Sample linkedin post 6",
+      "author": "user_6"
+    },
+    "platform": "linkedin"
+  },
+  {
+    "timestamp": "2025-03-21T18:23:26.310191",
+    "action": "like",
+    "target": {
+      "id": "linkedin_post_9",
+      "content": "Sample linkedin post 9",
+      "author": "user_9"
+    },
+    "platform": "linkedin"
+  }
+]

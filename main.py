@@ -8,6 +8,9 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 
 # Bootstrap paths early
 from core.bootstrap import get_bootstrap_paths
+from core.system_loader import SystemLoader, initialize_system
+from core.services.service_registry import ServiceRegistry
+from core.PathManager import PathManager
 from core.AgentDispatcher import AgentDispatcher
 from config.ConfigManager import ConfigManager
 from core.DriverManager import DriverManager
@@ -41,241 +44,153 @@ def setup_logging():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description='Dream.OS Command Line Interface')
+    parser.add_argument('--headless', action='store_true', help='Run in headless mode')
+    parser.add_argument('--web', action='store_true', help='Start web interface')
+    parser.add_argument('--config', type=str, help='Path to configuration file')
+    parser.add_argument('--port', type=int, default=5000, help='Web server port')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parser.add_argument('--agent', action='store_true', help='Run in agent mode')
+    return parser.parse_args()
 
-def initialize_services():
-    """Initialize application services."""
-    services = {}
-    
-    # Boot OpenAIClient if not already booted
+def start_web_server(port, services):
+    """Start the web server in a separate thread."""
     try:
-        if not OpenAIClient.is_booted():
-            logging.info("OpenAIClient not booted. Booting now...")
-            # Create a default client instance with profiles from config if needed
-            profile_dir = os.path.join(os.getcwd(), "chrome_profile", "openai")
-            client = OpenAIClient(profile_dir=profile_dir, headless=True)
-            client.boot()
-            services['openai_client'] = client
-            logging.info("✅ OpenAIClient booted successfully.")
-        else:
-            logging.info("✅ OpenAIClient already booted.")
+        web_thread = threading.Thread(
+            target=start_flask_app,
+            args=(port, services),
+            daemon=True
+        )
+        web_thread.start()
+        logging.info(f"Web server started on port {port}")
+        return web_thread
     except Exception as e:
-        logging.warning(f"❌ Failed to boot OpenAIClient: {e}")
-        
-    # Initialize FeedbackEngine as a singleton using factory
+        logging.error(f"Failed to start web server: {e}")
+        return None
+
+def start_agent(services):
+    """Start the agent dispatcher in a separate thread."""
     try:
-        # Create temporary config to pass to factory
-        temp_config = {'memory_file': 'memory/persistent_memory.json', 'feedback_log_file': 'memory/feedback_log.json'}
-        
-        feedback_engine = FeedbackEngineFactory.create(temp_config, logger_obj=logging.getLogger())
-        if feedback_engine:
-            services['feedback_engine'] = feedback_engine
-            logging.info("✅ FeedbackEngine initialized successfully.")
-        else:
-            logging.warning("⚠️ FeedbackEngine factory returned None.")
+        agent_thread = threading.Thread(
+            target=run_agent_dispatcher,
+            args=(services,),
+            daemon=True
+        )
+        agent_thread.start()
+        logging.info("Agent dispatcher started")
+        return agent_thread
     except Exception as e:
-        logging.warning(f"❌ Failed to initialize FeedbackEngine: {e}")
-
-    # Initialize config service
-    config_service = ConfigService()
-    services['config'] = config_service
-
-    # Initialize prompt service
-    prompt_service = UnifiedPromptService(config_service)
-    services['prompt'] = prompt_service
-
-    # Initialize fix service
-    fix_service = FixService(config_service)
-    services['fix_service'] = fix_service
-
-    # Initialize debug service
-    debug_service = DebugService(config_service)
-    services['debug_service'] = debug_service
-
-    # Initialize rollback service
-    rollback_service = RollbackService(config_service)
-    services['rollback_service'] = rollback_service
-
-    # Try to initialize CursorSessionManager (for debugging)
-    try:
-        from core.refactor.CursorSessionManager import CursorSessionManager
-        cursor_manager = CursorSessionManager(config_service, {})  # Empty dict as memory_manager placeholder
-        services['cursor_manager'] = cursor_manager
-        logging.info("CursorSessionManager initialized successfully.")
-    except Exception as e:
-        logging.warning(f"Failed to initialize CursorSessionManager: {e}")
-        services['cursor_manager'] = None
-
-    return services
-
-
-def show_error_dialog(errors):
-    """Display an error dialog if services fail to initialize."""
-    app = QApplication.instance() or QApplication([])
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Warning)
-    msg.setWindowTitle("Initialization Errors")
-    msg.setText("Some services encountered failures:")
-    msg.setDetailedText("\n".join(errors))
-    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    return msg.exec_() == QMessageBox.Ok
-
+        logging.error(f"Failed to start agent dispatcher: {e}")
+        return None
 
 def run_agent_dispatcher(services):
-    """Start the agent dispatcher in a loop."""
-    dispatcher = AgentDispatcher(config=services["config"])
-    dispatcher._start_workers()
-
+    """Run the agent dispatcher."""
     try:
-        logging.info("Agent Dispatcher started.")
-        dispatcher._worker_loop()
-    except KeyboardInterrupt:
-        logging.info("Graceful shutdown triggered.")
-    finally:
-        dispatcher.shutdown()
-        services.get("driver_manager", {}).quit_driver()
-        services.get("logger", {}).log_system_event("System shutdown complete.")
+        agent_dispatcher = AgentDispatcher(services)
+        agent_dispatcher.start()
+    except Exception as e:
+        logging.error(f"Agent dispatcher error: {e}")
 
-
-def run_pyqt_gui(app, services):
-    """Run the PyQt GUI application."""
-    # Initialize UI logic
-    ui_logic = DreamscapeUILogic()
-    ui_logic.service = services['prompt']  # Example: assign the prompt service
-
-    # Extract required dependencies from the services dictionary
-    prompt_manager = services.get('prompt_manager')
-    config_manager = services.get('config_manager')
-    logger = services.get('logger')
-    discord_manager = services.get('discord_manager')  # Optional, if available
-    memory_manager = services.get('memory_manager')      # Optional, if available
-
-    # Initialize the dispatcher
-    dispatcher = SignalDispatcher()
-    
-    # Add dispatcher to services
-    services['dispatcher'] = dispatcher
-
-    # Now pass all dependencies to MainTabs
-    main_tabs = MainTabs(
-        dispatcher=dispatcher,
-        ui_logic=ui_logic,
-        config_manager=config_manager,
-        logger=logger,
-        prompt_manager=prompt_manager,
-        chat_manager=services.get('chat_manager'),
-        memory_manager=memory_manager,
-        discord_manager=discord_manager,
-        cursor_manager=services.get('cursor_manager'),
-        **services.get('extra_dependencies', {})
-    )
-
-    # Create your main window and set its central widget
-    main_window = DreamscapeMainWindow(ui_logic, dispatcher, services)
-    main_window.setCentralWidget(main_tabs)
-    main_window.show()
-    
-    return main_window
-
-
-def run_flask_app(services):
-    """Launch the Flask web application in a separate thread."""
-    def flask_thread():
-        try:
-            logging.info("Starting Flask Dashboard...")
-            start_flask_app(services)
-        except Exception as e:
-            logging.error(f"Flask app error: {str(e)}")
-
-    # Start Flask in a separate thread
-    flask_thread = threading.Thread(target=flask_thread, daemon=True)
-    flask_thread.start()
-    return flask_thread
-
-
-def execute_mode(mode, services, app=None):
-    """Execute the selected mode."""
-    if mode == "agent":
-        run_agent_dispatcher(services)
-
-    elif mode == "gui":
-        if not app:
-            app = QApplication(sys.argv)
-        run_pyqt_gui(app, services)
-        sys.exit(app.exec_())
-
-    elif mode == "web":
-        flask_thread = run_flask_app(services)
-        try:
-            while flask_thread.is_alive():
-                time.sleep(1)
-        except KeyboardInterrupt:
-            logging.info("Shutting down Flask server...")
-
-    elif mode == "all":
-        logging.info("Launching all systems concurrently...")
-
-        # Start Flask in a separate thread
-        flask_thread = run_flask_app(services)
-
-        # Start Agent Dispatcher in another thread
-        agent_thread = threading.Thread(target=run_agent_dispatcher, args=(services,), daemon=True)
-        agent_thread.start()
-
-        # Start PyQt GUI in main thread
-        if not app:
-            app = QApplication(sys.argv)
-        run_pyqt_gui(app, services)
-        sys.exit(app.exec_())
+def show_error_message(message):
+    """Show an error message box."""
+    app = QApplication.instance() or QApplication(sys.argv)
+    error_box = QMessageBox()
+    error_box.setIcon(QMessageBox.Critical)
+    error_box.setWindowTitle("Dream.OS Error")
+    error_box.setText(message)
+    error_box.setStandardButtons(QMessageBox.Ok)
+    return error_box.exec_()
 
 def main():
-    """Main entry point of the Dreamscape Execution System."""
+    """Main entry point for the application."""
+    # Set up logging
     setup_logging()
-
-    # Initialize core services
-    config_manager = ConfigManager()
-    logger = LoggerFactory.create_standard_logger("Dreamscape", level=logging.INFO)
-    config_manager.set_logger(logger)
-
-    # Initialize application services
-    services = initialize_services()
-    services['config_manager'] = config_manager
-    services['logger'] = logger
-
-    # ✅ Inject ChatManager using factory
-    from core.micro_factories.chat_factory import create_chat_manager
-    chat_manager = create_chat_manager(config_manager, logger=logger)
-    services['chat_manager'] = chat_manager
-
-    # Track initialization errors
-    errors = []
-
-    try:
-        driver_manager = DriverManager(config_manager)
-        services['driver_manager'] = driver_manager
-    except Exception as e:
-        error_msg = f"Failed to initialize DriverManager: {str(e)}"
-        errors.append(error_msg)
-        logger.error(error_msg)
-
-    parser = argparse.ArgumentParser(description="Dreamscape Execution System")
-    parser.add_argument(
-        "--mode",
-        choices=["agent", "gui", "web", "all"],
-        default="gui",
-        help="Execution mode selection. Defaults to 'gui' if not specified."
-    )
-    args = parser.parse_args()
-
-    # If there are errors and mode is not agent, show error dialog
-    if errors and args.mode != "agent":
-        app = QApplication(sys.argv)
-        if not show_error_dialog(errors):
-            logging.info("User aborted execution due to initialization errors.")
-            return
-
-    # Execute the chosen mode
-    app = QApplication(sys.argv) if args.mode in ["gui", "all"] else None
-    execute_mode(args.mode, services, app=app)
+    logger = logging.getLogger("main")
+    logger.info("🚀 Starting Dream.OS application")
     
+    # Parse command line arguments
+    args = parse_arguments()
+    
+    # Initialize core system with proper dependency injection
+    try:
+        system_loader = SystemLoader(args.config)
+        services = system_loader.boot()
+        logger.info("✅ Core system initialized successfully with SystemLoader")
+    except Exception as e:
+        logger.critical(f"❌ Failed to initialize core system: {e}")
+        show_error_message(f"Failed to initialize system: {e}")
+        return 1
+    
+    # Get essential services
+    config_manager = ServiceRegistry.get("config_manager")
+    openai_client = ServiceRegistry.get("openai_client")
+    prompt_service = ServiceRegistry.get("prompt_service")
+    
+    # Start web server if requested
+    if args.web:
+        web_thread = start_web_server(args.port, services)
+        if not web_thread:
+            logger.warning("⚠️ Web server failed to start")
+    
+    # Start agent if requested
+    if args.headless or args.agent:
+        agent_thread = start_agent(services)
+        if not agent_thread:
+            logger.warning("⚠️ Agent failed to start")
+        
+        # If running in headless mode, just keep the main thread alive
+        if args.headless:
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                logger.info("Keyboard interrupt received, shutting down...")
+                return 0
+    
+    # Start GUI if not in headless mode
+    if not args.headless:
+        try:
+            # Create QApplication
+            app = QApplication(sys.argv)
+            
+            # Create and configure event loop
+            from utils.qasync_event_loop_manager import QAsyncEventLoopManager
+            event_loop_manager = QAsyncEventLoopManager(app, logger=logging.getLogger("QAsyncEventLoop"))
+            logger.info("✅ Async event loop initialized")
+            
+            # Create signal dispatcher
+            dispatcher = SignalDispatcher()
+            
+            # Create UI logic
+            ui_logic = DreamscapeUILogic()
+            ui_logic.service = services.get("dreamscape_service")
+            logger.info("✅ UI logic initialized")
+            
+            # Create and show main window
+            window = DreamscapeMainWindow(
+                ui_logic=ui_logic,
+                dispatcher=dispatcher,
+                services=services,
+                event_loop_manager=event_loop_manager
+            )
+            window.show()
+            window.raise_()
+            window.activateWindow()
+            logger.info("✅ Main window initialized and displayed")
+            
+            # Start event loop
+            event_loop_manager.start()
+            logger.info("✅ Application event loop started")
+            
+            # Run main application loop
+            return app.exec_()
+            
+        except Exception as e:
+            logger.critical(f"❌ Failed to start GUI: {e}")
+            show_error_message(f"Failed to start GUI: {e}")
+            return 1
+
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

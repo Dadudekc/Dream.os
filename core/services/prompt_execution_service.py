@@ -523,13 +523,21 @@ class UnifiedPromptService(QObject):
             Dict with context data or None if loading failed
         """
         try:
+            # Handle ConfigManager instances by extracting their context_file_path property
             if isinstance(filepath, ConfigManager):
-                # Extract the path from ConfigManager
+                # Extract the path from ConfigManager using get method if available
                 if hasattr(filepath, 'get'):
                     filepath_str = filepath.get("context_file_path", "")
                 else:
-                    filepath_str = ""
+                    # Try accessing as an attribute if get method isn't available
+                    filepath_str = getattr(filepath, "context_file_path", "")
+                
+                # If we couldn't get a path from the ConfigManager, use a default
+                if not filepath_str:
+                    self.logger.warning("No context file path found in ConfigManager")
+                    filepath_str = str(self.path_manager.get_path("memory", "project_context.json"))
             else:
+                # Convert to string if it's a Path object or already a string
                 filepath_str = str(filepath)
                 
             if not filepath_str:

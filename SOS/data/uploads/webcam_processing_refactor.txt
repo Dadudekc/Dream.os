@@ -1,0 +1,440 @@
+Below is a unified, updated webcam_filter_pyqt5.py that:
+Incorporates your working PyAV logic (video=C270 HD WEBCAM) from the snippet.
+Replaces the old list_video_devices_windows function with the new list_devices function (direct from your snippet).
+Continues to provide a PyQt5 interface for selecting devices, applying style filters, and outputting to a virtual camera.
+Use this as a drop-in replacement for your existing webcam_filter_pyqt5.py. Run it with:
+bash
+Copy
+Edit
+python webcam_filter_pyqt5.py
+Then choose the appropriate device from the dropdown (if enumerated) or type in "video=C270 HD WEBCAM" manually.
+Updated webcam_filter_pyqt5.py
+python
+Copy
+Edit
+import sys
+import os
+import json
+import subprocess
+import av
+import cv2
+import numpy as np
+import pyvirtualcam
+
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QLabel, QComboBox, QPushButton,
+    QVBoxLayout, QHBoxLayout, QLineEdit, QMessageBox, QSlider, QFileDialog, QGroupBox, QFormLayout
+)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
+
+# Import style classes from your styles.py
+from styles import Style, PencilSketch, Grayscale, Original, Sepia, EdgeDetection, Cartoon
+
+# =============================================================================
+# 1. Config Load/Save
+# =============================================================================
+
+CONFIG_FILE = "config.json"
+
+def load_settings():
+    """Load settings from a JSON file if it exists; otherwise use defaults."""
+    default_settings = {
+        "input_device": "video=C270 HD WEBCAM",  # Default from your working snippet
+        "style": "Pencil Sketch",
+        "parameters": {}
+    }
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, "r") as f:
+                loaded = json.load(f)
+                default_settings.update(loaded)
+        except (json.JSONDecodeError, IOError):
+            pass
+    return default_settings
+
+def save_settings(settings):
+    """Save current settings to a JSON file."""
+    try:
+        with open(CONFIG_FILE, "w") as f:
+            json.dump(settings, f, indent=4)
+    except IOError as e:
+        print(f"Error saving settings: {e}")
+
+# =============================================================================
+# 2. Device Enumeration (Windows-Only) - from your working snippet
+# =============================================================================
+
+def list_devices():
+    """
+    List DirectShow devices on Windows using FFmpeg.
+    Returns a list of fully qualified device names, e.g. ["video=C270 HD WEBCAM", "video=OBS Virtual Camera"].
+    """
+    devices = []
+    cmd = ['ffmpeg', '-list_devices', 'true', '-f', 'dshow', '-i', 'dummy']
+    try:
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode('utf-8', errors='ignore')
+        for line in output.splitlines():
+            if "DirectShow video devices" in line:
+                # This is a heading line; skip
+                continue
+            if "]  \"" in line:
+                # Extract the exact device name from the quotes
+                start_idx = line.find("\"")
+                end_idx = line.find("\"", start_idx + 1)
+                if start_idx != -1 and end_idx != -1:
+                    device_name = line[start_idx + 1:end_idx]
+                    # Prepend "video=" for DirectShow usage with PyAV
+                    devices.append(f"video={device_name}")
+    except subprocess.CalledProcessError:
+        print("Could not enumerate devices using FFmpeg.")
+    return devices
+
+# =============================================================================
+# 3. Webcam Processing Thread (Using PyAV)
+# =============================================================================
+
+class WebcamThread(QThread):
+    """
+    A QThread that captures video frames using PyAV, applies the chosen style,
+    and publishes them to a virtual camera with pyvirtualcam.
+    """
+    error_signal = pyqtSignal(str)
+    info_signal = pyqtSignal(str)
+
+    last_frame = None  # For snapshot feature
+
+    def __init__(self, input_device, style_instance, style_params):
+        super().__init__()
+        self.input_device = input_device
+        self.style_instance = style_instance
+        self.style_params = style_params
+        self._is_running = True
+
+    def run(self):
+        """
+        Continuously decode frames from the specified device using PyAV,
+        apply the chosen style, and send them to a virtual camera.
+        """
+        # 3.1 Open the device with PyAV
+        try:
+            container = av.open(self.input_device, format="dshow")
+        except OSError as e:
+            self.error_signal.emit(f"Error opening webcam with PyAV: {e}")
+            return
+
+        try:
+            # 3.2 Start a pyvirtualcam Camera
+            with pyvirtualcam.Camera(width=640, height=480, fps=30, fmt=pyvirtualcam.PixelFormat.BGR) as cam:
+                self.info_signal.emit(f"Virtual camera started: {cam.device}")
+                self.info_signal.emit("Streaming... Press 'Stop' to end.")
+
+                for frame in container.decode(video=0):
+                    if not self._is_running:
+                        break
+
+                    # Convert PyAV frame to NumPy array (BGR24)
+                    img = frame.to_ndarray(format="bgr24")
+
+                    # Apply the selected style (with current style parameters)
+                    styled_frame = self.style_instance.apply(img, self.style_params)
+
+                    # Convert single-channel frames to BGR if needed
+                    if len(styled_frame.shape) == 2:
+                        styled_frame = cv2.cvtColor(styled_frame, cv2.COLOR_GRAY2BGR)
+
+                    # Resize to match virtual camera resolution
+                    resized_frame = cv2.resize(styled_frame, (cam.width, cam.height))
+
+                    # Send frame to virtual camera
+                    cam.send(resized_frame)
+                    cam.sleep_until_next_frame()
+
+                    # Save the last processed frame for snapshots
+                    self.last_frame = resized_frame.copy()
+
+        except pyvirtualcam.CameraAlreadyRunningError as e:
+            self.error_signal.emit(f"Virtual camera error: {e}")
+        except KeyboardInterrupt:
+            self.info_signal.emit("Streaming stopped by user.")
+        except Exception as e:
+            self.error_signal.emit(f"Unexpected error: {e}")
+        finally:
+            # Release resources
+            container.close()
+
+    def update_params(self, new_params):
+        """Update style parameters in real-time."""
+        self.style_params = new_params
+
+    def stop(self):
+        """Stop the webcam processing loop."""
+        self._is_running = False
+        self.wait()
+
+# =============================================================================
+# 4. PyQt5 GUI
+# =============================================================================
+
+class WebcamApp(QWidget):
+    """
+    Main GUI application that manages device selection, style parameters,
+    and the start/stop logic for the webcam processing thread.
+    """
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Webcam Style Selector")
+        self.setGeometry(100, 100, 800, 600)
+
+        # Thread & style management
+        self.thread = None
+        self.style_instances = self.load_styles()
+        self.current_style = None
+        self.current_style_params = {}
+
+        # Config settings
+        self.settings = load_settings()
+
+        # Initialize the UI
+        self.init_ui()
+
+    def load_styles(self):
+        """Instantiate all Style subclasses from styles.py."""
+        style_classes = Style.__subclasses__()
+        style_instances = {}
+        for cls in style_classes:
+            instance = cls()
+            style_instances[instance.name] = instance
+        return style_instances
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+
+        # 4.1 Device Selection
+        device_layout = QHBoxLayout()
+        device_label = QLabel("Input Device:")
+        self.device_combo = QComboBox()
+        device_layout.addWidget(device_label)
+        device_layout.addWidget(self.device_combo)
+
+        # Enumerate devices on Windows via FFmpeg (new approach from your working snippet)
+        device_list = list_devices()
+        if not device_list:
+            # Allow manual typing if no devices found
+            self.device_combo.setEditable(True)
+        else:
+            # Populate combo box with enumerated devices
+            self.device_combo.addItems(device_list)
+            self.device_combo.setEditable(True)
+
+        # If there's a previously saved device, use it; else default to "video=C270 HD WEBCAM"
+        if self.settings["input_device"]:
+            self.device_combo.setCurrentText(self.settings["input_device"])
+
+        layout.addLayout(device_layout)
+
+        # 4.2 Style Selector
+        style_layout = QHBoxLayout()
+        style_label = QLabel("Select Style:")
+        self.style_combo = QComboBox()
+        self.style_combo.addItems(self.style_instances.keys())
+        self.style_combo.setCurrentText(self.settings.get("style", "Pencil Sketch"))
+        style_layout.addWidget(style_label)
+        style_layout.addWidget(self.style_combo)
+        layout.addLayout(style_layout)
+
+        # 4.3 Parameter Controls
+        self.parameters_group = QGroupBox("Parameters")
+        self.parameters_layout = QFormLayout()
+        self.parameters_group.setLayout(self.parameters_layout)
+        layout.addWidget(self.parameters_group)
+
+        # Initialize parameters based on the selected style
+        self.update_parameter_controls()
+        self.style_combo.currentTextChanged.connect(self.update_parameter_controls)
+
+        # 4.4 Action Buttons
+        button_layout = QHBoxLayout()
+        self.start_button = QPushButton("Start Virtual Camera")
+        self.start_button.clicked.connect(self.start_virtual_camera)
+        self.stop_button = QPushButton("Stop")
+        self.stop_button.clicked.connect(self.stop_virtual_camera)
+        self.stop_button.setEnabled(False)
+        self.snapshot_button = QPushButton("Take Snapshot")
+        self.snapshot_button.clicked.connect(self.take_snapshot)
+        self.snapshot_button.setEnabled(False)
+
+        button_layout.addWidget(self.start_button)
+        button_layout.addWidget(self.stop_button)
+        button_layout.addWidget(self.snapshot_button)
+        layout.addLayout(button_layout)
+
+        # 4.5 Status Display
+        self.status_label = QLabel("Status: Idle")
+        self.status_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.status_label)
+
+        self.setLayout(layout)
+
+    def update_parameter_controls(self):
+        """Dynamically update parameter sliders for the selected style."""
+        # Clear any existing controls
+        while self.parameters_layout.count():
+            item = self.parameters_layout.takeAt(0)
+            if item.widget():
+                item.widget().setParent(None)
+
+        # Determine the current style
+        selected_style_name = self.style_combo.currentText()
+        self.current_style = self.style_instances.get(selected_style_name, Original())
+
+        # Load previously saved parameters or defaults
+        saved_params = self.settings.get("parameters", {})
+        self.current_style_params = saved_params.get(selected_style_name, {})
+
+        # Create a UI control for each parameter
+        for param in self.current_style.parameters:
+            label = QLabel(param["label"])
+
+            if param["type"] == "int":
+                slider = QSlider(Qt.Horizontal)
+                slider.setMinimum(param["min"])
+                slider.setMaximum(param["max"])
+                slider.setSingleStep(param["step"])
+                slider.setTickInterval(param["step"])
+                slider.setTickPosition(QSlider.TicksBelow)
+
+                value = self.current_style_params.get(param["name"], param["default"])
+                slider.setValue(value)
+
+                value_label = QLabel(str(value))
+                slider.valueChanged.connect(lambda val, p=param["name"], l=value_label: self.on_param_changed(p, val, l))
+
+                h_layout = QHBoxLayout()
+                h_layout.addWidget(slider)
+                h_layout.addWidget(value_label)
+                self.parameters_layout.addRow(label, h_layout)
+
+            elif param["type"] == "float":
+                slider = QSlider(Qt.Horizontal)
+                slider.setMinimum(int(param["min"] * 10))
+                slider.setMaximum(int(param["max"] * 10))
+                slider.setSingleStep(int(param["step"] * 10))
+                slider.setTickInterval(int(param["step"] * 10))
+                slider.setTickPosition(QSlider.TicksBelow)
+
+                value = self.current_style_params.get(param["name"], param["default"])
+                slider.setValue(int(value * 10))
+
+                value_label = QLabel(f"{value:.1f}")
+                slider.valueChanged.connect(lambda val, p=param["name"], l=value_label: self.on_param_changed(p, val / 10, l))
+
+                h_layout = QHBoxLayout()
+                h_layout.addWidget(slider)
+                h_layout.addWidget(value_label)
+                self.parameters_layout.addRow(label, h_layout)
+
+    def on_param_changed(self, param_name, value, label_widget):
+        """
+        Update the parameter in real-time and pass it to the running thread
+        so the style changes reflect immediately.
+        """
+        self.current_style_params[param_name] = value
+        label_widget.setText(f"{value}" if isinstance(value, int) else f"{value:.1f}")
+
+        # If the thread is running, update parameters on the fly
+        if self.thread and self.thread.isRunning():
+            self.thread.update_params(dict(self.current_style_params))
+
+    def start_virtual_camera(self):
+        """Starts the WebcamThread to capture frames via PyAV and stream them."""
+        input_device = self.device_combo.currentText().strip()
+        selected_style = self.style_combo.currentText()
+
+        if not input_device:
+            QMessageBox.warning(self, "Input Device Error", "Please specify a valid input device.")
+            return
+
+        # Save current settings
+        self.settings["input_device"] = input_device
+        self.settings["style"] = selected_style
+        if "parameters" not in self.settings:
+            self.settings["parameters"] = {}
+        self.settings["parameters"][selected_style] = self.current_style_params
+        save_settings(self.settings)
+
+        # Initialize and start the thread
+        self.thread = WebcamThread(input_device, self.current_style, dict(self.current_style_params))
+        self.thread.error_signal.connect(self.display_error)
+        self.thread.info_signal.connect(self.display_info)
+        self.thread.start()
+
+        self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(True)
+        self.snapshot_button.setEnabled(True)
+
+    def stop_virtual_camera(self):
+        """Stops the webcam thread."""
+        if self.thread:
+            self.thread.stop()
+            self.thread = None
+            self.status_label.setText("Status: Stopped")
+
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        self.snapshot_button.setEnabled(False)
+
+    def take_snapshot(self):
+        """
+        Capture the last processed frame and let the user save it.
+        """
+        if not self.thread or self.thread.last_frame is None:
+            QMessageBox.information(self, "Snapshot", "No frame available to save.")
+            return
+
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save Snapshot", "", "Image Files (*.png *.jpg *.bmp)")
+        if save_path:
+            cv2.imwrite(save_path, self.thread.last_frame)
+            QMessageBox.information(self, "Snapshot", f"Snapshot saved to:\n{save_path}")
+
+    def display_error(self, message):
+        """Show error messages via a dialog and stop the thread."""
+        QMessageBox.critical(self, "Error", message)
+        self.stop_virtual_camera()
+
+    def display_info(self, message):
+        """Display status messages in the status label."""
+        self.status_label.setText(f"Status: {message}")
+
+    def closeEvent(self, event):
+        """Ensure the thread stops when closing the app."""
+        if self.thread and self.thread.isRunning():
+            self.thread.stop()
+        event.accept()
+
+# =============================================================================
+# 5. Main Entry Point
+# =============================================================================
+
+def main():
+    app = QApplication(sys.argv)
+    window = WebcamApp()
+    window.show()
+    sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
+How It Works
+list_devices(): Uses FFmpeg’s -list_devices for DirectShow on Windows, returning a list of names prefixed with "video=" (e.g., "video=C270 HD WEBCAM").
+Device ComboBox: In init_ui(), we call list_devices() to populate the combo box. If no devices are found, it allows manual typing. The default device (from load_settings) is "video=C270 HD WEBCAM".
+PyAV Capture: The WebcamThread opens your chosen device via:
+python
+Copy
+Edit
+av.open(self.input_device, format="dshow")
+and decodes frames in a loop.
+Style Application: The chosen style is applied on each frame, then the script sends frames to a virtual camera (pyvirtualcam).
+Saving Settings: Each time you start, it saves the chosen device and style to config.json. On the next run, it will remember your preference.
+Follow-Up Questions
+Does listing devices via list_devices() in the GUI properly display your “C270 HD WEBCAM” in the dropdown?
+Are you able to start the virtual camera successfully once you select "video=C270 HD WEBCAM"?
+Would you like to incorporate any additional styles or advanced device settings (e.g., resolution/fps changes)?

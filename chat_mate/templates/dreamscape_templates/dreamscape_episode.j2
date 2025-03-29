@@ -1,0 +1,144 @@
+---
+# 🌀 Digital Dreamscape MMO Log: {{ episode_title | default("Untitled Chronicle") }}
+---
+
+> 🗓️ *Chronicle generated on {{ generation_date | default(now().strftime("%Y-%m-%d %H:%M")) }} from thread: "{{ chat_title | default("Unknown Origin") }}"*
+{% if has_previous_episode and episode_count %}
+> 📜 *Episode {{ episode_count }} in the ongoing saga*
+{% endif %}
+
+## 🔮 Quest Fragment
+> *"{{ summary | default("The architects worked in silence, the code growing beneath their hands like living vines, reaching toward unseen heights...") }}"*
+
+---
+
+{% if has_previous_episode %}
+## ⏪ Previously in the Dreamscape
+**Last Known Location:** {{ last_location | default("The Nexus") }}
+**Emotional State:** {{ current_emotional_state | default("Neutral") }}
+
+{% if last_episode %}
+*{{ last_episode }}*
+{% endif %}
+
+{% if ongoing_quests %}
+### 🔄 Ongoing Quests
+{% for quest in ongoing_quests %}
+- {{ quest }}
+{% endfor %}
+{% endif %}
+
+{% if completed_quests %}
+### ✅ Completed Quests
+{% for quest in completed_quests %}
+- {{ quest }}
+{% endfor %}
+{% endif %}
+
+---
+{% endif %}
+
+## 🗺️ Event Type
+{% if episode_type %}
+**Classification:** {{ episode_type | join(', ') }}
+{% else %}
+**Classification:** Lore Node
+{% endif %}
+
+{% if involved_entities %}
+**Entities Involved:** {{ involved_entities | join(', ') }}
+{% endif %}
+
+**Location:** {{ location | default(last_location) | default("The Nexus") }}
+
+---
+
+## 📖 Episode Log
+{{ raw_response | default("⚠️ Episode content unavailable.") }}
+
+---
+
+## 📊 Status Update
+**Emotional State:** {{ current_emotional_state | default("Determined") }}
+**Location:** {{ location | default(last_location) | default("The Nexus") }}
+
+## 🧠 Memory Convergence Report
+{% if memory_updates %}
+### 🧩 New Lore Nodes
+{% for update in memory_updates %}
+- {{ update }}
+{% endfor %}
+{% else %}
+_No new lore nodes recorded._
+{% endif %}
+
+{% if skill_level_advancements %}
+### 🧬 Skills Upgraded
+{% for skill, advancement in skill_level_advancements.items() %}
+- **{{ skill }}** → {{ advancement }}
+{% endfor %}
+{% endif %}
+
+{% if newly_stabilized_domains %}
+### 🌐 Domains Stabilized
+{% for domain in newly_stabilized_domains %}
+- {{ domain }}
+{% endfor %}
+{% endif %}
+
+{% if newly_unlocked_protocols %}
+### 🔓 Protocols Unlocked
+{% for protocol in newly_unlocked_protocols %}
+- {{ protocol }}
+{% endfor %}
+{% endif %}
+
+{% if ongoing_quests %}
+### 🔄 Active Quests
+{% for quest in ongoing_quests %}
+- Quest active: {{ quest }}
+{% endfor %}
+{% endif %}
+
+{% if newly_started_quests %}
+### 🚀 New Quests
+{% for quest in newly_started_quests %}
+- Quest started: {{ quest }}
+{% endfor %}
+{% endif %}
+
+{% if completed_quests %}
+### ✅ Completed Quests
+{% for quest in completed_quests %}
+- Quest completed: {{ quest }}
+{% endfor %}
+{% endif %}
+
+{% if world_effects %}
+### 🌌 World Effects
+{% for key, value in world_effects.items() %}
+- **{{ key }}**: {{ value }}
+{% endfor %}
+{% endif %}
+
+---
+
+## 📝 Summary
+{% if summary %}
+{{ summary }}
+{% else %}
+The digital boundaries continue to expand as the Architect explores new territories within the code. Each interaction brings new insights and capabilities to the evolving dreamscape.
+{% endif %}
+
+---
+
+## 🏷️ Tags & Flags
+{% if tags %}
+{{ tags | join(' ') }}
+{% else %}
+#dreamscape #MMORPG #lore #questlog #protocols #systemevent
+{% endif %}
+
+---
+
+> *"In the Dreamscape, code doesn't just execute—it echoes. Every ripple in logic births consequence. Every prompt carves the path of an Architect."*

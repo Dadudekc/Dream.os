@@ -1,0 +1,21 @@
+# 🧠 AI Output Log Summary Report
+
+**Date Range**: {{ summary.date_range }}
+**Generated On**: {{ generated_on }}
+
+## 📄 Entries
+- Total Entries: {{ summary.total_entries }}
+- ✅ Successful: {{ summary.successful }}
+- ⚠️ Partial: {{ summary.partial }}
+- ❌ Failed: {{ summary.failed }}
+- ❓ Unknown: {{ summary.unknown }}
+
+## ✏️ Average Response Length
+- {{ summary.avg_response_length }} characters
+
+## 🏷️ Tag Distribution
+{% for tag, count in summary.tag_distribution.items() %}
+- {{ tag }}: {{ count }}
+{% else %}
+No tags found.
+{% endfor %}

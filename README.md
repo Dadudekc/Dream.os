@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DigitalDreamscapeEpisodes
 
 A system for generating interconnected dream-like narrative episodes from your chat interactions, providing a continuity-aware creative reflection of your conversations.
@@ -115,3 +116,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details. 
+=======
+# Dream.OS
+>>>>>>> 201c4bdc9956acf8e03287d5c95a997199e222bf

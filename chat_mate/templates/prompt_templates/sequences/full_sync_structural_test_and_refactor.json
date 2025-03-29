@@ -1,0 +1,33 @@
+{
+  "sequence_name": "full_sync_structural_test_and_refactor",
+  "context_file": "project_analysis.json",
+  "target_file": "core/memory/MemoryManager.py",
+  "tasks": [
+    {
+      "prompt_path": "full_sync/test_generation.prompt.j2",
+      "output_file": "tests/core/memory/test_memory_manager.py",
+      "render_context": {
+        "project_context": "{{ context_file | load_json }}",
+        "target_file": "{{ target_file }}"
+      },
+      "executor": "cursor"
+    },
+    {
+      "prompt_path": "full_sync/refactor_suggestion.prompt.j2",
+      "output_file": "core/memory/MemoryManager.refactored.md",
+      "render_context": {
+        "project_context": "{{ context_file | load_json }}",
+        "target_file": "{{ target_file }}"
+      },
+      "executor": "chatgpt"
+    }
+  ],
+  "validation": {
+    "required_files": [
+      "templates/full_sync/test_generation.prompt.j2",
+      "templates/full_sync/refactor_suggestion.prompt.j2",
+      "project_analysis.json"
+    ],
+    "required_filters": ["load_json", "tojson"]
+  }
+} 

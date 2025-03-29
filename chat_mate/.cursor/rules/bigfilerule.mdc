@@ -1,0 +1,48 @@
+---
+description: whenever a File has Over 400 Lines
+globs: 
+alwaysApply: false
+---
+
+
+### Enforced Rule: Modular Refactor for Files Over 400 Lines
+
+**Rule Summary:**  
+If a Python file exceeds **400 lines**, it must be **modularized**. Break the file into smaller, well-defined components while preserving the original public interface. The main file must remain the central access point to all functionality.
+
+---
+
+### Implementation Guidelines
+
+**1. Decomposition by Responsibility:**  
+Split logic into smaller modules based on responsibility. Suggested module types include:
+- `TemplatePreviewer`: Handles template rendering and preview logic  
+- `ContextProcessor`: Handles context injection, memory loading, or state management  
+- `EventBinder`: Handles UI signal-slot binding and event logic  
+
+**2. Interface Preservation:**  
+- The original file (e.g. `DreamscapeGenerationTab.py`) must continue to function without changes to external import paths or usage.  
+- Use composition to integrate refactored components (e.g., `self.context_processor = ContextProcessor(...)`).  
+- Avoid renaming or removing any method or attribute used outside the file.
+
+**3. Directory Structure:**  
+- Create a sibling directory named after the original file without extension.  
+  For `DreamscapeGenerationTab.py`, use:  
+  `interfaces/pyqt/tabs/dreamscape_generation/`  
+- Move supporting logic into this folder.
+- Leave `DreamscapeGenerationTab.py` as a thin shell that delegates to those components.
+
+---
+
+### Enforcement
+
+- Applies to all PyQt tabs, service layers, and logic controllers.  
+- Files >400 lines must be refactored using this rule.  
+- Red-Green-Refactor is mandatory.  
+- Code must be production-ready, no placeholders.  
+- No circular dependencies.  
+- Cursor may create files only if they align with existing system architecture.
+
+---
+
+Let me know when you want to trigger the actual refactor, and I’ll structure the Cursor prompt with precise execution steps.

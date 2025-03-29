@@ -1,0 +1,82 @@
+{# Dreamscape Episode Template #}
+{# This template formats the raw ChatGPT response into a structured narrative with game elements #}
+
+{# Main narrative section #}
+{{ raw_response }}
+
+{# Game progression section #}
+{% if skill_level_advancements or newly_unlocked_protocols or quest_completions %}
+
+## 🎮 The Dreamscape Evolves
+
+{% if skill_level_advancements %}
+**Skill Advancements:**
+{% for skill, level in skill_level_advancements.items() %}
+- {{ skill }}: {{ level }}
+{% endfor %}
+{% endif %}
+
+{% if newly_unlocked_protocols %}
+**New Protocols Unlocked:**
+{% for protocol in newly_unlocked_protocols %}
+- {{ protocol }}
+{% endfor %}
+{% endif %}
+
+{% if newly_stabilized_domains %}
+**Domains Stabilized:**
+{% for domain in newly_stabilized_domains %}
+- {{ domain }}
+{% endfor %}
+{% endif %}
+
+{% if quest_completions %}
+**Quests Completed:**
+{% for quest in quest_completions %}
+- {{ quest }}
+{% endfor %}
+{% endif %}
+
+{% if new_quests_accepted %}
+**New Quests Accepted:**
+{% for quest in new_quests_accepted %}
+- {{ quest }}
+{% endfor %}
+{% endif %}
+
+{% if architect_tier_progression %}
+**Architect Status:**
+- Current Tier: {{ architect_tier_progression.current_tier }}
+- Progress: {{ architect_tier_progression.progress_to_next_tier }}
+{% endif %}
+
+{% endif %}
+
+#dreamscape #automation #aiagents #zeromanual #indiedev #buildinpublic
+
+---
+
+### MEMORY_UPDATE
+```json
+{
+  "skill_level_advancements": {
+    "System Convergence": "CURRENT_LEVEL / +INCREMENT",
+    "Execution Velocity": "CURRENT_LEVEL / +INCREMENT"
+  },
+  "newly_stabilized_domains": [
+    "DOMAIN_NAME"
+  ],
+  "newly_unlocked_protocols": [
+    "PROTOCOL_NAME"
+  ],
+  "quest_completions": [
+    "QUEST_NAME"
+  ],
+  "new_quests_accepted": [
+    "NEW_QUEST_NAME"
+  ],
+  "architect_tier_progression": {
+    "current_tier": "CURRENT_TIER",
+    "progress_to_next_tier": "PERCENT_COMPLETE"
+  }
+}

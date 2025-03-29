@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ────────────────
 # 🌍 Environment
 # ────────────────
@@ -64,3 +65,166 @@ clean_venv/
 # ────────────────
 .DS_Store
 Thumbs.db
+=======
+# === Byte-compiled / optimized / DLL files ===
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+
+# === Logs ===
+*.log
+*.jsonl
+logs/
+ai_logs/
+prompt_cycle_outputs/
+outputs/
+chat_mate/logs/
+chat_mate/social/logs/
+
+# === Secrets / Sensitive Configurations ===
+.env
+*.env
+secrets.json
+discord_manager_config.json
+memory/chat_mate_config.json
+memory/config.yml
+persistent_memory.json
+episode_counter.json
+chat_mate/cookies/
+chat_mate/episode_counter.json
+chat_mate/persistent_memory.json
+
+# === Browser Profiles, Cookies, Drivers ===
+chrome_profile/
+cookies/
+drivers/
+component_crx_cache/
+
+# === Archives, Drafts, Backups ===
+archive/
+DEV_BLOGS/
+*.bak
+*.backup
+*.tmp
+*.old
+*.swp
+*.swo
+*.orig
+*.draft
+
+# === Tests, Coverage, Reports ===
+.pytest_cache/
+.coverage
+htmlcov/
+nosetests.xml
+coverage.xml
+test_episode.txt
+tests/
+
+# === OS Junk Files ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# === IDE / Editor Metadata ===
+.idea/
+.vscode/
+
+# === Large Binary / Data Files ===
+*.tar
+*.zip
+*.gz
+*.rar
+*.7z
+*.csv
+*.db
+*.sqlite
+*.h5
+*.pickle
+
+# === Exports / Scans / System Outputs ===
+SYSTEM_AUDIT/
+project_analysis.json
+chat_mate/project_analysis.json
+social/project_analysis.json
+
+# === AI Response Dumps / Generated Outputs ===
+chat_mate/responses/
+chat_mate/ai_logs/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+
+# Logs
+*.log
+*.jsonl
+logs/
+ai_logs/
+prompt_cycle_outputs/
+outputs/
+
+# Secrets
+.env
+*.env
+secrets.json
+discord_manager_config.json
+memory/chat_mate_config.json
+memory/config.yml
+persistent_memory.json
+episode_counter.json
+
+# Browser, cookies, drivers
+chrome_profile/
+cookies/
+drivers/
+component_crx_cache/
+
+# Archives, drafts, backups
+archive/
+DEV_BLOGS/
+*.bak
+*.backup
+*.tmp
+*.old
+*.swp
+*.swo
+*.orig
+*.draft
+
+# Tests, coverage, reports
+.pytest_cache/
+.coverage
+htmlcov/
+nosetests.xml
+coverage.xml
+test_episode.txt
+tests/
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE files
+.idea/
+.vscode/
+
+# Large binary / data files
+*.tar
+*.zip
+*.gz
+*.rar
+*.7z
+*.csv
+*.db
+*.sqlite
+*.h5
+*.pickle
+
+# Exports / Scans
+SYSTEM_AUDIT/
+project_analysis.json
+>>>>>>> 201c4bdc9956acf8e03287d5c95a997199e222bf

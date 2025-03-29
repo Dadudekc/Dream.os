@@ -1,0 +1,117 @@
+{
+  "app": {
+    "name": "Digital Dreamscape",
+    "version": "0.1.0",
+    "description": "Digital Dreamscape Devlog & Strategy Automation",
+    "headless": false
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "date_format": "%Y-%m-%d %H:%M:%S"
+  },
+  "paths": {
+    "data_dir": "data",
+    "output_dir": "outputs",
+    "log_dir": "logs"
+  },
+  "chat_agent": {
+    "chatgpt_url": "https://chat.openai.com/",
+    "profile_dir": "chrome_profile/openai",
+    "cookie_file": "cookies/openai.pkl",
+    "archive_file": "archived_chats.txt",
+    "excluded_chats": [
+      "ChatGPT",
+      "Sora",
+      "Freeride Investor"
+    ],
+    "default_model": "gpt-4o-mini"
+  },
+  "commands": [
+    {
+      "triggers": ["run tests", "execute tests", "start tests"],
+      "action": "run_tests",
+      "args": [],
+      "description": "Runs all unit tests in the project."
+    },
+    {
+      "triggers": ["generate tests", "create tests", "build unit tests"],
+      "action": "generate_tests",
+      "args": ["file_name"],
+      "description": "Generates unit tests for the specified file using Cursor."
+    },
+    {
+      "triggers": ["commit changes", "git commit", "save to git"],
+      "action": "commit_changes",
+      "args": [],
+      "description": "Triggers a git commit with an AI-generated message."
+    },
+    {
+      "triggers": ["fix last error", "self heal", "repair this file"],
+      "action": "self_heal_file",
+      "args": ["file_name"],
+      "description": "Uses ChatGPT to attempt a self-healing fix based on the last error."
+    },
+    {
+      "triggers": ["retry test", "rerun failed test"],
+      "action": "retry_last_test",
+      "args": [],
+      "description": "Reruns the last failed test automatically."
+    },
+    {
+      "triggers": ["explain this error", "what went wrong", "analyze failure"],
+      "action": "explain_error",
+      "args": ["error_message"],
+      "description": "Sends the last error to ChatGPT and receives a breakdown."
+    },
+    {
+      "triggers": ["generate mock data", "build mock file"],
+      "action": "generate_mock_data",
+      "args": ["file_name"],
+      "description": "Generates mock input data for the specified module or file."
+    },
+    {
+      "triggers": ["summarize coverage", "test summary", "coverage report"],
+      "action": "summarize_test_coverage",
+      "args": [],
+      "description": "Summarizes which files have tests and which don't."
+    },
+    {
+      "triggers": ["toggle assistant mode", "start assistant", "stop assistant"],
+      "action": "toggle_assistant_mode",
+      "args": [],
+      "description": "Turns Assistant Mode on or off."
+    },
+    {
+      "triggers": ["switch to voice input", "use mic", "listen to me"],
+      "action": "set_input_mode_voice",
+      "args": [],
+      "description": "Switches assistant mode to voice input."
+    },
+    {
+      "triggers": ["switch to log input", "watch chat", "read responses"],
+      "action": "set_input_mode_log",
+      "args": [],
+      "description": "Switches assistant mode to log scrape input."
+    },
+    {
+      "triggers": ["share to discord", "post this", "send episode"],
+      "action": "share_to_discord",
+      "args": [],
+      "description": "Sends the current episode or content to Discord."
+    }
+  ],
+  "system": {
+    "version": "1.0",
+    "commands": {
+      "help": {
+        "description": "Display available commands",
+        "enabled": true
+      },
+      "status": {
+        "description": "Show current system status",
+        "enabled": true
+      }
+    }
+  }
+}

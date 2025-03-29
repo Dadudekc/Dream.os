@@ -625,50 +625,22 @@ def _create_empty_service(service_name, logger):
 def initialize_services():
     """Initialize and connect core services with proper dependency injection."""
     try:
-        config_manager = ConfigManager()
-        logger = logging.getLogger("Services")
+        # Use the SystemLoader to initialize all services
+        from core.system_loader import SystemLoader
         
-        # Repair any corrupted memory files
-        from utils.safe_json import repair_memory_files
-        from core.PathManager import PathManager
-        memory_dir = PathManager().get_path("memory")
-        repair_memory_files(memory_dir, logger)
+        # Create and boot the system loader
+        loader = SystemLoader()
+        services = loader.boot()
         
-        # Create prompt service first
-        from core.services.service_registry import create_prompt_service
-        prompt_service = create_prompt_service(config_manager)
-        if not prompt_service:
-            raise RuntimeError("Failed to create UnifiedPromptService")
-        
-        # Create chat manager with prompt service
-        chat_manager = create_chat_manager(config_manager, logger, prompt_service)
-        if not chat_manager:
-            raise RuntimeError("Failed to create ChatManager")
-        
-        # Create orchestrator with injected dependencies
-        try:
-            orchestrator = PromptCycleOrchestrator(
-                config_manager=config_manager,
-                chat_manager=chat_manager,  # Ensure chat_manager is passed
-                prompt_service=prompt_service
-            )
-            logger.info("PromptCycleOrchestrator initialized successfully")
-        except Exception as e:
-            logger.error(f"Failed to initialize PromptCycleOrchestrator: {e}")
-            orchestrator = _create_empty_service("orchestrator", logger)
-        
-        services = {
-            'config_manager': config_manager,
-            'chat_manager': chat_manager,
-            'orchestrator': orchestrator,
-            'prompt_service': prompt_service
-        }
-        
-        # Register services in the service registry
+        # Get a reference to the ServiceRegistry for registering any additional services
         from core.services.service_registry import ServiceRegistry
         registry = ServiceRegistry()
+        
+        # Log initialization status
+        logger = logging.getLogger("Services")
         for name, service in services.items():
-            registry.register(name, service)
+            status = "✅ Available" if service else "⚠️ Empty implementation"
+            logger.info(f"Service '{name}': {status}")
         
         return services
     except Exception as e:
