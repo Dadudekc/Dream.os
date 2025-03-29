@@ -4,7 +4,7 @@ from typing import Dict, Any, Optional
 
 from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
-from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
 from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 from core.TemplateManager import TemplateManager
@@ -182,16 +182,17 @@ class ServiceInitializer:
         except Exception as e:
             self.logger.error(f"❌ Error initializing DreamscapeEpisodeGenerator (core service): {str(e)}")
             self.dreamscape_generator = None
-
+    
     def _initialize_component_managers(self) -> None:
         """
         Initialize component managers responsible for UI and context tasks.
         """
         try:
             # Initialize TemplateManager with the path to dreamscape templates.
-            base_dir = os.path.dirname(os.path.dirname(os.pa(os.path.dirname(os.path.abspath(__file__)))))
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             dreamscape_dir = os.path.join(base_dir, 'templates', 'dreamscape_templates')
-            self.template_manager = TemplateManager(template_dir=dreamscape_dir)
+            self.template_manager = TemplateManager(template_path=dreamscape_dir)
+            self.template_manager.load_templates()
             self.logger.info("✅ TemplateManager initialized successfully")
         except Exception as e:
             self.logger.error(f"❌ Error initializing TemplateManager: {str(e)}")

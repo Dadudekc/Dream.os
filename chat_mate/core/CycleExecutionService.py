@@ -2,7 +2,7 @@ from typing import Dict, Any, Optional
 from config.ConfigManager import ConfigManager
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
-from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 from core.logging.CompositeLogger import CompositeLogger
 
 class CycleExecutionService:

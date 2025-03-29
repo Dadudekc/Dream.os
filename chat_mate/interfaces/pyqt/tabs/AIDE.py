@@ -9,14 +9,15 @@ This tab provides:
 - Debug session management
 - Code generation and testing
 - Self-healing capabilities
+- Project scanning functionality (new)
 """
 
 import sys
 import random
 from pathlib import Path
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, 
-                            QLabel, QSplitter, QTabWidget, QProgressBar, QPlainTextEdit, 
-                            QFileDialog)
+                             QLabel, QSplitter, QTabWidget, QProgressBar, QPlainTextEdit, 
+                             QFileDialog)
 from PyQt5.QtCore import Qt, pyqtSlot
 
 from interfaces.pyqt.widgets.file_browser_widget import FileBrowserWidget
@@ -36,7 +37,8 @@ class AIDE(QWidget):
         Args:
             dispatcher: Centralized signal dispatcher.
             logger: Logger instance.
-            services: Additional services including debug_service, fix_service, rollback_service, cursor_manager.
+            services: Additional services including debug_service, fix_service, rollback_service, 
+                      cursor_manager, project_scanner.
         """
         super().__init__()
         self.dispatcher = dispatcher
@@ -53,10 +55,14 @@ class AIDE(QWidget):
         self.fix_service = services.get("fix_service")
         self.rollback_service = services.get("rollback_service")
         self.cursor_manager = services.get("cursor_manager")
+        self.project_scanner = services.get("project_scanner")
         
         self._init_ui()
         self._connect_signals()
-        self.logger.info("AIDE initialized")
+        if self.logger:
+            self.logger.info("AIDE initialized")
+        else:
+            print("AIDE initialized")
 
     def _init_ui(self):
         """
@@ -91,8 +97,13 @@ class AIDE(QWidget):
         )
         preview_layout.addWidget(self.file_preview)
         
-        # Action buttons
+        # Action buttons layout
         button_layout = QHBoxLayout()
+        
+        # Add Scan Project button
+        self.scan_project_btn = QPushButton("Scan Project")
+        self.scan_project_btn.clicked.connect(self.on_scan_project)
+        button_layout.addWidget(self.scan_project_btn)
         
         # File processing buttons
         self.process_button = QPushButton("Process File")
@@ -163,7 +174,7 @@ class AIDE(QWidget):
 
     def _connect_signals(self):
         """
-        Connect signals between components
+        Connect signals between components.
         """
         if self.dispatcher:
             if hasattr(self.dispatcher, "automation_result"):
@@ -235,6 +246,26 @@ class AIDE(QWidget):
         results = self.engine.run_tests(self.current_file_path)
         self.append_output("Test run complete.")
 
+    # --- New: Project Scan Operation ---
+        
+    def on_scan_project(self):
+        """Trigger a project scan with live progress reporting."""
+        self.append_output("Scanning project...")
+        if self.project_scanner:
+            try:
+                # Define a callback that updates the progress bar.
+                def progress_callback(percent):
+                    self.progress_bar.setValue(percent)
+                    self.append_output(f"Scan progress: {percent}%")
+                
+                # Trigger scan_project with the progress callback.
+                self.project_scanner.scan_project(progress_callback=progress_callback)
+                self.append_output("✅ Project scan completed.")
+            except Exception as e:
+                self.append_output(f"❌ Project scan error: {e}")
+        else:
+            self.append_output("Project scanner service not available.")
+
     # --- Prompt Operations ---
 
     def send_prompt(self):
@@ -296,7 +327,6 @@ class AIDE(QWidget):
 
     # --- Debug Operations ---
 
-    @pyqtSlot()
     def on_run_debug(self):
         """Run a debug session."""
         self.append_output("Starting debug session...")
@@ -314,7 +344,6 @@ class AIDE(QWidget):
         else:
             self.append_output("Debug service not available.")
 
-    @pyqtSlot()
     def on_apply_fix(self):
         """Apply a fix."""
         self.append_output("Applying fix...")
@@ -332,7 +361,6 @@ class AIDE(QWidget):
         else:
             self.append_output("Fix service not available.")
 
-    @pyqtSlot()
     def on_rollback_fix(self):
         """Roll back a fix."""
         self.append_output("Rolling back fix...")
@@ -350,7 +378,6 @@ class AIDE(QWidget):
         else:
             self.append_output("Rollback service not available.")
 
-    @pyqtSlot()
     def on_cursor_execute(self):
         """Execute a prompt via the Cursor integration."""
         self.append_output("Executing debug prompt via Cursor...")
@@ -375,12 +402,10 @@ class AIDE(QWidget):
 
     # --- Signal Handlers ---
 
-    @pyqtSlot(str)
     def on_automation_result(self, result):
         """Handle automation result from the dispatcher."""
         self.append_output(result)
 
-    @pyqtSlot(str)
     def on_cursor_code_generated(self, code):
         """Handle generated code from Cursor."""
         self.append_output("Cursor generated code:")
@@ -388,17 +413,12 @@ class AIDE(QWidget):
 
     def append_output(self, message: str):
         """Append a message to the output and log it."""
-        # Log message to the central log system via dispatcher if available
         if self.dispatcher and hasattr(self.dispatcher, "emit_append_output"):
             self.dispatcher.emit_append_output(message)
-        
-        # Also show in the prompt response area for immediate feedback
         current_text = self.prompt_response.toPlainText()
         if current_text:
             self.prompt_response.setPlainText(f"{current_text}\n{message}")
         else:
             self.prompt_response.setPlainText(message)
-            
-        # Log using the logger if available
         if self.logger:
-            self.logger.info(f"[AIDE] {message}") 
+            self.logger.info(f"[AIDE] {message}")

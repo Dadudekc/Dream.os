@@ -19,7 +19,7 @@ from config.ConfigManager import ConfigManager
 from core.executors.cursor_executor import CursorExecutor
 from core.executors.chatgpt_executor import ChatGPTExecutor
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
-from core.DiscordBatchDispatcher import DiscordBatchDispatcher
+from core.services.discord.DiscordBatchDispatcher import DiscordBatchDispatcher
 from core.ReinforcementEvaluator import ReinforcementEvaluator
 from core.DriverSessionManager import DriverSessionManager
 from core.services.config_service import ConfigService

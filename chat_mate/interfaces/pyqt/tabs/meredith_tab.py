@@ -30,9 +30,12 @@ from PyQt5.QtWidgets import (
 # Adjust import paths to your project structure
 from core.meredith.profile_scraper import ScraperManager, ProfileFilter
 from core.meredith.resonance_scorer import ResonanceScorer
+from core.PathManager import PathManager
 
 # Directory where all resonance JSON models are stored
-MODEL_DIR = os.path.join(os.getcwd(), "resonance_match_models")
+MODEL_DIR = PathManager().get_path("resonance_models")
+
+
 
 ###############################################################################
 #                             SCRAPER THREAD                                  #

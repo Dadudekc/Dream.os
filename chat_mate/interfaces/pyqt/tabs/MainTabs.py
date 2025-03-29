@@ -8,6 +8,8 @@ from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
 from interfaces.pyqt.tabs.AIDE import AIDE
 from interfaces.pyqt.tabs.meredith_tab import MeredithTab  # NEW
 from interfaces.pyqt.tabs.SyncOpsTab import SyncOpsTab        # ADDED
+from interfaces.pyqt.widgets.file_browser_widget import FileBrowserWidget
+import logging
 
 class MainTabs(QTabWidget):
     """
@@ -18,29 +20,86 @@ class MainTabs(QTabWidget):
     which improves readability and extensibility while retaining all original features.
     """
 
-    def __init__(self, dispatcher, ui_logic=None, config_manager=None, logger=None, 
-                 prompt_manager=None, chat_manager=None, memory_manager=None, 
+    def __init__(self, dispatcher=None, ui_logic=None, config_manager=None, logger=None,
+                 prompt_manager=None, chat_manager=None, memory_manager=None,
                  discord_manager=None, cursor_manager=None, **extra_dependencies):
         """
         Initialize MainTabs with all required services and a SignalDispatcher.
         """
         super().__init__()
-
-        # Core services
         self.dispatcher = dispatcher
         self.ui_logic = ui_logic
-        self.logger = logger
         self.config_manager = config_manager
+        self.logger = logger or logging.getLogger("MainTabs")
         self.prompt_manager = prompt_manager
         self.chat_manager = chat_manager
         self.memory_manager = memory_manager
         self.discord_manager = discord_manager
         self.cursor_manager = cursor_manager
         self.extra_dependencies = extra_dependencies
+        
+        self.init_tabs()
+        self.logger.info("MainTabs initialized")
 
         self.tabs = {}
         self._init_tabs()
         self._connect_signals()
+
+        self.file_browser = FileBrowserWidget()
+
+    def init_tabs(self):
+        """Initialize all tab widgets."""
+        try:
+            # Initialize tabs here
+            pass
+        except Exception as e:
+            self.logger.error(f"Error initializing tabs: {e}")
+
+    def cleanup(self):
+        """Gracefully close resources used by tabs."""
+        self.logger.info("Starting MainTabs cleanup...")
+        
+        # Clean up each tab
+        for tab_index in range(self.count()):
+            try:
+                widget = self.widget(tab_index)
+                tab_name = self.tabText(tab_index)
+                if hasattr(widget, "cleanup"):
+                    self.logger.info(f"Cleaning up tab: {tab_name}")
+                    widget.cleanup()
+                else:
+                    self.logger.debug(f"Tab {tab_name} has no cleanup method")
+            except Exception as e:
+                self.logger.error(f"Error cleaning up tab {tab_index}: {e}")
+
+        # Clean up managers if they have cleanup methods
+        managers = {
+            'prompt_manager': self.prompt_manager,
+            'chat_manager': self.chat_manager,
+            'memory_manager': self.memory_manager,
+            'discord_manager': self.discord_manager,
+            'cursor_manager': self.cursor_manager
+        }
+
+        for manager_name, manager in managers.items():
+            if manager and hasattr(manager, 'cleanup'):
+                try:
+                    self.logger.info(f"Cleaning up {manager_name}...")
+                    manager.cleanup()
+                except Exception as e:
+                    self.logger.error(f"Error cleaning up {manager_name}: {e}")
+
+        # Clean up extra dependencies
+        if self.extra_dependencies:
+            for dep_name, dependency in self.extra_dependencies.items():
+                if dependency and hasattr(dependency, 'cleanup'):
+                    try:
+                        self.logger.info(f"Cleaning up extra dependency: {dep_name}")
+                        dependency.cleanup()
+                    except Exception as e:
+                        self.logger.error(f"Error cleaning up {dep_name}: {e}")
+
+        self.logger.info("MainTabs cleanup completed")
 
     def _init_tabs(self):
         """

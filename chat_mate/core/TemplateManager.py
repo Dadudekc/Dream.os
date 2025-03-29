@@ -15,7 +15,8 @@ except ImportError:
 try:
     from social.log_writer import write_json_log
 except ImportError:
-    def write_json_log(platform, result, tags, ai_output): pass
+    def write_json_log(platform, result, tags, ai_output): 
+        pass
 
 class TemplateManager(QObject):
     """
@@ -86,6 +87,9 @@ class TemplateManager(QObject):
 
         # Active template (for general category by default)
         self.active_template: Optional[str] = None
+
+        # Initialize the templates dictionary BEFORE loading templates to avoid attribute errors.
+        self.templates: Dict[str, str] = {}
 
         # Initialize a file system watcher for hot reloading.
         self.watcher = QFileSystemWatcher()
@@ -236,7 +240,6 @@ class TemplateManager(QObject):
         except Exception as e:
             self.logger.error(f"Error loading template {template_rel_path}: {e}")
             return None
-
 
     def set_active_template(self, template_name: str, category: str = "general"):
         """

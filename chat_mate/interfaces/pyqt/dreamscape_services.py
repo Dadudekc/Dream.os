@@ -43,7 +43,7 @@ from utils.run_summary import generate_full_run_json
 from core.DriverManager import DriverManager
 from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
-from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
 from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator

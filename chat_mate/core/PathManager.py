@@ -1,6 +1,6 @@
 import os
 import logging
-from typing import Dict, Optional
+from typing import Dict
 from core.bootstrap import get_bootstrap_paths
 from pathlib import Path
 
@@ -51,9 +51,17 @@ class PathManager(metaclass=PathManagerMeta):
     def _ensure_initialized(cls) -> None:
         """Ensure paths are initialized from bootstrap if not already done."""
         if not cls._initialized:
+            from core.bootstrap import get_bootstrap_paths
             cls._paths = get_bootstrap_paths()
+
+            # 🔧 Register additional paths not included in bootstrap
+            if "resonance_models" not in cls._paths:
+                # You can adjust the subpath here if your folder structure changes
+                cls._paths["resonance_models"] = Path(cls._paths["base"]) / "core" / "meredith" / "resonance_match_models"
+
             cls._initialized = True
             PathManagerMeta._generate_properties(cls)
+
     
     @classmethod
     def register_path(cls, key: str, path: str) -> None:
@@ -67,10 +75,10 @@ class PathManager(metaclass=PathManagerMeta):
         cls._ensure_initialized()
         abs_path = Path(path)
         if key in cls._paths and cls._paths[key] != abs_path:
-            logger.warning(f"️ Overwriting existing path for key '{key}'")
+            logger.warning(f"Overwriting existing path for key '{key}'")
         cls._paths[key] = abs_path
         # Regenerate dynamic properties for the new key.
-        cls.__class__._generate_properties()
+        PathManagerMeta._generate_properties(cls)
     
     @classmethod
     def get_path(cls, key: str) -> Path:
@@ -88,7 +96,7 @@ class PathManager(metaclass=PathManagerMeta):
         """
         cls._ensure_initialized()
         if key not in cls._paths:
-            logger.warning(f"️ Path key '{key}' not found.")
+            logger.warning(f"Path key '{key}' not found.")
             raise ValueError(f"Path key '{key}' not found.")
         return cls._paths[key]
     
@@ -227,3 +235,14 @@ class PathManager(metaclass=PathManagerMeta):
         cls._ensure_initialized()
         base = cls.get_path("memory")
         return base / filename if filename else base
+
+    @classmethod
+    def get_workspace_path(cls) -> Path:
+        """
+        Get the root workspace path.
+        
+        Returns:
+            Path: The workspace root path
+        """
+        cls._ensure_initialized()
+        return cls.get_path("base")

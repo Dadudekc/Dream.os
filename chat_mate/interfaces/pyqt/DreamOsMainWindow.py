@@ -28,7 +28,6 @@ from core.chatgpt_automation.controllers.assistant_mode_controller import Assist
 from core.chatgpt_automation.OpenAIClient import OpenAIClient
 from core.system.startup_validator import StartupValidator
 from core.PathManager import PathManager
-from interfaces.pyqt.tabs.full_sync_tab import FullSyncTab
 from core.micro_factories.chat_factory import create_chat_manager
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
@@ -41,7 +40,7 @@ class DreamscapeMainWindow(QMainWindow):
     Provides a decoupled interface with signal dispatching and async task support.
     """
 
-    def __init__(self, ui_logic: DreamscapeUILogic, dispatcher: SignalDispatcher, services=None):
+    def __init__(self, ui_logic: DreamscapeUILogic, dispatcher: SignalDispatcher, services=None, event_loop_manager=None):
         """
         Initialize the main window with UI logic, signal dispatcher, and services.
         """
@@ -50,6 +49,9 @@ class DreamscapeMainWindow(QMainWindow):
         self.dispatcher = dispatcher
         self.services = services or {}
         self.logger = self.services.get('logger', logging.getLogger("DreamscapeMainWindow"))
+        self.event_loop_manager = event_loop_manager
+        
+        self.path_manager = PathManager()
         
         # Initialize OpenAI client
         try:
@@ -60,15 +62,9 @@ class DreamscapeMainWindow(QMainWindow):
             self.logger.error(f"Failed to initialize OpenAI client: {e}")
             self.openai_client = None
         
-        self.path_manager = PathManager()
-        
         # Initialize assistant controller
         try:
-            self.assistant_controller = AssistantModeController(
-                openai_client=self.openai_client,
-                config=self.services.get('config_manager'),
-                logger=self.logger
-            )
+            self.assistant_controller = AssistantModeController(engine=self.openai_client)
             self.logger.info("Assistant controller initialized")
         except Exception as e:
             self.logger.error(f"Failed to initialize assistant controller: {e}")
@@ -82,6 +78,8 @@ class DreamscapeMainWindow(QMainWindow):
         self.setup_signals()
 
         self.logger.info("DreamscapeMainWindow initialized")
+
+        self.engine = AutomationEngine()  # Initialize engine for project scanning
 
     def verify_services(self):
         """
@@ -366,14 +364,78 @@ class DreamscapeMainWindow(QMainWindow):
     def closeEvent(self, event):
         """
         Handle application close event.
-        Ensure proper cleanup of resources.
+        Ensure proper cleanup of resources in a specific order.
         """
-        if self.openai_client:
-            try:
+        self.logger.info("Starting application shutdown sequence...")
+
+        # 1. Stop the assistant first to prevent new operations
+        try:
+            if hasattr(self, 'assistant_controller') and self.assistant_controller:
+                self.logger.info("Stopping assistant controller...")
+                self.stop_assistant()
+        except Exception as e:
+            self.logger.error(f"Error stopping assistant controller: {str(e)}")
+
+        # 2. Clean up UI components and tabs
+        try:
+            if hasattr(self, 'tabs') and self.tabs:
+                self.logger.info("Cleaning up tabs...")
+                self.tabs.cleanup()
+        except Exception as e:
+            self.logger.error(f"Error cleaning up tabs: {str(e)}")
+
+        # 3. Shutdown OpenAI client
+        try:
+            if hasattr(self, 'openai_client') and self.openai_client:
+                self.logger.info("Shutting down OpenAI client...")
                 self.openai_client.shutdown()
-            except Exception as e:
-                self.logger.error(f"Error shutting down OpenAI client: {str(e)}")
+        except Exception as e:
+            self.logger.error(f"Error shutting down OpenAI client: {str(e)}")
+
+        # 4. Clean up services in specific order
+        if hasattr(self, 'services'):
+            # First, shutdown high-level services that might depend on others
+            high_level_services = ['discord_service', 'chat_manager', 'prompt_manager']
+            for service_name in high_level_services:
+                self._shutdown_service(service_name)
+
+            # Then shutdown remaining services
+            for service_name, service in self.services.items():
+                if service_name not in high_level_services:
+                    self._shutdown_service(service_name)
+
+        # 5. Stop the event loop manager last
+        try:
+            if self.event_loop_manager:
+                self.logger.info("Shutting down event loop manager...")
+                # First stop the loop
+                if self.event_loop_manager.loop and self.event_loop_manager.loop.is_running():
+                    self.logger.info("Stopping running event loop...")
+                    self.event_loop_manager.loop.call_soon_threadsafe(self.event_loop_manager.loop.stop)
+                
+                # Then shutdown the manager
+                self.event_loop_manager.shutdown()
+        except Exception as e:
+            self.logger.error(f"Error shutting down event loop manager: {str(e)}")
+
+        self.logger.info("Application shutdown completed successfully")
         event.accept()
+
+    def _shutdown_service(self, service_name):
+        """Helper method to shutdown a single service."""
+        try:
+            service = self.services.get(service_name)
+            if service:
+                if hasattr(service, 'shutdown'):
+                    self.logger.info(f"Shutting down {service_name}...")
+                    service.shutdown()
+                elif hasattr(service, 'cleanup'):
+                    self.logger.info(f"Cleaning up {service_name}...")
+                    service.cleanup()
+                else:
+                    self.logger.debug(f"Service {service_name} has no shutdown/cleanup method")
+        except Exception as e:
+            self.logger.error(f"Error shutting down service {service_name}: {str(e)}")
 
     def _run_startup_validation(self):
         """Run startup validation and handle results."""
@@ -409,11 +471,7 @@ class DreamscapeMainWindow(QMainWindow):
 
     def _init_tabs(self):
         """Initialize and add all tab widgets."""
-        # Add Full Sync tab
-        self.full_sync_tab = FullSyncTab(self)
-        self.tabs.addTab(self.full_sync_tab, "Full Sync")
         
-        # TODO: Add other tabs here
         
     def log_message(self, message: str, level: str = "info"):
         """Log a message to both logger and relevant UI components."""
@@ -557,7 +615,10 @@ def main():
 
     try:
         # Create and show main window
-        window = DreamscapeMainWindow(ui_logic, dispatcher, services=services)
+        window = DreamscapeMainWindow(ui_logic=DreamscapeUILogic(), 
+                                    dispatcher=dispatcher, 
+                                    services=services,
+                                    event_loop_manager=event_loop_manager)
         window.show()  # Make window visible
         window.raise_()  # Bring window to front
         window.activateWindow()  # Give window focus
@@ -597,30 +658,43 @@ def initialize_services():
         memory_dir = PathManager().get_path("memory")
         repair_memory_files(memory_dir, logger)
         
-        # Create chat manager first
-        chat_manager = create_chat_manager(config_manager, logger)
-        if not chat_manager:
-            raise RuntimeError("Failed to create ChatManager")
-        
-        # Create prompt service with dependencies
+        # Create prompt service first
         from core.services.service_registry import create_prompt_service
         prompt_service = create_prompt_service(config_manager)
         if not prompt_service:
             raise RuntimeError("Failed to create UnifiedPromptService")
         
-        # Create orchestrator with injected dependencies
-        orchestrator = PromptCycleOrchestrator(
-            config_manager=config_manager,
-            chat_manager=chat_manager,
-            prompt_service=prompt_service
-        )
+        # Create chat manager with prompt service
+        chat_manager = create_chat_manager(config_manager, logger, prompt_service)
+        if not chat_manager:
+            raise RuntimeError("Failed to create ChatManager")
         
-        return {
+        # Create orchestrator with injected dependencies
+        try:
+            orchestrator = PromptCycleOrchestrator(
+                config_manager=config_manager,
+                chat_manager=chat_manager,  # Ensure chat_manager is passed
+                prompt_service=prompt_service
+            )
+            logger.info("PromptCycleOrchestrator initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize PromptCycleOrchestrator: {e}")
+            orchestrator = _create_empty_service("orchestrator", logger)
+        
+        services = {
             'config_manager': config_manager,
             'chat_manager': chat_manager,
             'orchestrator': orchestrator,
             'prompt_service': prompt_service
         }
+        
+        # Register services in the service registry
+        from core.services.service_registry import ServiceRegistry
+        registry = ServiceRegistry()
+        for name, service in services.items():
+            registry.register(name, service)
+        
+        return services
     except Exception as e:
         logger.error(f"Failed to initialize services: {e}")
         raise

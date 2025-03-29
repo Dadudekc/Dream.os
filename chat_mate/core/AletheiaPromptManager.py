@@ -22,7 +22,7 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 # Import DiscordManager from your core directory
-from core.DiscordManager import DiscordManager
+from core.services.discord.DiscordManager import DiscordManager
 
 
 class AletheiaPromptManager:

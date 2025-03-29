@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication
 
 from core.ChatManager import ChatManager
 from core.AletheiaPromptManager import AletheiaPromptManager
-from core.DiscordManager import DiscordManager
+from core.services.discord.DiscordManager import DiscordManager
 from core.ReinforcementEngine import ReinforcementEngine
 from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler

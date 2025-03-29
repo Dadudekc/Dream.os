@@ -1,6 +1,8 @@
 import logging
 import os
 from typing import Dict, Any, Optional
+import json
+from datetime import datetime
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QMessageBox
 
@@ -280,4 +282,27 @@ class ContextManager:
             
         except Exception as e:
             self.logger.error(f"Error saving context schedule: {str(e)}")
+            return False
+            
+    def cleanup(self):
+        """
+        Clean up resources used by the ContextManager.
+        Called during application shutdown.
+        """
+        try:
+            self.logger.info("Cleaning up ContextManager resources...")
+            
+            # Ensure any pending context changes are saved
+            if hasattr(self, 'context_manager') and self.context_manager:
+                if hasattr(self.context_manager, 'save_context'):
+                    try:
+                        self.logger.debug("Saving context memory during cleanup")
+                        self.context_manager.save_context()
+                    except Exception as e:
+                        self.logger.error(f"Error saving context during cleanup: {str(e)}")
+            
+            self.logger.info("ContextManager cleanup completed")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error during ContextManager cleanup: {str(e)}")
             return False 

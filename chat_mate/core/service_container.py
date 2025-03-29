@@ -5,7 +5,7 @@ from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
 from config.ConfigManager import ConfigManager
-from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 
 # Local LLM Backends
 from core.llm_backends.huggingface_backend import HuggingFaceBackend

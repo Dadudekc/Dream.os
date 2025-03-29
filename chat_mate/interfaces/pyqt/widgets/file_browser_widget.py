@@ -44,13 +44,15 @@ class FileTreeWidget(QtWidgets.QTreeWidget):
 class FileBrowserWidget(QtWidgets.QWidget):
     """Enhanced file browser widget with advanced filtering and context menu."""
     
-    file_selected = QtCore.pyqtSignal(str)  # Keep existing signal
+    file_selected = QtCore.pyqtSignal(str)  # Signal for file selection
+    fileDoubleClicked = QtCore.pyqtSignal(str)  # Signal for double-click events
 
-    def __init__(self, parent=None, root_dir: Optional[str] = None):
+    def __init__(self, parent=None, root_dir: Optional[str] = None, helpers=None):
         super().__init__(parent)
         self.root_dir = root_dir or os.getcwd()
         self.icon_path = os.path.join(os.path.dirname(__file__), "icons")
         self.view_mode = "Emoji"  # Default view mode
+        self.helpers = helpers  # Assign the 'helpers' parameter to self.helpers
 
         self.setup_ui()
         self.populate_tree(self.root_dir)
@@ -62,7 +64,7 @@ class FileBrowserWidget(QtWidgets.QWidget):
         # Search bar with match counter
         search_layout = QtWidgets.QHBoxLayout()
         self.search_box = QtWidgets.QLineEdit()
-        self.search_box.setPlaceholder("Search files (fuzzy match)")
+        self.search_box.setPlaceholderText("Search files (fuzzy match)")
         self.search_box.textChanged.connect(self.filter_tree)
         self.match_counter = QtWidgets.QLabel("0 matches")
         search_layout.addWidget(self.search_box)
@@ -70,10 +72,12 @@ class FileBrowserWidget(QtWidgets.QWidget):
         layout.addLayout(search_layout)
         
         # File tree
-        self.tree = QtWidgets.QTreeWidget()
+        self.tree = FileTreeWidget()  # Use our custom FileTreeWidget
         self.tree.setHeaderLabels(["Name"])
         self.tree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tree.customContextMenuRequested.connect(self.open_context_menu)
+        self.tree.itemDoubleClicked.connect(self.on_item_double_clicked)  # Connect double-click signal
+        self.tree.itemExpanded.connect(self.on_item_expanded)  # Connect expand signal
         layout.addWidget(self.tree)
         
     def populate_tree(self, directory):
@@ -185,8 +189,9 @@ class FileBrowserWidget(QtWidgets.QWidget):
             if not item.isExpanded():
                 item.setExpanded(True)
         elif os.path.isfile(file_path):
-            # Emit custom signal to notify main window.
+            # Emit both signals for backward compatibility
             self.file_selected.emit(file_path)
+            self.fileDoubleClicked.emit(file_path)
 
     def open_context_menu(self, position):
         """Show context menu with enhanced file operations."""

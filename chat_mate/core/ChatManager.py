@@ -27,16 +27,18 @@ def sanitize_filename(filename: str) -> str:
     return re.sub(r'[\\/*?:"<>|]', '_', filename)
 
 class ChatManager(IChatManager):
-    def __init__(self, config: ConfigManager, logger: Optional[logging.Logger] = None):
+    def __init__(self, config: ConfigManager, logger: Optional[logging.Logger] = None, prompt_manager=None):
         """
         Initialize the ChatManager.
         
         Args:
             config: Configuration object or dictionary
             logger: Optional logger instance
+            prompt_manager: Optional prompt manager instance
         """
         self.config = config
         self.logger = logger or logging.getLogger(__name__)
+        self.prompt_manager = prompt_manager
 
         # Patch memory path initialization using PathManager.
         memory_path = None

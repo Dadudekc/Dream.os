@@ -342,6 +342,28 @@ def create_memory_service(config_service: Any = None) -> Any:
         return container._create_empty_service("memory_service")
 
 
+def create_template_manager(config_manager=None, logger=None):
+    """Create and configure the template manager."""
+    try:
+        from core.TemplateManager import TemplateManager
+        
+        # Initialize with default data and logger
+        default_data = {}
+        if config_manager:
+            default_data = config_manager.get('template_defaults', {})
+        
+        template_manager = TemplateManager(
+            default_data=default_data,
+            logger=logger
+        )
+        
+        return template_manager
+    except Exception as e:
+        if logger:
+            logger.error(f"Failed to create TemplateManager: {e}")
+        return None
+
+
 # -----------------------------------------------------------------------------
 # Service Registry and Registration
 # -----------------------------------------------------------------------------

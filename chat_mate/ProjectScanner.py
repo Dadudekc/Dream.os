@@ -410,11 +410,15 @@ class ReportGenerator:
         return {}
 
     def save_report(self):
-        """Merge new analysis results into old project_analysis.json, then write it out."""
+        """
+        Merge new analysis results into old project_analysis.json, then write it out.
+        Old data is kept; new files are added or updated.
+        """
         report_path = self.project_root / "project_analysis.json"
         existing = self.load_existing_report(report_path)
 
-        # Merge logic: new data overrides old
+        # Merge logic: new data overrides old entries with the same filename,
+        # but preserves any old entries for files not in the current scan.
         merged = {**existing, **self.analysis}
 
         with report_path.open("w", encoding="utf-8") as f:
@@ -472,6 +476,7 @@ class ReportGenerator:
     def export_chatgpt_context(self, template_path: Optional[str] = None, output_path: Optional[str] = None):
         """
         Merges current analysis details with old chatgpt_project_context.json.
+        Again, old keys remain unless overridden by new data.
         If no template, write JSON. Else use Jinja to render a custom format.
         """
         if not output_path:
@@ -490,11 +495,12 @@ class ReportGenerator:
                 "num_files_analyzed": len(self.analysis),
                 "analysis_details": self.analysis
             }
+            # New data overrides same keys, but preserves everything else.
             merged_context = {**existing_context, **payload}
             try:
                 with context_path.open("w", encoding="utf-8") as f:
                     json.dump(merged_context, f, indent=4)
-                logger.info(f"✅ Merged ChatGPT context saved to: {output_path}")
+                logger.info(f"✅ Merged ChatGPT context saved to: {context_path}")
             except Exception as e:
                 logger.error(f"❌ Error writing ChatGPT context: {e}")
             return
@@ -533,8 +539,8 @@ class ProjectScanner:
       - Extracts functions, classes, routes, complexity.
       - Caches file hashes to skip unchanged files.
       - Detects moved files by matching file hashes.
-      - Merges new analysis into existing project_analysis.json (no overwrite).
-      - Exports a merged ChatGPT context if requested.
+      - Merges new analysis into existing project_analysis.json (preserving old entries).
+      - Exports a merged ChatGPT context if requested (preserving old context data).
       - Processes files asynchronously with BotWorker threads.
       - Auto-generates __init__.py files for Python packages.
     """
@@ -570,15 +576,16 @@ class ProjectScanner:
         with cache_path.open("w", encoding="utf-8") as f:
             json.dump(self.cache, f, indent=4)
 
-    def scan_project(self):
+    def scan_project(self, progress_callback: Optional[callable] = None):
         """
         Orchestrates the project scan:
-         - Finds Python, Rust, JS, TS files with os.walk()
-         - Excludes certain directories
-         - Detects moved files by comparing cached hashes
-         - Spawns multibot workers for concurrency
-         - Merges new analysis with old project_analysis.json
-         - Writes or updates the final 'project_analysis.json'
+        - Finds Python, Rust, JS, TS files with os.walk()
+        - Excludes certain directories
+        - Detects moved files by comparing cached hashes
+        - Spawns multibot workers for concurrency
+        - Merges new analysis with old project_analysis.json (preserving old data)
+        - Writes/updates 'project_analysis.json' without overwriting unscanned files
+        - Reports progress via progress_callback(percent)
         """
         logger.info(f"🔍 Scanning project: {self.project_root} ...")
 
@@ -593,7 +600,12 @@ class ProjectScanner:
                 if file_path.suffix.lower() in file_extensions and not self.file_processor.should_exclude(file_path):
                     valid_files.append(file_path)
 
-        logger.info(f"📝 Found {len(valid_files)} valid files for analysis.")
+        total_files = len(valid_files)
+        logger.info(f"📝 Found {total_files} valid files for analysis.")
+
+        # Progress reporting: update every file processed
+        processed_count = 0
+
         previous_files = set(self.cache.keys())
         current_files = {str(f.relative_to(self.project_root)) for f in valid_files}
         moved_files = {}
@@ -635,8 +647,12 @@ class ProjectScanner:
         manager.wait_for_completion()
         manager.stop_workers()
 
-        # Gather results from manager
+        # Update progress for each processed file
         for result in manager.results_list:
+            processed_count += 1
+            if progress_callback:
+                percent = int((processed_count / total_files) * 100)
+                progress_callback(percent)
             if result is not None:
                 file_path, analysis_result = result
                 self.analysis[file_path] = analysis_result
@@ -644,7 +660,8 @@ class ProjectScanner:
         # Merge & write final report + save updated cache
         self.report_generator.save_report() 
         self.save_cache()
-        logger.info(f"✅ Scan complete. Results merged into {self.project_root / 'project_analysis.json'}")
+        logger.info(f"✅ Scan complete. Results merged into {self.project_root / 'project_analysis.json'} (preserving existing file data)")
+
 
     def _process_file(self, file_path: Path):
         """Processes a file via FileProcessor, returning (relative_path, analysis_result)."""
@@ -655,7 +672,7 @@ class ProjectScanner:
         self.report_generator.generate_init_files(overwrite)
 
     def export_chatgpt_context(self, template_path: Optional[str] = None, output_path: Optional[str] = None):
-        """Merges new analysis into old chatgpt_project_context.json or uses a Jinja template."""
+        """Merges new analysis into old chatgpt_project_context.json or uses a Jinja template, preserving existing data."""
         self.report_generator.export_chatgpt_context(template_path, output_path)
 
     # ----- Agent Categorization -----
@@ -704,7 +721,7 @@ def main():
     parser.add_argument("--project-root", default=".", help="Root directory to scan.")
     parser.add_argument("--ignore", nargs="*", default=[], help="Additional directories to ignore.")
     parser.add_argument("--categorize-agents", action="store_true", help="Categorize Python classes into maturity level and agent type.")
-    parser.add_argument("--export-chatgpt-context", action="store_true", help="Export ChatGPT context along with project analysis.")
+    parser.add_argument("--no-chatgpt-context", action="store_true", help="Skip exporting ChatGPT context.")
     parser.add_argument("--generate-init", action="store_true", help="Enable auto-generating __init__.py files.")
     args = parser.parse_args()
 
@@ -721,9 +738,19 @@ def main():
         scanner.report_generator.save_report()
         logging.info("✅ Agent categorization complete. Updated project_analysis.json.")
 
-    if args.export_chatgpt_context:
+    if not args.no_chatgpt_context:
         scanner.export_chatgpt_context()
-        logging.info("✅ ChatGPT context exported.")
+        logging.info("✅ ChatGPT context exported by default.")
+
+        # Output merged ChatGPT context to stdout
+        context_path = Path(args.project_root) / "chatgpt_project_context.json"
+        if context_path.exists():
+            try:
+                with context_path.open("r", encoding="utf-8") as f:
+                    chatgpt_context = json.load(f)
+            except Exception as e:
+                logger.error(f"❌ Error reading exported ChatGPT context: {e}")
 
 if __name__ == "__main__":
     main()
+

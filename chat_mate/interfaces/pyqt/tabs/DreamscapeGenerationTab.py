@@ -1,5 +1,3 @@
-# File: interfaces/pyqt/tabs/DreamscapeGenerationTab.py
-
 import os
 import logging
 from datetime import datetime
@@ -18,6 +16,8 @@ from interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer import Servic
 from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 from interfaces.pyqt.tabs.dreamscape_generation.ContextManager import ContextManager
 from interfaces.pyqt.tabs.dreamscape_generation.UIManager import UIManager
+
+logger = logging.getLogger(__name__)
 
 class DreamscapeGenerationTab(QWidget):
     """
@@ -67,6 +67,11 @@ class DreamscapeGenerationTab(QWidget):
         )
         self._store_service_references(services)
 
+        # Optionally store prompt_manager from services (if provided)
+        self.prompt_manager = services.get("prompt_manager", None)
+        if not self.prompt_manager:
+            self.logger.warning("No prompt_manager service provided.")
+
         # -------------------------
         # 2) SET UP THE UI
         # -------------------------
@@ -86,18 +91,18 @@ class DreamscapeGenerationTab(QWidget):
         core_services = services['core_services']
         component_managers = services['component_managers']
 
-        self.cycle_service = core_services['cycle_service']
-        self.prompt_handler = core_services['prompt_handler']
-        self.discord_processor = core_services['discord_processor']
-        self.task_orchestrator = core_services['task_orchestrator']
-        self.dreamscape_generator = core_services['dreamscape_generator']
+        self.cycle_service = core_services.get('cycle_service')
+        self.prompt_handler = core_services.get('prompt_handler')
+        self.discord_processor = core_services.get('discord_processor')
+        self.task_orchestrator = core_services.get('task_orchestrator')
+        self.dreamscape_generator = core_services.get('dreamscape_generator')
 
-        self.template_manager = component_managers['template_manager']
-        self.episode_generator = component_managers['episode_generator']
-        self.context_manager = component_managers['context_manager']
-        self.ui_manager = component_managers['ui_manager']
+        self.template_manager = component_managers.get('template_manager')
+        self.episode_generator = component_managers.get('episode_generator')
+        self.context_manager = component_managers.get('context_manager')
+        self.ui_manager = component_managers.get('ui_manager')
 
-        self.output_dir = services['output_dir']
+        self.output_dir = services.get('output_dir')
 
     # ------------------------------------------------------------
     # UI INIT
@@ -367,8 +372,19 @@ class DreamscapeGenerationTab(QWidget):
     def _load_initial_data(self):
         """Load initial templates, episode list, and context memory."""
         try:
+            # If ui_manager is available, use it to load templates; otherwise, fallback
             if hasattr(self, 'ui_manager') and self.ui_manager and hasattr(self, 'template_dropdown'):
-                self.ui_manager.load_templates(self.template_dropdown)
+                if self.template_manager is not None:
+                    self.ui_manager.load_templates(self.template_dropdown)
+                else:
+                    self.logger.warning("No template_manager available; using fallback directory.")
+                    default_template_dir = os.path.join(os.getcwd(), "templates", "dreamscape_templates")
+                    if os.path.isdir(default_template_dir):
+                        templates = [f for f in os.listdir(default_template_dir) if f.endswith('.j2')]
+                        self.template_dropdown.clear()
+                        self.template_dropdown.addItems(templates)
+                    else:
+                        self.logger.error(f"Default template directory not found: {default_template_dir}")
 
             self.refresh_episode_list()
             self.refresh_context_memory()
@@ -396,8 +412,17 @@ class DreamscapeGenerationTab(QWidget):
         self.ui_manager.render_template_preview(template_name, self.template_preview, context)
 
     def _validate_template_context(self):
-        if not self.template_manager.active_template:
+        # Guard against template_manager being None or missing active_template attribute
+        if not self.template_manager or not hasattr(self.template_manager, 'active_template'):
+            self.missing_vars_label.setText('Template Manager unavailable')
+            self.missing_vars_label.setStyleSheet('color: red')
             return
+
+        if not self.template_manager.active_template:
+            self.missing_vars_label.setText("No active template selected")
+            self.missing_vars_label.setStyleSheet("color: red")
+            return
+
         context = self.context_manager.get_preview_context()
         missing = self.template_manager.validate_context(self.template_manager.active_template, context)
         if missing:
@@ -533,3 +558,64 @@ class DreamscapeGenerationTab(QWidget):
         except Exception as e:
             self.logger.error(f"Error populating chat list: {str(e)}")
             return 0
+
+    def cleanup(self):
+        """
+        Clean up resources used by this tab.
+        Called when the application is shutting down.
+        """
+        self.logger.info("Cleaning up DreamscapeGenerationTab resources...")
+        
+        try:
+            # Cancel any ongoing generation
+            if hasattr(self, 'episode_generator') and self.episode_generator:
+                self.logger.info("Cancelling any ongoing episode generation...")
+                self.episode_generator.cancel_generation()
+            
+            # Stop any timers
+            if hasattr(self, 'ui_manager') and self.ui_manager:
+                self.logger.info("Stopping UI timers...")
+                self.ui_manager.stop_timers()
+            
+            # Clean up resources in component managers
+            component_managers = [
+                ('episode_generator', 'shutdown'),
+                ('template_manager', 'cleanup'),
+                ('context_manager', 'cleanup'),
+                ('ui_manager', 'cleanup')
+            ]
+            
+            for manager_name, method_name in component_managers:
+                if hasattr(self, manager_name):
+                    manager = getattr(self, manager_name)
+                    if manager and hasattr(manager, method_name):
+                        try:
+                            self.logger.info(f"Cleaning up {manager_name}...")
+                            method = getattr(manager, method_name)
+                            method()
+                        except Exception as e:
+                            self.logger.error(f"Error cleaning up {manager_name}: {str(e)}")
+            
+            # Clean up core services
+            core_services = [
+                ('cycle_service', 'shutdown'),
+                ('prompt_handler', 'cleanup'),
+                ('discord_processor', 'cleanup'),
+                ('task_orchestrator', 'shutdown'),
+                ('dreamscape_generator', 'shutdown')
+            ]
+            
+            for service_name, method_name in core_services:
+                if hasattr(self, service_name):
+                    service = getattr(self, service_name)
+                    if service and hasattr(service, method_name):
+                        try:
+                            self.logger.info(f"Cleaning up {service_name}...")
+                            method = getattr(service, method_name)
+                            method()
+                        except Exception as e:
+                            self.logger.error(f"Error cleaning up {service_name}: {str(e)}")
+            
+            self.logger.info("DreamscapeGenerationTab cleanup completed")
+        except Exception as e:
+            self.logger.error(f"Error during DreamscapeGenerationTab cleanup: {str(e)}")

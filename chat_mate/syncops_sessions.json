@@ -1,0 +1,38 @@
+[
+  {
+    "user": "Victor",
+    "event": "clock_in",
+    "timestamp": "2025-03-28T21:42:35.137525",
+    "detail": null
+  },
+  {
+    "user": "Victor",
+    "event": "pomodoro_started",
+    "timestamp": "2025-03-28T21:42:40.828667",
+    "detail": null
+  },
+  {
+    "user": "Victor",
+    "event": "pomodoro_stopped",
+    "timestamp": "2025-03-28T21:42:49.730721",
+    "detail": null
+  },
+  {
+    "user": "Victor",
+    "event": "clock_out",
+    "timestamp": "2025-03-28T21:42:52.191947",
+    "detail": "0:00:17.054422"
+  },
+  {
+    "user": "Victor",
+    "event": "clock_in",
+    "timestamp": "2025-03-28T21:42:59.146227",
+    "detail": null
+  },
+  {
+    "user": "Victor",
+    "event": "clock_out",
+    "timestamp": "2025-03-28T21:43:03.888513",
+    "detail": "0:00:04.742286"
+  }
+]

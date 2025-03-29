@@ -321,3 +321,26 @@ class UIManager:
             self.logger.info(message)
         except Exception as e:
             print(f"Log error: {e}, Original message: {message}")
+
+    def stop_timers(self):
+        """
+        Stop all timers managed by the UIManager.
+        Called during cleanup to ensure timers don't fire after shutdown.
+        """
+        try:
+            if hasattr(self, 'timer') and self.timer and self.timer.isActive():
+                self.logger.info("Stopping UIManager auto-update timer")
+                self.timer.stop()
+                
+            # Disconnect any timer connections to prevent callbacks after shutdown
+            if hasattr(self, 'timer') and self.timer:
+                try:
+                    self.timer.timeout.disconnect()
+                except (TypeError, RuntimeError):
+                    # Already disconnected or no connections
+                    pass
+                    
+            return True
+        except Exception as e:
+            self.logger.error(f"Error stopping timers: {str(e)}")
+            return False
