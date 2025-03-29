@@ -457,9 +457,24 @@ class ServiceRegistry:
                         cls.register_service("prompt_manager", prompt_manager)
                         cls._logger.info("PromptManager registered via factory")
                     else:
-                        cls._logger.warning("PromptFactory returned None for prompt_manager")
+                        cls._logger.warning("PromptFactory returned None for prompt_manager, attempting fallback creation")
+                        # Fallback: try the legacy creation method
+                        prompt_manager = PromptFactory.create_prompt_manager(logger=cls._logger)
+                        if prompt_manager:
+                            cls.register_service("prompt_manager", prompt_manager)
+                            cls._logger.info("PromptManager registered via legacy factory method")
+                        else:
+                            cls._logger.error("Failed to create PromptManager using both factory methods")
                 except Exception as e:
                     cls._logger.error(f"Failed to create PromptManager via factory: {e}")
+                    try:
+                        # Last resort: direct import and creation
+                        from core.AletheiaPromptManager import AletheiaPromptManager
+                        prompt_manager = AletheiaPromptManager()
+                        cls.register_service("prompt_manager", prompt_manager)
+                        cls._logger.info("PromptManager created directly as fallback")
+                    except Exception as inner_e:
+                        cls._logger.error(f"All attempts to create PromptManager failed: {inner_e}")
             
             # Register chat manager using the factory
             if "chat_manager" not in cls._services:

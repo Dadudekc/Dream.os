@@ -29,17 +29,25 @@ class PromptFactory:
         # Get required paths using PathManager
         try:
             path_manager = PathManager()
-            memory_path = path_manager.get_memory_path("prompt_memory.json")
-            template_path = path_manager.get_template_path()
-            conversation_memory_path = path_manager.get_memory_path("conversation_memory.json")
-            cycle_memory_path = path_manager.get_memory_path("cycle_memory.json")
+            memory_path = str(path_manager.get_memory_path("prompt_memory.json"))
+            template_path = str(path_manager.get_template_path())
+            conversation_memory_path = str(path_manager.get_memory_path("conversation_memory.json"))
+            cycle_memory_path = str(path_manager.get_memory_path("cycle_memory.json"))
+            
+            # Log path resolution
+            if logger:
+                logger.info(f"Resolved paths from PathManager:")
+                logger.info(f"  - memory_path: {memory_path}")
+                logger.info(f"  - template_path: {template_path}")
+                logger.info(f"  - conversation_memory_path: {conversation_memory_path}")
+                logger.info(f"  - cycle_memory_path: {cycle_memory_path}")
         except Exception as e:
             if logger:
                 logger.warning(f"⚠️ Error getting paths from PathManager: {e}")
-            memory_path = Path("memory/prompt_memory.json")
-            template_path = Path("templates")
-            conversation_memory_path = Path("memory/conversation_memory.json") 
-            cycle_memory_path = Path("memory/cycle_memory.json")
+            memory_path = "memory/prompt_memory.json"
+            template_path = "templates"
+            conversation_memory_path = "memory/conversation_memory.json" 
+            cycle_memory_path = "memory/cycle_memory.json"
         
         # Create and return the prompt manager
         try:
@@ -47,10 +55,10 @@ class PromptFactory:
             from core.AletheiaPromptManager import AletheiaPromptManager
             
             prompt_manager = AletheiaPromptManager(
-                memory_file=str(memory_path),
-                template_path=str(template_path),
-                conversation_memory_file=str(conversation_memory_path),
-                cycle_memory_file=str(cycle_memory_path)
+                memory_file=memory_path,  # Already a string from above
+                template_path=template_path,  # Already a string from above
+                conversation_memory_file=conversation_memory_path,  # Already a string from above
+                cycle_memory_file=cycle_memory_path  # Already a string from above
             )
             
             if logger:
@@ -95,6 +103,17 @@ class PromptFactory:
                 conversation_memory_file = str(path_manager.get_memory_path("conversation_memory.json"))
             if not cycle_memory_file:
                 cycle_memory_file = str(path_manager.get_memory_path("cycle_memory.json"))
+                
+            # Ensure all paths are strings
+            memory_file = str(memory_file)
+            template_path = str(template_path)
+            conversation_memory_file = str(conversation_memory_file)
+            cycle_memory_file = str(cycle_memory_file)
+            
+            if logger:
+                logger.info(f"Using resolved paths:")
+                logger.info(f"  - memory_file: {memory_file}")
+                logger.info(f"  - template_path: {template_path}")
         except Exception as e:
             if logger:
                 logger.warning(f"⚠️ Error getting paths from PathManager: {e}")

@@ -69,7 +69,7 @@ class UnifiedPromptService(QObject):
         self.auto_generate_if_missing = auto_generate_if_missing
 
         # Async executors & integrations (for code generation and git integration)
-        # FIXED: Extract configuration values instead of passing the entire config_manager object
+        # Extract configuration values instead of passing the entire config_manager object
         headless = getattr(self.config, "headless", True) if not hasattr(self.config, "get") else self.config.get("headless", True)
         profile_dir = getattr(self.config, "profile_dir", None) if not hasattr(self.config, "get") else self.config.get("profile_dir", None)
         cookie_file = getattr(self.config, "cookie_file", None) if not hasattr(self.config, "get") else self.config.get("cookie_file", None)
