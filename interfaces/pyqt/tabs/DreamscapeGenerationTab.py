@@ -438,11 +438,12 @@ class DreamscapeGenerationTab(QWidget):
     # ------------------------------------------------------------
     # DATA & STATE MANAGEMENT
     # ------------------------------------------------------------
-    def refresh_episode_list(self):
-        """Refresh the episode list by delegating to UIManager."""
-        if self.reverse_order_checkbox:
-            reverse_order = self.reverse_order_checkbox.isChecked()
-            self.ui_manager.refresh_episode_list(reverse_order)
+    def refresh_episode_list(self, reverse_order=False):
+        """Refresh the episode list using the ui_manager."""
+        if not hasattr(self, 'ui_manager') or self.ui_manager is None:
+            self.logger.error("UI Manager is not initialized - cannot refresh episode list.")
+            return
+        self.ui_manager.refresh_episode_list(reverse_order)
 
     def refresh_context_memory(self):
         """Refresh context memory display via ContextManager."""
@@ -463,6 +464,11 @@ class DreamscapeGenerationTab(QWidget):
             self.logger.info(message)
 
     def render_dreamscape_template(self):
+        """Render the selected template with current context data."""
+        if not hasattr(self, 'ui_manager') or self.ui_manager is None:
+            self.logger.error("UI Manager is not initialized - cannot render template.")
+            return
+            
         selected_template = self.template_dropdown.currentText()
         if not selected_template:
             return
@@ -533,6 +539,13 @@ class DreamscapeGenerationTab(QWidget):
         """Save context update schedule and reset timers."""
         if not self.auto_update_checkbox:
             return
+            
+        # Check if context_manager is available
+        if not hasattr(self, 'context_manager') or self.context_manager is None:
+            self.logger.error("Context Manager is not initialized - cannot save context schedule.")
+            QMessageBox.warning(self, "Error", "Context manager is not available. Cannot save schedule.")
+            return
+            
         enabled = self.auto_update_checkbox.isChecked()
         interval = self.update_interval_combo.currentText() if self.update_interval_combo else "7 days"
         success = self.context_manager.save_context_schedule(enabled, interval)

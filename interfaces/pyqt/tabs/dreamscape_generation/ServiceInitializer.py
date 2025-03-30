@@ -238,35 +238,105 @@ class ServiceInitializer:
         # Get required core services
         config_manager = core_services.get("config_manager")
         path_manager = core_services.get("path_manager")
+        template_manager = core_services.get("template_manager")
+        dreamscape_service = core_services.get("dreamscape_service")
         
-        # Initialize chat manager if it doesn't exist
-        chat_manager = None
-        try:
-            # Only create ChatManager if it's configured to do so
-            if config_manager.get("create_chat_manager", True):
-                # Use ChatFactory to create ChatManager with dependency injection
-                from core.factories.chat_factory import ChatFactory
-                
-                # Create a temporary registry with the services we have
-                temp_registry = {
-                    "config_manager": config_manager,
-                    "path_manager": path_manager,
-                    "logger": self.logger
-                }
-                
-                # Use factory to create ChatManager with clean dependency injection
-                chat_manager = ChatFactory.create(temp_registry)
-                self.logger.info("ChatManager initialized via factory.")
-        except Exception as e:
-            self.logger.warning(f"Could not initialize ChatManager: {e}")
+        # Get output directory
+        output_dir = self._get_output_directory()
         
-        # Initialize other component managers as needed
+        # Create a component_managers dictionary to store all managers
         component_managers = {}
-        if chat_manager:
-            component_managers["chat_manager"] = chat_manager
         
-        self.logger.info(f"Initialized {len(component_managers)} component managers.")
-        return component_managers
+        try:
+            # Initialize template manager to use in UI
+            if not template_manager:
+                # If not provided in core_services, create a new one
+                template_dir = path_manager.get_template_path("dreamscape_templates") if path_manager else "templates/dreamscape_templates"
+                template_manager = TemplateManager(template_dir=template_dir, logger=self.logger)
+                self.logger.info(f"Created template manager for directory: {template_dir}")
+            
+            component_managers["template_manager"] = template_manager
+            
+            # Initialize episode generator
+            from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+            
+            episode_generator = DreamscapeEpisodeGenerator(
+                parent_widget=self.parent_widget,
+                prompt_manager=self.prompt_manager,
+                chat_manager=self.chat_manager,
+                dreamscape_service=dreamscape_service,
+                output_dir=output_dir,
+                logger=self.logger
+            )
+            component_managers["episode_generator"] = episode_generator
+            
+            # Initialize context manager
+            from interfaces.pyqt.tabs.dreamscape_generation.ContextManager import ContextManager
+            
+            context_manager = ContextManager(
+                parent_widget=self.parent_widget,
+                prompt_manager=self.prompt_manager,
+                chat_manager=self.chat_manager,
+                template_manager=template_manager,
+                dreamscape_service=dreamscape_service,
+                output_dir=output_dir,
+                logger=self.logger
+            )
+            component_managers["context_manager"] = context_manager
+            
+            # Initialize UI manager using the micro-factory pattern
+            try:
+                from core.micro_factories.ui_manager_factory import create as create_ui_manager
+                
+                # Get the episode list widget from the parent if available
+                episode_list = None
+                if hasattr(self.parent_widget, 'episode_list'):
+                    episode_list = self.parent_widget.episode_list
+                
+                ui_manager = create_ui_manager(
+                    parent_widget=self.parent_widget,
+                    logger=self.logger,
+                    episode_list=episode_list,
+                    template_manager=template_manager,
+                    output_dir=output_dir
+                )
+                
+                if ui_manager:
+                    self.logger.info("✅ UIManager created successfully via factory")
+                    component_managers["ui_manager"] = ui_manager
+                else:
+                    self.logger.warning("⚠️ UIManager factory returned None")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to create UIManager using factory: {e}")
+                # Fallback to direct instantiation
+                try:
+                    from interfaces.pyqt.tabs.dreamscape_generation.UIManager import UIManager
+                    episode_list = None
+                    if hasattr(self.parent_widget, 'episode_list'):
+                        episode_list = self.parent_widget.episode_list
+                        
+                    ui_manager = UIManager(
+                        parent_widget=self.parent_widget,
+                        logger=self.logger,
+                        episode_list=episode_list,
+                        template_manager=template_manager,
+                        output_dir=output_dir
+                    )
+                    component_managers["ui_manager"] = ui_manager
+                    self.logger.info("✅ UIManager created using direct instantiation")
+                except Exception as e2:
+                    self.logger.error(f"❌ Failed to create UIManager directly: {e2}")
+            
+            # Store output directory in component_managers
+            component_managers["output_dir"] = output_dir
+            
+            self.logger.info(f"Initialized {len(component_managers)} component managers.")
+            return component_managers
+            
+        except Exception as e:
+            self.logger.error(f"Error initializing component managers: {e}")
+            # Return whatever was initialized
+            return component_managers
     
     def _wire_dependencies(self, core_services, component_managers):
         """
@@ -375,29 +445,94 @@ class ServiceInitializer:
 
     def _initialize_component_managers(self) -> None:
         """
-        Initialize component-specific managers like ContextManager and UIManager.
+        Initialize all component managers.
+        
+        This method is called during initialization and sets up:
+        - TemplateManager
+        - EpisodeGenerator
+        - ContextManager
+        - UIManager
         """
-        # Initialize ContextManager
         try:
+            # Get output directory
+            self.output_dir = self._get_output_directory()
+            
+            # Initialize template manager
+            template_dir = os.path.join(os.getcwd(), "templates", "dreamscape_templates")
+            self.template_manager = TemplateManager(template_dir=template_dir, logger=self.logger)
+            
+            # Initialize episode generator
+            self.episode_generator = DreamscapeEpisodeGenerator(
+                parent_widget=self.parent_widget,
+                prompt_manager=self.prompt_manager,
+                chat_manager=self.chat_manager,
+                dreamscape_service=self.dreamscape_generator,
+                output_dir=self.output_dir,
+                logger=self.logger
+            )
+            
+            # Initialize context manager
             self.context_manager = ContextManager(
                 parent_widget=self.parent_widget,
+                prompt_manager=self.prompt_manager,
+                chat_manager=self.chat_manager,
+                template_manager=self.template_manager,
+                dreamscape_service=self.dreamscape_generator,
+                output_dir=self.output_dir,
                 logger=self.logger
             )
-            self.logger.info("✅ ContextManager initialized successfully")
+            
+            # Initialize UI manager using the micro-factory pattern
+            try:
+                from core.micro_factories.ui_manager_factory import create as create_ui_manager
+                
+                # Get the episode list widget from the parent if available
+                episode_list = None
+                if hasattr(self.parent_widget, 'episode_list'):
+                    episode_list = self.parent_widget.episode_list
+                
+                self.ui_manager = create_ui_manager(
+                    parent_widget=self.parent_widget,
+                    logger=self.logger,
+                    episode_list=episode_list,
+                    template_manager=self.template_manager,
+                    output_dir=self.output_dir
+                )
+                
+                if self.ui_manager:
+                    self.logger.info("✅ UIManager created successfully via factory")
+                else:
+                    self.logger.warning("⚠️ UIManager factory returned None")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to create UIManager using factory: {e}")
+                # Fallback to direct instantiation
+                try:
+                    from interfaces.pyqt.tabs.dreamscape_generation.UIManager import UIManager
+                    episode_list = None
+                    if hasattr(self.parent_widget, 'episode_list'):
+                        episode_list = self.parent_widget.episode_list
+                        
+                    self.ui_manager = UIManager(
+                        parent_widget=self.parent_widget,
+                        logger=self.logger,
+                        episode_list=episode_list,
+                        template_manager=self.template_manager,
+                        output_dir=self.output_dir
+                    )
+                    self.logger.info("✅ UIManager created using direct instantiation")
+                except Exception as e2:
+                    self.logger.error(f"❌ Failed to create UIManager directly: {e2}")
+                    self.ui_manager = None
+            
+            self.logger.info("Component managers initialized successfully")
+            
         except Exception as e:
-            self.logger.error(f"❌ Error initializing ContextManager: {str(e)}")
-            self.context_manager = None
-
-        # Initialize UIManager
-        try:
-            self.ui_manager = UIManager(
-                parent_widget=self.parent_widget,
-                logger=self.logger
-            )
-            self.logger.info("✅ UIManager initialized successfully")
-        except Exception as e:
-            self.logger.error(f"❌ Error initializing UIManager: {str(e)}")
-            self.ui_manager = None
+            self.logger.error(f"Error initializing component managers: {e}")
+            # Ensure we have at least empty managers to avoid NoneType errors
+            self.template_manager = self.template_manager or TemplateManager()
+            self.episode_generator = self.episode_generator or None
+            self.context_manager = self.context_manager or None
+            self.ui_manager = self.ui_manager or None
 
     def _get_output_directory(self) -> str:
         """
