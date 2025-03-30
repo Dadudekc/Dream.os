@@ -400,10 +400,33 @@ class DreamscapeGenerationTab(QWidget):
     # EVENT HANDLERS
     # ------------------------------------------------------------
     def on_episode_selected(self, current, previous):
-        self.ui_manager.update_episode_content(self.episode_content, current)
+        """Handle episode selection change and update content display."""
+        if not hasattr(self, 'ui_manager') or self.ui_manager is None:
+            self.logger.error("UI Manager is not initialized - cannot update episode content.")
+            return
+            
+        try:
+            self.ui_manager.update_episode_content(self.episode_content, current)
+        except Exception as e:
+            self.logger.error(f"Error updating episode content: {str(e)}")
 
     def share_to_discord(self):
-        self.ui_manager.share_to_discord(self.episode_content, self.discord_manager)
+        """Share the current episode content to Discord via UIManager."""
+        if not hasattr(self, 'ui_manager') or self.ui_manager is None:
+            self.logger.error("UI Manager is not initialized - cannot share to Discord.")
+            QMessageBox.warning(self, "Error", "UI manager is not available. Cannot share to Discord.")
+            return
+            
+        if not hasattr(self, 'discord_manager') or self.discord_manager is None:
+            self.logger.error("Discord Manager is not initialized - cannot share to Discord.")
+            QMessageBox.warning(self, "Error", "Discord manager is not available. Cannot share to Discord.")
+            return
+            
+        try:
+            self.ui_manager.share_to_discord(self.episode_content, self.discord_manager)
+        except Exception as e:
+            self.logger.error(f"Error sharing to Discord: {str(e)}")
+            QMessageBox.critical(self, "Error", f"Failed to share to Discord: {str(e)}")
 
     def _on_template_selected(self, template_name):
         if not template_name:
@@ -548,12 +571,17 @@ class DreamscapeGenerationTab(QWidget):
             
         enabled = self.auto_update_checkbox.isChecked()
         interval = self.update_interval_combo.currentText() if self.update_interval_combo else "7 days"
-        success = self.context_manager.save_context_schedule(enabled, interval)
-        if success:
-            self._setup_timers()
-            QMessageBox.information(self, "Schedule Saved", "Context update schedule saved successfully.")
-        else:
-            QMessageBox.warning(self, "Error", "Failed to save context schedule.")
+        
+        try:
+            success = self.context_manager.save_context_schedule(enabled, interval)
+            if success:
+                self._setup_timers()
+                QMessageBox.information(self, "Schedule Saved", "Context update schedule saved successfully.")
+            else:
+                QMessageBox.warning(self, "Error", "Failed to save context schedule.")
+        except Exception as e:
+            self.logger.error(f"Error saving context schedule: {str(e)}")
+            QMessageBox.critical(self, "Error", f"Failed to save schedule: {str(e)}")
 
     def populate_chat_list(self):
         """Populate the target chat dropdown with available chats."""
