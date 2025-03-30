@@ -275,12 +275,10 @@ class ServiceInitializer:
             
             context_manager = ContextManager(
                 parent_widget=self.parent_widget,
-                prompt_manager=self.prompt_manager,
+                logger=self.logger,
                 chat_manager=self.chat_manager,
-                template_manager=template_manager,
-                dreamscape_service=dreamscape_service,
-                output_dir=output_dir,
-                logger=self.logger
+                dreamscape_generator=dreamscape_service,
+                template_manager=template_manager
             )
             component_managers["context_manager"] = context_manager
             
@@ -474,12 +472,10 @@ class ServiceInitializer:
             # Initialize context manager
             self.context_manager = ContextManager(
                 parent_widget=self.parent_widget,
-                prompt_manager=self.prompt_manager,
+                logger=self.logger,
                 chat_manager=self.chat_manager,
-                template_manager=self.template_manager,
-                dreamscape_service=self.dreamscape_generator,
-                output_dir=self.output_dir,
-                logger=self.logger
+                dreamscape_generator=self.dreamscape_generator,
+                template_manager=self.template_manager
             )
             
             # Initialize UI manager using the micro-factory pattern
