@@ -39,8 +39,7 @@ class OpenAIClient:
         self.headless = headless
         self.driver_path = driver_path
         self.driver = None
-        self.driver_ready = False
-        self._initialized = False  # Add an initialized flag for tracking boot state
+        self._booted = False  # New flag to track boot state
 
         # Configuration
         self.CHATGPT_URL = "https://chat.openai.com/"
@@ -179,18 +178,16 @@ class OpenAIClient:
 
     def boot(self):
         """Initialize the OpenAI driver."""
-        if not self.driver_ready and not OpenAIClient._booted:
-            self.driver = self.get_openai_driver()
-            self.driver_ready = True
-            self._initialized = True  # Set initialized flag
-            OpenAIClient._booted = True
-            logger.info("🚀 OpenAIClient boot complete.")
-        else:
+        if self._booted:
             logger.info("⚠️ OpenAIClient already booted.")
+            return
+        self.driver = self.get_openai_driver()
+        self._booted = True
+        logger.info("🚀 OpenAIClient boot complete.")
 
     def _assert_ready(self):
         """Check if the driver is ready for use."""
-        if not self.driver_ready or not self._initialized:
+        if not self._booted:
             raise RuntimeError("❌ OpenAIClient not booted. Call `.boot()` first.")
 
     def login_openai(self):
@@ -326,59 +323,27 @@ class OpenAIClient:
         """
         Shut down the driver gracefully and clean up resources.
         """
+        if not self._booted:
+            logger.warning("❌ OpenAIClient not booted. Call `.boot()` first.")
+            return
         logger.info("🛑 Shutting down OpenAIClient driver...")
         try:
-            # Check if driver is initialized before attempting shutdown
-            if not hasattr(self, '_initialized') or not self._initialized:
-                logger.warning("⚠️ OpenAIClient not fully initialized. Skipping some shutdown steps.")
-                return
-
-            if hasattr(self, 'driver') and self.driver:
-                # Save cookies before shutting down
-                try:
-                    self.save_openai_cookies()
-                except Exception as cookie_e:
-                    logger.warning(f"⚠️ Could not save cookies during shutdown: {cookie_e}")
-                
-                # Close all windows
+            if self.driver:
                 try:
                     self.driver.close()
                 except Exception as close_e:
                     logger.warning(f"⚠️ Error closing browser window: {close_e}")
-                    
-                # Quit the driver
                 try:
                     self.driver.quit()
                 except Exception as quit_e:
                     logger.warning(f"⚠️ Error quitting driver: {quit_e}")
-                    # Force kill any remaining ChromeDriver processes if driver.quit() fails
-                    self._force_kill_chromedriver()
-                
                 self.driver = None
-                self.driver_ready = False
-                self._initialized = False
-                OpenAIClient._booted = False  # Reset the class boot state
-                logger.info("✅ Driver shut down successfully.")
+                self._booted = False
+                logger.info("✅ OpenAIClient shutdown complete.")
         except Exception as e:
-            logger.error(f"❌ Error during shutdown: {e}")
-            # Even if an exception occurs, try to kill chromedriver processes
+            logger.error(f"❌ Error during OpenAIClient shutdown: {e}")
             self._force_kill_chromedriver()
-        finally:
-            # Clean up any temporary files or resources
-            try:
-                if hasattr(self, 'profile_dir') and os.path.exists(self.profile_dir):
-                    for root, dirs, files in os.walk(self.profile_dir):
-                        for name in files:
-                            if name.endswith('.lock'):
-                                try:
-                                    os.remove(os.path.join(root, name))
-                                except Exception:
-                                    pass
-            except Exception as cleanup_e:
-                logger.warning(f"⚠️ Error during cleanup: {cleanup_e}")
-            
-            logger.info("✅ OpenAIClient shutdown complete.")
-    
+
     def _force_kill_chromedriver(self):
         """
         Force kill any remaining ChromeDriver processes.
@@ -412,10 +377,6 @@ class OpenAIClient:
             except Exception as e:
                 logger.error(f"Error shutting down OpenAI client: {str(e)}")
         event.accept()
-
-    def is_ready(self):
-        """Check if this specific instance of OpenAIClient is ready for use."""
-        return self.driver_ready and self._initialized
 
 # --------------------
 # Test Run (Optional)

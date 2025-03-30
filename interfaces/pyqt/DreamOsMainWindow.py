@@ -302,8 +302,8 @@ class DreamscapeMainWindow(QMainWindow):
                 self.statusBar().showMessage("OpenAI client not initialized", 5000)
                 return
                 
-            if not hasattr(self.openai_client, 'is_ready') or not self.openai_client.is_ready():
-                self.logger.info("Booting OpenAI client...")
+            if not hasattr(self.openai_client, 'is_booted') or not self.openai_client.is_booted():
+                self.logger.info("Manually booting OpenAI client...")
                 self.openai_client.boot()
 
             if self.openai_client.login_openai():
@@ -376,19 +376,12 @@ class DreamscapeMainWindow(QMainWindow):
         # Shutdown any OpenAI clients
         if hasattr(self, 'openai_client') and self.openai_client:
             try:
-                # Check if the client supports is_ready or is_booted methods
-                is_initialized = False
-                if hasattr(self.openai_client, 'is_ready'):
-                    is_initialized = self.openai_client.is_ready()
-                elif hasattr(self.openai_client, 'is_booted'):
-                    is_initialized = self.openai_client.is_booted()
-                
-                # Only attempt shutdown if the client was initialized
-                if is_initialized:
+                # Check if the client is booted before attempting shutdown
+                if hasattr(self.openai_client, 'is_booted') and self.openai_client.is_booted():
                     self.openai_client.shutdown()
                     self.logger.info("✅ OpenAI client shut down successfully")
                 else:
-                    self.logger.info("ℹ️ OpenAI client was not initialized, skipping shutdown")
+                    self.logger.info("ℹ️ OpenAI client was not booted, skipping shutdown")
             except Exception as e:
                 self.logger.error(f"❌ Error shutting down OpenAI client: {e}")
                 # If shutdown fails, try to force kill chromedrivers
