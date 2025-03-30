@@ -40,6 +40,7 @@ class OpenAIClient:
         self.driver_path = driver_path
         self.driver = None
         self.driver_ready = False
+        self._initialized = False  # Add an initialized flag for tracking boot state
 
         # Configuration
         self.CHATGPT_URL = "https://chat.openai.com/"
@@ -102,8 +103,10 @@ class OpenAIClient:
             if self.profile_dir:
                 options.add_argument(f"--user-data-dir={self.profile_dir}")
             if self.headless:
-                # The new headless mode in Chrome 109+ is more reliable
+                # Use the new headless mode for more reliability
                 options.add_argument("--headless=new")
+                options.add_argument("--disable-gpu")
+                options.add_argument("--window-size=1920,1080")  # Ensure a standard window size
 
             # Force undetected_chromedriver to manage driver automatically
             # We recommend not overriding driver_executable_path
@@ -179,6 +182,7 @@ class OpenAIClient:
         if not self.driver_ready and not OpenAIClient._booted:
             self.driver = self.get_openai_driver()
             self.driver_ready = True
+            self._initialized = True  # Set initialized flag
             OpenAIClient._booted = True
             logger.info("🚀 OpenAIClient boot complete.")
         else:
@@ -186,7 +190,7 @@ class OpenAIClient:
 
     def _assert_ready(self):
         """Check if the driver is ready for use."""
-        if not self.driver_ready:
+        if not self.driver_ready or not self._initialized:
             raise RuntimeError("❌ OpenAIClient not booted. Call `.boot()` first.")
 
     def login_openai(self):
@@ -322,9 +326,13 @@ class OpenAIClient:
         """
         Shut down the driver gracefully and clean up resources.
         """
-        self._assert_ready()
         logger.info("🛑 Shutting down OpenAIClient driver...")
         try:
+            # Check if driver is initialized before attempting shutdown
+            if not hasattr(self, '_initialized') or not self._initialized:
+                logger.warning("⚠️ OpenAIClient not fully initialized. Skipping some shutdown steps.")
+                return
+
             if hasattr(self, 'driver') and self.driver:
                 # Save cookies before shutting down
                 try:
@@ -348,6 +356,8 @@ class OpenAIClient:
                 
                 self.driver = None
                 self.driver_ready = False
+                self._initialized = False
+                OpenAIClient._booted = False  # Reset the class boot state
                 logger.info("✅ Driver shut down successfully.")
         except Exception as e:
             logger.error(f"❌ Error during shutdown: {e}")
@@ -402,6 +412,10 @@ class OpenAIClient:
             except Exception as e:
                 logger.error(f"Error shutting down OpenAI client: {str(e)}")
         event.accept()
+
+    def is_ready(self):
+        """Check if this specific instance of OpenAIClient is ready for use."""
+        return self.driver_ready and self._initialized
 
 # --------------------
 # Test Run (Optional)

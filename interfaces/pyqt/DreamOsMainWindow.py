@@ -30,11 +30,13 @@ from core.chatgpt_automation.controllers.assistant_mode_controller import Assist
 from core.chatgpt_automation.OpenAIClient import OpenAIClient
 from core.system.startup_validator import StartupValidator
 from core.PathManager import PathManager
-from core.micro_factories.chat_factory import create_chat_manager
+# ✅ Ensure we import the factory class, not a missing function
+from core.micro_factories.chat_factory import ChatFactory
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
 # Suppress SIP deprecation warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class DreamscapeMainWindow(QMainWindow):
     """
@@ -300,7 +302,7 @@ class DreamscapeMainWindow(QMainWindow):
                 self.statusBar().showMessage("OpenAI client not initialized", 5000)
                 return
                 
-            if not self.openai_client.is_ready():
+            if not hasattr(self.openai_client, 'is_ready') or not self.openai_client.is_ready():
                 self.logger.info("Booting OpenAI client...")
                 self.openai_client.boot()
 
@@ -313,7 +315,7 @@ class DreamscapeMainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"OpenAI login error: {e}")
             try:
-                if self.openai_client:
+                if self.openai_client and hasattr(self.openai_client, 'is_booted') and self.openai_client.is_booted():
                     self.openai_client.shutdown()
             except Exception as shutdown_error:
                 self.logger.error(f"OpenAI shutdown error: {shutdown_error}")
@@ -370,14 +372,31 @@ class DreamscapeMainWindow(QMainWindow):
         Handle the window close event to ensure proper shutdown of all resources
         """
         self.logger.info("🛑 Shutting down DreamOs...")
-        
+
         # Shutdown any OpenAI clients
         if hasattr(self, 'openai_client') and self.openai_client:
             try:
-                self.openai_client.shutdown()
-                self.logger.info("✅ OpenAI client shut down successfully")
+                # Check if the client supports is_ready or is_booted methods
+                is_initialized = False
+                if hasattr(self.openai_client, 'is_ready'):
+                    is_initialized = self.openai_client.is_ready()
+                elif hasattr(self.openai_client, 'is_booted'):
+                    is_initialized = self.openai_client.is_booted()
+                
+                # Only attempt shutdown if the client was initialized
+                if is_initialized:
+                    self.openai_client.shutdown()
+                    self.logger.info("✅ OpenAI client shut down successfully")
+                else:
+                    self.logger.info("ℹ️ OpenAI client was not initialized, skipping shutdown")
             except Exception as e:
                 self.logger.error(f"❌ Error shutting down OpenAI client: {e}")
+                # If shutdown fails, try to force kill chromedrivers
+                try:
+                    if hasattr(self.openai_client, '_force_kill_chromedriver'):
+                        self.openai_client._force_kill_chromedriver()
+                except Exception:
+                    pass
         
         # Shutdown any service containers
         if hasattr(self, 'container') and self.container:
@@ -430,8 +449,8 @@ class DreamscapeMainWindow(QMainWindow):
 
     def _init_tabs(self):
         """Initialize and add all tab widgets."""
-        
-        
+        # Implementation if needed
+
     def log_message(self, message: str, level: str = "info"):
         """Log a message to both logger and relevant UI components."""
         if level == "error":
@@ -508,82 +527,72 @@ def main():
     dispatcher = SignalDispatcher()
 
     try:
-        # Initialize core services with proper dependency injection
+        # Initialize core services with the new SystemLoader
         services = initialize_services()
-        config_manager = services['config_manager']
-        chat_manager = services['chat_manager']
-        orchestrator = services['orchestrator']
-        logger.info("Core services initialized successfully")
+        from core.services.service_registry import ServiceRegistry
+        
+        # Extract key services from registry
+        config_manager = ServiceRegistry.get("config_manager")
+        
+        logger.info("✅ Core services initialized successfully via SystemLoader")
     except Exception as e:
-        logger.error(f"Failed to initialize core services: {str(e)}")
+        logger.error(f"❌ Failed to initialize core services: {str(e)}")
+        # Create fallback config if not available
         config_manager = ConfigManager()
-        chat_manager = None
-        orchestrator = None
 
-    try:
-        config = ConfigManager(config_name="base.yaml")
-        logger.info("Configuration loaded successfully")
-    except Exception as e:
-        logger.error(f"Failed to load configuration: {str(e)}")
-        config = type('ConfigStub', (), {'get': lambda *args, **kwargs: None})
-
-    try:
-        service = DreamscapeService(config=config)
-        logger.info("DreamscapeService initialized successfully")
-        bootstrap_success = service.bootstrap_services()
-        if bootstrap_success:
-            logger.info("All critical services bootstrapped successfully")
-        else:
-            logger.warning("Some critical services failed to initialize properly")
-    except Exception as e:
-        logger.error(f"Failed to initialize DreamscapeService: {str(e)}")
-        service = type('ServiceStub', (), {
-            'prompt_manager': None,
-            'chat_manager': None,
-            'prompt_handler': None,
-            'discord': None,
-            'reinforcement_engine': None,
-            'cycle_service': None,
-            'task_orchestrator': None,
-            'dreamscape_generator': None
-        })
-
+    # Always initialize UI regardless of service status
     ui_logic = DreamscapeUILogic()
-    ui_logic.service = service
-    logger.info("UI logic initialized")
+    
+    # Initialize DreamscapeService with the environment
+    try:
+        dreamscape_service = ServiceRegistry.get("dreamscape_generator")
+        if not dreamscape_service:
+            logger.warning("⚠️ DreamscapeService not found in registry, creating a new instance")
+            dreamscape_service = DreamscapeService(config=config_manager)
+            
+        ui_logic.service = dreamscape_service
+        logger.info("✅ UI logic initialized with dreamscape service")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize DreamscapeService: {str(e)}")
+        # Create a stub for UI to use
+        dreamscape_service = type('ServiceStub', (), {
+            'get_service': lambda name: None,
+            'discord': None
+        })
+        ui_logic.service = dreamscape_service
 
+    # Build service dictionary with fallbacks from registry
     services = {
-        'config_manager': config,
+        'config_manager': config_manager,
         'logger': logger,
-        'dreamscape_service': service,
-        'prompt_manager': _ensure_service(service.get_service('prompt_manager'), "prompt_manager", logger),
-        'chat_manager': _ensure_service(service.get_service('chat_manager'), "chat_manager", logger),
-        'response_handler': _ensure_service(service.get_service('prompt_handler'), "response_handler", logger),
-        'memory_manager': _ensure_service(service.get_service('prompt_manager'), "memory_manager", logger),
-        'discord_service': _ensure_service(service.discord, "discord_service", logger),
-        'discord_manager': _ensure_service(service.discord, "discord_manager", logger),
-        'fix_service': _ensure_service(service.get_service('reinforcement_engine'), "fix_service", logger),
-        'rollback_service': _ensure_service(service.get_service('reinforcement_engine'), "rollback_service", logger),
+        'dreamscape_service': dreamscape_service,
+        'prompt_manager': _ensure_service(ServiceRegistry.get("prompt_manager"), "prompt_manager", logger),
+        'chat_manager': _ensure_service(ServiceRegistry.get("chat_manager"), "chat_manager", logger),
+        'response_handler': _ensure_service(ServiceRegistry.get("feedback_engine"), "response_handler", logger),
+        'memory_manager': _ensure_service(ServiceRegistry.get("prompt_manager"), "memory_manager", logger),
+        'discord_service': _ensure_service(ServiceRegistry.get("discord_service"), "discord_service", logger),
         'cursor_manager': None,
         'extra_dependencies': {
-            'cycle_service': _ensure_service(service.get_service('cycle_service'), "cycle_service", logger),
-            'task_orchestrator': _ensure_service(service.get_service('task_orchestrator'), "task_orchestrator", logger),
-            'dreamscape_generator': _ensure_service(service.get_service('dreamscape_generator'), "dreamscape_generator", logger),
-            'prompt_handler': _ensure_service(service.get_service('prompt_handler'), "prompt_handler", logger),
-            'response_handler': _ensure_service(service.get_service('prompt_handler'), "response_handler", logger),
-            'service': service
+            'cycle_service': _ensure_service(ServiceRegistry.get("cycle_service"), "cycle_service", logger),
+            'task_orchestrator': _ensure_service(ServiceRegistry.get("task_orchestrator"), "task_orchestrator", logger),
+            'dreamscape_generator': _ensure_service(ServiceRegistry.get("dreamscape_generator"), "dreamscape_generator", logger),
+            'prompt_handler': _ensure_service(ServiceRegistry.get("feedback_engine"), "prompt_handler", logger),
+            'response_handler': _ensure_service(ServiceRegistry.get("feedback_engine"), "response_handler", logger),
+            'service': dreamscape_service
         }
     }
 
+    # Initialize cursor manager if available
     try:
         from core.refactor.CursorSessionManager import CursorSessionManager
-        cursor_url = config.get("cursor_url", "http://localhost:8000") if hasattr(config, "get") else getattr(config, "cursor_url", "http://localhost:8000")
-        services['cursor_manager'] = CursorSessionManager(config, services['memory_manager'])
-        logger.info("Cursor manager initialized successfully")
+        cursor_url = config_manager.get("cursor_url", "http://localhost:8000")
+        services['cursor_manager'] = CursorSessionManager(config_manager, services['memory_manager'])
+        logger.info("✅ Cursor manager initialized successfully")
     except (ImportError, Exception) as e:
-        logger.warning(f"Cursor manager could not be initialized: {str(e)}")
+        logger.warning(f"⚠️ Cursor manager could not be initialized: {str(e)}")
         services['cursor_manager'] = _create_empty_service("cursor_manager", logger)
 
+    # Log service status
     for service_name, service_obj in services.items():
         if service_name != 'extra_dependencies':
             status = "available" if service_obj is not None else "unavailable"
@@ -591,10 +600,10 @@ def main():
 
     try:
         # Create and show main window
-        window = DreamscapeMainWindow(ui_logic=DreamscapeUILogic(), 
-                                    dispatcher=dispatcher, 
-                                    services=services,
-                                    event_loop_manager=event_loop_manager)
+        window = DreamscapeMainWindow(ui_logic=ui_logic, 
+                                      dispatcher=dispatcher, 
+                                      services=services,
+                                      event_loop_manager=event_loop_manager)
         window.show()  # Make window visible
         window.raise_()  # Bring window to front
         window.activateWindow()  # Give window focus
@@ -624,28 +633,41 @@ def _create_empty_service(service_name, logger):
 
 def initialize_services():
     """Initialize and connect core services with proper dependency injection."""
+    logger = logging.getLogger("Services")
+    
     try:
-        # Use the SystemLoader to initialize all services
+        # Use the SystemLoader to initialize all services with micro-factories
         from core.system_loader import SystemLoader
+        from core.services.service_registry import ServiceRegistry
         
         # Create and boot the system loader
+        logger.info("🚀 Initializing core services using SystemLoader...")
         loader = SystemLoader()
         services = loader.boot()
         
-        # Get a reference to the ServiceRegistry for registering any additional services
-        from core.services.service_registry import ServiceRegistry
-        registry = ServiceRegistry()
-        
         # Log initialization status
-        logger = logging.getLogger("Services")
         for name, service in services.items():
             status = "✅ Available" if service else "⚠️ Empty implementation"
             logger.info(f"Service '{name}': {status}")
         
+        # Validate that essential services are available
+        essential_services = ["prompt_manager", "feedback_engine", "prompt_service"]
+        missing_services = []
+        
+        for service_name in essential_services:
+            if not ServiceRegistry.has_service(service_name):
+                missing_services.append(service_name)
+        
+        if missing_services:
+            logger.warning(f"⚠️ Missing essential services: {missing_services}")
+        else:
+            logger.info("✅ All essential services are available")
+        
         return services
     except Exception as e:
-        logger.error(f"Failed to initialize services: {e}")
-        raise
+        logger.error(f"❌ Failed to initialize services: {e}", exc_info=True)
+        # Return empty dict instead of raising to allow app to at least start
+        return {}
 
 
 if __name__ == "__main__":
