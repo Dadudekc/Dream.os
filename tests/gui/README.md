@@ -17,6 +17,12 @@ The test suite is organized into several files, each focusing on different aspec
 - `test_historical_chats_tab.py`: Tests for chat history features
 - `test_configuration_tab.py`: Tests for configuration management
 
+## Tabs Tests
+
+The `tabs` directory contains tests for individual tabs in the Dream.OS UI:
+
+- `test_meredith_tab.py`: Tests for the MeredithTab component, which provides profile scanning and resonance analysis capabilities. Tests cover UI initialization, ScraperThread logic, button behavior, table rendering, dispatcher integration, and more.
+
 ## Running the Tests
 
 ### Prerequisites
