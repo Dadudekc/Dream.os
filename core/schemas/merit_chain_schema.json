@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MeritChain Entry Schema",
+  "description": "Schema for validating MeritChain entries representing high-resonance profile matches",
+  "type": "object",
+  "required": ["platform", "username", "resonance_score", "timestamp"],
+  "properties": {
+    "platform": {
+      "type": "string",
+      "description": "The platform where the profile was found (e.g., 'twitter', 'instagram')"
+    },
+    "username": {
+      "type": "string",
+      "description": "The username of the profile"
+    },
+    "resonance_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Resonance score indicating how well the profile matches your criteria (0-100)"
+    },
+    "matching_traits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of traits that match your criteria"
+    },
+    "red_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of potential red flags or concerns"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short summary of why this profile matches or doesn't match"
+    },
+    "first_message": {
+      "type": "string",
+      "description": "Suggested first message to send to this person"
+    },
+    "should_save_to_meritchain": {
+      "type": "boolean",
+      "description": "Whether this profile should be saved to the merit chain"
+    },
+    "merit_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags to categorize this merit entry"
+    },
+    "suggested_follow_up": {
+      "type": "string",
+      "description": "Suggested follow-up action or message"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when this entry was created"
+    }
+  },
+  "additionalProperties": true
+} 
