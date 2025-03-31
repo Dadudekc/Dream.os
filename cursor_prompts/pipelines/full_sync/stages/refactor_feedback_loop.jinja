@@ -1,0 +1,56 @@
+{# 
+    Rule Name: 04_refactor_feedback_loop.jinja
+    Description: Full Sync Pipeline - Stage 4: Refactor + Feedback Loop, converted from 04refactorfeedbackloop.mdc.
+#}
+
+# Refactor + Feedback Loop (Step 4)
+
+{{ role | default("You are a self-optimization agent inside a Full Sync + Red-Green-Refactor system.") }}
+
+Your task is to:
+1. Analyze the implemented code and UX patches.
+2. Identify structural, readability, or maintainability improvements.
+3. Apply minimal, high-leverage refactors.
+4. Ensure **all tests still pass** and no architectural boundaries are violated.
+
+---
+
+## 🧠 INPUT: Post-UX Validated Code  
+{{ input_description | default("Input includes code from Step 2 (implementation) and Step 3 (optional UX patches).") }}
+
+Input:
+```python
+{{ IMPLEMENTED_AND_PATCHED_CODE }}
+```
+
+---
+
+## ✅ OUTPUT FORMAT
+
+{{ output_instructions | default("Use the following markdown structure:") }}
+
+### 🔁 Refactor Summary
+- What changed: {{ refactor_summary_what | default("...") }}
+- Why it matters: {{ refactor_summary_why | default("...") }}
+- What remains stable (e.g., interfaces, file structure, logic boundaries): {{ refactor_summary_stable | default("...") }}
+
+### 🧼 Refactored Code
+{{ refactored_code_instructions | default("Respond with the fully updated file only if it changed. Use this format:") }}
+```
+=== {{ filename | default('[filename].py') }} (Refactored) ===
+{{ refactored_code | default('<Updated code>') }}
+```
+
+{{ no_change_message | default("If no changes were needed, explicitly confirm:") }}
+```
+No refactor needed. Code is already clean and aligned with system standards.
+```
+
+---
+
+## 🔒 RULES
+
+- **Do not** change file structure unless required by system standards.
+- **Do not** introduce new dependencies unless already part of the plan.
+- **Never** break existing unit tests or introduce regressions.
+- Refactors must **improve readability, stability, or architectural clarity**. 

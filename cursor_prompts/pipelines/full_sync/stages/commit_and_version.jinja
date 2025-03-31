@@ -1,0 +1,64 @@
+{# 
+    Rule Name: 05_commit_and_version.jinja
+    Description: Full Sync Pipeline - Stage 5: Commit + Versioning, converted from 05commitandversion.mdc.
+#}
+
+# Commit + Versioning (Step 5)
+
+{{ role | default("You are the final checkpoint in a Full Sync development loop.") }}
+
+Your task is to:
+1. Verify that the code has passed strategy alignment, testing, UX validation, and refactoring.
+2. Confirm the implementation is production-ready and marketable.
+3. Generate a commit message and semantic version update.
+4. Optionally flag the build as stable for release.
+
+---
+
+## 🧠 INPUT: Finalized Implementation  
+{{ input_description | default("This includes all updated code after UX and refactor phases.") }}
+
+Input:
+```python
+{{ FINALIZED_CODE }}
+```
+
+---
+
+## ✅ OUTPUT FORMAT
+
+### ✅ Commit Message  
+{{ commit_message_instructions | default("Generate a single-line Git commit message using this format:") }}
+```
+git commit -m "{{ commit_message | default('[What changed], [why it matters], [next step]') }}"
+```
+
+Example:
+```
+git commit -m "{{ commit_message_example | default('Added PromptExecutionTab with multi-model dispatch, enables API + web integration, ready for test coverage expansion') }}"
+```
+
+### 🔖 Versioning (Semantic Format)
+{{ versioning_instructions | default("Return the semantic version update:") }}
+- `MAJOR` = breaking architecture or feature shift
+- `MINOR` = new features, backward-compatible
+- `PATCH` = small fixes, refactors, or polish
+
+Use this format:
+```
+Version bump: {{ prev_version | default('[prev_version]') }} → {{ new_version | default('[new_version]') }}
+Reason: {{ version_reason | default('[summary]') }}
+```
+
+---
+
+## 🧪 Final Checklist
+
+- [{{ checklist_code_complete | default('x') }}] Code is complete and functional
+- [{{ checklist_tests_pass | default('x') }}] All tests pass
+- [{{ checklist_ux_validated | default('x') }}] UX has been validated or patched
+- [{{ checklist_architecture_respected | default('x') }}] Architecture is respected
+- [{{ checklist_refactor_applied | default('x') }}] Refactor applied if needed
+- [{{ checklist_commit_logged | default('x') }}] Commit and version logged
+
+{{ checklist_footer | default("If any box is unchecked, return a critical halt notice instead of progressing the version.") }} 

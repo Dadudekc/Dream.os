@@ -1,0 +1,41 @@
+{# 
+    Rule Name: bundle.jinja
+    Description: Full Sync Mode execution pipeline definition, converted from fullsyncpipelinemdcbundle.mdc.
+#}
+{
+  "name": "{{ pipeline_name | default('fullsync_pipeline') }}",
+  "description": "{{ pipeline_description | default('Full Sync Mode execution pipeline: strategy to commit with test+UX+refactor loop') }}",
+  "stages": [
+    {
+      "id": "01-strategy-to-code",
+      "template": "{{ stage1_template | default('pipelines/full_sync/stages/01_strategy_to_code.jinja') }}",
+      "input": "{{ STRATEGY_DESCRIPTION }}"
+    },
+    {
+      "id": "02-code-test-validate",
+      "template": "{{ stage2_template | default('pipelines/full_sync/stages/02_code_test_validate.jinja') }}",
+      "input": "{{ 01-strategy-to-code.output }}"
+    },
+    {
+      "id": "03-ux-simulation-feedback",
+      "template": "{{ stage3_template | default('pipelines/full_sync/stages/03_ux_simulation_feedback.jinja') }}",
+      "input": "{{ 02-code-test-validate.output }}"
+    },
+    {
+      "id": "04-refactor-feedback-loop",
+      "template": "{{ stage4_template | default('pipelines/full_sync/stages/04_refactor_feedback_loop.jinja') }}",
+      "input": "{{ 03-ux-simulation-feedback.output }}"
+    },
+    {
+      "id": "05-commit-and-version",
+      "template": "{{ stage5_template | default('pipelines/full_sync/stages/05_commit_and_version.jinja') }}",
+      "input": "{{ 04-refactor-feedback-loop.output }}"
+    }
+  ],
+  "mode": "{{ pipeline_mode | default('fullsync') }}",
+  "enforced_rules": "{{ enforced_rules_path | default('rules/cursor_rules.jinja') }}",
+  "model_preferences": {
+    "default": "{{ model_preferences.default | default('gpt-4') }}",
+    "gpt-4o": {{ model_preferences.gpt4o_stages | default('["02-code-test-validate", "03-ux-simulation-feedback"]') | tojson }}
+  }
+} 
