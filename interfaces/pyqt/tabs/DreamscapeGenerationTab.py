@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QLabel, QCheckBox, QComboBox, QTextEdit, QPlainTextEdit,
     QTreeWidget, QGroupBox, QLineEdit, QFileDialog, QMessageBox, QTabWidget
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from qasync import asyncSlot
 
 # Import the ServiceInitializer and component managers
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 class DreamscapeGenerationTab(QWidget):
     """
     Main UI tab for generating and managing Dreamscape episodes.
+    Uses DreamscapeSystemLoader for service initialization and management.
     """
 
     def __init__(self, dispatcher=None, prompt_manager=None, chat_manager=None, response_handler=None,
@@ -34,6 +35,34 @@ class DreamscapeGenerationTab(QWidget):
         self.logger = logger or logging.getLogger(__name__)
 
         # Initialize UI elements to None
+        self._initialize_ui_vars()
+
+        # -------------------------
+        # 2) SET UP THE UI FIRST
+        # -------------------------
+        self.init_ui()
+
+        # -------------------------
+        # 3) INIT SERVICES
+        # -------------------------
+        # Use ServiceInitializer with DreamscapeSystemLoader to inject and initialize required services
+        self.service_initializer = ServiceInitializer(self, config_manager, self.logger)
+        services = self.service_initializer.initialize_services(
+            prompt_manager, chat_manager, response_handler,
+            memory_manager, discord_manager, ui_logic
+        )
+        self._store_service_references(services)
+
+        # -------------------------
+        # 4) TIMERS & DATA LOAD
+        # -------------------------
+        # Ensure the UI is built, then set up timers and connect signals
+        self._setup_timers()
+        QTimer.singleShot(500, self._load_initial_data)
+        self._connect_ui_signals()
+
+    def _initialize_ui_vars(self):
+        """Helper to set all UI instance variables to None initially."""
         self.auto_update_checkbox = None
         self.update_interval_combo = None
         self.target_chat_input = None
@@ -59,50 +88,71 @@ class DreamscapeGenerationTab(QWidget):
         self.save_md_btn = None
         self.tab_widget = None
 
-        # Use ServiceInitializer to inject and initialize required services
-        self.service_initializer = ServiceInitializer(self, config_manager, self.logger)
-        services = self.service_initializer.initialize_services(
-            prompt_manager, chat_manager, response_handler,
-            memory_manager, discord_manager, ui_logic
-        )
-        self._store_service_references(services)
-
-        # Optionally store prompt_manager from services (if provided)
-        self.prompt_manager = services.get("prompt_manager", None)
-        if not self.prompt_manager:
-            self.logger.warning("No prompt_manager service provided.")
-
-        # -------------------------
-        # 2) SET UP THE UI
-        # -------------------------
-        self.init_ui()
-
-        # -------------------------
-        # 3) TIMERS & DATA LOAD
-        # -------------------------
-        # Ensure the UI is built, then set up timers
-        self._setup_timers()
-        self._load_initial_data()
-
-    # ------------------------------------------------------------
-    # Store references to all initialized core services/components
-    # ------------------------------------------------------------
     def _store_service_references(self, services):
+        """Store references to all initialized core services/components."""
         core_services = services['core_services']
         component_managers = services['component_managers']
 
+        # Store core services
         self.cycle_service = core_services.get('cycle_service')
         self.prompt_handler = core_services.get('prompt_handler')
         self.discord_processor = core_services.get('discord_processor')
         self.task_orchestrator = core_services.get('task_orchestrator')
         self.dreamscape_generator = core_services.get('dreamscape_generator')
 
+        # Store component managers
         self.template_manager = component_managers.get('template_manager')
         self.episode_generator = component_managers.get('episode_generator')
         self.context_manager = component_managers.get('context_manager')
         self.ui_manager = component_managers.get('ui_manager')
 
+        # Store output directory
         self.output_dir = services.get('output_dir')
+
+        # Log service initialization status
+        self._log_service_status()
+
+    def _log_service_status(self):
+        """Log the status of all initialized services."""
+        services_status = {
+            'Core Services': {
+                'Cycle Service': bool(self.cycle_service),
+                'Prompt Handler': bool(self.prompt_handler),
+                'Discord Processor': bool(self.discord_processor),
+                'Task Orchestrator': bool(self.task_orchestrator),
+                'Dreamscape Generator': bool(self.dreamscape_generator)
+            },
+            'Component Managers': {
+                'Template Manager': bool(self.template_manager),
+                'Episode Generator': bool(self.episode_generator),
+                'Context Manager': bool(self.context_manager),
+                'UI Manager': bool(self.ui_manager)
+            }
+        }
+
+        self.logger.info("Service initialization status:")
+        for category, services in services_status.items():
+            self.logger.info(f"\n{category}:")
+            for service, status in services.items():
+                status_symbol = "✅" if status else "❌"
+                self.logger.info(f"  {status_symbol} {service}")
+
+    def _setup_timers(self):
+        """Set up any required timers for the UI."""
+        pass  # Implement if needed
+
+    def _load_initial_data(self):
+        """Load initial data after UI setup."""
+        if self.ui_manager:
+            # Pass the specific widgets required by UIManager methods
+            if hasattr(self, 'template_dropdown'):
+                 self.ui_manager.load_templates()
+            else:
+                 self.logger.error("Cannot load templates: template_dropdown not found on self.")
+            
+            self.ui_manager.refresh_episode_list()
+        else:
+            self.logger.error("UI Manager not initialized - cannot load initial data")
 
     # ------------------------------------------------------------
     # UI INIT
@@ -141,15 +191,10 @@ class DreamscapeGenerationTab(QWidget):
     def _setup_episode_list_group(self):
         episodes_group = QGroupBox("Dreamscape Episodes")
         episodes_layout = QVBoxLayout()
-
         self.episode_list = QListWidget()
-        self.episode_list.currentItemChanged.connect(self.on_episode_selected)
         episodes_layout.addWidget(self.episode_list)
-
-        refresh_btn = QPushButton("Refresh Episodes")
-        refresh_btn.clicked.connect(self.refresh_episode_list)
-        episodes_layout.addWidget(refresh_btn)
-
+        self.refresh_episodes_btn = QPushButton("Refresh Episodes")
+        episodes_layout.addWidget(self.refresh_episodes_btn)
         episodes_group.setLayout(episodes_layout)
         return episodes_group
 
@@ -184,12 +229,10 @@ class DreamscapeGenerationTab(QWidget):
 
         # -- GENERATE BUTTON --
         self.generate_button = QPushButton("Generate Episodes")
-        self.generate_button.clicked.connect(self.on_generate_clicked)
         controls_layout.addWidget(self.generate_button)
 
         # -- CANCEL BUTTON --
         self.cancel_button = QPushButton("Cancel Generation")
-        self.cancel_button.clicked.connect(self.on_cancel_clicked)
         self.cancel_button.setEnabled(False)
         controls_layout.addWidget(self.cancel_button)
 
@@ -216,10 +259,8 @@ class DreamscapeGenerationTab(QWidget):
         context_layout = QVBoxLayout()
         context_layout.setContentsMargins(0, 10, 0, 0)
 
-        send_context_btn = QPushButton("Send Context to ChatGPT")
-        send_context_btn.setToolTip("Send the current context to ChatGPT")
-        send_context_btn.clicked.connect(self.send_context_to_chatgpt)
-        context_layout.addWidget(send_context_btn)
+        self.send_context_btn = QPushButton("Send Context to ChatGPT")
+        context_layout.addWidget(self.send_context_btn)
 
         # -- AUTO UPDATE --
         auto_update_layout = QHBoxLayout()
@@ -241,9 +282,8 @@ class DreamscapeGenerationTab(QWidget):
         target_chat_layout.addWidget(self.target_chat_input)
         context_layout.addLayout(target_chat_layout)
 
-        save_schedule_btn = QPushButton("Save Schedule")
-        save_schedule_btn.clicked.connect(self.save_context_schedule)
-        context_layout.addWidget(save_schedule_btn)
+        self.save_schedule_btn = QPushButton("Save Schedule")
+        context_layout.addWidget(self.save_schedule_btn)
 
         return context_layout
 
@@ -269,9 +309,8 @@ class DreamscapeGenerationTab(QWidget):
         content_layout.addWidget(self.episode_content)
 
         share_layout = QHBoxLayout()
-        share_discord_btn = QPushButton("Share to Discord")
-        share_discord_btn.clicked.connect(self.share_to_discord)
-        share_layout.addWidget(share_discord_btn)
+        self.share_discord_btn = QPushButton("Share to Discord")
+        share_layout.addWidget(self.share_discord_btn)
         content_layout.addLayout(share_layout)
 
         return content_tab
@@ -294,9 +333,8 @@ class DreamscapeGenerationTab(QWidget):
         self.context_tree.setColumnWidth(0, 200)
         context_layout.addWidget(self.context_tree)
 
-        refresh_context_btn = QPushButton("Refresh Context Memory")
-        refresh_context_btn.clicked.connect(self.refresh_context_memory)
-        context_layout.addWidget(refresh_context_btn)
+        self.refresh_context_btn = QPushButton("Refresh Context Memory")
+        context_layout.addWidget(self.refresh_context_btn)
 
         return context_tab
 
@@ -357,46 +395,6 @@ class DreamscapeGenerationTab(QWidget):
         return template_widget
 
     # ------------------------------------------------------------
-    # Timers & Data Load
-    # ------------------------------------------------------------
-    def _setup_timers(self):
-        """Delegate setting up auto-update timers to UIManager."""
-        # Guard if UI not fully ready
-        if not self.auto_update_checkbox:
-            self.logger.warning("auto_update_checkbox undefined at _setup_timers. Skipping timer setup.")
-            return
-
-        if hasattr(self, 'ui_manager') and self.ui_manager:
-            self.ui_manager.setup_auto_update_timer(self.auto_update_checkbox, self.update_interval_combo)
-
-    def _load_initial_data(self):
-        """Load initial templates, episode list, and context memory."""
-        try:
-            # If ui_manager is available, use it to load templates; otherwise, fallback
-            if hasattr(self, 'ui_manager') and self.ui_manager and hasattr(self, 'template_dropdown'):
-                if self.template_manager is not None:
-                    self.ui_manager.load_templates(self.template_dropdown)
-                else:
-                    self.logger.warning("No template_manager available; using fallback directory.")
-                    default_template_dir = os.path.join(os.getcwd(), "templates", "dreamscape_templates")
-                    if os.path.isdir(default_template_dir):
-                        templates = [f for f in os.listdir(default_template_dir) if f.endswith('.j2')]
-                        self.template_dropdown.clear()
-                        self.template_dropdown.addItems(templates)
-                    else:
-                        self.logger.error(f"Default template directory not found: {default_template_dir}")
-
-            self.refresh_episode_list()
-            self.refresh_context_memory()
-
-            if self.target_chat_input:
-                self.populate_chat_list()
-
-            self.log_output("🚀 Initial data loaded")
-        except Exception as e:
-            self.log_output(f"⚠️ Warning: Error loading initial data: {str(e)}")
-
-    # ------------------------------------------------------------
     # EVENT HANDLERS
     # ------------------------------------------------------------
     def on_episode_selected(self, current, previous):
@@ -431,29 +429,36 @@ class DreamscapeGenerationTab(QWidget):
     def _on_template_selected(self, template_name):
         if not template_name:
             return
+        
+        # Ensure context_manager is initialized before using it
+        if not hasattr(self, 'context_manager') or self.context_manager is None:
+            self.logger.warning("_on_template_selected called before context_manager was initialized. Skipping.")
+            return
+        
+        # Ensure ui_manager is also initialized
+        if not hasattr(self, 'ui_manager') or self.ui_manager is None:
+            self.logger.warning("_on_template_selected called before ui_manager was initialized. Skipping.")
+            return
+        
         context = self.context_manager.get_preview_context()
         self.ui_manager.render_template_preview(template_name, self.template_preview, context)
 
     def _validate_template_context(self):
-        # Guard against template_manager being None or missing active_template attribute
-        if not self.template_manager or not hasattr(self.template_manager, 'active_template'):
-            self.missing_vars_label.setText('Template Manager unavailable')
-            self.missing_vars_label.setStyleSheet('color: red')
-            return
-
-        if not self.template_manager.active_template:
-            self.missing_vars_label.setText("No active template selected")
-            self.missing_vars_label.setStyleSheet("color: red")
-            return
-
-        context = self.context_manager.get_preview_context()
-        missing = self.template_manager.validate_context(self.template_manager.active_template, context)
-        if missing:
-            self.missing_vars_label.setText(f"Missing variables: {', '.join(missing)}")
-            self.missing_vars_label.setStyleSheet("color: red")
+        """Handle template context validation trigger by calling UIManager."""
+        if hasattr(self, 'ui_manager') and self.ui_manager:
+            # Pass the context_manager instance
+            if hasattr(self, 'context_manager'):
+                self.ui_manager.validate_and_display_template_status(self.context_manager)
+            else:
+                self.logger.error("ContextManager not available to pass for validation.")
+                if hasattr(self.parent, 'missing_vars_label'): # Direct update as fallback
+                    self.missing_vars_label.setText('Context Mgr Err')
+                    self.missing_vars_label.setStyleSheet('color: red')
         else:
-            self.missing_vars_label.setText("✓ All variables present")
-            self.missing_vars_label.setStyleSheet("color: green")
+            self.logger.error("UIManager not available for template validation.")
+            if hasattr(self.parent, 'missing_vars_label'): # Direct update as fallback
+                 self.missing_vars_label.setText('UI Mgr Err')
+                 self.missing_vars_label.setStyleSheet('color: red')
 
     def _save_rendered_output(self, format='txt'):
         self.ui_manager.save_rendered_output(format)
@@ -465,14 +470,48 @@ class DreamscapeGenerationTab(QWidget):
         """Refresh the episode list using the ui_manager."""
         if not hasattr(self, 'ui_manager') or self.ui_manager is None:
             self.logger.error("UI Manager is not initialized - cannot refresh episode list.")
+            
+            # Fallback implementation in case UI Manager is not available
+            if hasattr(self, 'episode_list') and self.episode_list:
+                self.logger.info("Using fallback episode list refresh implementation...")
+                try:
+                    import os
+                    
+                    # Simple fallback for the most essential functionality
+                    output_dir = getattr(self, 'output_dir', os.path.join(os.getcwd(), "outputs", "dreamscape"))
+                    if not os.path.exists(output_dir):
+                        os.makedirs(output_dir, exist_ok=True)
+                        return
+                    
+                    self.episode_list.clear()
+                    for filename in sorted(os.listdir(output_dir), reverse=reverse_order):
+                        if filename.endswith(".txt") and filename != "dreamscape_context.json":
+                            self.episode_list.addItem(filename.replace('_', ' ').replace('.txt', ''))
+                            
+                    self.logger.info(f"Fallback episode list refresh completed for directory: {output_dir}")
+                except Exception as e:
+                    self.logger.error(f"Error in fallback episode list refresh: {str(e)}")
             return
+            
+        # Normal operation with UIManager
         self.ui_manager.refresh_episode_list(reverse_order)
 
     def refresh_context_memory(self):
         """Refresh context memory display via ContextManager."""
+        # Ensure context_manager is initialized before using it
+        if not hasattr(self, 'context_manager') or self.context_manager is None:
+            self.logger.warning("refresh_context_memory called before context_manager was initialized. Skipping.")
+            return
+        
         filter_text = ""
         if hasattr(self, 'context_filter_input') and self.context_filter_input:
             filter_text = self.context_filter_input.text()
+        
+        # Ensure context_tree is also initialized
+        if not hasattr(self, 'context_tree') or self.context_tree is None:
+            self.logger.warning("refresh_context_memory called before context_tree was initialized. Skipping.")
+            return
+        
         self.context_manager.refresh_context_display(self.context_tree, filter_text)
 
     def log_output(self, message: str):
@@ -507,6 +546,14 @@ class DreamscapeGenerationTab(QWidget):
         try:
             self.generate_button.setEnabled(False)
             self.cancel_button.setEnabled(True)
+            self.log_output("Starting episode generation...")
+            
+            # Check episode_generator before proceeding
+            if not hasattr(self, 'episode_generator') or self.episode_generator is None:
+                self.logger.error("Episode generator is not initialized")
+                QMessageBox.critical(self, "Error", "Episode generator is not available")
+                return
+            
             await self.generate_dreamscape_episodes()
         except Exception as e:
             self.logger.error(f"Error generating dreamscape episodes: {str(e)}")
@@ -517,39 +564,94 @@ class DreamscapeGenerationTab(QWidget):
 
     def on_cancel_clicked(self):
         """Handle the cancel button click."""
-        if self.episode_generator:
-            self.episode_generator.cancel_generation()
-            self.log_output("Generation cancelled by user")
-            self.cancel_button.setEnabled(False)
-            self.generate_button.setEnabled(True)
+        try:
+            if hasattr(self, 'episode_generator') and self.episode_generator:
+                self.episode_generator.cancel_generation()
+                self.log_output("Generation cancelled by user")
+                self.cancel_button.setEnabled(False)
+                self.generate_button.setEnabled(True)
+            else:
+                self.logger.warning("Episode generator not available for cancellation")
+        except Exception as e:
+            self.logger.error(f"Error cancelling generation: {str(e)}")
 
     async def generate_dreamscape_episodes(self):
-        """Core method to generate episodes, referencing the episode_generator in async context."""
+        """Core method to generate episodes, delegating parameter gathering and execution."""
         try:
-            process_all = self.process_all_chats_checkbox.isChecked() if self.process_all_chats_checkbox else False
-            prompt_text = self.prompt_text_edit.toPlainText() if self.prompt_text_edit else ""
-            chat_url = None if process_all else self.target_chat_input.currentText() if self.target_chat_input else None
-            model = self.model_dropdown.currentText() if self.model_dropdown else "gpt-4"
-            reverse_order = self.reverse_order_checkbox.isChecked() if self.reverse_order_checkbox else False
-
-            if not process_all and not chat_url:
-                self.populate_chat_list()
-                if self.target_chat_input:
-                    chat_url = self.target_chat_input.currentText()
-
-            success = await self.episode_generator.generate_episodes(
-                prompt_text=prompt_text,
-                chat_url=chat_url,
-                model=model,
-                process_all=process_all,
-                reverse_order=reverse_order
-            )
-
-            if success:
-                self.refresh_episode_list()
+            self.log_output("Preparing episode generation...")
+            
+            # Validate required components
+            if not hasattr(self, 'ui_manager') or self.ui_manager is None:
+                self.logger.error("UI Manager is not initialized")
+                QMessageBox.critical(self, "Error", "UI manager is not available")
+                return
+                
+            if not hasattr(self, 'episode_generator') or self.episode_generator is None:
+                self.logger.error("Episode generator is not initialized")
+                QMessageBox.critical(self, "Error", "Episode generator is not available")
+                return
+            
+            if not hasattr(self, 'chat_manager') or self.chat_manager is None:
+                self.logger.error("Chat manager is not initialized")
+                QMessageBox.critical(self, "Error", "Chat manager is not available")
+                return
+            
+            # Get generation parameters from UIManager
+            try:
+                params = self.ui_manager.get_generation_parameters()
+                self.log_output(f"Parameters: model={params.get('model')}, process_all={params.get('process_all')}, reverse={params.get('reverse_order')}")
+                
+                # Basic validation on retrieved parameters
+                if not params.get("prompt_text"):
+                    self.log_output("Warning: Using default prompt as no prompt text was provided")
+                
+                if not params.get("process_all") and not params.get("chat_url"):
+                    self.log_output("No chat selected. Attempting to populate chat list...")
+                    # Attempt to populate and re-get parameters if successful
+                    count = await asyncio.to_thread(self.ui_manager.populate_chat_dropdown, self.chat_manager) # Assume populate_chat_dropdown exists
+                    if count > 0:
+                        params = self.ui_manager.get_generation_parameters() # Re-fetch params
+                        self.log_output(f"Selected chat: {params.get('chat_url')}")
+                        if not params.get("chat_url"):
+                            self.log_output("Still no chat selected after populating.")
+                            QMessageBox.warning(self, "Warning", "No chat selected after refreshing list.")
+                            return
+                    else:
+                        self.log_output("No chats available")
+                        QMessageBox.warning(self, "Warning", "No chat selected and no chats available")
+                        return
+            except Exception as e:
+                self.logger.error(f"Error retrieving parameters from UIManager: {str(e)}", exc_info=True)
+                QMessageBox.critical(self, "Error", f"Failed to retrieve generation parameters: {str(e)}")
+                return
+            
+            self.log_output(f"Generating episode(s) using {params.get('model')}...")
+            
+            # Call the episode_generator with parameters
+            try:
+                success = await self.episode_generator.generate_episodes(
+                    prompt_text=params.get("prompt_text", ""),
+                    chat_url=params.get("chat_url"),
+                    model=params.get("model", "gpt-4o"),
+                    process_all=params.get("process_all", False),
+                    reverse_order=params.get("reverse_order", False)
+                )
+                
+                if success:
+                    self.log_output("Episode generation completed successfully!")
+                    self.log_output("Refreshing episode list...")
+                    self.refresh_episode_list()
+                else:
+                    self.log_output("Episode generation did not complete successfully")
+            except Exception as e:
+                self.logger.error(f"Error in episode_generator.generate_episodes: {str(e)}", exc_info=True)
+                self.log_output(f"Generation error: {str(e)}")
+                # Let the outer handler show the message box
+                raise
 
         except Exception as e:
             self.logger.error(f"Error generating dreamscape episodes: {str(e)}")
+            self.log_output(f"Fatal error: {str(e)}")
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
 
     def send_context_to_chatgpt(self):
@@ -582,23 +684,6 @@ class DreamscapeGenerationTab(QWidget):
         except Exception as e:
             self.logger.error(f"Error saving context schedule: {str(e)}")
             QMessageBox.critical(self, "Error", f"Failed to save schedule: {str(e)}")
-
-    def populate_chat_list(self):
-        """Populate the target chat dropdown with available chats."""
-        try:
-            if not self.target_chat_input or not self.chat_manager:
-                return 0
-            self.target_chat_input.clear()
-            chat_list = self.chat_manager.get_all_chat_titles()
-            self.logger.info(f"Found {len(chat_list)} chats")
-            for chat in chat_list:
-                title = chat.get("title", "Untitled")
-                url = chat.get("link", "")
-                self.target_chat_input.addItem(title, userData=url)
-            return len(chat_list)
-        except Exception as e:
-            self.logger.error(f"Error populating chat list: {str(e)}")
-            return 0
 
     def cleanup(self):
         """
@@ -660,3 +745,29 @@ class DreamscapeGenerationTab(QWidget):
             self.logger.info("DreamscapeGenerationTab cleanup completed")
         except Exception as e:
             self.logger.error(f"Error during DreamscapeGenerationTab cleanup: {str(e)}")
+
+    def _connect_ui_signals(self):
+        """Connect signals for all UI elements after services are initialized."""
+        self.logger.info("Connecting DreamscapeGenerationTab UI signals...")
+        try:
+            # Left Panel Connections
+            if self.episode_list: self.episode_list.currentItemChanged.connect(self.on_episode_selected)
+            if hasattr(self, 'refresh_episodes_btn') and self.refresh_episodes_btn: self.refresh_episodes_btn.clicked.connect(self.refresh_episode_list)
+            if self.generate_button: self.generate_button.clicked.connect(self.on_generate_clicked)
+            if self.cancel_button: self.cancel_button.clicked.connect(self.on_cancel_clicked)
+            if hasattr(self, 'send_context_btn') and self.send_context_btn: self.send_context_btn.clicked.connect(self.send_context_to_chatgpt)
+            if hasattr(self, 'save_schedule_btn') and self.save_schedule_btn: self.save_schedule_btn.clicked.connect(self.save_context_schedule)
+
+            # Right Panel Connections (Tabs)
+            if hasattr(self, 'share_discord_btn') and self.share_discord_btn: self.share_discord_btn.clicked.connect(self.share_to_discord)
+            if self.context_filter_input: self.context_filter_input.textChanged.connect(self.refresh_context_memory)
+            if hasattr(self, 'refresh_context_btn') and self.refresh_context_btn: self.refresh_context_btn.clicked.connect(self.refresh_context_memory)
+            if self.template_dropdown: self.template_dropdown.currentTextChanged.connect(self._on_template_selected)
+            if self.preview_button: self.preview_button.clicked.connect(self.render_dreamscape_template)
+            if self.validate_btn: self.validate_btn.clicked.connect(self._validate_template_context)
+            if self.save_txt_btn: self.save_txt_btn.clicked.connect(lambda: self._save_rendered_output('txt'))
+            if self.save_md_btn: self.save_md_btn.clicked.connect(lambda: self._save_rendered_output('md'))
+
+            self.logger.info("✅ DreamscapeGenerationTab UI signals connected successfully.")
+        except Exception as e:
+            self.logger.error(f"❌ Error connecting DreamscapeGenerationTab UI signals: {str(e)}", exc_info=True)

@@ -53,7 +53,9 @@ class UnifiedPromptService(QObject):
         auto_generate_if_missing: bool = False,
         model: str = "gpt-4o-mini",
         cycle_speed: int = 2,
-        stable_wait: int = 10
+        stable_wait: int = 10,
+        cursor_dispatcher: Optional[Any] = None,
+        cursor_manager: Optional[Any] = None
     ) -> None:
         super().__init__()
         self.logger = logging.getLogger(__name__)
@@ -67,6 +69,8 @@ class UnifiedPromptService(QObject):
         self.driver_manager = driver_manager
         self.feedback_engine = feedback_engine
         self.auto_generate_if_missing = auto_generate_if_missing
+        self.cursor_dispatcher = cursor_dispatcher
+        self.cursor_manager = cursor_manager
 
         # Async executors & integrations (for code generation and git integration)
         # Extract configuration values instead of passing the entire config_manager object
@@ -135,6 +139,36 @@ class UnifiedPromptService(QObject):
             A dictionary with execution details.
         """
         try:
+            if model_type == ModelType.CURSOR and self.cursor_manager:
+                # Use CursorSessionManager for Cursor-based execution
+                task_context = {
+                    "test_file": test_file,
+                    "generate_tests": generate_tests,
+                    "auto_commit": auto_commit,
+                    **kwargs
+                }
+                
+                # Queue the task and wait for completion
+                self.cursor_manager.queue_task(prompt, task_context)
+                
+                # If auto_accept is disabled, we need to manually accept
+                if not self.cursor_manager.auto_accept:
+                    self.cursor_manager.accept_next_task()
+                
+                # Return the result from execution history
+                history = self.cursor_manager.execution_history
+                if history:
+                    latest_result = history[-1]
+                    return {
+                        "success": latest_result.get("success", False),
+                        "response": latest_result.get("response", ""),
+                        "artifacts": latest_result.get("context", {}),
+                        "test_results": latest_result.get("test_results", None),
+                        "git_commit": latest_result.get("git_commit", None)
+                    }
+                return {"success": False, "error": "No execution history found"}
+            
+            # Fall back to regular executor for non-Cursor or if CursorSessionManager not available
             executor = self._get_executor(model_type)
             result = await executor.execute(
                 prompt=prompt,
@@ -188,26 +222,54 @@ class UnifiedPromptService(QObject):
                 result["test_results"] = test_result
                 result["success"] = result["success"] and test_result.get("success", False)
 
-            if auto_commit and result.get("success", False) and self.git_service:
-                commit_msg = kwargs.get("commit_message", "Auto-commit: Prompt execution changes")
-                commit_result = await self.git_service.commit_changes(commit_msg)
-                result["git_commit"] = commit_result
+            if auto_commit and result.get("success", False):
+                if self.cursor_dispatcher:
+                    commit_msg = kwargs.get("commit_message", "Auto-commit: Prompt execution changes")
+                    files_to_commit = kwargs.get("files_to_commit", [])
+                    if not files_to_commit and test_file:
+                        files_to_commit = [test_file]
+                    
+                    commit_success = self.cursor_dispatcher.git_commit_changes(commit_msg, files_to_commit)
+                    result["git_commit"] = {
+                        "success": commit_success,
+                        "message": commit_msg,
+                        "files": files_to_commit
+                    }
+                else:
+                    self.logger.warning("CursorDispatcher not available for Git operations")
+                    result["git_commit"] = {
+                        "success": False,
+                        "error": "CursorDispatcher not available"
+                    }
 
         except Exception as e:
             self.logger.error(f"Error in post-execution handling: {str(e)}")
             result["post_execution_error"] = str(e)
 
     async def _run_tests(self, test_file: str) -> Dict[str, Any]:
-        """
-        Run tests using the specified test file.
-        """
+        """Run tests for a given test file."""
         try:
-            from core.testing.test_runner import TestRunner
-            runner = TestRunner(self.path_manager)
-            return await runner.run_tests(test_file)
+            if self.cursor_dispatcher:
+                success, output = self.cursor_dispatcher.run_tests(test_file)
+                return {
+                    "success": success,
+                    "output": output,
+                    "test_file": test_file
+                }
+            else:
+                self.logger.warning("CursorDispatcher not available for test execution")
+                return {
+                    "success": False,
+                    "error": "CursorDispatcher not available",
+                    "test_file": test_file
+                }
         except Exception as e:
             self.logger.error(f"Error running tests: {str(e)}")
-            return {"success": False, "error": str(e)}
+            return {
+                "success": False,
+                "error": str(e),
+                "test_file": test_file
+            }
 
     # -------------------------------------------------
     # SYNCHRONOUS PROMPT EXECUTION (Selenium–Based Cycles)
@@ -633,6 +695,8 @@ class UnifiedPromptService(QObject):
                 self.discord_dispatcher.stop()
             if self.driver_manager:
                 self.driver_manager.shutdown_driver()
+            if self.cursor_manager:
+                self.cursor_manager.shutdown()
             self.log_message.emit("UnifiedPromptService shutdown complete.")
             self.logger.info("UnifiedPromptService successfully shut down.")
         except Exception as e:

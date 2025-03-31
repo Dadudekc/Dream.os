@@ -1,5 +1,5 @@
 ---
-description: whenever a File has Over 400 Lines
+description: 
 globs: 
 alwaysApply: false
 ---

@@ -39,22 +39,26 @@ class OrchestratorFactory:
 
             config_manager = ServiceRegistry.get("config_manager")
             prompt_service = ServiceRegistry.get("prompt_service")
-            prompt_manager = ServiceRegistry.get("prompt_manager")
+            chat_manager = ServiceRegistry.get("chat_manager")
             feedback_engine = ServiceRegistry.get("feedback_engine")
+            # Get the driver manager
+            driver_manager = ServiceRegistry.get("driver_manager")
 
             if service_type == "task":
+                # TaskOrchestrator does not seem to need the driver_manager based on its current args
                 orchestrator = TaskOrchestrator(
                     config=config_manager,
                     feedback=feedback_engine
                 )
                 logger.info("✅ TaskOrchestrator created via factory")
                 return orchestrator
-            else:
+            else: # Assume 'cycle' or default
+                # Pass driver_manager to PromptCycleOrchestrator
                 orchestrator = PromptCycleOrchestrator(
                     config_manager=config_manager,
+                    chat_manager=chat_manager,
                     prompt_service=prompt_service,
-                    prompt_manager=prompt_manager,
-                    feedback_engine=feedback_engine
+                    driver_manager=driver_manager # Pass the driver manager
                 )
                 logger.info("✅ PromptCycleOrchestrator created via factory")
                 return orchestrator
@@ -89,8 +93,8 @@ class OrchestratorFactory:
             config_manager: Required ConfigManager instance
             chat_manager: Optional IChatManager
             prompt_service: Optional prompt service
-            prompt_manager: Optional prompt manager
-            feedback_engine: Optional feedback engine
+            prompt_manager: Optional prompt manager (used only for TaskOrchestrator)
+            feedback_engine: Optional feedback engine (used only for TaskOrchestrator)
             orchestrator_type: "cycle" or "task"
 
         Returns:
@@ -106,12 +110,11 @@ class OrchestratorFactory:
                     feedback=feedback_engine
                 )
             else:
+                # Only pass the parameters expected by PromptCycleOrchestrator
                 return PromptCycleOrchestrator(
                     config_manager=config_manager,
                     chat_manager=chat_manager,
-                    prompt_service=prompt_service,
-                    prompt_manager=prompt_manager,
-                    feedback_engine=feedback_engine
+                    prompt_service=prompt_service
                 )
         except Exception as e:
             logger.error(f"❌ Failed to create orchestrator with explicit deps ({orchestrator_type}): {e}")

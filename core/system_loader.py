@@ -4,41 +4,48 @@ SystemLoader - Centralized Service Initialization System
 =======================================================
 
 This module provides a centralized system for initializing and wiring all
-Dream.OS services with proper dependency injection and sequencing.
+Dream.OS services with proper dependency injection and sequencing using
+the micro-factory pattern.
 
 It ensures:
 - Services are initialized in the correct dependency order
 - Configuration is properly extracted and passed
-- Path objects are correctly handled
+- Factories are used for proper dependency injection
 - Singleton services are properly maintained
 - Proper fallbacks for missing or failing services
 """
 
 import logging
-import sys
 import os
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional, List, Union, Type
 from pathlib import Path
 
-# Core service imports
+# Core service registry import
 from core.services.service_registry import ServiceRegistry
-from core.factories.prompt_factory import PromptFactory
-from core.factories.feedback_engine_factory import FeedbackEngineFactory
+
+# Base factory imports
 from core.PathManager import PathManager
 from config.ConfigManager import ConfigManager
-from core.DriverManager import DriverManager
-from core.chatgpt_automation.OpenAIClient import OpenAIClient
+
+# Core micro-factories
+from core.micro_factories.prompt_factory import PromptFactory
+from core.micro_factories.feedback_factory import FeedbackFactory
+from core.micro_factories.chat_factory import ChatFactory
+from core.micro_factories.orchestrator_factory import OrchestratorFactory
+from core.micro_factories.dreamscape_factory import DreamscapeFactory
+from core.micro_factories.merit_test_factory import MeritTestFactory
+
+# Utility imports
 from core.memory_utils import fix_memory_file
 
-# Import these only on demand to avoid circular dependencies
-# from core.services.prompt_execution_service import UnifiedPromptService
-# from core.AletheiaPromptManager import AletheiaPromptManager
+# Configure the logger at module level
+logger = logging.getLogger(__name__)
 
 
 class SystemLoader:
     """
     Centralized service loader that initializes all Dream.OS components
-    in the correct order with proper dependency handling.
+    using the micro-factory pattern with proper dependency handling.
     """
     
     def __init__(self, config_path: Optional[str] = None):
@@ -48,52 +55,72 @@ class SystemLoader:
         Args:
             config_path: Optional custom path to config file
         """
+        # Initialize logger first
         self.logger = logging.getLogger(__name__)
-        self.registry = ServiceRegistry()
+
+        # Core services to initialize first (these are not from factories)
         self.path_manager = PathManager()
         
         # Initialize config manager
         try:
             self.config_manager = ConfigManager(config_path)
-            self.logger.info("✅ ConfigManager initialized successfully")
+            logger.info("✅ ConfigManager initialized successfully")
         except Exception as e:
-            self.logger.error(f"❌ Failed to initialize ConfigManager: {e}")
+            logger.error(f"❌ Failed to initialize ConfigManager: {e}")
             self.config_manager = ConfigManager()  # Fallback to default
         
         # Register these core services immediately
         ServiceRegistry.register("config_manager", self.config_manager)
-        ServiceRegistry.register("logger", self.logger)
+        ServiceRegistry.register("logger", logger)
         ServiceRegistry.register("path_manager", self.path_manager)
         
+        # Define the factory registry with service name to factory class mapping
+        self.factories = {
+            "prompt_manager": PromptFactory,
+            "feedback_engine": FeedbackFactory,
+            "openai_client": self._create_openai_client,  # Special handler function
+            "driver_manager": self._create_driver_manager,  # Special handler function
+            "prompt_service": self._create_prompt_service,  # Special handler
+            "chat_manager": ChatFactory,
+            "cycle_service": OrchestratorFactory,
+            "task_orchestrator": OrchestratorFactory,
+            "dreamscape_generator": DreamscapeFactory,
+            "merit_chain_manager": MeritTestFactory,
+            "test_coverage_analyzer": MeritTestFactory,
+            "test_generator_service": MeritTestFactory
+        }
+    
     def boot(self) -> Dict[str, Any]:
         """
-        Boot all core services in proper dependency order.
+        Boot all core services in proper dependency order using registered factories.
         
         Returns:
             Dict of initialized services
         """
-        self.logger.info("🚀 Starting Dream.OS SystemLoader...")
+        logger.info("🚀 Starting Dream.OS SystemLoader...")
         
-        # Verify and repair memory files early
-        self._repair_memory_files()
-        
-        # Initialize in dependency order
-        self._init_prompt_manager()
-        self._init_feedback_engine()
-        self._init_openai_client()
-        self._init_driver_manager()
-        self._init_prompt_service()
-        self._init_orchestration_services()
-        
-        # Verify core services
-        missing_services = self.registry.validate_service_registry()
-        if missing_services:
-            self.logger.warning(f"⚠️ Missing required services: {missing_services}")
-        else:
-            self.logger.info("✅ All required services registered and available")
-        
-        # Return all registered services
-        return {name: ServiceRegistry.get(name) for name in ServiceRegistry._services}
+        try:
+            # Verify and repair memory files early
+            self._repair_memory_files()
+            
+            # Initialize all services in dependency order
+            self._initialize_services()
+            
+            # Verify core services
+            missing_services = self._validate_required_services()
+            if missing_services:
+                logger.warning(f"⚠️ Missing required services: {missing_services}")
+            else:
+                logger.info("✅ All required services registered and available")
+            
+            # Return all registered services
+            return {name: ServiceRegistry.get(name) for name in ServiceRegistry._services}
+        except Exception as e:
+            # Fallback logger in case of unexpected errors
+            fallback_logger = logging.getLogger(__name__)
+            fallback_logger.error(f"Failed to initialize core services: {e}", exc_info=True)
+            # Return whatever services were successfully initialized
+            return {name: ServiceRegistry.get(name) for name in ServiceRegistry._services}
     
     def _repair_memory_files(self) -> None:
         """Verify and repair all memory files."""
@@ -109,144 +136,146 @@ class SystemLoader:
             for memory_file in memory_files:
                 file_path = memory_dir / memory_file
                 if file_path.exists():
-                    fix_memory_file(str(file_path), self.logger)
+                    fix_memory_file(str(file_path), logger)
             
-            self.logger.info("✅ Memory files verified/repaired")
+            logger.info("✅ Memory files verified/repaired")
         except Exception as e:
-            self.logger.error(f"❌ Error repairing memory files: {e}")
+            logger.error(f"❌ Error repairing memory files: {e}")
     
-    def _init_prompt_manager(self) -> None:
-        """Initialize the PromptManager service."""
-        if not ServiceRegistry.has_service("prompt_manager"):
-            try:
-                prompt_manager = PromptFactory.create(ServiceRegistry)
-                if prompt_manager:
-                    ServiceRegistry.register("prompt_manager", prompt_manager)
-                    self.logger.info("✅ PromptManager initialized via factory")
-                else:
-                    self.logger.warning("⚠️ PromptFactory.create() returned None")
-            except Exception as e:
-                self.logger.error(f"❌ Failed to initialize PromptManager: {e}")
-    
-    def _init_feedback_engine(self) -> None:
-        """Initialize the FeedbackEngine service."""
-        if not ServiceRegistry.has_service("feedback_engine"):
-            try:
-                feedback_engine = FeedbackEngineFactory.create_singleton()
-                ServiceRegistry.register("feedback_engine", feedback_engine)
-                self.logger.info("✅ FeedbackEngine initialized as singleton")
-            except Exception as e:
-                self.logger.error(f"❌ Failed to initialize FeedbackEngine: {e}")
-    
-    def _init_driver_manager(self) -> None:
-        """Initialize the DriverManager service."""
-        if not ServiceRegistry.has_service("driver_manager"):
-            try:
-                # Extract configuration values instead of passing ConfigManager directly
-                headless = self.config_manager.get("headless", True)
-                profile_dir = self.config_manager.get("profile_dir", None)
-                cookie_file = self.config_manager.get("cookie_file", None)
-                chrome_options = self.config_manager.get("chrome_options", [])
-                
-                driver_manager = DriverManager(
-                    headless=headless,
-                    profile_dir=profile_dir,
-                    cookie_file=cookie_file,
-                    undetected_mode=True,
-                    additional_arguments=chrome_options,
-                    timeout=30
-                )
-                ServiceRegistry.register("driver_manager", driver_manager)
-                self.logger.info("✅ DriverManager initialized")
-            except Exception as e:
-                self.logger.error(f"❌ Failed to initialize DriverManager: {e}")
-    
-    def _init_openai_client(self) -> None:
-        """Initialize the OpenAIClient service."""
-        if not ServiceRegistry.has_service("openai_client"):
-            try:
-                profile_dir = os.path.join(self.path_manager.get_path("cache"), "openai_profile")
-                openai_client = OpenAIClient(profile_dir=profile_dir)
-                openai_client.boot()  # Explicitly boot the client at startup
-                ServiceRegistry.register("openai_client", openai_client)
-                self.logger.info("✅ OpenAIClient initialized and booted")
-            except Exception as e:
-                self.logger.error(f"❌ Failed to initialize OpenAIClient: {e}")
-    
-    def _init_prompt_service(self) -> None:
-        """Initialize the UnifiedPromptService."""
-        if not ServiceRegistry.has_service("prompt_service"):
-            try:
-                # Avoid circular import
-                from core.services.prompt_execution_service import UnifiedPromptService
-                
-                # Get required dependencies from registry
-                config_manager = ServiceRegistry.get("config_manager")
-                path_manager = ServiceRegistry.get("path_manager")
-                prompt_manager = ServiceRegistry.get("prompt_manager")
-                driver_manager = ServiceRegistry.get("driver_manager")
-                feedback_engine = ServiceRegistry.get("feedback_engine")
-                
-                # Create the prompt service with properly extracted config values
-                prompt_service = UnifiedPromptService(
-                    config_manager=config_manager,
-                    path_manager=path_manager,
-                    config_service=config_manager,  # Use config_manager as config_service
-                    prompt_manager=prompt_manager,
-                    driver_manager=driver_manager,
-                    feedback_engine=feedback_engine,
-                    model=config_manager.get("default_model", "gpt-4o-mini")
-                )
-                
-                ServiceRegistry.register("prompt_service", prompt_service)
-                self.logger.info("✅ UnifiedPromptService initialized")
-            except Exception as e:
-                self.logger.error(f"❌ Failed to initialize UnifiedPromptService: {e}")
-    
-    def _init_orchestration_services(self) -> None:
-        """Initialize the orchestration services (cycle_service, task_orchestrator, dreamscape_generator)."""
-        # Initialize cycle service if not already registered
-        if not ServiceRegistry.has_service("cycle_service"):
-            try:
-                # Avoid circular import
-                from core.PromptCycleOrchestrator import PromptCycleOrchestrator
-                
-                # Get required dependencies
-                config_manager = ServiceRegistry.get("config_manager")
-                prompt_service = ServiceRegistry.get("prompt_service")
-                
-                # Create cycle service
-                cycle_service = PromptCycleOrchestrator(
-                    config_manager=config_manager,
-                    prompt_service=prompt_service
-                )
-                
-                ServiceRegistry.register("cycle_service", cycle_service)
-                self.logger.info("✅ CycleService initialized")
-            except Exception as e:
-                self.logger.warning(f"⚠️ Failed to initialize CycleService: {e}")
+    def _initialize_services(self) -> None:
+        """Initialize all services using their registered factories in dependency order."""
+        # Process services in a specific order to respect dependencies
+        service_init_order = [
+            "prompt_manager",
+            "feedback_engine",
+            "openai_client",
+            "driver_manager",
+            "chat_manager",
+            "prompt_service",
+            "cycle_service",
+            "task_orchestrator",
+            "dreamscape_generator",
+            "merit_chain_manager",
+            "test_coverage_analyzer",
+            "test_generator_service"
+        ]
         
-        # Register placeholder for task_orchestrator (if you want to implement it later)
-        if not ServiceRegistry.has_service("task_orchestrator"):
-            from core.micro_factories.orchestrator_factory import OrchestratorFactory
-            try:
-                task_orchestrator = OrchestratorFactory.create()
-                if task_orchestrator:
-                    ServiceRegistry.register("task_orchestrator", task_orchestrator)
-                    self.logger.info("✅ TaskOrchestrator initialized")
-            except Exception as e:
-                self.logger.warning(f"⚠️ TaskOrchestrator not yet implemented: {e}")
+        # Initialize services in the specified order
+        for service_name in service_init_order:
+            if service_name in self.factories and not ServiceRegistry.has_service(service_name):
+                self._initialize_service(service_name)
+    
+    def _initialize_service(self, service_name: str) -> None:
+        """Initialize a single service using its factory."""
+        if ServiceRegistry.has_service(service_name):
+            logger.info(f"✓ Service '{service_name}' already initialized.")
+            return
         
-        # Register placeholder for dreamscape_generator (if you want to implement it later)
-        if not ServiceRegistry.has_service("dreamscape_generator"):
-            try:
-                # Import if you have a factory for it
-                # from core.micro_factories.dreamscape_factory import DreamscapeFactory
-                # dreamscape_generator = DreamscapeFactory.create()
-                # ServiceRegistry.register("dreamscape_generator", dreamscape_generator)
-                self.logger.info("🧩 DreamscapeGenerator not yet wired")
-            except Exception as e:
-                self.logger.warning(f"⚠️ DreamscapeGenerator not yet implemented: {e}")
+        try:
+            factory = self.factories.get(service_name)
+            if factory is None:
+                logger.warning(f"⚠️ No factory registered for service '{service_name}'")
+                return
+            
+            # Handle special factory functions vs factory classes
+            if callable(factory) and not isinstance(factory, type):
+                # It's a method that handles creation directly
+                instance = factory()
+            else:
+                # It's a factory class with a create method
+                instance = factory.create()
+            
+            if instance:
+                ServiceRegistry.register(service_name, instance)
+                logger.info(f"✅ Service '{service_name}' initialized via factory")
+            else:
+                logger.warning(f"⚠️ Factory for '{service_name}' returned None")
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize '{service_name}': {e}")
+    
+    def _validate_required_services(self) -> List[str]:
+        """Validate that all required services are registered."""
+        required_services = [
+            "config_manager",
+            "path_manager",
+            "prompt_manager",
+            "feedback_engine",
+            "prompt_service"
+        ]
+        
+        missing = []
+        for service in required_services:
+            if not ServiceRegistry.has_service(service):
+                missing.append(service)
+        
+        return missing
+    
+    def _create_openai_client(self) -> Any:
+        """Special handler to create the OpenAIClient service."""
+        try:
+            from core.chatgpt_automation.OpenAIClient import OpenAIClient
+            
+            profile_dir = os.path.join(self.path_manager.get_path("cache"), "openai_profile")
+            openai_client = OpenAIClient(profile_dir=profile_dir)
+            openai_client.boot()  # Explicitly boot the client at startup
+            return openai_client
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize OpenAIClient: {e}")
+            return None
+    
+    def _create_driver_manager(self) -> Any:
+        """Special handler to create the DriverManager service."""
+        try:
+            from core.DriverManager import DriverManager
+            
+            # Extract configuration values
+            headless = self.config_manager.get("headless", True)
+            profile_dir = self.config_manager.get("profile_dir", None)
+            cookie_file = self.config_manager.get("cookie_file", None)
+            chrome_options = self.config_manager.get("chrome_options", [])
+            
+            driver_manager = DriverManager(
+                headless=headless,
+                profile_dir=profile_dir,
+                cookie_file=cookie_file,
+                undetected_mode=True,
+                additional_arguments=chrome_options,
+                timeout=30,
+                logger=self.logger
+            )
+            return driver_manager
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize DriverManager: {e}")
+            return None
+    
+    def _create_prompt_service(self) -> Any:
+        """Special handler to create the UnifiedPromptService."""
+        try:
+            # Avoid circular import
+            from core.services.prompt_execution_service import UnifiedPromptService
+            
+            # Get required dependencies from registry
+            config_manager = ServiceRegistry.get("config_manager")
+            path_manager = ServiceRegistry.get("path_manager")
+            prompt_manager = ServiceRegistry.get("prompt_manager")
+            driver_manager = ServiceRegistry.get("driver_manager")
+            feedback_engine = ServiceRegistry.get("feedback_engine")
+            
+            # Create the prompt service with properly extracted config values
+            prompt_service = UnifiedPromptService(
+                config_manager=config_manager,
+                path_manager=path_manager,
+                config_service=config_manager,  # Use config_manager as config_service
+                prompt_manager=prompt_manager,
+                driver_manager=driver_manager,
+                feedback_engine=feedback_engine,
+                model=config_manager.get("default_model", "gpt-4o-mini")
+            )
+            
+            return prompt_service
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize UnifiedPromptService: {e}")
+            return None
 
 
 # Convenience function to create and boot the system
@@ -274,8 +303,7 @@ if __name__ == "__main__":
     # Initialize system and print status
     services = initialize_system()
     
-    logger = logging.getLogger(__name__)
-    logger.info("System initialized with the following services:")
+    print("System initialized with the following services:")
     for name, service in services.items():
         status = "✅ Available" if service else "⚠️ Empty implementation"
-        logger.info(f"  - {name}: {status}") 
+        print(f"  - {name}: {status}") 

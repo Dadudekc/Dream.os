@@ -91,6 +91,7 @@ class DriverManager:
                  retry_attempts: int = DEFAULT_RETRY_ATTEMPTS,
                  retry_delay: int = DEFAULT_RETRY_DELAY,
                  timeout: Optional[int] = None,
+                 logger: Optional[logging.Logger] = None,
                  **kwargs):
         """
         Initialize DriverManager.
@@ -108,11 +109,15 @@ class DriverManager:
             retry_attempts: Retry attempts for driver operations.
             retry_delay: Delay between retry attempts.
             timeout: Alias for wait_timeout, for backward compatibility.
+            logger: Optional logger instance.
             **kwargs: Additional configuration options.
         """
         with self._lock:
             if self._initialized:
                 return
+
+            # Set up logger
+            self.logger = logger or setup_logger()
 
             # Set configuration
             self.profile_dir = profile_dir or os.path.join(os.getcwd(), "chrome_profile", "default")
@@ -141,7 +146,7 @@ class DriverManager:
             if not os.path.exists(self.profile_dir) and not self.headless:
                 os.makedirs(self.profile_dir, exist_ok=True)
 
-            logger.info(f"DriverManager initialized: Headless={self.headless}, "
+            self.logger.info(f"DriverManager initialized: Headless={self.headless}, "
                         f"Mobile={self.mobile_emulation}, Undetected={self.undetected_mode}")
             self._initialized = True
 
@@ -164,13 +169,13 @@ class DriverManager:
     def _download_driver_if_needed(self) -> str:
         cached_driver = self._get_cached_driver_path()
         if not os.path.exists(cached_driver):
-            logger.warning("No cached ChromeDriver found. Downloading new version...")
+            self.logger.warning("No cached ChromeDriver found. Downloading new version...")
             driver_path = ChromeDriverManager().install()
             os.makedirs(os.path.dirname(cached_driver), exist_ok=True)
             shutil.copyfile(driver_path, cached_driver)
-            logger.info(f"Cached ChromeDriver at: {cached_driver}")
+            self.logger.info(f"Cached ChromeDriver at: {cached_driver}")
             return cached_driver
-        logger.info(f"Using cached ChromeDriver: {cached_driver}")
+        self.logger.info(f"Using cached ChromeDriver: {cached_driver}")
         return cached_driver
 
     # ---------------------------
@@ -182,18 +187,18 @@ class DriverManager:
         session_duration = (datetime.now() - self.session_start_time).total_seconds()
         expired = session_duration > self.max_session_duration
         if expired:
-            logger.info(f"Session expired after {session_duration:.2f} seconds")
+            self.logger.info(f"Session expired after {session_duration:.2f} seconds")
         return expired
 
     def refresh_session(self) -> bool:
         if not self.driver:
-            logger.warning("No active session to refresh")
+            self.logger.warning("No active session to refresh")
             return False
         try:
             self.quit_driver()
             return bool(self.get_driver(force_new=True))
         except Exception as e:
-            logger.error(f"Error refreshing session: {e}")
+            self.logger.error(f"Error refreshing session: {e}")
             return False
 
     def get_session_info(self) -> Dict[str, Any]:
@@ -218,7 +223,7 @@ class DriverManager:
 
     def set_session_timeout(self, timeout: int) -> None:
         self.max_session_duration = timeout
-        logger.info(f"Session timeout set to {timeout} seconds")
+        self.logger.info(f"Session timeout set to {timeout} seconds")
 
     # ---------------------------
     # Chrome Options Creation
@@ -239,7 +244,7 @@ class DriverManager:
                               "AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148")
             }
             options.add_experimental_option("mobileEmulation", mobile_emulation_settings)
-            logger.info("Mobile emulation enabled.")
+            self.logger.info("Mobile emulation enabled.")
         # Headless mode: use temporary profile if headless
         if self.headless:
             self.temp_profile = tempfile.mkdtemp(prefix="chrome_profile_")
@@ -248,9 +253,19 @@ class DriverManager:
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
-            logger.info(f"Headless mode enabled with temp profile: {self.temp_profile}")
+            options.add_argument("--window-size=1920,1080")
+            self.logger.info(f"Headless mode enabled with temp profile: {self.temp_profile}")
         else:
             options.add_argument(f"--user-data-dir={self.profile_dir}")
+            self.logger.info(f"Using persistent profile: {self.profile_dir}")
+            
+        # Experimental options to potentially reduce detection
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+
+        # Configure logging level for Selenium/Browser
+        options.set_capability('goog:loggingPrefs', {'browser': 'WARNING'})
+
         return options
 
     # ---------------------------
@@ -259,10 +274,9 @@ class DriverManager:
     def get_driver(self, force_new: bool = False) -> Optional[webdriver.Chrome]:
         with self._lock:
             if self.driver and not force_new and not self._is_session_expired():
-                logger.info("Returning existing driver instance.")
                 return self.driver
             if self.driver and self._is_session_expired():
-                logger.info("Session expired, creating new driver.")
+                self.logger.info("Session expired, creating new driver.")
                 self.quit_driver()
             for attempt in range(1, self.retry_attempts + 1):
                 try:
@@ -270,21 +284,20 @@ class DriverManager:
                     options = self._create_chrome_options()
                     service = ChromeService(executable_path=driver_path)
                     if self.undetected_mode:
-                        logger.info("Launching undetected Chrome driver...")
+                        self.logger.info("Launching undetected Chrome driver...")
                         new_driver = uc.Chrome(service=service, options=options)
                     else:
-                        logger.info("Launching standard Chrome driver...")
+                        self.logger.info("Launching standard Chrome driver...")
                         new_driver = webdriver.Chrome(service=service, options=options)
-                    logger.info("Chrome driver initialized and ready.")
                     self.session_start_time = datetime.now()
                     self.driver = new_driver
                     return new_driver
                 except Exception as e:
-                    logger.error(f"Driver initialization attempt {attempt} failed: {e}")
+                    self.logger.error(f"Driver initialization attempt {attempt} failed: {e}")
                     if attempt < self.retry_attempts:
                         time.sleep(self.retry_delay)
                     else:
-                        logger.error("All driver initialization attempts failed")
+                        self.logger.error("All driver initialization attempts failed")
                         return None
 
     # ---------------------------
@@ -293,17 +306,17 @@ class DriverManager:
     def quit_driver(self) -> None:
         with self._lock:
             if self.driver:
-                logger.info("Quitting Chrome driver...")
+                self.logger.info("Quitting Chrome driver...")
                 try:
                     self.driver.quit()
                 except Exception as e:
-                    logger.exception(f"Error during driver quit: {e}")
+                    self.logger.exception(f"Error during driver quit: {e}")
                 finally:
                     self.driver = None
                     self.session_start_time = None
-                    logger.info("Driver session closed.")
+                    self.logger.info("Driver session closed.")
                     if self.temp_profile and os.path.exists(self.temp_profile):
-                        logger.info(f"Cleaning up temp profile: {self.temp_profile}")
+                        self.logger.info(f"Cleaning up temp profile: {self.temp_profile}")
                         shutil.rmtree(self.temp_profile)
                         self.temp_profile = None
 
@@ -312,25 +325,25 @@ class DriverManager:
     # ---------------------------
     def save_cookies(self) -> bool:
         if not self.driver:
-            logger.warning("Driver not initialized. Cannot save cookies.")
+            self.logger.warning("Driver not initialized. Cannot save cookies.")
             return False
         try:
             cookies = self.driver.get_cookies()
             os.makedirs(os.path.dirname(self.cookie_file), exist_ok=True)
             with open(self.cookie_file, "wb") as f:
                 pickle.dump(cookies, f)
-            logger.info(f"Cookies saved to {self.cookie_file}")
+            self.logger.info(f"Cookies saved to {self.cookie_file}")
             return True
         except Exception as e:
-            logger.exception(f"Failed to save cookies: {e}")
+            self.logger.exception(f"Failed to save cookies: {e}")
             return False
 
     def load_cookies(self) -> bool:
         if not self.driver:
-            logger.warning("Driver not initialized. Cannot load cookies.")
+            self.logger.warning("Driver not initialized. Cannot load cookies.")
             return False
         if not os.path.exists(self.cookie_file):
-            logger.warning(f"No cookie file found at {self.cookie_file}")
+            self.logger.warning(f"No cookie file found at {self.cookie_file}")
             return False
         try:
             with open(self.cookie_file, "rb") as f:
@@ -345,25 +358,25 @@ class DriverManager:
                 try:
                     self.driver.add_cookie(cookie)
                 except Exception as cookie_ex:
-                    logger.warning(f"Could not add cookie: {cookie_ex}")
+                    self.logger.warning(f"Could not add cookie: {cookie_ex}")
             self.driver.refresh()
             time.sleep(2)
-            logger.info("Cookies loaded and session refreshed.")
+            self.logger.info("Cookies loaded and session refreshed.")
             return True
         except Exception as e:
-            logger.exception(f"Failed to load cookies: {e}")
+            self.logger.exception(f"Failed to load cookies: {e}")
             return False
 
     def clear_cookies(self) -> bool:
         if not self.driver:
-            logger.warning("No active session to clear cookies")
+            self.logger.warning("No active session to clear cookies")
             return False
         try:
             self.driver.delete_all_cookies()
-            logger.info("Cookies cleared successfully")
+            self.logger.info("Cookies cleared successfully")
             return True
         except Exception as e:
-            logger.error(f"Error clearing cookies: {e}")
+            self.logger.error(f"Error clearing cookies: {e}")
             return False
 
     # ---------------------------
@@ -371,7 +384,7 @@ class DriverManager:
     # ---------------------------
     def is_logged_in(self, retries: int = 3) -> bool:
         if not self.driver:
-            logger.warning("Driver not initialized.")
+            self.logger.warning("Driver not initialized.")
             return False
         for attempt in range(1, retries + 1):
             try:
@@ -379,12 +392,12 @@ class DriverManager:
                 WebDriverWait(self.driver, self.wait_timeout).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, 'nav[aria-label="Chat history"]'))
                 )
-                logger.info("User is logged in.")
+                self.logger.info("User is logged in.")
                 return True
             except Exception as e:
-                logger.warning(f"Login check attempt {attempt} failed: {e}")
+                self.logger.warning(f"Login check attempt {attempt} failed: {e}")
                 time.sleep(2)
-        logger.warning("Exceeded login check retries.")
+        self.logger.warning("Exceeded login check retries.")
         return False
 
     # ---------------------------
@@ -396,13 +409,13 @@ class DriverManager:
             try:
                 return action()
             except Exception as e:
-                logger.warning(f"Action attempt {attempt} failed: {e}")
+                self.logger.warning(f"Action attempt {attempt} failed: {e}")
                 if attempt < max_retries:
                     time.sleep(self.retry_delay)
                     if self._is_session_expired():
                         self.refresh_session()
                 else:
-                    logger.error("All action attempts failed")
+                    self.logger.error("All action attempts failed")
                     raise
 
     # ---------------------------
@@ -410,28 +423,28 @@ class DriverManager:
     # ---------------------------
     def scroll_into_view(self, element) -> None:
         if not self.driver:
-            logger.warning("Driver not initialized.")
+            self.logger.warning("Driver not initialized.")
             return
         try:
             self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", element)
             time.sleep(1)
-            logger.info("Scrolled element into view.")
+            self.logger.info("Scrolled element into view.")
         except Exception as e:
-            logger.exception(f"Failed to scroll element into view: {e}")
+            self.logger.exception(f"Failed to scroll element into view: {e}")
 
     def manual_scroll(self, scroll_pause_time: float = 1.0, max_scrolls: int = 10) -> None:
         if not self.driver:
-            logger.warning("Driver not initialized.")
+            self.logger.warning("Driver not initialized.")
             return
-        logger.info("Starting manual scrolling...")
+        self.logger.info("Starting manual scrolling...")
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         for i in range(max_scrolls):
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(scroll_pause_time)
             new_height = self.driver.execute_script("return document.body.scrollHeight")
-            logger.info(f"Scroll {i+1}: Document height is {new_height}")
+            self.logger.info(f"Scroll {i+1}: Document height is {new_height}")
             if new_height == last_height:
-                logger.info("Reached bottom of the page.")
+                self.logger.info("Reached bottom of the page.")
                 break
             last_height = new_height
 
@@ -449,14 +462,14 @@ class DriverManager:
                     if option in restart_options and getattr(self, option) != value:
                         restart_needed = True
                     setattr(self, option, value)
-                    logger.info(f"Updated option {option} to {value}")
+                    self.logger.info(f"Updated option {option} to {value}")
                 else:
-                    logger.warning(f"Unknown option: {option}")
+                    self.logger.warning(f"Unknown option: {option}")
             if restart_needed and self.driver:
-                logger.info("Restarting driver with new options...")
+                self.logger.info("Restarting driver with new options...")
                 self.quit_driver()
                 self.get_driver(force_new=True)
-            logger.info("Driver options updated successfully.")
+            self.logger.info("Driver options updated successfully.")
 
     def shutdown_driver(self):
         """Cleanly shutdown the driver and force kill any leftover browser processes."""

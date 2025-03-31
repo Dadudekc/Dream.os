@@ -1,121 +1,91 @@
-<<<<<<< HEAD
-# DigitalDreamscapeEpisodes
+# Dreamscape Tab Test Suite
 
-A system for generating interconnected dream-like narrative episodes from your chat interactions, providing a continuity-aware creative reflection of your conversations.
+This directory contains a comprehensive test suite for the Dreamscape Generation Tab of Chat Mate.
 
-## Features
+## Test Structure
 
-- 🧠 **Hybrid Context Synthesis** - Combines LLM-based semantic memory with structured episode data and web-scraped content for deeper narrative continuity
-- 🔄 **Dynamic Episode Chaining** - Each episode builds on previous ones, maintaining character development, themes, and quests
-- 🌌 **Automated Worldbuilding** - Consistent world elements persist across episodes through memory persistence
-- 🤖 **Automated Generation** - Schedule regular episode creation from your chat history
-- 🔔 **Discord Integration** - Share generated episodes to Discord with rich formatting and status updates
-- 📊 **Chain Analysis** - Track narrative progression, quest completion, and emotional arcs
+The test suite is organized into three main categories:
 
-## System Architecture
+1. **Unit Tests** - Tests for individual components of the Dreamscape tab
+2. **Integration Tests** - Tests for interactions between components
+3. **UI Component Tests** - Tests for UI elements and their behavior
 
-The system consists of:
+## Files
 
-1. **Core Services**:
-   - `DreamscapeGenerationService`: Handles episode creation with context awareness
-   - `PromptContextSynthesizer`: Merges multiple context sources for coherent narratives
-   - Memory persistence through `dreamscape_memory.json` and `episode_chain.json`
+- `test_dreamscape_tab_unit.py` - Unit tests for Dreamscape tab components
+- `test_dreamscape_tab_integration.py` - Integration tests for component interactions
+- `test_dreamscape_ui_components.py` - Tests for UI components and layout
+- `run_dreamscape_tests.py` - Script to run all tests
+- `pytest.ini` - Configuration for pytest
 
-2. **Automation Tools**:
-   - `dreamscape_automation.py`: Generate episodes from chat history with web scraping or memory
-   - `scheduled_dreamscape.py`: Run generation on a schedule with smart context source selection
+## Running Tests
 
-3. **Templates**:
-   - Markdown-based episode templates with sections for previous context, quests, and summaries
+To run all tests:
 
-## Memory System
-
-The DigitalDreamscapeEpisodes system uses multiple memory layers:
-
-### 1. Semantic Memory
-LLM-based reasoning over previous episodes to extract themes, character development, and plot points.
-
-### 2. Structured Memory
-JSON-based persistent memory stores:
-- `dreamscape_memory.json`: Long-term world elements (protocols, characters, quests, etc.)
-- `episode_chain.json`: Episode sequence tracking and quest status
-- `conversation_memory.json`: Chat-specific memories for context retrieval
-
-### 3. Web-Scraped Context
-When enabled, extracts conversation context directly from chat interfaces.
-
-## Getting Started
-
-### Installation
-
-1. Clone this repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Configure settings in `config.json` (create from template if needed)
-
-### Usage
-
-#### Manual Generation
-
-To generate episodes manually:
-
-```
-python dreamscape_automation.py --chat "Chat Title"
+```bash
+python run_dreamscape_tests.py
 ```
 
-Options:
-- `--web`: Use web scraping for retrieving chat history (vs. memory)
-- `--discord`: Send the generated episode to Discord
-- `--analysis`: Show detailed episode chain analysis
+To run tests with coverage reporting:
 
-#### Scheduled Generation
-
-To set up automated scheduled generation:
-
-```
-python scheduled_dreamscape.py --interval 6 --discord --continuous
+```bash
+python run_dreamscape_tests.py --coverage
 ```
 
-Options:
-- `--interval`: Hours between runs (default: 6)
-- `--jitter`: Random minutes of jitter to add (default: 30)
-- `--continuous`: Run as a daemon, continuously checking schedule
-- `--status`: Show current status and exit
+To run a specific test file:
 
-## Understanding Episode Chain Structure
+```bash
+pytest test_dreamscape_tab_unit.py -v
+```
 
-Each episode connects to previous ones through:
+## Test Coverage
 
-1. **Direct References** - "Previously in the Dreamscape" section
-2. **Quest Continuity** - Ongoing quests persist between episodes
-3. **Character Development** - Emotional arcs connect across episodes
-4. **Location Progression** - Movement through the dreamscape world
+The test suite aims to provide comprehensive coverage of:
 
-## Integration Options
+- UI initialization and component properties
+- Service interactions (chat manager, episode generator, etc.)
+- User interaction flow (selecting chats, generating episodes, sharing)
+- Episode generation processes
+- Error handling
 
-The system can be integrated with:
+## Mocking Strategy
 
-- Discord for sharing episodes and status updates
-- Chat interfaces for retrieving conversation context
-- Custom applications through the included Python API
+The tests use a consistent mocking strategy to isolate components:
 
-## Customization
+1. Service mocks are provided via fixtures
+2. The `ServiceInitializer` is patched to return mock services
+3. Temporary output directories are used for file operations
+4. UI events are simulated for interaction testing
 
-You can customize the system by:
+## Future Improvements
 
-1. Modifying episode templates in the `templates/dreamscape_templates` directory
-2. Adjusting LLM prompt parameters in `config.json`
-3. Creating custom scripts that utilize the `DreamscapeGenerationService` class
+Planned improvements for the test suite include:
 
-## Contributing
+- Event simulation testing for complex user interactions
+- Performance testing for episode generation
+- CI/CD integration for automated test runs
+- Visual regression testing for UI elements
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## Developer Guidelines
 
-## License
+When developing tests for the Dreamscape tab, follow these guidelines:
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
-=======
-# Dream.OS
->>>>>>> 201c4bdc9956acf8e03287d5c95a997199e222bf
+1. **Follow TDD principles**:
+   - Write failing tests first
+   - Implement code to make tests pass
+   - Refactor while keeping tests green
+
+2. **Keep tests isolated**:
+   - Each test should run independently
+   - Use fixtures for common setup
+   - Clean up any modifications after tests
+
+3. **Test both happy and error paths**:
+   - Verify correct behavior with valid inputs
+   - Test error handling with invalid inputs
+   - Test edge cases thoroughly
+
+4. **Organize tests logically**:
+   - Group related tests in the same file
+   - Maintain clear naming conventions
+   - Use descriptive test names that explain the purpose 

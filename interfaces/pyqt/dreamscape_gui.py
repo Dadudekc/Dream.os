@@ -11,7 +11,7 @@ from core.services.discord.DiscordManager import DiscordManager
 from core.ReinforcementEngine import ReinforcementEngine
 from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
-from core.DiscordQueueProcessor import DiscordQueueProcessor
+from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
 from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 

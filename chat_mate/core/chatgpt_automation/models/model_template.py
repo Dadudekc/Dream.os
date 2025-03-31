@@ -29,7 +29,7 @@ def process_with_template(driver, file_content):
     )
 
     # You may import get_chatgpt_response inline to avoid circular imports
-    from chatgpt_automation.OpenAIClient import get_chatgpt_response
+    from core.openai.OpenAIClient import get_chatgpt_response
 
     # Send the prompt to ChatGPT (or any LLM you are using)
     response = get_chatgpt_response(driver, prompt)

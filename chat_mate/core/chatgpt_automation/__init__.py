@@ -2,7 +2,7 @@
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
 from . import ModelRegistry
-from . import OpenAIClient
+from ....core.openai import OpenAIClient
 from . import PostProcessValidator
 from . import automation_engine
 from . import bot_worker

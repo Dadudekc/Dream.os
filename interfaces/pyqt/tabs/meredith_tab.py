@@ -10,31 +10,38 @@ A full-featured PyQt5 tab for Dream.OS that:
   - Allows you to open each discovered profile in a browser via a "Message" button.
   - Exports filtered profiles to JSON.
   - Supports canceling an in-progress scrape.
-  - Offers a "Clear" function for resetting the tab’s data and logs.
+  - Offers a "Clear" function for resetting the tab's data and logs.
   - Displays a "Resonance Score" computed via ResonanceScorer.
   - Dynamically loads all resonance model JSONs from the "resonance_match_models" directory.
   - Can be toggled visible/invisible if running in "private mode."
+  - Integrates the MeredithDispatcher for analyzing profiles and logging resonance matches.
+  - Displays visual indicators for profiles saved to MeritChain.
+  - Provides a view of previously saved MeritChain entries.
 """
 
 import os
 import json
 import logging
 import webbrowser
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
+from datetime import datetime
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject, pyqtSlot
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit,
     QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView,
-    QFileDialog, QProgressBar, QComboBox
+    QFileDialog, QProgressBar, QComboBox, QMessageBox,
+    QDialog, QTabWidget, QListWidget, QListWidgetItem, QSplitter,
+    QFrame, QGridLayout
 )
+from PyQt5.QtGui import QIcon, QColor, QBrush, QFont
 
 # Adjust import paths to your project structure
 from core.meredith.profile_scraper import ScraperManager, ProfileFilter
 from core.meredith.resonance_scorer import ResonanceScorer
 from core.PathManager import PathManager
+from core.meredith.meredith_dispatcher import MeredithDispatcher
 
 # Directory where all resonance JSON models are stored
 MODEL_DIR = PathManager().get_path("resonance_models")
-
 
 
 ###############################################################################
@@ -120,6 +127,154 @@ class ScraperThread(QThread):
             self.log_update.emit(f"Error during scan: {str(e)}")
             self.scan_completed.emit([])
 
+
+###############################################################################
+#                            MERITCHAIN DIALOG                                #
+###############################################################################
+
+class MeritChainViewDialog(QDialog):
+    """
+    Dialog for viewing MeritChain entries.
+    Provides a list of saved matches and a detailed view of the selected match.
+    """
+    def __init__(self, dispatcher, parent=None):
+        super().__init__(parent)
+        self.dispatcher = dispatcher
+        self.setWindowTitle("MeritChain Entries")
+        self.resize(800, 600)
+        self.init_ui()
+        self.load_entries()
+        
+    def init_ui(self):
+        """Initialize the UI components."""
+        layout = QVBoxLayout()
+        
+        # Create a splitter for the list and details view
+        splitter = QSplitter(Qt.Horizontal)
+        
+        # Left side - List of entries
+        self.entries_list = QListWidget()
+        self.entries_list.setMinimumWidth(200)
+        self.entries_list.currentItemChanged.connect(self.on_entry_selected)
+        splitter.addWidget(self.entries_list)
+        
+        # Right side - Entry details
+        details_widget = QWidget()
+        details_layout = QVBoxLayout(details_widget)
+        
+        # Details header
+        self.details_header = QLabel("Select an entry to view details")
+        details_layout.addWidget(self.details_header)
+        
+        # Details grid (for key-value pairs)
+        self.details_grid = QGridLayout()
+        details_frame = QFrame()
+        details_frame.setFrameShape(QFrame.StyledPanel)
+        details_frame.setLayout(self.details_grid)
+        details_layout.addWidget(details_frame)
+        
+        # First message preview
+        message_label = QLabel("First Message:")
+        details_layout.addWidget(message_label)
+        
+        self.message_text = QTextEdit()
+        self.message_text.setReadOnly(True)
+        details_layout.addWidget(self.message_text)
+        
+        splitter.addWidget(details_widget)
+        
+        # Add the splitter to the main layout
+        layout.addWidget(splitter)
+        
+        # Close button
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self.accept)
+        layout.addWidget(close_button)
+        
+        self.setLayout(layout)
+        
+    def load_entries(self):
+        """Load entries from the MeritChain."""
+        entries = self.dispatcher.get_previous_matches(30)  # Get up to 30 recent entries
+        self.entries_list.clear()
+        
+        for entry in entries:
+            username = entry.get("username", "Unknown")
+            platform = entry.get("platform", "Unknown")
+            score = entry.get("resonance_score", 0)
+            
+            item = QListWidgetItem(f"{username} ({platform}) - {score}")
+            
+            # Set tooltip with more details
+            tooltip = f"Username: {username}\nPlatform: {platform}\nScore: {score}"
+            if "timestamp" in entry:
+                dt = datetime.fromisoformat(entry["timestamp"])
+                tooltip += f"\nAdded: {dt.strftime('%Y-%m-%d %H:%M')}"
+            item.setToolTip(tooltip)
+            
+            # Set data for the item
+            item.setData(Qt.UserRole, entry)
+            
+            # Set color based on score
+            if score >= 90:
+                item.setForeground(QBrush(QColor("green")))
+                item.setFont(QFont("Arial", 10, QFont.Bold))
+            elif score >= 75:
+                item.setForeground(QBrush(QColor("blue")))
+            
+            self.entries_list.addItem(item)
+            
+    def on_entry_selected(self, current, previous):
+        """Handle selection of an entry."""
+        if not current:
+            return
+            
+        entry = current.data(Qt.UserRole)
+        if not entry:
+            return
+            
+        # Update the header
+        username = entry.get("username", "Unknown")
+        platform = entry.get("platform", "Unknown")
+        score = entry.get("resonance_score", 0)
+        self.details_header.setText(f"{username} from {platform} - Resonance Score: {score}")
+        
+        # Clear the grid
+        for i in reversed(range(self.details_grid.count())):
+            self.details_grid.itemAt(i).widget().setParent(None)
+        
+        # Add details to the grid
+        row = 0
+        for key, value in entry.items():
+            if key in ["username", "platform", "resonance_score", "first_message"]:
+                continue  # Skip these as they're shown elsewhere
+                
+            if key == "timestamp":
+                try:
+                    dt = datetime.fromisoformat(value)
+                    value = dt.strftime("%Y-%m-%d %H:%M:%S")
+                except:
+                    pass
+                    
+            if isinstance(value, list):
+                value = ", ".join(value)
+                
+            label = QLabel(f"{key.replace('_', ' ').title()}:")
+            label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            label.setFont(QFont("Arial", 9, QFont.Bold))
+            
+            value_label = QLabel(str(value))
+            value_label.setWordWrap(True)
+            
+            self.details_grid.addWidget(label, row, 0)
+            self.details_grid.addWidget(value_label, row, 1)
+            row += 1
+            
+        # Set the first message
+        first_message = entry.get("first_message", "")
+        self.message_text.setText(first_message)
+
+
 ###############################################################################
 #                               MEREDITH TAB                                  #
 ###############################################################################
@@ -134,7 +289,9 @@ class MeredithTab(QWidget):
       - Providing a 'Message' button that opens each profile in your default browser.
       - Displaying a "Resonance Score" computed via the ResonanceScorer.
       - Dynamically loading available resonance models from a directory.
+      - Integrates the MeredithDispatcher to analyze profiles.
       - Can be toggled visible/invisible if running in "private mode."
+      - Provides access to view MeritChain entries.
     
     Args:
         parent (QWidget): Parent widget, if any.
@@ -144,6 +301,8 @@ class MeredithTab(QWidget):
         super().__init__(parent)
         self.private_mode = private_mode
         self.filtered_profiles = []
+        self.dispatcher = MeredithDispatcher()  # Instantiate the dispatcher
+        self.analyzed_profiles = set()  # Track which profiles have been analyzed
 
         # Load default model (if exists, otherwise you may handle errors)
         default_model = os.path.join(MODEL_DIR, "romantic.json")
@@ -163,7 +322,8 @@ class MeredithTab(QWidget):
           3. Button row: Run, Stop, Export, Clear.
           4. Progress bar.
           5. Log output.
-          6. Results table with columns for Platform, Username, Bio, Location, URL, Message, and Resonance Score.
+          6. Results table with columns for Platform, Username, Bio, Location, URL, Message, Analyze, and Resonance Score.
+          7. View MeritChain button to access previously saved matches.
         """
         layout = QVBoxLayout()
 
@@ -174,10 +334,20 @@ class MeredithTab(QWidget):
         layout.addWidget(header_label)
 
         # --- MODEL SELECTOR (Dynamic) ---
+        model_layout = QHBoxLayout()
+        model_layout.addWidget(QLabel("Resonance Model:"))
+        
         self.model_selector = QComboBox()
         self.populate_model_selector()
         self.model_selector.currentTextChanged.connect(self.switch_model)
-        layout.addWidget(self.model_selector)
+        model_layout.addWidget(self.model_selector, stretch=2)
+        
+        # View MeritChain button
+        self.view_meritchain_button = QPushButton("View MeritChain")
+        self.view_meritchain_button.clicked.connect(self.view_meritchain)
+        model_layout.addWidget(self.view_meritchain_button, stretch=1)
+        
+        layout.addLayout(model_layout)
 
         # --- BUTTON ROW ---
         button_layout = QHBoxLayout()
@@ -215,13 +385,16 @@ class MeredithTab(QWidget):
         layout.addWidget(self.log_output)
 
         # --- RESULTS TABLE ---
-        # 7 columns: Platform, Username, Bio, Location, URL, Message, Resonance Score
+        # 9 columns: Status, Platform, Username, Bio, Location, URL, Message, Analyze, Resonance Score
         self.results_table = QTableWidget()
-        self.results_table.setColumnCount(7)
+        self.results_table.setColumnCount(9)
         self.results_table.setHorizontalHeaderLabels([
-            "Platform", "Username", "Bio", "Location", "URL", "Message", "Resonance Score"
+            "Status", "Platform", "Username", "Bio", "Location", "URL", "Message", "Analyze", "Resonance Score"
         ])
         self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # Set the Status column to be narrower
+        self.results_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+        self.results_table.setColumnWidth(0, 40)
         layout.addWidget(self.results_table)
 
         self.setLayout(layout)
@@ -233,7 +406,6 @@ class MeredithTab(QWidget):
         self.model_selector.clear()
         if os.path.isdir(MODEL_DIR):
             files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".json")]
-            # Sort alphabetically for consistency
             files.sort()
             for file in files:
                 model_name = os.path.splitext(file)[0]
@@ -251,6 +423,13 @@ class MeredithTab(QWidget):
             self.log(f"Resonance model switched to '{model_name}'.")
         else:
             self.log(f"Model '{model_name}' not found.")
+
+    def view_meritchain(self):
+        """
+        Open dialog to view MeritChain entries.
+        """
+        dialog = MeritChainViewDialog(self.dispatcher, self)
+        dialog.exec_()
 
     ###############################################################################
     #                                LOGGING                                      #
@@ -316,31 +495,81 @@ class MeredithTab(QWidget):
     def populate_results_table(self, profiles: list):
         """
         Renders each profile as a row in the results table, adding:
+          - A status indicator showing if profile is saved to MeritChain.
           - A 'Message' button to open the profile URL in a browser.
+          - An 'Analyze' button to run the MeredithDispatcher for resonance analysis.
           - A "Resonance Score" computed via the ResonanceScorer.
         """
         self.results_table.setRowCount(len(profiles))
 
         for row, profile in enumerate(profiles):
-            # Standard data columns
-            self.results_table.setItem(row, 0, QTableWidgetItem(profile.get("platform", "")))
-            self.results_table.setItem(row, 1, QTableWidgetItem(profile.get("username", "")))
-            self.results_table.setItem(row, 2, QTableWidgetItem(profile.get("bio", "")))
-            self.results_table.setItem(row, 3, QTableWidgetItem(profile.get("location", "")))
-            self.results_table.setItem(row, 4, QTableWidgetItem(profile.get("url", "")))
+            # Status indicator (column 0)
+            username = profile.get("username", "")
+            
+            # Check if this profile exists in MeritChain
+            meritchain_entry = self.dispatcher.find_match_by_username(username)
+            status_item = QTableWidgetItem()
+            
+            if meritchain_entry:
+                # Profile is in MeritChain, show saved icon
+                status_item.setText("✓")
+                status_item.setForeground(QBrush(QColor("green")))
+                status_item.setToolTip("Saved to MeritChain")
+                # Also add this to analyzed profiles set
+                self.analyzed_profiles.add(username)
+            elif username in self.analyzed_profiles:
+                # Profile was analyzed but not saved
+                status_item.setText("✗")
+                status_item.setForeground(QBrush(QColor("red")))
+                status_item.setToolTip("Analyzed but not saved")
+            else:
+                # Profile not analyzed
+                status_item.setText("")
+                status_item.setToolTip("Not analyzed")
+                
+            status_item.setTextAlignment(Qt.AlignCenter)
+            self.results_table.setItem(row, 0, status_item)
 
-            # 'Message' button column
+            # Standard data columns (1-5)
+            self.results_table.setItem(row, 1, QTableWidgetItem(profile.get("platform", "")))
+            self.results_table.setItem(row, 2, QTableWidgetItem(username))
+            self.results_table.setItem(row, 3, QTableWidgetItem(profile.get("bio", "")))
+            self.results_table.setItem(row, 4, QTableWidgetItem(profile.get("location", "")))
+            self.results_table.setItem(row, 5, QTableWidgetItem(profile.get("url", "")))
+
+            # 'Message' button column (6)
             url_for_this_profile = profile.get("url", "")
             message_button = QPushButton("Message")
             message_button.clicked.connect(
                 lambda _, url=url_for_this_profile: self.open_profile_in_browser(url)
             )
-            self.results_table.setCellWidget(row, 5, message_button)
+            self.results_table.setCellWidget(row, 6, message_button)
 
-            # 'Resonance Score' column
-            result = self.scorer.score_profile(profile)
-            score_text = f"{result['score']:.2f}"
-            self.results_table.setItem(row, 6, QTableWidgetItem(score_text))
+            # 'Analyze' button column (7): triggers MeredithDispatcher to process profile
+            analyze_button = QPushButton("Analyze")
+            
+            # If already analyzed, change button text and style
+            if username in self.analyzed_profiles:
+                analyze_button.setText("Re-Analyze")
+                
+            analyze_button.clicked.connect(
+                lambda _, p=profile: self.analyze_profile(p)
+            )
+            self.results_table.setCellWidget(row, 7, analyze_button)
+
+            # 'Resonance Score' column (8)
+            if meritchain_entry and "resonance_score" in meritchain_entry:
+                # Use score from MeritChain if available
+                score_text = f"{meritchain_entry['resonance_score']}"
+                score_item = QTableWidgetItem(score_text)
+                score_item.setForeground(QBrush(QColor("green")))
+            else:
+                # Otherwise use the scorer to compute a preliminary score
+                result = self.scorer.score_profile(profile)
+                score_text = f"{result['score']:.2f}"
+                score_item = QTableWidgetItem(score_text)
+                
+            self.results_table.setItem(row, 8, score_item)
 
     def open_profile_in_browser(self, url: str):
         """
@@ -351,6 +580,91 @@ class MeredithTab(QWidget):
             return
         webbrowser.open(url)
         self.log(f"Opened URL: {url}")
+
+    def analyze_profile(self, profile: dict):
+        """
+        Uses MeredithDispatcher to process a profile and update the UI with the analysis result.
+        """
+        username = profile.get("username", "unknown")
+        self.log(f"Analyzing profile: {username}")
+        
+        result = self.dispatcher.process_profile(
+            profile_data=profile,
+            source_platform=profile.get("platform", "Unknown"),
+            target_role="love"
+        )
+        
+        if result:
+            # Add to analyzed profiles set
+            self.analyzed_profiles.add(username)
+            
+            # Log the result
+            resonance_score = result.get("resonance_score", 0)
+            saved_to_meritchain = result.get("should_save_to_meritchain", False)
+            
+            if saved_to_meritchain:
+                self.log(f"✅ Analysis complete - {username} saved to MeritChain with score {resonance_score}")
+            else:
+                self.log(f"Analysis complete - {username} not saved to MeritChain (score {resonance_score})")
+                
+            # Update the table display
+            self.populate_results_table(self.filtered_profiles)
+            
+            # Show details dialog if saved to MeritChain
+            if saved_to_meritchain:
+                self.show_analysis_details(result)
+        else:
+            self.log("Analysis failed or returned no result.")
+            
+    def show_analysis_details(self, result):
+        """
+        Shows a dialog with the details of the analysis result.
+        """
+        username = result.get("username", "Unknown")
+        platform = result.get("platform", "Unknown")
+        score = result.get("resonance_score", 0)
+        
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Analysis Result")
+        
+        # Create a colorful header based on score
+        if score >= 90:
+            header_color = "green"
+            header_prefix = "🌟 HIGH MATCH"
+        elif score >= 75:
+            header_color = "blue"
+            header_prefix = "✨ GOOD MATCH"
+        else:
+            header_color = "black"
+            header_prefix = "ANALYZED"
+            
+        header = f"<h3 style='color:{header_color};'>{header_prefix}: {username} from {platform}</h3>"
+        
+        # Create content
+        content = f"<p><b>Resonance Score:</b> {score}</p>"
+        
+        if "matching_traits" in result and result["matching_traits"]:
+            traits = ", ".join(result["matching_traits"])
+            content += f"<p><b>Matching Traits:</b> {traits}</p>"
+            
+        if "summary" in result and result["summary"]:
+            content += f"<p><b>Summary:</b> {result['summary']}</p>"
+            
+        if "suggested_follow_up" in result and result["suggested_follow_up"]:
+            content += f"<p><b>Suggested Follow-up:</b> {result['suggested_follow_up']}</p>"
+            
+        if "first_message" in result and result["first_message"]:
+            content += f"<p><b>First Message Template:</b><br>{result['first_message']}</p>"
+            
+        # Set text
+        msg_box.setText(header)
+        msg_box.setInformativeText(content)
+        
+        # Make it wide enough to be readable
+        msg_box.setMinimumWidth(500)
+        
+        # Show the dialog
+        msg_box.exec_()
 
     ###############################################################################
     #                             DATA MANAGEMENT                                 #
@@ -382,6 +696,7 @@ class MeredithTab(QWidget):
         """
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
+        self.analyzed_profiles.clear()
         self.log_output.clear()
         self.log("Cleared all results.")
 
@@ -403,6 +718,8 @@ class MeredithTab(QWidget):
         self.progress_bar.setValue(0)
         self.results_table.setRowCount(0)
         self.filtered_profiles.clear()
+        # Do not clear analyzed_profiles as we want to keep track of which
+        # profiles have been analyzed across multiple scans
 
     def toggle_visibility(self):
         """

@@ -7,6 +7,7 @@ from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
 from interfaces.pyqt.tabs.AIDE import AIDE
 from interfaces.pyqt.tabs.meredith_tab import MeredithTab  # NEW
+# Temporarily commenting out SyncOpsTab to allow application to run
 from interfaces.pyqt.tabs.SyncOpsTab import SyncOpsTab        # ADDED
 from interfaces.pyqt.widgets.file_browser_widget import FileBrowserWidget
 import logging

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 CursorSessionManager with Task Queue, History, Auto-Accept, and Prompt Batch Builder
-
+ 
 This class merges features:
   - UI calibration for Cursor
   - Task queueing (auto or manual accept)

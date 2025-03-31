@@ -43,7 +43,7 @@ def process_with_gpt4_5(driver, file_content):
     print("[GPT-4.5] Sending prompt to ChatGPT GPT-4.5...")
 
     # Inline import to avoid circular dependencies
-    from chatgpt_automation.OpenAIClient import get_chatgpt_response
+    from core.openai.OpenAIClient import get_chatgpt_response
 
     # Send prompt directly to GPT-4.5 model endpoint
     response = get_chatgpt_response(driver, prompt, model_url="https://chatgpt.com/?model=gpt-4-5")

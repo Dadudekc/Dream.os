@@ -1,7 +1,7 @@
 import time
 import threading
 import queue
-from .OpenAIClient import OpenAIClient
+from ....core.openai.OpenAIClient import OpenAIClient
 from .setup_logging import setup_logging
 
 # Configure logger with a specific log directory (supports both beta and production)

@@ -373,11 +373,32 @@ class DreamscapeMainWindow(QMainWindow):
         """
         self.logger.info("🛑 Shutting down DreamOs...")
 
+        # Cleanup tabs first
+        if hasattr(self, 'tabs') and self.tabs:
+            try:
+                if hasattr(self.tabs, 'cleanup'):
+                    self.logger.info("Cleaning up tabs...")
+                    self.tabs.cleanup()
+                elif isinstance(self.tabs, QTabWidget):
+                    self.logger.info("Cleaning up individual tabs...")
+                    for tab_index in range(self.tabs.count()):
+                        try:
+                            tab_widget = self.tabs.widget(tab_index)
+                            tab_name = self.tabs.tabText(tab_index)
+                            if tab_widget and hasattr(tab_widget, 'cleanup'):
+                                self.logger.info(f"Cleaning up tab: {tab_name}")
+                                tab_widget.cleanup()
+                        except Exception as tab_e:
+                            self.logger.error(f"Error cleaning up tab: {tab_e}")
+            except Exception as e:
+                self.logger.error(f"Error during tab cleanup: {e}")
+
         # Shutdown any OpenAI clients
         if hasattr(self, 'openai_client') and self.openai_client:
             try:
                 # Check if the client is booted before attempting shutdown
                 if hasattr(self.openai_client, 'is_booted') and self.openai_client.is_booted():
+                    self.logger.info("Shutting down OpenAI client...")
                     self.openai_client.shutdown()
                     self.logger.info("✅ OpenAI client shut down successfully")
                 else:
@@ -388,8 +409,24 @@ class DreamscapeMainWindow(QMainWindow):
                 try:
                     if hasattr(self.openai_client, '_force_kill_chromedriver'):
                         self.openai_client._force_kill_chromedriver()
-                except Exception:
-                    pass
+                        self.logger.info("Attempted to force kill chromedriver processes")
+                except Exception as kill_e:
+                    self.logger.error(f"Error force killing chromedriver: {kill_e}")
+            finally:
+                # Last resort - try to kill any remaining Chrome processes
+                try:
+                    import subprocess
+                    import platform
+                    
+                    self.logger.info("Attempting to kill any remaining browser processes...")
+                    if platform.system() == "Windows":
+                        subprocess.call("taskkill /f /im chromedriver.exe", shell=True)
+                        subprocess.call("taskkill /f /im chrome.exe", shell=True)
+                    else:
+                        subprocess.call("pkill -f chromedriver", shell=True)
+                        subprocess.call("pkill -f chrome", shell=True)
+                except Exception as force_e:
+                    self.logger.error(f"Error force killing browser processes: {force_e}")
         
         # Shutdown any service containers
         if hasattr(self, 'container') and self.container:
@@ -402,11 +439,38 @@ class DreamscapeMainWindow(QMainWindow):
             except Exception as e:
                 self.logger.error(f"❌ Error shutting down services: {e}")
         
+        # Clean up any registered services via the ServiceRegistry
+        try:
+            from core.services.service_registry import ServiceRegistry
+            services_to_clean = ["openai_client", "chat_manager", "prompt_manager", "dreamscape_generator"]
+            
+            for service_name in services_to_clean:
+                service = ServiceRegistry.get(service_name)
+                if service and hasattr(service, 'shutdown'):
+                    try:
+                        self.logger.info(f"Shutting down registered service: {service_name}")
+                        service.shutdown()
+                    except Exception as svc_e:
+                        self.logger.error(f"Error shutting down {service_name}: {svc_e}")
+        except Exception as reg_e:
+            self.logger.error(f"Error cleaning up registered services: {reg_e}")
+        
+        # Process any pending events before closing
+        QtWidgets.QApplication.processEvents()
+        
         # Accept the event to close the window
         event.accept()
         
+        self.logger.info("App shutdown process completed, forcing exit...")
         # Ensure application fully exits
-        QtWidgets.QApplication.exit(0)
+        try:
+            # Use a timer to allow event processing and ensure clean quit
+            QtCore.QTimer.singleShot(100, lambda: QtWidgets.QApplication.exit(0))
+        except Exception as exit_e:
+            self.logger.error(f"Error during final exit: {exit_e}")
+            # Force quit if clean exit fails
+            import os
+            os._exit(0)
 
     def _run_startup_validation(self):
         """Run startup validation and handle results."""
@@ -578,8 +642,12 @@ def main():
     # Initialize cursor manager if available
     try:
         from core.refactor.CursorSessionManager import CursorSessionManager
-        cursor_url = config_manager.get("cursor_url", "http://localhost:8000")
-        services['cursor_manager'] = CursorSessionManager(config_manager, services['memory_manager'])
+        # Correctly get project_root and dry_run from config_manager
+        project_root = config_manager.get("project_root", ".") 
+        dry_run = config_manager.get("dry_run", False) 
+        
+        # Initialize with correct arguments
+        services['cursor_manager'] = CursorSessionManager(project_root=project_root, dry_run=dry_run)
         logger.info("✅ Cursor manager initialized successfully")
     except (ImportError, Exception) as e:
         logger.warning(f"⚠️ Cursor manager could not be initialized: {str(e)}")

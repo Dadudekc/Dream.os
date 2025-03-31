@@ -149,6 +149,11 @@ def create_prompt_service(config_service: Any = None) -> Any:
         # Get feedback engine from registry or create new
         feedback_engine = get_service("feedback_engine")
         
+        # Get cursor dispatcher from registry
+        cursor_dispatcher = get_service("cursor_dispatcher")
+        if not cursor_dispatcher:
+            logging.warning("CursorDispatcher not available, some features may be limited")
+        
         # Create UnifiedPromptService with all dependencies
         prompt_service = UnifiedPromptService(
             config_manager=config_manager,
@@ -157,7 +162,8 @@ def create_prompt_service(config_service: Any = None) -> Any:
             prompt_manager=prompt_manager,
             driver_manager=driver_manager,
             feedback_engine=feedback_engine,
-            model=config_service.get("default_model", "gpt-4o-mini")
+            model=config_service.get("default_model", "gpt-4o-mini"),
+            cursor_dispatcher=cursor_dispatcher
         )
         
         logging.info("UnifiedPromptService initialized successfully")
@@ -177,7 +183,7 @@ def create_chat_service(config_service: Any = None) -> Any:
         logging.error("Cannot create chat service without configuration")
         return _create_empty_service("chat_service")
     try:
-        model = config_service.get("default_model", "gpt-4")
+        model = config_service.get("default_model", "gpt-4o-mini")
         headless = config_service.get("headless", True)
         excluded_chats = config_service.get("excluded_chats", [])
         memory_path = config_service.get("memory_path", "memory/chat_memory.json")
@@ -256,12 +262,32 @@ def create_discord_service(config_service: Any = None, logger_obj: Any = None) -
 
 
 def create_cursor_service(config_service: Any = None, memory_service: Any = None) -> Any:
+    """Create and configure the CursorSessionManager service."""
     try:
         from core.refactor.CursorSessionManager import CursorSessionManager  # Lazy import
-        if not config_service or not memory_service:
-            logging.error("Cannot create cursor service without config and memory services")
+        if not config_service:
+            logging.error("Cannot create cursor service without configuration")
             return _create_empty_service("cursor_service")
-        return CursorSessionManager(config_service, memory_service)
+            
+        # Get project root from config or use default
+        project_root = config_service.get("project_root", ".")
+        dry_run = config_service.get("dry_run", False)
+        
+        cursor_manager = CursorSessionManager(
+            project_root=project_root,
+            dry_run=dry_run
+        )
+        
+        # Set up auto-accept based on config
+        auto_accept = config_service.get("cursor_auto_accept", False)
+        cursor_manager.toggle_auto_accept(auto_accept)
+        
+        # Start the background task loop
+        cursor_manager.start_loop()
+        
+        logging.info(f"CursorSessionManager initialized with project_root={project_root}, auto_accept={auto_accept}")
+        return cursor_manager
+        
     except Exception as e:
         logging.error(f"Failed to initialize cursor service: {str(e)}")
         return _create_empty_service("cursor_service")
@@ -370,6 +396,27 @@ def create_template_manager(config_manager=None, logger=None):
         return None
 
 
+def create_cursor_dispatcher(config_service: Any = None) -> Any:
+    """Create and configure the CursorDispatcher service."""
+    from core.refactor.cursor_dispatcher import CursorDispatcher
+    from core.PathManager import PathManager
+    
+    try:
+        path_manager = PathManager()
+        templates_dir = path_manager.get_templates_dir()
+        output_dir = path_manager.get_output_dir()
+        
+        dispatcher = CursorDispatcher(
+            templates_dir=templates_dir,
+            output_dir=output_dir
+        )
+        logging.info("CursorDispatcher initialized successfully")
+        return dispatcher
+    except Exception as e:
+        logging.error(f"Failed to initialize CursorDispatcher: {str(e)}")
+        return _create_empty_service("cursor_dispatcher")
+
+
 # -----------------------------------------------------------------------------
 # Service Registry and Registration
 # -----------------------------------------------------------------------------
@@ -379,8 +426,9 @@ class ServiceRegistry:
     Central registry for managing and validating services.
     """
     _services: Dict[str, Any] = {}
+    _factories: Dict[str, Callable] = {}
     _config = None
-    _logger = None
+    _logger = logging.getLogger("ServiceRegistry") # Use a specific logger
     
     def __init__(self):
         self._required_services = {
@@ -391,9 +439,17 @@ class ServiceRegistry:
         self.logger = logging.getLogger(__name__)
 
     @classmethod
-    def register(cls, name: str, service: Any) -> None:
-        cls._services[name] = service
-        logging.info(f"Registered service: {name}")
+    def register(cls, name: str, instance: Any = None, factory: Optional[Callable] = None, dependencies: Optional[List[str]] = None):
+        if name in cls._services:
+            cls._logger.warning(f"Service '{name}' is already registered. Overwriting.")
+        if instance is not None:
+            cls._services[name] = instance
+            cls._logger.debug(f"Service '{name}' registered with instance.")
+        elif factory is not None:
+            cls._factories[name] = (factory, dependencies or [])
+            cls._logger.debug(f"Service '{name}' registered with factory.")
+        else:
+            cls._logger.error(f"Registration attempt for '{name}' failed: Must provide instance or factory.")
 
     @classmethod
     def get(cls, name: str) -> Optional[Any]:
@@ -401,6 +457,16 @@ class ServiceRegistry:
             logging.warning(f"Service '{name}' not available - creating empty implementation")
             cls._services[name] = cls._create_empty_service(name)
         return cls._services[name]
+
+    @classmethod
+    def get_all_services(cls) -> dict:
+        """
+        Returns all registered services.
+
+        Returns:
+            Dict[str, Any]: All service name -> instance pairs
+        """
+        return cls._services.copy()
 
     def validate_service_registry(self) -> List[str]:
         missing_services = []
@@ -488,7 +554,7 @@ class ServiceRegistry:
             # Register chat manager using the factory
             if "chat_manager" not in cls._services:
                 try:
-                    from core.factories.chat_factory import ChatFactory
+                    from core.factories.ChatFactory import ChatFactory
                     chat_manager = ChatFactory.create(cls)
                     cls.register_service("chat_manager", chat_manager)
                 except Exception as e:
@@ -582,7 +648,7 @@ def register_all_services() -> None:
     container.register('reinforcement_engine', create_reinforcement_service, ['config', 'logger'])
     container.register('fix_service', lambda: container.get('reinforcement_engine'))
     container.register('rollback_service', lambda: container.get('reinforcement_engine'))
-    container.register('cursor_manager', create_cursor_service, ['config', 'memory_manager'])
+    container.register('cursor_manager', create_cursor_service, ['config'])
     container.register('cycle_service', create_cycle_service, 
                        ['config', 'prompt_manager', 'chat_manager', 'response_handler',
                         'memory_manager', 'discord_service'])
@@ -590,6 +656,8 @@ def register_all_services() -> None:
     container.register('dreamscape_generator', create_dreamscape_generator,
                        ['chat_manager', 'response_handler', 'discord_service', 'config'])
     container.register('memory_service', create_memory_service, ['config'])
+    container.register('cursor_dispatcher', create_cursor_dispatcher, ['config'])
+    container.register('prompt_service', create_prompt_service, ['config', 'cursor_dispatcher', 'cursor_manager'])
 
 # Helper functions to avoid circular imports
 def get_service(name: str) -> Any:

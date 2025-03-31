@@ -44,7 +44,7 @@ def process_with_o3mini(driver, file_content):
     print("[O3-mini] Sending prompt to ChatGPT O3-mini...")
 
     # Inline import to avoid circular dependency issues
-    from chatgpt_automation.OpenAIClient import get_chatgpt_response
+    from core.openai.OpenAIClient import get_chatgpt_response
     response = get_chatgpt_response(driver, prompt)
 
     print("[O3-mini] Received response from ChatGPT O3-mini.")

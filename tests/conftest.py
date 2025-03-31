@@ -1,21 +1,18 @@
-import pytest
-from fastapi.testclient import TestClient
-from main import app
-from core.services.prompt_execution_service import UnifiedPromptService
-from core.services.discord_service import DiscordService
 import os
-from datetime import datetime
-from unittest.mock import MagicMock, Mock
 import sys
+from pathlib import Path
 from unittest import mock
-from PyQt5.QtWidgets import QApplication
-import asyncio
-import discord
+from unittest.mock import MagicMock, Mock
+from datetime import datetime
 
-# Add the project root to Python path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, project_root)
-sys.path.insert(0, os.path.join(project_root, 'tests', 'mocks'))
+import pytest
+from PyQt5.QtWidgets import QApplication
+from fastapi import FastAPI
+
+# Add project root to Python path
+project_root = str(Path(__file__).parent.parent)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 # Mock GUI modules
 mock_gui = mock.MagicMock()
@@ -50,22 +47,32 @@ class MockCursorDispatcher:
 sys.modules['cursor_dispatcher'] = Mock()
 sys.modules['cursor_dispatcher'].CursorDispatcher = MockCursorDispatcher
 
+# Create a mock FastAPI app
+app = FastAPI()
+
+# Mock the services
+class MockUnifiedPromptService:
+    def __init__(self):
+        self.dreamscape = MagicMock()
+        self.dreamscape.execute_prompt = MagicMock()
+        self.dreamscape.execute_cycle = MagicMock()
+
+class MockDiscordService:
+    def __init__(self):
+        pass
+
 @pytest.fixture
 def test_client():
+    from fastapi.testclient import TestClient
     return TestClient(app)
 
 @pytest.fixture
-def mock_prompt_service(mocker):
-    service = UnifiedPromptService()
-    # Mock the DreamscapeService methods
-    mocker.patch.object(service.dreamscape, 'execute_prompt')
-    mocker.patch.object(service.dreamscape, 'execute_cycle')
-    return service
+def mock_prompt_service():
+    return MockUnifiedPromptService()
 
 @pytest.fixture
-def mock_discord_service(mocker):
-    service = DiscordService()
-    return service
+def mock_discord_service():
+    return MockDiscordService()
 
 @pytest.fixture
 def sample_prompt_request():
@@ -166,12 +173,13 @@ def test_context_data():
         "platform": "youtube"
     }
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def qapp():
-    """Create a QApplication instance for all tests."""
-    app = QApplication([])
-    yield app
-    app.quit()
+    """Create a QApplication instance for Qt tests."""
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication([])
+    return app
 
 @pytest.fixture
 def mock_services():

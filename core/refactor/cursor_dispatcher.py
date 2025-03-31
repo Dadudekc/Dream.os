@@ -217,241 +217,158 @@ class CursorDispatcher:
         
     def run_tests(self, code_file_path: str, test_file_path: Optional[str] = None, timeout: int = 30, retry_count: int = 0) -> Tuple[bool, str]:
         """
-        Executes tests for the generated code file.
+        Run tests for a given code file. If test_file_path is not provided,
+        it will attempt to find or generate a test file.
         
         Args:
             code_file_path: Path to the code file to test
-            test_file_path: Path to the test file (if None, will be auto-generated)
-            timeout: Maximum time (in seconds) to allow tests to run before timing out
-            retry_count: Number of times to retry on test failures (0 = no retry)
+            test_file_path: Optional path to the test file. If not provided, will try to find or generate one.
+            timeout: Maximum time to wait for test execution in seconds
+            retry_count: Number of times to retry failed tests
             
         Returns:
-            A tuple of (success, output)
-            
-        Raises:
-            FileNotFoundError: If the code file or test file doesn't exist
-            subprocess.TimeoutExpired: If tests exceed the timeout limit
-        """
-        logger.info(f"🧪 Running tests for: {code_file_path}")
-        
-        code_path = Path(code_file_path)
-        if not code_path.exists():
-            error_msg = f"Code file not found: {code_file_path}"
-            logger.error(f"❌ {error_msg}")
-            return False, error_msg
-        
-        if test_file_path is None:
-            # Generate a test file name based on the code file
-            test_file_path = str(self.output_path / f"test_{code_path.stem}.py")
-            
-            # Check if we need to generate tests
-            test_path = Path(test_file_path)
-            if not test_path.exists():
-                logger.info(f"Generating test file at: {test_file_path}")
-                self._create_test_file(code_file_path, test_file_path)
-        else:
-            # Verify if provided test file exists
-            test_path = Path(test_file_path)
-            if not test_path.exists():
-                error_msg = f"Test file not found: {test_file_path}"
-                logger.error(f"❌ {error_msg}")
-                return False, error_msg
-        
-        attempts = 0
-        max_attempts = retry_count + 1  # Original attempt + retries
-        
-        while attempts < max_attempts:
-            attempts += 1
-            
-            try:
-                # Run the tests using unittest
-                logger.info(f"Test attempt {attempts}/{max_attempts} with timeout {timeout}s")
-                
-                result = subprocess.run(
-                    ["python", "-m", "unittest", test_file_path],
-                    capture_output=True, 
-                    text=True, 
-                    timeout=timeout,
-                    encoding="utf-8",
-                    errors="replace"
-                )
-                
-                output = result.stdout + "\n" + result.stderr
-                success = (result.returncode == 0)
-                
-                if success:
-                    logger.info(f"✅ Tests PASSED for {code_file_path} (attempt {attempts}/{max_attempts})")
-                    break  # Exit the retry loop on success
-                else:
-                    logger.warning(f"❌ Tests FAILED for {code_file_path} (attempt {attempts}/{max_attempts})")
-                    logger.debug(f"Test output: {output}")
-                    
-                    if attempts < max_attempts:
-                        logger.info(f"Retrying in 2 seconds...")
-                        time.sleep(2)  # Short delay before retry
-                
-            except subprocess.TimeoutExpired as e:
-                error_msg = f"Timeout when running tests (exceeded {timeout}s): {e}"
-                logger.error(f"❌ {error_msg}")
-                if attempts < max_attempts:
-                    logger.info(f"Retrying with longer timeout...")
-                    timeout += 10  # Increase timeout for next attempt
-                    time.sleep(1)
-                else:
-                    return False, error_msg
-                
-            except Exception as e:
-                error_msg = f"Exception when running tests: {e}"
-                logger.error(f"❌ {error_msg}")
-                import traceback
-                logger.debug(f"Traceback: {traceback.format_exc()}")
-                if attempts < max_attempts:
-                    logger.info(f"Retrying after error...")
-                    time.sleep(2)
-                else:
-                    return False, error_msg
-        
-        # Create a structured test result for analysis
-        test_results = {
-            "success": success,
-            "output": output,
-            "file_tested": code_file_path,
-            "test_file": test_file_path,
-            "return_code": result.returncode,
-            "attempts": attempts,
-            "timestamp": time.time()
-        }
-        
-        # Store results for later analysis
-        results_file = self.output_path / "test_results.json"
-        self._append_to_json(results_file, test_results)
-            
-        return success, output
-    
-    def _create_test_file(self, code_file_path: str, test_file_path: str) -> None:
-        """
-        Creates a test file for the given code file using Cursor.
-        
-        Args:
-            code_file_path: Path to the code file
-            test_file_path: Path to create the test file
-            
-        Raises:
-            FileNotFoundError: If the code file doesn't exist
-            IOError: If there are issues reading/writing files
+            Tuple of (success: bool, output: str)
         """
         try:
-            # Read the code file with explicit encoding
-            try:
-                code_content = Path(code_file_path).read_text(encoding="utf-8", errors="replace")
-            except Exception as e:
-                logger.error(f"Failed to read code file {code_file_path}: {e}")
-                raise IOError(f"Cannot read code file: {e}")
+            code_path = Path(code_file_path)
+            if not code_path.exists():
+                return False, f"Code file not found: {code_file_path}"
             
-            # Create a prompt for test generation
-            test_prompt = f"""
-# TASK: Generate Unit Tests
-
-## CODE TO TEST
-```python
-{code_content}
-```
-
-## REQUIREMENTS
-- Create thorough unittest tests for this code
-- Cover edge cases and normal operation
-- Mock external dependencies if needed
-- Make the tests runnable with unittest module
-- Return ONLY the test code
-"""
-            # Use Cursor to generate tests
-            initial_test = "import unittest\n\n# Tests will be generated by Cursor"
-            test_code = self.send_and_wait(initial_test, test_prompt, "generated_test", skip_wait=False)
+            # If no test file provided, try to find or generate one
+            if not test_file_path:
+                test_file_path = self._find_or_generate_test_file(code_file_path)
+                if not test_file_path:
+                    return False, f"Could not find or generate test file for {code_file_path}"
             
-            # Save the generated test code with explicit encoding
-            try:
-                Path(test_file_path).write_text(test_code, encoding="utf-8")
-                logger.info(f"✅ Generated test file: {test_file_path}")
-            except Exception as e:
-                logger.error(f"Failed to write test file {test_file_path}: {e}")
-                raise IOError(f"Cannot write test file: {e}")
+            test_path = Path(test_file_path)
+            if not test_path.exists():
+                return False, f"Test file not found: {test_file_path}"
             
-        except Exception as e:
-            logger.error(f"Failed to create test file: {e}")
-            logger.info("Creating a minimal fallback test file instead")
-            # Create a minimal test file
-            minimal_test = (
-                "import unittest\n\n"
-                "class MinimalTest(unittest.TestCase):\n"
-                "    def test_module_imports(self):\n"
-                "        # This is a placeholder test\n"
-                "        import sys\n"
-                f"        sys.path.append('{Path(code_file_path).parent}')\n"
-                f"        import {Path(code_file_path).stem}\n"
-                "        self.assertTrue(True)\n\n"
-                "if __name__ == '__main__':\n"
-                "    unittest.main()\n"
-            )
-            try:
-                Path(test_file_path).write_text(minimal_test, encoding="utf-8")
-                logger.info(f"⚠️ Created minimal test file: {test_file_path}")
-            except Exception as write_err:
-                logger.critical(f"Failed to create even minimal test file: {write_err}")
-                raise
-    
-    def _append_to_json(self, file_path: Path, data: dict) -> None:
-        """
-        Appends data to a JSON file, creating it if it doesn't exist.
-        Takes care to preserve existing data in case of corruption.
-        
-        Args:
-            file_path: Path to the JSON file
-            data: Dictionary data to append
-        """
-        try:
-            # Initialize with an empty list if file doesn't exist
-            if not file_path.exists():
-                file_path.write_text("[]", encoding="utf-8")
-                
-            # Read existing data
-            try:
-                with open(file_path, 'r', encoding="utf-8") as f:
-                    json_data = json.load(f)
-            except json.JSONDecodeError as json_err:
-                # If JSON is corrupted, back it up and start fresh
-                backup_path = file_path.with_suffix(f".corrupted.{int(time.time())}.json")
-                logger.error(f"JSON file corrupted: {json_err}. Backing up to {backup_path}")
-                
-                # Backup the corrupted file
+            # Run pytest with output capture
+            cmd = ["pytest", "-v", str(test_path)]
+            
+            for attempt in range(retry_count + 1):
                 try:
-                    with open(file_path, 'r', encoding="utf-8") as src:
-                        with open(backup_path, 'w', encoding="utf-8") as dst:
-                            dst.write(src.read())
-                    logger.info(f"Corrupted JSON backed up to: {backup_path}")
-                except Exception as backup_err:
-                    logger.error(f"Failed to backup corrupted JSON: {backup_err}")
-                
-                # Start fresh with an empty list
-                json_data = []
-                
-            # Append new data
-            json_data.append(data)
-            
-            # Write back to file
-            with open(file_path, 'w', encoding="utf-8") as f:
-                json.dump(json_data, f, indent=2)
-                
-        except Exception as e:
-            logger.error(f"Failed to append data to {file_path}: {e}")
-            # Last resort: try to write just this piece of data to a new file
-            try:
-                fallback_path = file_path.with_suffix(f".fallback.{int(time.time())}.json")
-                with open(fallback_path, 'w', encoding="utf-8") as f:
-                    json.dump([data], f, indent=2)
-                logger.warning(f"Saved data to fallback file: {fallback_path}")
-            except Exception as fallback_err:
-                logger.critical(f"Failed to save data even to fallback file: {fallback_err}")
+                    result = subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        timeout=timeout
+                    )
                     
+                    success = result.returncode == 0
+                    output = result.stdout if success else f"{result.stdout}\n{result.stderr}"
+                    
+                    if success:
+                        logger.info(f"Tests passed for {code_file_path}")
+                        return True, output
+                    
+                    if attempt < retry_count:
+                        logger.warning(f"Test attempt {attempt + 1} failed, retrying...")
+                        time.sleep(1)  # Brief pause between retries
+                    else:
+                        logger.error(f"Tests failed for {code_file_path} after {retry_count + 1} attempts")
+                        return False, output
+                        
+                except subprocess.TimeoutExpired:
+                    if attempt < retry_count:
+                        logger.warning(f"Test attempt {attempt + 1} timed out, retrying...")
+                        continue
+                    return False, f"Tests timed out after {timeout} seconds"
+                    
+        except Exception as e:
+            logger.error(f"Error running tests: {str(e)}")
+            return False, str(e)
+
+    def _find_or_generate_test_file(self, code_file_path: str) -> Optional[str]:
+        """
+        Find an existing test file or generate a new one for the given code file.
+        """
+        code_path = Path(code_file_path)
+        
+        # Common test file patterns
+        test_patterns = [
+            code_path.parent / f"test_{code_path.name}",
+            code_path.parent / f"{code_path.stem}_test{code_path.suffix}",
+            code_path.parent / "tests" / f"test_{code_path.name}",
+            Path("tests") / f"test_{code_path.name}"
+        ]
+        
+        # Try to find existing test file
+        for test_path in test_patterns:
+            if test_path.exists():
+                return str(test_path)
+        
+        # If no test file found and auto-generation is enabled, generate one
+        try:
+            from generate_missing_tests import generate_test_file
+            test_path = code_path.parent / f"test_{code_path.name}"
+            generate_test_file(str(code_path), str(test_path))
+            if test_path.exists():
+                return str(test_path)
+        except Exception as e:
+            logger.error(f"Failed to generate test file: {str(e)}")
+        
+        return None
+
+    def git_commit_changes(self, message: str, file_paths: list) -> bool:
+        """
+        Commit changes to Git with the given message and files.
+        
+        Args:
+            message: Commit message
+            file_paths: List of files to commit
+            
+        Returns:
+            bool: True if commit was successful, False otherwise
+        """
+        try:
+            # Ensure all files exist
+            for file_path in file_paths:
+                if not Path(file_path).exists():
+                    logger.error(f"File not found: {file_path}")
+                    return False
+            
+            # Stage files
+            for file_path in file_paths:
+                subprocess.run(["git", "add", file_path], check=True)
+            
+            # Create commit
+            result = subprocess.run(
+                ["git", "commit", "-m", message],
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode == 0:
+                logger.info(f"Successfully committed changes: {message}")
+                
+                # Try to push if remote is configured
+                try:
+                    push_result = subprocess.run(
+                        ["git", "push"],
+                        capture_output=True,
+                        text=True
+                    )
+                    if push_result.returncode == 0:
+                        logger.info("Successfully pushed changes")
+                    else:
+                        logger.warning(f"Push failed: {push_result.stderr}")
+                except Exception as e:
+                    logger.warning(f"Failed to push changes: {str(e)}")
+                
+                return True
+            else:
+                logger.error(f"Commit failed: {result.stderr}")
+                return False
+                
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Git operation failed: {str(e)}")
+            return False
+        except Exception as e:
+            logger.error(f"Error during Git commit: {str(e)}")
+            return False
+
     def execute_prompt_sequence(self, sequence_name: str, initial_context: Dict, skip_wait=False, wait_timeout=0):
         """
         Executes a sequence of prompts defined in a JSON configuration file.
@@ -591,77 +508,6 @@ class CursorDispatcher:
             logger.error(f"Failed to execute prompt sequence: {e}")
             raise
             
-    def git_commit_changes(self, message: str, file_paths: list) -> bool:
-        """
-        Commits changes to Git repository.
-        
-        Args:
-            message: Commit message
-            file_paths: List of file paths to commit
-            
-        Returns:
-            True if commit was successful, False otherwise
-        """
-        try:
-            # Make sure we're in a git repository
-            try:
-                subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], 
-                               check=True, 
-                               capture_output=True,
-                               text=True,
-                               encoding="utf-8",
-                               errors="replace")
-            except subprocess.CalledProcessError:
-                logger.error("Not inside a git repository.")
-                return False
-                
-            # Add specified files
-            files_str = " ".join(file_paths)
-            add_cmd = f"git add {files_str}"
-            logger.info(f"Adding files to git: {add_cmd}")
-            
-            try:
-                subprocess.run(add_cmd, 
-                              shell=True, 
-                              check=True, 
-                              capture_output=True,
-                              text=True,
-                              encoding="utf-8",
-                              errors="replace")
-            except subprocess.CalledProcessError as e:
-                logger.error(f"Failed to add files: {e.stderr}")
-                return False
-            
-            # Create commit - handle special characters in commit message
-            # Escape quotes and other special characters for shell
-            safe_message = message.replace('"', '\\"').replace('$', '\\$')
-            commit_cmd = f'git commit -m "{safe_message}"'
-            logger.info(f"Creating commit: {commit_cmd}")
-            
-            try:
-                result = subprocess.run(
-                    commit_cmd, 
-                    shell=True, 
-                    capture_output=True,
-                    text=True,
-                    encoding="utf-8",
-                    errors="replace"
-                )
-                
-                if result.returncode == 0:
-                    logger.info(f"✅ Successfully committed changes: {message}")
-                    return True
-                else:
-                    logger.error(f"Failed to commit changes: {result.stderr}")
-                    return False
-            except Exception as e:
-                logger.error(f"Error during Git commit execution: {str(e)}")
-                return False
-                
-        except Exception as e:
-            logger.error(f"Error during Git commit: {str(e)}")
-            return False
-            
     def install_git_hook(self, hook_type: str = "post-commit") -> bool:
         """
         Installs a Git hook that runs after commit operations.
@@ -785,221 +631,48 @@ if __name__ == "__main__":
                 file_dir = target_file_path.parent
                 test_prompt += f"\n## IMPORT SUGGESTION\nSince no module name was specified, please include these lines at the top of your test:\n```python\nimport sys\nimport os\nsys.path.append('{file_dir}')\nfrom {file_basename} import *\n```"
             
-            dispatcher.send_to_cursor(
-                code_output="import unittest\n\n# Tests will be generated by Cursor",
-                prompt_text=test_prompt,
-                base_filename="generated_test"
-            )
-            
-            logger.info("✨ Test prompt prepared and sent to Cursor")
-            
-            if args.wait_timeout > 0:
-                logger.info(f"Waiting up to {args.wait_timeout} seconds for test generation...")
-                success, _ = dispatcher.wait_for_cursor_edit_with_timeout(
-                    "generated_test", 
-                    timeout_seconds=args.wait_timeout
+            try:
+                dispatcher.send_to_cursor(
+                    code_output="import unittest\n\n# Tests will be generated by Cursor",
+                    prompt_text=test_prompt,
+                    base_filename="generated_test"
                 )
-                if not success:
-                    logger.warning("⏱️ Timeout waiting for test generation.")
-                    choice = input("Continue anyway? [y/N]: ").lower().strip()
-                    if choice != 'y':
-                        logger.info("Aborting test generation.")
-                        exit(1)
+            except Exception as e:
+                logger.error(f"Failed to send to cursor: {e}")
+                raise
+            
+            # Read the generated test file
+            generated_test_file = dispatcher.wait_for_cursor_edit(base_filename="generated_test")
+            
+            # Run tests
+            success, output = dispatcher.run_tests(args.file)
+            
+            if success:
+                logger.info("Tests passed!")
             else:
-                input("[↪] Open 'generated_test.py' in Cursor, run the prompt, then press ENTER to run tests...")
+                logger.error(f"Tests failed. Output:\n{output}")
             
-            # Load the generated test code
-            test_file_path = dispatcher.output_path / "generated_test.py"
-            if not test_file_path.exists():
-                logger.error("❌ No test file was generated.")
-                exit(1)
-                
-            logger.info("📋 Generated test code successfully")
-            generated_test_code = test_file_path.read_text(encoding="utf-8", errors="replace")
+            # Commit changes if requested
+            if args.git_commit:
+                dispatcher.git_commit_changes("Updated tests", [args.file])
             
-            # Save to output location if specified
+            # Save the generated test file
             if args.output_test:
-                output_path = Path(args.output_test)
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                output_path.write_text(generated_test_code, encoding="utf-8")
-                logger.info(f"✅ Saved generated test to: {output_path}")
-                
-                # Use the saved test file for running tests
-                test_file_to_run = str(output_path)
-            else:
-                # Use the temporary test file
-                test_file_to_run = str(test_file_path)
-                
-            # Run the tests against the target file
-            if not args.skip_tests:
-                logger.info("🧪 Running tests...")
-                success, output = dispatcher.run_tests(
-                    args.file, 
-                    test_file_to_run,
-                    timeout=args.timeout,
-                    retry_count=args.retry
-                )
-                
-                if success:
-                    logger.info("✅ Tests passed successfully!")
-                    print("[✓] Tests passed successfully.")
-                else:
-                    logger.warning("❌ Tests failed.")
-                    print("[!] Tests failed. Details:")
-                    print(output)
-            else:
-                logger.info("⏭️ Skipping test execution (--skip-tests flag)")
-                print("[i] Tests generated but not executed.")
-                
+                test_output_path = Path(args.output_test)
+                test_output_path.write_text(generated_test_file, encoding="utf-8")
+                logger.info(f"✅ Generated test file saved to: {test_output_path}")
+            
         except Exception as e:
-            logger.error(f"Error in test generation mode: {e}")
-            exit(1)
-            
-        exit(0)
-    
-    skip_waiting = args.auto
-    run_tests = not args.skip_tests
-    auto_commit = args.git_commit
-    
-    if skip_waiting:
-        logger.info("Running in automated mode - skipping user input pauses")
-    
-    # Initialize dispatcher with specified (or default) templates directory
-    dispatcher = CursorDispatcher(templates_dir=args.templates)
-    
-    # Install Git hooks if requested
-    if args.install_hooks:
-        if dispatcher.install_git_hook("post-commit"):
-            logger.info("Git hooks installed successfully")
-        else:
-            logger.warning("Failed to install Git hooks")
-    
-    if args.sequence:
-        # Run a predefined sequence of prompts
-        try:
-            initial_context = {
-                "STRATEGY_DESCRIPTION": "Create a modular PyQt5 tab for UX testing and live preview of widgets."
-            }
-            final_code = dispatcher.execute_prompt_sequence(
-                args.sequence, 
-                initial_context, 
-                skip_wait=skip_waiting,
-                wait_timeout=args.wait_timeout
-            )
-            
-            # Auto-commit if enabled
-            if auto_commit:
-                # Generate commit message
-                commit_context = {
-                    "CODE_DIFF_OR_FINAL": final_code,
-                    "SEQUENCE_NAME": args.sequence
-                }
-                commit_message = dispatcher.run_prompt("05_commit_and_version.j2", commit_context)
-                commit_message = commit_message.split("\n")[0]  # Use first line as commit message
-                
-                # Commit changes
-                files_to_commit = [
-                    str(dispatcher.output_path / f"*.py")
-                ]
-                if dispatcher.git_commit_changes(commit_message, files_to_commit):
-                    logger.info(f"Changes committed: {commit_message}")
-                else:
-                    logger.warning("Failed to commit changes")
-            
-            exit(0)
-        except Exception as e:
-            logger.error(f"Failed to run sequence '{args.sequence}': {e}")
+            logger.error(f"Error in test mode: {e}")
             exit(1)
 
-    # Default flow: Strategy → Code → Test → UX → Refactor → Commit
-    # Step 1: Strategy → Code
-    strategy_context = {
-        "STRATEGY_DESCRIPTION": "Create a modular PyQt5 tab for UX testing and live preview of widgets."
-    }
-    raw_prompt_1 = dispatcher.run_prompt("01_strategy_to_code.j2", strategy_context)
-    initial_code = "# TODO: Cursor will generate this based on prompt\n\n" + raw_prompt_1
-    
-    try:
-        # Send prompt to Cursor and wait for user to run it
-        code_result = dispatcher.send_and_wait(initial_code, raw_prompt_1, skip_wait=skip_waiting, wait_timeout=args.wait_timeout)
-    except (KeyboardInterrupt, Exception) as e:
-        logger.error(f"Process halted during Step 1: {str(e)}")
-        exit(1)
-
-    # Step 2: Code → Test & Validate
-    test_context = {
-        "CODE_FILE_CONTENT": code_result
-    }
-    test_result = dispatcher.run_prompt("02_code_test_validate.j2", test_context)
-    generated_file_path = dispatcher.output_path / "generated_tab.py"
-    
-    if run_tests:
-        # Run tests on the generated code
-        test_success, test_output = dispatcher.run_tests(
-            str(generated_file_path), 
-            timeout=args.timeout,
-            retry_count=args.retry
-        )
-        logger.info(f"Test execution result: {'✅ PASSED' if test_success else '❌ FAILED'}")
-        if not test_success:
-            logger.info("\n--- Test Failure Details ---\n" + test_output)
     else:
-        logger.info("Skipping test execution (--skip-tests flag)")
-    
-    print("\n--- Cursor Step 2 Output ---\n", test_result)
-
-    # Step 3: Code → UX Simulation
-    ux_context = {
-        "CODE_FILE_CONTENT": code_result
-    }
-    ux_result = dispatcher.run_prompt("03_ux_simulation_feedback.j2", ux_context)
-    print("\n--- Cursor Step 3 Output ---\n", ux_result)
-
-    # Step 4: Refactor from Feedback
-    feedback_context = {
-        "USER_FEEDBACK": "Improve readability and handle edge cases for empty user inputs.",
-        "CODE_FILE_CONTENT": code_result
-    }
-    refactor_prompt = dispatcher.run_prompt("04_refactor_feedback_loop.j2", feedback_context)
-    
-    try:
-        # Send refactor prompt to Cursor and wait for user to run it
-        refactored_result = dispatcher.send_and_wait(code_result, refactor_prompt, "refactored_tab", skip_wait=skip_waiting, wait_timeout=args.wait_timeout)
-        print("\n--- Cursor Step 4 Output: Successfully refactored code ---")
+        # Interactive mode
+        dispatcher = CursorDispatcher()
         
-        if run_tests:
-            # Run tests on the refactored code
-            refactored_file_path = dispatcher.output_path / "refactored_tab.py"
-            refactor_test_success, refactor_test_output = dispatcher.run_tests(
-                str(refactored_file_path),
-                timeout=args.timeout,
-                retry_count=args.retry
-            )
-            logger.info(f"Refactored code test result: {'✅ PASSED' if refactor_test_success else '❌ FAILED'}")
-            if not refactor_test_success:
-                logger.info("\n--- Refactored Test Failure Details ---\n" + refactor_test_output)
-    except (KeyboardInterrupt, Exception) as e:
-        logger.error(f"Process halted during Step 4: {str(e)}")
-        refactored_result = code_result  # Use original code if refactoring fails
-        print("\n--- Cursor Step 4 Output: Using original code due to error ---")
-
-    # Step 5: Commit & Versioning
-    commit_context = {
-        "CODE_DIFF_OR_FINAL": refactored_result
-    }
-    commit_message = dispatcher.run_prompt("05_commit_and_version.j2", commit_context)
-    print("\n--- Cursor Step 5 Output ---\n", commit_message)
-    
-    # Auto-commit if enabled
-    if auto_commit:
-        # Extract first line for commit message
-        commit_msg = commit_message.split("\n")[0]
-        files_to_commit = [
-            str(generated_file_path),
-            str(dispatcher.output_path / "refactored_tab.py"),
-            str(dispatcher.output_path / "test_*.py")
-        ]
-        if dispatcher.git_commit_changes(commit_msg, files_to_commit):
-            logger.info(f"Changes committed: {commit_msg}")
+        # Run a sequence if specified
+        if args.sequence:
+            dispatcher.execute_prompt_sequence(args.sequence, {}, skip_wait=args.wait_timeout > 0, wait_timeout=args.wait_timeout)
         else:
-            logger.warning("Failed to commit changes")
+            # Run default interactive mode
+            dispatcher.execute_prompt_sequence("default", {}, skip_wait=args.wait_timeout > 0, wait_timeout=args.wait_timeout)

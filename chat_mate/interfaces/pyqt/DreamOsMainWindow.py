@@ -373,11 +373,15 @@ class DreamscapeMainWindow(QMainWindow):
         
         # Shutdown any OpenAI clients
         if hasattr(self, 'openai_client') and self.openai_client:
-            try:
-                self.openai_client.shutdown()
-                self.logger.info("✅ OpenAI client shut down successfully")
-            except Exception as e:
-                self.logger.error(f"❌ Error shutting down OpenAI client: {e}")
+            self.logger.info("Shutting down OpenAI Client...")
+            # Check the class booted state before attempting shutdown
+            if OpenAIClient.is_booted(): # Use the class method for the check
+                 try:
+                     self.openai_client.shutdown()
+                 except Exception as e:
+                     self.logger.error(f"❌ Error during OpenAIClient shutdown: {e}", exc_info=True)
+            else:
+                 self.logger.info("OpenAI Client was not booted, skipping shutdown.")
         
         # Shutdown any service containers
         if hasattr(self, 'container') and self.container:

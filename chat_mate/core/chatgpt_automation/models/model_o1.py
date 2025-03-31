@@ -41,7 +41,7 @@ def process_with_o1(driver, file_content):
     print("[O1] Sending prompt to ChatGPT O1...")
 
     # Inline import to avoid circular dependencies
-    from chatgpt_automation.OpenAIClient import get_chatgpt_response
+    from core.openai.OpenAIClient import get_chatgpt_response
 
     # Send prompt directly to O1 model endpoint
     response = get_chatgpt_response(driver, prompt, model_url="https://chatgpt.com/?model=o1")

@@ -43,7 +43,7 @@ def process_with_o3_mini_high(driver, file_content):
     print("[O3-Mini-High] Sending prompt to ChatGPT O3-Mini-High...")
 
     # Inline import to avoid circular dependencies
-    from chatgpt_automation.OpenAIClient import get_chatgpt_response
+    from core.openai.OpenAIClient import get_chatgpt_response
 
     # Send prompt directly to O3-Mini-High model endpoint
     response = get_chatgpt_response(driver, prompt, model_url="https://chatgpt.com/?model=o3-mini-high")

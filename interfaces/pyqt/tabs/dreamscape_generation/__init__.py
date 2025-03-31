@@ -3,6 +3,7 @@
 
 from . import ContextManager
 from . import DreamscapeEpisodeGenerator
+from . import DreamscapeGenerationTab
 from . import EpisodeGenerator
 from . import ServiceInitializer
 from . import UIManager
@@ -10,6 +11,7 @@ from . import UIManager
 __all__ = [
     'ContextManager',
     'DreamscapeEpisodeGenerator',
+    'DreamscapeGenerationTab',
     'EpisodeGenerator',
     'ServiceInitializer',
     'UIManager',

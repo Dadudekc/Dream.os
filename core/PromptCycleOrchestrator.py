@@ -7,10 +7,22 @@ from core.interfaces.IPromptManager import IPromptManager
 from core.micro_factories.prompt_factory import PromptFactory
 from config.ConfigManager import ConfigManager
 
+# --- Start: Pytest Path Fix ---
+import sys
+import os
+from pathlib import Path
+
+# Ensure the project root is in the path
+# This is a workaround for potential pytest import issues
+project_root = Path(__file__).resolve().parents[1] # Go up two levels (core -> project root)
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+# --- End: Pytest Path Fix ---
+
 class PromptCycleOrchestrator(IPromptOrchestrator):
     """Orchestrates prompt cycles with injected chat management."""
     
-    def __init__(self, config_manager: ConfigManager, chat_manager: Optional[IChatManager] = None, prompt_service: Any = None):
+    def __init__(self, config_manager: ConfigManager, chat_manager: Optional[IChatManager] = None, prompt_service: Any = None, driver_manager: Optional[Any] = None):
         """
         Initialize the orchestrator with required dependencies.
         
@@ -18,10 +30,12 @@ class PromptCycleOrchestrator(IPromptOrchestrator):
             config_manager: Configuration manager instance
             chat_manager: Chat manager implementation (optional, can be set later)
             prompt_service: Prompt service implementation (optional, will use factory if not provided)
+            driver_manager: DriverManager instance (optional)
         """
         self.logger = logging.getLogger(__name__)
         self.config_manager = config_manager
         self.chat_manager = chat_manager
+        self.driver_manager = driver_manager
         
         # Use the provided prompt_service if available, otherwise create using factory
         if prompt_service:
@@ -167,6 +181,27 @@ class PromptCycleOrchestrator(IPromptOrchestrator):
 
     def shutdown(self) -> None:
         """Clean up resources and shut down components."""
-        if self.chat_manager:
-            self.chat_manager.shutdown_driver()
-        self.logger.info("PromptCycleOrchestrator shutdown complete")
+        # Try shutting down via chat_manager first if it exists
+        if self.chat_manager and hasattr(self.chat_manager, 'shutdown_driver'):
+            try:
+                self.logger.info("Attempting shutdown via ChatManager...")
+                self.chat_manager.shutdown_driver()
+            except Exception as e:
+                self.logger.warning(f"ChatManager shutdown failed: {e}. Attempting direct driver shutdown.")
+                # Fallback to direct driver_manager if chat_manager fails or doesn't have the method
+                if self.driver_manager and hasattr(self.driver_manager, 'shutdown_driver'):
+                    try:
+                        self.driver_manager.shutdown_driver()
+                    except Exception as driver_e:
+                        self.logger.error(f"Direct DriverManager shutdown also failed: {driver_e}")
+        # If no chat_manager, try direct driver_manager shutdown
+        elif self.driver_manager and hasattr(self.driver_manager, 'shutdown_driver'):
+             try:
+                self.logger.info("Attempting direct shutdown via DriverManager...")
+                self.driver_manager.shutdown_driver()
+             except Exception as driver_e:
+                self.logger.error(f"Direct DriverManager shutdown failed: {driver_e}")
+        else:
+             self.logger.warning("No ChatManager or DriverManager available for shutdown.")
+             
+        self.logger.info("PromptCycleOrchestrator shutdown sequence complete")

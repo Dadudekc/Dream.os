@@ -181,9 +181,20 @@ class OpenAIClient:
         if self._booted:
             logger.info("⚠️ OpenAIClient already booted.")
             return
-        self.driver = self.get_openai_driver()
-        self._booted = True
-        logger.info("🚀 OpenAIClient boot complete.")
+        # Ensure driver initialization happens before setting flags
+        try:
+            self.driver = self.get_openai_driver()
+            # Set both instance and class booted flags upon successful driver creation
+            self._booted = True
+            OpenAIClient._booted = True
+            logger.info("🚀 OpenAIClient boot complete.")
+        except Exception as e:
+            logger.error(f"❌ OpenAIClient boot failed during driver initialization: {e}", exc_info=True)
+            # Ensure flags remain False if boot fails
+            self._booted = False
+            OpenAIClient._booted = False
+            # Optionally re-raise or handle the error appropriately
+            raise
 
     def _assert_ready(self):
         """Check if the driver is ready for use."""
@@ -321,28 +332,53 @@ class OpenAIClient:
 
     def shutdown(self):
         """
-        Shut down the driver gracefully and clean up resources.
+        Gracefully shuts down the Selenium WebDriver and performs cleanup.
+        Also attempts to forcefully kill lingering processes if needed.
         """
+        # Check instance boot state first
         if not self._booted:
-            logger.warning("❌ OpenAIClient not booted. Call `.boot()` first.")
+            logger.info("ℹ️ OpenAIClient shutdown called, but instance was not booted. No action needed.")
             return
-        logger.info("🛑 Shutting down OpenAIClient driver...")
-        try:
-            if self.driver:
-                try:
-                    self.driver.close()
-                except Exception as close_e:
-                    logger.warning(f"⚠️ Error closing browser window: {close_e}")
-                try:
-                    self.driver.quit()
-                except Exception as quit_e:
-                    logger.warning(f"⚠️ Error quitting driver: {quit_e}")
+
+        logger.info("⏳ Shutting down OpenAIClient...")
+        if self.driver:
+            try:
+                logger.info("Attempting to quit WebDriver...")
+                self.driver.quit()
+                logger.info("✅ WebDriver quit successfully.")
+            except ImportError:
+                # Handle cases where selenium might not be fully available during shutdown
+                logger.warning("⚠️ Selenium WebDriver exception types not available for specific handling.")
+            except Exception as e: # Catch broader exceptions initially
+                 # Check for common WebDriver exceptions if possible (requires selenium import)
+                 try:
+                     from selenium.common.exceptions import WebDriverException, InvalidSessionIdException
+                     if isinstance(e, (InvalidSessionIdException, WebDriverException)):
+                          logger.warning(f"⚠️ WebDriver already closed or invalid session during quit: {e}")
+                     else:
+                          logger.error(f"❌ Unexpected error during WebDriver quit: {e}", exc_info=True)
+                 except ImportError:
+                      logger.error(f"❌ Error during WebDriver quit (Selenium exceptions unavailable): {e}", exc_info=True)
+            finally:
                 self.driver = None
-                self._booted = False
-                logger.info("✅ OpenAIClient shutdown complete.")
-        except Exception as e:
-            logger.error(f"❌ Error during OpenAIClient shutdown: {e}")
+
+        # Update instance state
+        self._booted = False
+        # Update class state only if this is the current instance
+        if OpenAIClient._instance is self:
+            OpenAIClient._booted = False
+            OpenAIClient._instance = None # Clear the singleton instance reference
+            logger.info("Cleared singleton instance reference.")
+        else:
+             logger.warning("Shutting down an instance that is not the current singleton _instance.")
+
+        # Attempt to force kill any remaining chromedriver processes
+        try:
             self._force_kill_chromedriver()
+        except Exception as e:
+            logger.error(f"❌ Error during force kill of chromedriver: {e}", exc_info=True)
+
+        logger.info("✅ OpenAIClient shutdown complete.")
 
     def _force_kill_chromedriver(self):
         """

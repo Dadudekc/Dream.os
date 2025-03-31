@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from typing import Optional, Any
 
-from core.micro_factories.chat_factory import create_chat_manager
+from core.micro_factories.chat_factory import ChatFactory
 
 class ChatService:
     """

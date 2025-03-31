@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QListWidget
 
 from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
@@ -301,6 +302,7 @@ class ServiceInitializer:
             self.logger.error(f"❌ Error initializing DreamscapeEpisodeGenerator: {str(e)}")
             self.episode_generator = None
 
+
     def _initialize_component_managers(self) -> None:
         """
         Initialize component-specific managers like ContextManager and UIManager.
@@ -316,16 +318,38 @@ class ServiceInitializer:
             self.logger.error(f"❌ Error initializing ContextManager: {str(e)}")
             self.context_manager = None
 
-        # Initialize UIManager
+        # Determine the episode list widget:
+        # Try to retrieve it from the parent_widget if it exists,
+        # otherwise create a new QListWidget instance.
+        try:
+            episode_list = getattr(self.parent_widget, "episode_list", None)
+            if episode_list is None:
+                self.logger.warning("Episode list not found in parent_widget; creating a new QListWidget.")
+                episode_list = QListWidget(self.parent_widget)
+        except Exception as e:
+            self.logger.error(f"Error accessing episode_list: {str(e)}")
+            episode_list = QListWidget(self.parent_widget)
+
+        # Ensure output_dir is set (it should be initialized earlier)
+        if not self.output_dir:
+            self.output_dir = os.path.join(os.getcwd(), "outputs", "dreamscape")
+            os.makedirs(self.output_dir, exist_ok=True)
+            self.logger.info(f"✅ Output directory ensured: {self.output_dir}")
+
+        # Initialize UIManager with all required arguments
         try:
             self.ui_manager = UIManager(
                 parent_widget=self.parent_widget,
-                logger=self.logger
+                logger=self.logger,
+                episode_list=episode_list,
+                template_manager=self.template_manager,
+                output_dir=self.output_dir
             )
             self.logger.info("✅ UIManager initialized successfully")
         except Exception as e:
             self.logger.error(f"❌ Error initializing UIManager: {str(e)}")
             self.ui_manager = None
+
 
     def _get_output_directory(self) -> str:
         """

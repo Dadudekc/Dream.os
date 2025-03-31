@@ -104,11 +104,14 @@ class DreamscapeEpisodeGenerator:
 
         # Also instantiate a TemplateManager for robust .j2 loading with fallback
         try:
+            print("[DEBUG EPISODE GEN] Attempting to create TemplateManager...")
             self.template_manager = TemplateManager(template_dir=template_dir, logger=self.logger)
+            print("[DEBUG EPISODE GEN] TemplateManager created successfully.")
         except Exception as e:
             self.logger.error(f"Error instantiating TemplateManager: {e}")
             # If critical, raise; otherwise proceed with fallback
-            raise
+            # raise # Temporarily remove raise to see if init completes
+            raise # Restore raise
 
         # The base Dreamscape prompt (as fallback)
         self.dreamscape_prompt = (
@@ -128,7 +131,8 @@ class DreamscapeEpisodeGenerator:
             "work project", "prompt library", "Bot", "smartstock-pro"
         ]
 
-        self.logger.info("DreamscapeEpisodeGenerator initialized.")
+        # self.logger.info("DreamscapeEpisodeGenerator initialized.") # Temporarily comment out final log
+        self.logger.info("DreamscapeEpisodeGenerator initialized.") # Restore final log
 
     def _load_context_memory(self):
         """Load context memory from file or initialize if not present."""

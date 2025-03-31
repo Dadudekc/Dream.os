@@ -1,28 +1,61 @@
-# AUTO-GENERATED __init__.py
-# DO NOT EDIT MANUALLY - changes may be overwritten
+#!/usr/bin/env python3
+"""
+Core services for Cursor enhanced operations.
+"""
 
-from . import chat_service
-from . import config_service
-from . import debug_service
-from . import discord_service
-from . import dreamscape_generator_service
-from . import fix_service
-from . import full_sync_pipeline_runner
-from . import git_integration_service
-from . import prompt_execution_service
-from . import rollback_service
-from . import service_registry
+# Debug, Fix, and Rollback services
+from core.services.debug_service import DebugService
+from core.services.fix_service import FixService
+from core.services.rollback_service import RollbackService
+
+# Prompt execution
+try:
+    from core.services.prompt_execution_service import UnifiedPromptService
+except ImportError:
+    # Fallback for testing
+    UnifiedPromptService = None
+
+# New services
+try:
+    from core.services.TestGeneratorService import TestGeneratorService
+except ImportError:
+    # Fallback for testing
+    TestGeneratorService = None
+    
+try:
+    from core.services.TestCoverageAnalyzer import TestCoverageAnalyzer
+except ImportError:
+    # Fallback for testing
+    TestCoverageAnalyzer = None
+
+try:
+    from core.services.PromptLifecycleHooksService import (
+        PromptLifecycleHooksService,
+        basic_validation_hook,
+        priority_normalization_hook,
+        sanitize_prompt_hook
+    )
+except ImportError:
+    # Fallback for testing
+    PromptLifecycleHooksService = None
+    basic_validation_hook = None
+    priority_normalization_hook = None
+    sanitize_prompt_hook = None
 
 __all__ = [
-    'chat_service',
-    'config_service',
-    'debug_service',
-    'discord_service',
-    'dreamscape_generator_service',
-    'fix_service',
-    'full_sync_pipeline_runner',
-    'git_integration_service',
-    'prompt_execution_service',
-    'rollback_service',
-    'service_registry',
+    # Legacy services
+    'DebugService',
+    'FixService',
+    'RollbackService',
+    'UnifiedPromptService',
+    
+    # New services
+    'TestGeneratorService',
+    'TestCoverageAnalyzer',
+    'PromptLifecycleHooksService',
+    
+    # Utility hooks
+    'basic_validation_hook',
+    'priority_normalization_hook',
+    'sanitize_prompt_hook'
 ]
