@@ -11,7 +11,7 @@ Supports both service-type routing and explicit creation patterns.
 
 import logging
 from typing import Optional, Any
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.IChatManager import IChatManager
 from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
 

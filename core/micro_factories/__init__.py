@@ -1,8 +1,10 @@
-# AUTO-GENERATED __init__.py
-# DO NOT EDIT MANUALLY - changes may be overwritten
+"""
+Micro Factories Package
 
-# Avoid eager imports to prevent circular dependencies
-__all__ = [
-    'chat_factory',
-    'dreamscape_factory',
-]
+This package contains specialized factory implementations for creating
+specific components and services in the system.
+"""
+
+from . import prompt_factory
+
+__all__ = ['prompt_factory']

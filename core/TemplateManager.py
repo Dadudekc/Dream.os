@@ -63,15 +63,15 @@ class TemplateManager(QObject):
         if template_dir:
             general_dir = str(Path(template_dir))
         elif PathManager:
-            general_dir = str(PathManager.get_path('templates'))
+            general_dir = str(PathManager().get_path('templates'))
         else:
             general_dir = str(self.get_base_template_dir())
 
         # Setup directories for each category. If using PathManager, get paths; else use subfolders.
         self.template_categories = {
-            "discord": str(PathManager.get_path('discord_templates')) if PathManager else os.path.join(general_dir, "discord_templates"),
-            "messages": str(PathManager.get_path('message_templates')) if PathManager else os.path.join(general_dir, "message_templates"),
-            "dreamscape": str(PathManager.get_path('dreamscape_templates')) if PathManager else os.path.join(general_dir, "dreamscape_templates"),
+            "discord": str(PathManager().get_path('discord_templates')) if PathManager else os.path.join(general_dir, "discord_templates"),
+            "messages": str(PathManager().get_path('message_templates')) if PathManager else os.path.join(general_dir, "message_templates"),
+            "dreamscape": str(PathManager().get_path('dreamscape_templates')) if PathManager else os.path.join(general_dir, "dreamscape_templates"),
             "general": general_dir
         }
         # Ensure all template directories exist
@@ -139,7 +139,7 @@ class TemplateManager(QObject):
 
     def discover_templates(self) -> List[str]:
         """
-        Recursively discovers all .j2 templates under the 'general' template directory.
+        Recursively discovers all templates under the 'general' template directory.
         
         Returns:
             List[str]: List of template paths relative to the base directory.
@@ -148,7 +148,7 @@ class TemplateManager(QObject):
         discovered = []
         for root, _, files in os.walk(base_dir):
             for file in files:
-                if file.endswith('.j2'):
+                if file.endswith('.j2') or file.endswith('.jinja'):
                     rel_path = os.path.relpath(os.path.join(root, file), base_dir)
                     discovered.append(rel_path.replace("\\", "/"))
         self.logger.info(f"Discovered {len(discovered)} templates under 'general'")
@@ -168,7 +168,11 @@ class TemplateManager(QObject):
             self.logger.warning(f"Template directory does not exist: {template_dir}")
             return
 
-        templates = list(template_dir.glob("*.j2"))
+        # Find both .j2 and .jinja templates
+        templates = []
+        for ext in [".j2", ".jinja"]:
+            templates.extend(list(template_dir.glob(f"*{ext}")))
+            
         self.logger.info(f"Found {len(templates)} template(s): {[t.name for t in templates]}")
         for template_file in templates:
             with open(template_file, 'r', encoding='utf-8') as f:
@@ -177,20 +181,46 @@ class TemplateManager(QObject):
         self.templates_updated.emit([str(t.relative_to(template_dir)) for t in templates])
         self.logger.info(f"Loaded {len(templates)} templates from {template_dir}")
 
-    def get_available_templates(self, category: str = "general") -> List[str]:
+    def get_available_templates(self, category: str = "general", model_key: Optional[str] = None) -> List[str]:
         """
-        Returns a sorted list of available template filenames for a given category.
+        Returns a sorted list of available template filenames for a given category,
+        optionally filtered by model key.
+        
+        Args:
+            category (str): Template category to search in
+            model_key (Optional[str]): If provided, only return templates compatible with this model
+            
+        Returns:
+            List[str]: List of template filenames
         """
         path = self.template_categories.get(category)
         if not path or not os.path.isdir(str(path)):
             self.logger.warning(f"No valid directory found for template category: {category} at path: {path}")
             return []
+            
         available = []
         for root, _, files in os.walk(str(path)):
             for file in files:
-                if file.endswith(".j2"):
+                if not (file.endswith(".j2") or file.endswith(".jinja")):
+                    continue
+                    
+                # If model_key is provided, check if template is compatible
+                if model_key:
+                    # Check for model-specific template (e.g. template.gpt-4o.jinja)
+                    if model_key in file:
+                        rel_path = os.path.relpath(os.path.join(root, file), str(path))
+                        available.append(rel_path.replace("\\", "/"))
+                    # Also include default templates that don't specify a model
+                    elif not any(model in file for model in [
+                        "gpt-4o", "gpt-4o-mini", "gpt-4o-scheduled",
+                        "gpt-4.5", "gpt-4", "o1", "o3-mini", "o3-mini-high"
+                    ]):
+                        rel_path = os.path.relpath(os.path.join(root, file), str(path))
+                        available.append(rel_path.replace("\\", "/"))
+                else:
                     rel_path = os.path.relpath(os.path.join(root, file), str(path))
                     available.append(rel_path.replace("\\", "/"))
+                    
         return sorted(available)
 
     def change_template_dir(self, category: str, new_dir: str) -> bool:
@@ -221,13 +251,13 @@ class TemplateManager(QObject):
         Loads a Jinja2 template from a relative path under a given category.
         
         Args:
-            template_rel_path (str): Relative path (e.g., 'my_episode.j2').
+            template_rel_path (str): Relative path (e.g., 'my_episode.j2' or 'my_episode.jinja').
             category (str): Template category.
             
         Returns:
             jinja2.Template or None if not found.
         """
-        if not template_rel_path.endswith('.j2'):
+        if not (template_rel_path.endswith('.j2') or template_rel_path.endswith('.jinja')):
             self.logger.warning(f"Invalid template format: {template_rel_path}")
             return None
 
@@ -404,3 +434,23 @@ class TemplateManager(QObject):
         rel_path = os.path.relpath(path, base_dir).replace("\\", "/")
         if self.active_template and rel_path == self.active_template:
             self.render_template({})
+
+    def get_template_content(self, template_name: str, category: str = "general") -> Optional[str]:
+        """Get the raw content of a template.
+        
+        Args:
+            template_name: Name of the template file
+            category: Template category to search in
+            
+        Returns:
+            Raw template content as string, or None if not found
+        """
+        try:
+            template_path = Path(self.template_categories[category]) / template_name
+            if template_path.exists():
+                return template_path.read_text(encoding='utf-8')
+            self.logger.warning(f"Template not found: {template_name} in category {category}")
+            return None
+        except Exception as e:
+            self.logger.error(f"Error reading template {template_name}: {e}")
+            return None

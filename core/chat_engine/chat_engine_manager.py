@@ -6,13 +6,13 @@ from typing import Any, Dict, List, Optional
 # Import non-circular dependencies first
 from core.DriverManager import DriverManager
 from core.PathManager import PathManager
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.refactor.CursorSessionManager import CursorSessionManager
 from core.chat_engine.chat_scraper_service import ChatScraperService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 from core.chat_engine.feedback_engine import FeedbackEngine
 from core.chat_engine.gui_event_handler import GUIEventHandler
-from core.services.prompt_execution_service import UnifiedPromptService
+from core.services.prompt_execution_service import PromptService
 from core.IChatManager import IChatManager
 
 class ChatEngineManager(IChatManager):
@@ -62,7 +62,7 @@ class ChatEngineManager(IChatManager):
         
         # Initialize services that don't have circular dependencies
         self.scraper_service = ChatScraperService(self.driver_manager, self.logger)
-        self.prompt_executor = UnifiedPromptService(
+        self.prompt_executor = PromptService(
             config_manager=self.config,
             path_manager=self.path_manager,
             config_service=self.config,

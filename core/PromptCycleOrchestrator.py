@@ -5,19 +5,25 @@ from core.IChatManager import IChatManager
 from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
 from core.interfaces.IPromptManager import IPromptManager
 from core.micro_factories.prompt_factory import PromptFactory
-from config.ConfigManager import ConfigManager
 
-# --- Start: Pytest Path Fix ---
+# --- Start: Path Fix ---
 import sys
 import os
 from pathlib import Path
 
-# Ensure the project root is in the path
-# This is a workaround for potential pytest import issues
-project_root = Path(__file__).resolve().parents[1] # Go up two levels (core -> project root)
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-# --- End: Pytest Path Fix ---
+# Get the absolute path to the project root
+project_root = str(Path(__file__).resolve().parent.parent)
+
+# Add both the project root and the config directory to the Python path
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+config_path = os.path.join(project_root, 'config')
+if config_path not in sys.path:
+    sys.path.insert(0, config_path)
+# --- End: Path Fix ---
+
+from core.config.config_manager import ConfigManager
 
 class PromptCycleOrchestrator(IPromptOrchestrator):
     """Orchestrates prompt cycles with injected chat management."""

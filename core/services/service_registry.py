@@ -18,16 +18,17 @@ import logging
 import os
 import json
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any, Callable, Dict, List, Optional, Protocol, Set, Type
+from dataclasses import dataclass
+from threading import Lock
 
 # Core interfaces and factories
 from core.interfaces.IPromptManager import IPromptManager
 from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
 from core.interfaces.IDreamscapeService import IDreamscapeService
-from core.micro_factories.prompt_factory import PromptFactory
 from core.micro_factories.orchestrator_factory import OrchestratorFactory
 
-# Note: DreamscapeFactory is imported dynamically when needed to avoid circular imports
+# Note: DreamscapeFactory and PromptFactory are imported dynamically when needed to avoid circular imports
 
 # -----------------------------------------------------------------------------
 # Service Interface Protocols
@@ -47,7 +48,7 @@ class ConfigService(Protocol):
     def save(self, config_file: Optional[str] = None) -> None: ...
 
 
-class UnifiedPromptService(Protocol):
+class PromptService(Protocol):
     def get_prompt(self, prompt_type: str) -> str: ...
     def save_prompt(self, prompt_type: str, prompt_text: str) -> None: ...
     def get_model(self, prompt_type: str) -> str: ...
@@ -94,7 +95,7 @@ class CursorService(Protocol):
 # -----------------------------------------------------------------------------
 
 def create_config_service(config_name: str = "dreamscape_config.yaml") -> Any:
-    from config.ConfigManager import ConfigManager  # Lazy import
+    from core.config.config_manager import ConfigManager  # Lazy import
     try:
         config = ConfigManager(config_name=config_name)
         logging.info(f"Configuration loaded from {config_name}")
@@ -125,11 +126,12 @@ def create_logging_service() -> Any:
 
 
 def create_prompt_service(config_service: Any = None) -> Any:
-    """Create and configure the UnifiedPromptService with all required dependencies."""
-    from core.services.prompt_execution_service import UnifiedPromptService
+    """Create and configure the PromptService with all required dependencies."""
+    from core.services.prompt_execution_service import PromptService
     from core.PathManager import PathManager
     from core.DriverManager import DriverManager
-    from config.ConfigManager import ConfigManager
+    from core.config.config_manager import ConfigManager
+    from core.micro_factories.prompt_factory import PromptFactory  # Lazy import
     
     if not config_service:
         logging.error("Cannot create prompt service without configuration")
@@ -154,8 +156,8 @@ def create_prompt_service(config_service: Any = None) -> Any:
         if not cursor_dispatcher:
             logging.warning("CursorDispatcher not available, some features may be limited")
         
-        # Create UnifiedPromptService with all dependencies
-        prompt_service = UnifiedPromptService(
+        # Create PromptService with all dependencies
+        prompt_service = PromptService(
             config_manager=config_manager,
             path_manager=path_manager,
             config_service=config_service,
@@ -166,18 +168,18 @@ def create_prompt_service(config_service: Any = None) -> Any:
             cursor_dispatcher=cursor_dispatcher
         )
         
-        logging.info("UnifiedPromptService initialized successfully")
+        logging.info("PromptService initialized successfully")
         return prompt_service
         
     except Exception as e:
-        logging.error(f"Failed to initialize UnifiedPromptService: {str(e)}")
+        logging.error(f"Failed to initialize PromptService: {str(e)}")
         return _create_empty_service("prompt_service")
 
 
 def create_chat_service(config_service: Any = None) -> Any:
     """Create and configure the chat service."""
     from core.ChatManager import ChatManager  # Lazy import
-    from config.ConfigManager import ConfigManager  # For type-checking
+    from core.config.config_manager import ConfigManager  # For type-checking
     import json
     if not config_service:
         logging.error("Cannot create chat service without configuration")
@@ -355,7 +357,7 @@ def create_dreamscape_generator(*, config_service, chat_service, response_handle
 
 
 def create_memory_service(config_service: Any = None) -> Any:
-    from core.MemoryManager import MemoryManager  # Lazy import
+    from core.memory import MemoryManager  # Lazy import
     try:
         memory_file = "memory/memory.json"
         if config_service:
@@ -421,243 +423,213 @@ def create_cursor_dispatcher(config_service: Any = None) -> Any:
 # Service Registry and Registration
 # -----------------------------------------------------------------------------
 
+@dataclass
+class ServiceRegistration:
+    """Data class for storing service registration details."""
+    name: str
+    instance: Optional[Any] = None
+    factory: Optional[Callable] = None
+    dependencies: List[str] = None
+    is_singleton: bool = True
+    initialized: bool = False
+
+_logger = logging.getLogger(__name__)
+
 class ServiceRegistry:
     """
-    Central registry for managing and validating services.
+    Central registry for managing and validating services with dependency tracking.
     """
+    _instance = None
+    _lock = Lock()
     _services: Dict[str, Any] = {}
-    _factories: Dict[str, Callable] = {}
-    _config = None
-    _logger = logging.getLogger("ServiceRegistry") # Use a specific logger
     
     def __init__(self):
-        self._required_services = {
-            "cycle_service": "Core service for managing execution cycles",
-            "task_orchestrator": "Service for orchestrating and managing tasks",
-            "dreamscape_generator": "Service for generating dreamscape episodes"
-        }
-        self.logger = logging.getLogger(__name__)
-
+        """Initialize the service registry."""
+        if not hasattr(self, '_services'):
+            self._services = {}
+    
     @classmethod
-    def register(cls, name: str, instance: Any = None, factory: Optional[Callable] = None, dependencies: Optional[List[str]] = None):
-        if name in cls._services:
-            cls._logger.warning(f"Service '{name}' is already registered. Overwriting.")
-        if instance is not None:
-            cls._services[name] = instance
-            cls._logger.debug(f"Service '{name}' registered with instance.")
-        elif factory is not None:
-            cls._factories[name] = (factory, dependencies or [])
-            cls._logger.debug(f"Service '{name}' registered with factory.")
+    def get_instance(cls) -> 'ServiceRegistry':
+        """Get the singleton instance of the registry."""
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls()
+        return cls._instance
+    
+    @classmethod
+    def register(cls, name: str, instance: Any = None) -> None:
+        """
+        Register a service instance.
+        
+        Args:
+            name: Service name
+            instance: Service instance
+        """
+        registry = cls.get_instance()
+        if name in registry._services:
+            _logger.warning(f"Service '{name}' is already registered. Overwriting.")
+        registry._services[name] = instance
+        _logger.debug(f"Service '{name}' registered successfully.")
+    
+    @classmethod
+    def unregister(cls, name: str) -> None:
+        """
+        Unregister a service.
+        
+        Args:
+            name: Service name
+        """
+        registry = cls.get_instance()
+        if name in registry._services:
+            del registry._services[name]
+            _logger.debug(f"Service '{name}' unregistered.")
         else:
-            cls._logger.error(f"Registration attempt for '{name}' failed: Must provide instance or factory.")
-
+            _logger.debug(f"Service '{name}' not found to unregister.")
+    
     @classmethod
     def get(cls, name: str) -> Optional[Any]:
-        if name not in cls._services:
-            logging.warning(f"Service '{name}' not available - creating empty implementation")
-            cls._services[name] = cls._create_empty_service(name)
-        return cls._services[name]
-
-    @classmethod
-    def get_all_services(cls) -> dict:
         """
-        Returns all registered services.
-
+        Get a service instance.
+        
+        Args:
+            name: Service name
+            
         Returns:
-            Dict[str, Any]: All service name -> instance pairs
+            Service instance or None if not found
         """
-        return cls._services.copy()
-
-    def validate_service_registry(self) -> List[str]:
-        missing_services = []
-        for service_name in self._required_services:
-            if service_name not in self._services:
-                self.logger.error(f"Required service '{service_name}' is missing")
-                missing_services.append(service_name)
-            elif self._is_empty_service(self._services[service_name]):
-                self.logger.error(f"Service '{service_name}' is registered but is an empty implementation")
-                missing_services.append(service_name)
-        return missing_services
-
-    def _is_empty_service(self, service: Any) -> bool:
-        return hasattr(service, '_is_empty_implementation') and service._is_empty_implementation
-
-    @classmethod
-    def _create_empty_service(cls, name: str) -> Any:
-        class EmptyService:
-            def __init__(self):
-                self._is_empty_implementation = True
-                self.logger = logging.getLogger(f"EmptyService.{name}")
-
-            def __getattr__(self, attr):
-                self.logger.warning(f"Attempted to call '{attr}' on empty service implementation of '{name}'")
-                return lambda *args, **kwargs: None
-
-        return EmptyService()
-
-    @classmethod
-    def initialize(cls, config, logger):
-        """Initialize the service registry with configuration."""
-        cls._config = config
-        cls._logger = logger
-        cls._register_core_services()
-    
-    @classmethod
-    def _register_core_services(cls):
-        """Register all core services needed by the application."""
-        try:
-            # Register config manager if not already registered
-            if "config_manager" not in cls._services and cls._config:
-                cls.register_service("config_manager", cls._config)
-            
-            # Register logger if not already registered
-            if "logger" not in cls._services and cls._logger:
-                cls.register_service("logger", cls._logger)
-                
-            # Register prompt_manager using the factory
-            if "prompt_manager" not in cls._services:
-                try:
-                    # Import the factory with robust error handling
-                    from core.factories.prompt_factory import PromptFactory
-                    
-                    # First try the registry-based factory method
-                    prompt_manager = PromptFactory.create(cls)
-                    if prompt_manager:
-                        cls.register_service("prompt_manager", prompt_manager)
-                        cls._logger.info("PromptManager registered via registry-based factory")
-                    else:
-                        # If that fails, try the standalone method
-                        cls._logger.warning("Registry-based factory returned None, trying standalone factory method")
-                        prompt_manager = PromptFactory.create_prompt_manager(logger=cls._logger)
-                        if prompt_manager:
-                            cls.register_service("prompt_manager", prompt_manager)
-                            cls._logger.info("PromptManager registered via standalone factory")
-                        else:
-                            # Last resort: create a direct instance
-                            cls._logger.warning("All factory methods failed, creating instance directly")
-                            from core.AletheiaPromptManager import AletheiaPromptManager
-                            prompt_manager = AletheiaPromptManager()
-                            cls.register_service("prompt_manager", prompt_manager)
-                            cls._logger.info("PromptManager created directly as last resort")
-                except Exception as e:
-                    cls._logger.error(f"Failed to create PromptManager: {e}")
-                    # Create a stub implementation
-                    prompt_manager = type('PromptManagerStub', (), {
-                        'get_prompt': lambda self, name: f"Stub prompt for {name}",
-                        'save_prompt': lambda self, name, text: None,
-                        'load_prompts': lambda self: {},
-                        'get_random_prompt': lambda self: "Stub random prompt"
-                    })()
-                    cls.register_service("prompt_manager", prompt_manager)
-                    cls._logger.warning("Registered stub PromptManager due to initialization failure")
-            
-            # Register chat manager using the factory
-            if "chat_manager" not in cls._services:
-                try:
-                    from core.factories.ChatFactory import ChatFactory
-                    chat_manager = ChatFactory.create(cls)
-                    cls.register_service("chat_manager", chat_manager)
-                except Exception as e:
-                    cls._logger.warning(f"Could not create ChatManager: {e}")
-            
-            # Import container here to avoid circular imports
-            from core.service_container import container
-            
-            # Import DreamscapeFactory here to avoid circular imports
-            from core.micro_factories.dreamscape_factory import DreamscapeFactory
-            
-            # Register Dreamscape service using the factory
-            dreamscape_service = DreamscapeFactory(
-                config_service=cls._config,
-                chat_service=cls.get_service("chat_manager"),
-                response_handler=cls.get_service("prompt_handler"),
-                discord_service=cls.get_service("discord_manager"),
-                logger=cls._logger
-            ).create()
-            cls.register_service("dreamscape_generation", dreamscape_service)
-            
-        except Exception as e:
-            cls._logger.error(f"Error registering core services: {str(e)}")
-    
-    @classmethod
-    def register_service(cls, name: str, service: object):
-        """Register a service instance with the registry."""
-        cls._services[name] = service
-        cls._logger.info(f"Registered service: {name}")
-    
-    @classmethod
-    def get_service(cls, name: str) -> object:
-        """Get a service instance by name."""
-        return cls._services.get(name)
+        registry = cls.get_instance()
+        if name not in registry._services:
+            _logger.warning(f"Service '{name}' not found.")
+            return None
+        return registry._services[name]
     
     @classmethod
     def has_service(cls, name: str) -> bool:
-        """Check if a service is registered."""
-        return name in cls._services
+        """
+        Check if a service exists.
+        
+        Args:
+            name: Service name
+            
+        Returns:
+            True if service exists
+        """
+        registry = cls.get_instance()
+        return name in registry._services
+    
+    @classmethod
+    def get_all_services(cls) -> Dict[str, Any]:
+        """
+        Get all registered services.
+        
+        Returns:
+            Dictionary of service name to instance
+        """
+        registry = cls.get_instance()
+        return registry._services.copy()
+    
+    @classmethod
+    def reset(cls) -> None:
+        """Reset the registry, clearing all services."""
+        registry = cls.get_instance()
+        registry._services.clear()
+        _logger.info("Service registry reset.")
 
+# Create the global instance
+registry = ServiceRegistry.get_instance()
 
 def register_all_services() -> None:
     """
-    Register all services with the service container in proper dependency order.
+    Register all core services with the ServiceRegistry.
+    This is the main initialization point for the application's service layer.
     """
-    # Import container here to avoid circular imports
-    from core.service_container import container
-    
-    container.register('logger', create_logging_service)
-    container.register('config', create_config_service)
-    
-    # Update prompt_manager registration to use the factory with proper error handling
-    from core.factories.prompt_factory import PromptFactory
-    def create_prompt_manager_safely():
-        try:
-            # First try using the registry-based factory method
-            from core.services.service_registry import ServiceRegistry
-            registry = ServiceRegistry()
-            prompt_manager = PromptFactory.create(registry)
-            if prompt_manager:
-                logging.info("PromptManager created successfully via factory with registry")
-                return prompt_manager
-            
-            # If that fails, try the standalone method
-            logging.warning("Registry-based factory returned None, trying standalone factory method")
-            prompt_manager = PromptFactory.create_prompt_manager()
-            if prompt_manager:
-                logging.info("PromptManager created successfully via standalone factory")
-                return prompt_manager
-                
-            # Last resort, create with defaults
-            logging.warning("All factory methods failed, creating with defaults")
-            from core.AletheiaPromptManager import AletheiaPromptManager
-            return AletheiaPromptManager()
-        except Exception as e:
-            logging.error(f"Error creating PromptManager: {e}")
-            # Create and return stub implementation
-            return type('PromptManagerStub', (), {
-                'get_prompt': lambda self, name: f"Stub prompt for {name}",
-                'save_prompt': lambda self, name, text: None,
-                'load_prompts': lambda self: {},
-                'get_random_prompt': lambda self: "Stub random prompt"
-            })()
-    
-    container.register('prompt_manager', create_prompt_manager_safely)
-    container.register('memory_manager', create_memory_service, ['config'])
-    container.register('response_handler', create_response_handler, ['config'])
-    container.register('chat_manager', create_chat_service, ['config'])
-    container.register('discord_service', create_discord_service, ['config', 'logger'])
-    container.register('discord_manager', lambda: container.get('discord_service'))
-    container.register('reinforcement_engine', create_reinforcement_service, ['config', 'logger'])
-    container.register('fix_service', lambda: container.get('reinforcement_engine'))
-    container.register('rollback_service', lambda: container.get('reinforcement_engine'))
-    container.register('cursor_manager', create_cursor_service, ['config'])
-    container.register('cycle_service', create_cycle_service, 
-                       ['config', 'prompt_manager', 'chat_manager', 'response_handler',
-                        'memory_manager', 'discord_service'])
-    container.register('task_orchestrator', create_task_orchestrator)
-    container.register('dreamscape_generator', create_dreamscape_generator,
-                       ['chat_manager', 'response_handler', 'discord_service', 'config'])
-    container.register('memory_service', create_memory_service, ['config'])
-    container.register('cursor_dispatcher', create_cursor_dispatcher, ['config'])
-    container.register('prompt_service', create_prompt_service, ['config', 'cursor_dispatcher', 'cursor_manager'])
+    try:
+        # Create and register basic services
+        config_service = create_config_service()
+        ServiceRegistry.register("config_manager", config_service)
+        
+        logger = create_logging_service()
+        ServiceRegistry.register("logger", logger)
+        
+        # Create and register memory service
+        memory_service = create_memory_service(config_service)
+        ServiceRegistry.register("memory_manager", memory_service)
+        
+        # Core services registration
+        def create_prompt_manager_safely():
+            try:
+                from core.micro_factories.prompt_factory import PromptFactory
+                return PromptFactory.create_prompt_manager()
+            except Exception as e:
+                logger.error(f"Failed to create PromptManager: {e}")
+                return None
+        
+        prompt_manager = create_prompt_manager_safely()
+        ServiceRegistry.register("prompt_manager", prompt_manager)
+        
+        chat_service = create_chat_service(config_service)
+        ServiceRegistry.register("chat_manager", chat_service)
+        
+        discord_service = create_discord_service(config_service, logger)
+        ServiceRegistry.register("discord_service", discord_service)
+        
+        cursor_service = create_cursor_service(config_service, memory_service)
+        ServiceRegistry.register("cursor_service", cursor_service)
+        
+        cursor_dispatcher = create_cursor_dispatcher(config_service)
+        ServiceRegistry.register("cursor_dispatcher", cursor_dispatcher)
+        
+        template_manager = create_template_manager(config_service, logger)
+        ServiceRegistry.register("template_manager", template_manager)
+        
+        # Create metrics service
+        from core.monitoring.metrics_service import MetricsService
+        metrics_service = MetricsService(memory_manager=memory_service, logger=logger)
+        ServiceRegistry.register("metrics_service", metrics_service)
+        
+        # Create recovery engine
+        from core.factories.recovery_engine_factory import RecoveryEngineFactory
+        recovery_engine = RecoveryEngineFactory.create(ServiceRegistry.get_instance())
+        ServiceRegistry.register("recovery_engine", recovery_engine)
+        
+        # Create agent failure hooks
+        from core.factories.agent_failure_hook_factory import AgentFailureHookFactory
+        agent_failure_hook = AgentFailureHookFactory.create(ServiceRegistry.get_instance())
+        ServiceRegistry.register("agent_failure_hook", agent_failure_hook)
+        
+        # Create feedback engine with recovery integration
+        from core.factories.feedback_factory import FeedbackFactory
+        feedback_engine = FeedbackFactory.create(ServiceRegistry.get_instance())
+        ServiceRegistry.register("feedback_engine", feedback_engine)
+        
+        # Get task orchestrator
+        orchestrator = create_task_orchestrator()
+        ServiceRegistry.register("orchestrator", orchestrator)
+        
+        # Register validation service
+        from core.validation.tab_validator_service import TabValidatorService
+        validator_service = TabValidatorService()
+        ServiceRegistry.register("tab_validator", validator_service)
+        
+        # Prompt execution service
+        prompt_service = create_prompt_service(config_service)
+        ServiceRegistry.register("prompt_service", prompt_service)
+        
+        # Create unified reinforcement service
+        reinforcement_service = create_reinforcement_service(config_service, logger)
+        ServiceRegistry.register("reinforcement_service", reinforcement_service)
+        
+        logger.info("✅ Core services registered successfully")
+        return True
+        
+    except Exception as e:
+        if ServiceRegistry.get("logger"):
+            logger = ServiceRegistry.get("logger")
+            logger.error(f"❌ Failed to register services: {e}")
+        else:
+            logging.error(f"❌ Failed to register services: {e}")
+        return False
 
 # Helper functions to avoid circular imports
 def get_service(name: str) -> Any:

@@ -4,7 +4,7 @@ from datetime import datetime
 from queue import Queue, Empty
 import threading
 import time
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class DiscordBatchDispatcher:
     """

@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class WordPressCommunityStrategy(BasePlatformStrategy):
     """

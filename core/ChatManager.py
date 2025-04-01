@@ -7,12 +7,12 @@ from typing import Any, Dict, List, Optional
 
 from core.DriverManager import DriverManager
 from core.chat_engine.chat_scraper_service import ChatScraperService
-from core.services.prompt_execution_service import UnifiedPromptService
+from core.services.prompt_execution_service import PromptService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 from core.chat_engine.feedback_engine import FeedbackEngine
 from core.refactor.CursorSessionManager import CursorSessionManager
 from core.IChatManager import IChatManager  # Import the interface directly
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 
 # Import the WebChatScraper
@@ -265,13 +265,14 @@ class ChatManager(IChatManager):
         self.logger.info(f"Switching execution mode to: {mode}")
         self.cursor_manager.set_execution_mode(mode)
 
-    def generate_dreamscape_episode(self, chat_title: str, source: str = "memory") -> Optional[Any]:
+    def generate_dreamscape_episode(self, chat_title: str, source: str = "memory", model: str = "gpt-4o") -> Optional[Any]:
         """
         Generate a dreamscape episode from a specific chat's history.
         
         Args:
             chat_title: The title of the chat to generate an episode from
             source: Source of chat history - "memory" (local file) or "web" (live scraping)
+            model: The AI model to use for generation (e.g., 'gpt-4o')
             
         Returns:
             The generated episode data, or None if generation fails
@@ -297,13 +298,14 @@ class ChatManager(IChatManager):
                 self.logger.warning(f"No message content found in chat history for '{chat_title}'")
                 return None
                 
-            # Generate episode from chat history
-            episode = self.dreamscape_service.generate_dreamscape_episode(
+            # Generate episode from chat history with model parameter
+            episode = self.dreamscape_service.generate_episode_from_history(
                 chat_title=chat_title,
-                chat_history=messages
+                chat_history=messages,
+                model=model  # Pass the model parameter to the dreamscape service
             )
             
-            self.logger.info(f"Dreamscape episode generated successfully for chat '{chat_title}'")
+            self.logger.info(f"Dreamscape episode generated successfully for chat '{chat_title}' using model {model}")
             return episode
             
         except Exception as e:

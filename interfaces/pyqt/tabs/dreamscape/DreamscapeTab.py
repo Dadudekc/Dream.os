@@ -50,7 +50,7 @@ class DreamscapeGenerationTab(QWidget):
         
         # Initialize services
         if services is None:
-            self.service_initializer = ServiceInitializer()
+            self.service_initializer = ServiceInitializer(parent=self)
             self.services = self.service_initializer.initialize_services()
         else:
             self.services = services
@@ -63,18 +63,13 @@ class DreamscapeGenerationTab(QWidget):
         
     @property
     def template_manager(self):
-        """Get the template manager service."""
-        return self.services['component_managers']['template_manager']
+        """Get the core template manager service."""
+        return self.services.get('template_manager')
         
     @property
-    def episode_generator(self):
-        """Get the episode generator service."""
-        return self.services['component_managers']['episode_generator']
-        
-    @property
-    def task_orchestrator(self):
-        """Get the task orchestrator service."""
-        return self.services['core_services']['task_orchestrator']
+    def dreamscape_engine(self):
+        """Get the core dreamscape engine service."""
+        return self.services.get('dreamscape_engine')
         
     def setup_ui(self):
         """Set up the UI components."""
@@ -108,22 +103,21 @@ class DreamscapeGenerationTab(QWidget):
     def _load_initial_data(self):
         """Load initial data for components."""
         try:
-            # Load templates
-            template_manager = self.services['component_managers']['template_manager']
-            if template_manager:
-                templates = template_manager.get_available_templates()
+            # Load templates using the core template_manager
+            tm = self.template_manager
+            if tm:
+                templates = tm.get_available_templates(subfolder='dreamscape')
                 self.generation_controls.set_templates(templates)
                 
-            # Load existing episodes
-            episode_generator = self.services['component_managers']['episode_generator']
-            if episode_generator:
-                episodes = episode_generator.get_episodes()
-                for episode in episodes:
-                    self.episode_list.add_episode(episode)
+            # Load existing episodes using the core dreamscape_engine
+            engine = self.dreamscape_engine
+            if engine:
+                self.episode_list.load_episodes(engine.output_dir)
                     
         except Exception as e:
-            self.logger.error(f"Error loading initial data: {e}")
+            self.logger.error(f"Error loading initial data: {e}", exc_info=True)
             
+    @asyncSlot
     async def _on_generate_clicked(self, params: Dict[str, Any]):
         """Handle generate button click.
         
@@ -131,30 +125,62 @@ class DreamscapeGenerationTab(QWidget):
             params: Dictionary containing generation parameters
         """
         try:
-            # Get episode generator
-            episode_generator = self.services['component_managers']['episode_generator']
-            if not episode_generator:
-                raise RuntimeError("Episode generator not available")
+            # Get the core dreamscape_engine
+            engine = self.dreamscape_engine
+            if not engine:
+                raise RuntimeError("Dreamscape engine not available")
                 
-            # Generate episode
-            episode_data = await episode_generator.generate_episode(params)
-            if episode_data:
-                self.episode_list.add_episode(episode_data)
-                # Select the newly added episode
-                self.episode_list.episode_list.setCurrentRow(self.episode_list.episode_list.count() - 1)
+            # Call the appropriate generation method on the engine
+            # We need to determine if we need chat history first based on params
+            # This logic might need refinement depending on engine methods
+            
+            # Example: If processing a single chat, get history first (if chat_manager available)
+            if not params.get('process_all') and params.get('target_chat'):
+                # Assuming ChatManager is accessible via self.services if needed
+                chat_manager = self.services.get('chat_manager') 
+                if chat_manager:
+                    chat_history = chat_manager.get_chat_history(params['target_chat'])
+                    if chat_history:
+                        messages = [entry['content'] for entry in chat_history if 'content' in entry]
+                        episode_path = await asyncio.to_thread(
+                            engine.generate_episode_from_history, 
+                            params['target_chat'], 
+                            messages
+                        )
+                        # TODO: Load episode_path data into episode_list
+                    else:
+                        self.logger.warning(f"Could not get history for {params['target_chat']}")
+                else:
+                     self.logger.warning("ChatManager not available to fetch history.")
+            elif params.get('process_all'):
+                 # TODO: Implement logic to process all chats 
+                 # This might involve calling engine methods differently or looping
+                 self.logger.warning("Process all chats not fully implemented yet.")
+            else:
+                 # Maybe generate from memory directly?
+                 episode_path = await asyncio.to_thread(
+                     engine.generate_episode_from_memory,
+                     params['template_name']
+                 )
+                 # TODO: Load episode_path data into episode_list
+
+            # Simplified: Assume episode_data is returned or load from path
+            # self.episode_list.add_episode(episode_data)
+            # self.episode_list.episode_list.setCurrentRow(self.episode_list.episode_list.count() - 1)
                 
         except Exception as e:
-            self.logger.error(f"Error generating episode: {e}")
+            self.logger.error(f"Error generating episode: {e}", exc_info=True)
             
     def _on_cancel_clicked(self):
         """Handle cancel button click."""
-        try:
-            task_orchestrator = self.services['core_services']['task_orchestrator']
-            if task_orchestrator:
-                task_orchestrator.cancel_current_task()
-                
-        except Exception as e:
-            self.logger.error(f"Error canceling task: {e}")
+        task_orchestrator = self.services.get('task_orchestrator')
+        if task_orchestrator:
+             try:
+                 task_orchestrator.cancel_current_task()
+             except Exception as e:
+                 self.logger.error(f"Error canceling task: {e}")
+        else:
+             self.logger.warning("Task Orchestrator service not found for cancellation.")
             
     def _on_episode_selected(self, episode_data: Dict[str, Any]):
         """Handle episode selection.
@@ -167,18 +193,7 @@ class DreamscapeGenerationTab(QWidget):
             self.context_tree.update_context(episode_data.get('context', {}))
             
         except Exception as e:
-            self.logger.error(f"Error handling episode selection: {e}")
-            
-    def cleanup(self):
-        """Clean up resources."""
-        try:
-            # Clean up UI managers
-            ui_manager = self.services['component_managers']['ui_manager']
-            if ui_manager:
-                ui_manager.cleanup()
-                
-        except Exception as e:
-            self.logger.error(f"Error during cleanup: {e}")
+            self.logger.error(f"Error handling episode selection: {e}", exc_info=True)
             
     def get_services(self) -> Dict[str, Any]:
         """Get the services dictionary.

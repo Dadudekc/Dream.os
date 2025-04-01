@@ -5,7 +5,7 @@ SystemLoader - Centralized Service Initialization System
 
 This module provides a centralized system for initializing and wiring all
 Dream.OS services with proper dependency injection and sequencing using
-the micro-factory pattern.
+the unified factory system.
 
 It ensures:
 - Services are initialized in the correct dependency order
@@ -17,265 +17,71 @@ It ensures:
 
 import logging
 import os
-from typing import Dict, Any, Optional, List, Union, Type
+import json
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 
 # Core service registry import
 from core.services.service_registry import ServiceRegistry
 
 # Base factory imports
-from core.PathManager import PathManager
-from config.ConfigManager import ConfigManager
+from core.utils.path_manager import PathManager
+from core.config.config_manager import ConfigManager
 
-# Core micro-factories
-from core.micro_factories.prompt_factory import PromptFactory
-from core.micro_factories.feedback_factory import FeedbackFactory
-from core.micro_factories.chat_factory import ChatFactory
-from core.micro_factories.orchestrator_factory import OrchestratorFactory
-from core.micro_factories.dreamscape_factory import DreamscapeFactory
-from core.micro_factories.merit_test_factory import MeritTestFactory
+# Import the factory registry
+from core.factories import FactoryRegistry
 
 # Utility imports
-from core.memory_utils import fix_memory_file
+from core.memory.utils import fix_memory_file
+
+# Import services
+from core.services.cursor_ui_service import CursorUIServiceFactory
 
 # Configure the logger at module level
 logger = logging.getLogger(__name__)
 
 
 class SystemLoader:
-    """
-    Centralized service loader that initializes all Dream.OS components
-    using the micro-factory pattern with proper dependency handling.
-    """
+    """Manages system initialization and service loading."""
     
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self):
+        """Initialize the system loader."""
+        self.registry = ServiceRegistry.get_instance()
+        self.factory_registry = FactoryRegistry.get_instance()
+        
+    def boot(self) -> bool:
         """
-        Initialize the system loader.
-        
-        Args:
-            config_path: Optional custom path to config file
-        """
-        # Initialize logger first
-        self.logger = logging.getLogger(__name__)
-
-        # Core services to initialize first (these are not from factories)
-        self.path_manager = PathManager()
-        
-        # Initialize config manager
-        try:
-            self.config_manager = ConfigManager(config_path)
-            logger.info("✅ ConfigManager initialized successfully")
-        except Exception as e:
-            logger.error(f"❌ Failed to initialize ConfigManager: {e}")
-            self.config_manager = ConfigManager()  # Fallback to default
-        
-        # Register these core services immediately
-        ServiceRegistry.register("config_manager", self.config_manager)
-        ServiceRegistry.register("logger", logger)
-        ServiceRegistry.register("path_manager", self.path_manager)
-        
-        # Define the factory registry with service name to factory class mapping
-        self.factories = {
-            "prompt_manager": PromptFactory,
-            "feedback_engine": FeedbackFactory,
-            "openai_client": self._create_openai_client,  # Special handler function
-            "driver_manager": self._create_driver_manager,  # Special handler function
-            "prompt_service": self._create_prompt_service,  # Special handler
-            "chat_manager": ChatFactory,
-            "cycle_service": OrchestratorFactory,
-            "task_orchestrator": OrchestratorFactory,
-            "dreamscape_generator": DreamscapeFactory,
-            "merit_chain_manager": MeritTestFactory,
-            "test_coverage_analyzer": MeritTestFactory,
-            "test_generator_service": MeritTestFactory
-        }
-    
-    def boot(self) -> Dict[str, Any]:
-        """
-        Boot all core services in proper dependency order using registered factories.
+        Boot the system by initializing all required services.
         
         Returns:
-            Dict of initialized services
+            bool: True if boot successful, False otherwise
         """
-        logger.info("🚀 Starting Dream.OS SystemLoader...")
-        
         try:
-            # Verify and repair memory files early
-            self._repair_memory_files()
-            
-            # Initialize all services in dependency order
             self._initialize_services()
-            
-            # Verify core services
-            missing_services = self._validate_required_services()
-            if missing_services:
-                logger.warning(f"⚠️ Missing required services: {missing_services}")
-            else:
-                logger.info("✅ All required services registered and available")
-            
-            # Return all registered services
-            return {name: ServiceRegistry.get(name) for name in ServiceRegistry._services}
+            return True
         except Exception as e:
-            # Fallback logger in case of unexpected errors
-            fallback_logger = logging.getLogger(__name__)
-            fallback_logger.error(f"Failed to initialize core services: {e}", exc_info=True)
-            # Return whatever services were successfully initialized
-            return {name: ServiceRegistry.get(name) for name in ServiceRegistry._services}
-    
-    def _repair_memory_files(self) -> None:
-        """Verify and repair all memory files."""
-        try:
-            memory_dir = self.path_manager.get_memory_path()
-            memory_files = [
-                "prompt_memory.json",
-                "engagement_memory.json",
-                "conversation_memory.json",
-                "cycle_memory.json"
-            ]
+            logger.error(f"System boot failed: {e}")
+            return False
             
-            for memory_file in memory_files:
-                file_path = memory_dir / memory_file
-                if file_path.exists():
-                    fix_memory_file(str(file_path), logger)
-            
-            logger.info("✅ Memory files verified/repaired")
-        except Exception as e:
-            logger.error(f"❌ Error repairing memory files: {e}")
-    
     def _initialize_services(self) -> None:
-        """Initialize all services using their registered factories in dependency order."""
-        # Process services in a specific order to respect dependencies
-        service_init_order = [
-            "prompt_manager",
-            "feedback_engine",
-            "openai_client",
-            "driver_manager",
-            "chat_manager",
-            "prompt_service",
-            "cycle_service",
-            "task_orchestrator",
-            "dreamscape_generator",
-            "merit_chain_manager",
-            "test_coverage_analyzer",
-            "test_generator_service"
-        ]
-        
-        # Initialize services in the specified order
-        for service_name in service_init_order:
-            if service_name in self.factories and not ServiceRegistry.has_service(service_name):
-                self._initialize_service(service_name)
-    
-    def _initialize_service(self, service_name: str) -> None:
-        """Initialize a single service using its factory."""
-        if ServiceRegistry.has_service(service_name):
-            logger.info(f"✓ Service '{service_name}' already initialized.")
-            return
-        
+        """Initialize core services using factories."""
         try:
-            factory = self.factories.get(service_name)
-            if factory is None:
-                logger.warning(f"⚠️ No factory registered for service '{service_name}'")
-                return
-            
-            # Handle special factory functions vs factory classes
-            if callable(factory) and not isinstance(factory, type):
-                # It's a method that handles creation directly
-                instance = factory()
-            else:
-                # It's a factory class with a create method
-                instance = factory.create()
-            
-            if instance:
-                ServiceRegistry.register(service_name, instance)
-                logger.info(f"✅ Service '{service_name}' initialized via factory")
-            else:
-                logger.warning(f"⚠️ Factory for '{service_name}' returned None")
+            # Initialize core services
+            for service_name, factory in self.factory_registry.get_factories().items():
+                logger.info(f"Initializing service: {service_name}")
+                try:
+                    instance = factory.create(self.registry)
+                    if instance:
+                        self.registry.register(service_name, instance)
+                        logger.info(f"Service '{service_name}' initialized successfully")
+                    else:
+                        logger.error(f"Failed to create service: {service_name}")
+                except Exception as e:
+                    logger.error(f"Error initializing {service_name}: {e}")
+                    
         except Exception as e:
-            logger.error(f"❌ Failed to initialize '{service_name}': {e}")
-    
-    def _validate_required_services(self) -> List[str]:
-        """Validate that all required services are registered."""
-        required_services = [
-            "config_manager",
-            "path_manager",
-            "prompt_manager",
-            "feedback_engine",
-            "prompt_service"
-        ]
-        
-        missing = []
-        for service in required_services:
-            if not ServiceRegistry.has_service(service):
-                missing.append(service)
-        
-        return missing
-    
-    def _create_openai_client(self) -> Any:
-        """Special handler to create the OpenAIClient service."""
-        try:
-            from core.chatgpt_automation.OpenAIClient import OpenAIClient
-            
-            profile_dir = os.path.join(self.path_manager.get_path("cache"), "openai_profile")
-            openai_client = OpenAIClient(profile_dir=profile_dir)
-            openai_client.boot()  # Explicitly boot the client at startup
-            return openai_client
-        except Exception as e:
-            logger.error(f"❌ Failed to initialize OpenAIClient: {e}")
-            return None
-    
-    def _create_driver_manager(self) -> Any:
-        """Special handler to create the DriverManager service."""
-        try:
-            from core.DriverManager import DriverManager
-            
-            # Extract configuration values
-            headless = self.config_manager.get("headless", True)
-            profile_dir = self.config_manager.get("profile_dir", None)
-            cookie_file = self.config_manager.get("cookie_file", None)
-            chrome_options = self.config_manager.get("chrome_options", [])
-            
-            driver_manager = DriverManager(
-                headless=headless,
-                profile_dir=profile_dir,
-                cookie_file=cookie_file,
-                undetected_mode=True,
-                additional_arguments=chrome_options,
-                timeout=30,
-                logger=self.logger
-            )
-            return driver_manager
-        except Exception as e:
-            logger.error(f"❌ Failed to initialize DriverManager: {e}")
-            return None
-    
-    def _create_prompt_service(self) -> Any:
-        """Special handler to create the UnifiedPromptService."""
-        try:
-            # Avoid circular import
-            from core.services.prompt_execution_service import UnifiedPromptService
-            
-            # Get required dependencies from registry
-            config_manager = ServiceRegistry.get("config_manager")
-            path_manager = ServiceRegistry.get("path_manager")
-            prompt_manager = ServiceRegistry.get("prompt_manager")
-            driver_manager = ServiceRegistry.get("driver_manager")
-            feedback_engine = ServiceRegistry.get("feedback_engine")
-            
-            # Create the prompt service with properly extracted config values
-            prompt_service = UnifiedPromptService(
-                config_manager=config_manager,
-                path_manager=path_manager,
-                config_service=config_manager,  # Use config_manager as config_service
-                prompt_manager=prompt_manager,
-                driver_manager=driver_manager,
-                feedback_engine=feedback_engine,
-                model=config_manager.get("default_model", "gpt-4o-mini")
-            )
-            
-            return prompt_service
-        except Exception as e:
-            logger.error(f"❌ Failed to initialize UnifiedPromptService: {e}")
-            return None
+            logger.error(f"Service initialization failed: {e}")
+            raise
 
 
 # Convenience function to create and boot the system
@@ -289,8 +95,195 @@ def initialize_system(config_path: Optional[str] = None) -> Dict[str, Any]:
     Returns:
         Dict of initialized services
     """
-    loader = SystemLoader(config_path)
-    return loader.boot()
+    loader = SystemLoader()
+    if loader.boot():
+        return ServiceRegistry.get_all_services()
+    else:
+        return {}
+
+
+class DreamscapeSystemLoader:
+    """
+    System loader that handles registration and initialization of services.
+    
+    This class implements a simple service registry pattern that allows different 
+    components of the system to access shared services through dependency injection.
+    """
+    
+    def __init__(self, config_path: Optional[str] = None):
+        """
+        Initialize the system loader.
+        
+        Args:
+            config_path: Path to configuration file (optional)
+        """
+        self.services = {}
+        self.config = {}
+        
+        # Load configuration if provided
+        if config_path:
+            self.load_config(config_path)
+        
+        logger.info("DreamscapeSystemLoader initialized")
+    
+    def load_config(self, config_path: str):
+        """
+        Load configuration from a file.
+        
+        Args:
+            config_path: Path to configuration file
+        """
+        if not os.path.exists(config_path):
+            logger.warning(f"Configuration file not found: {config_path}")
+            return
+        
+        try:
+            with open(config_path, 'r') as f:
+                self.config = json.load(f)
+            logger.info(f"Configuration loaded from {config_path}")
+        except Exception as e:
+            logger.error(f"Error loading configuration: {e}")
+    
+    def register_service(self, name: str, service: Any):
+        """
+        Register a service with the system loader.
+        
+        Args:
+            name: Service name
+            service: Service instance
+        """
+        self.services[name] = service
+        logger.info(f"Service registered: {name}")
+    
+    def get_service(self, name: str) -> Optional[Any]:
+        """
+        Get a service by name.
+        
+        Args:
+            name: Service name
+            
+        Returns:
+            Service instance if found, None otherwise
+        """
+        return self.services.get(name)
+    
+    def unregister_service(self, name: str):
+        """
+        Unregister a service.
+        
+        Args:
+            name: Service name
+        """
+        if name in self.services:
+            del self.services[name]
+            logger.info(f"Service unregistered: {name}")
+    
+    def initialize_cursor_ui_service(self, 
+                                   browser_path: Optional[str] = None,
+                                   debug_mode: bool = False) -> Any:
+        """
+        Initialize and register the CursorUIService.
+        
+        Args:
+            browser_path: Path to browser executable
+            debug_mode: Whether to enable debug mode
+            
+        Returns:
+            Initialized CursorUIService
+        """
+        # Get settings from config if not provided
+        if browser_path is None and "browser_path" in self.config.get("cursor_ui", {}):
+            browser_path = self.config.get("cursor_ui", {}).get("browser_path")
+        
+        if not debug_mode and self.config.get("cursor_ui", {}).get("debug_mode", False):
+            debug_mode = True
+        
+        # Create service using factory
+        service = CursorUIServiceFactory.create(
+            browser_path=browser_path,
+            debug_mode=debug_mode,
+            service_registry=self.services
+        )
+        
+        # Register the service
+        self.register_service("cursor_ui_service", service)
+        
+        return service
+    
+    def initialize_service(self, service_name: str, **kwargs) -> Optional[Any]:
+        """
+        Initialize and register a service by name.
+        
+        Args:
+            service_name: Name of the service to initialize
+            **kwargs: Arguments to pass to the initialization method
+            
+        Returns:
+            Initialized service or None if service type is unknown
+        """
+        if service_name == "cursor_ui_service":
+            return self.initialize_cursor_ui_service(**kwargs)
+        # Add additional service initializers here
+        else:
+            logger.warning(f"Unknown service type: {service_name}")
+            return None
+    
+    def initialize_all_services(self):
+        """
+        Initialize all services defined in the configuration.
+        """
+        if "services" in self.config:
+            for service_def in self.config.get("services", []):
+                service_type = service_def.get("type")
+                service_args = service_def.get("args", {})
+                
+                if service_type:
+                    self.initialize_service(service_type, **service_args)
+    
+    def get_registered_services(self) -> List[str]:
+        """
+        Get a list of all registered service names.
+        
+        Returns:
+            List of service names
+        """
+        return list(self.services.keys())
+    
+    def shutdown(self):
+        """
+        Shutdown and cleanup all services.
+        """
+        # Call any cleanup methods on services that support it
+        for name, service in self.services.items():
+            if hasattr(service, "shutdown") and callable(service.shutdown):
+                try:
+                    service.shutdown()
+                    logger.info(f"Service shutdown: {name}")
+                except Exception as e:
+                    logger.error(f"Error shutting down service {name}: {e}")
+        
+        # Clear all services
+        self.services.clear()
+        logger.info("All services unregistered")
+
+
+# Singleton instance
+_system_loader = None
+
+def get_system_loader(config_path: Optional[str] = None) -> DreamscapeSystemLoader:
+    """
+    Get the singleton system loader instance.
+    
+    Args:
+        config_path: Path to configuration file (only used if creating new instance)
+        
+    Returns:
+        DreamscapeSystemLoader instance
+    """
+    global _system_loader
+    if _system_loader is None:
+        _system_loader = DreamscapeSystemLoader(config_path)
+    return _system_loader
 
 
 if __name__ == "__main__":
@@ -306,4 +299,20 @@ if __name__ == "__main__":
     print("System initialized with the following services:")
     for name, service in services.items():
         status = "✅ Available" if service else "⚠️ Empty implementation"
-        print(f"  - {name}: {status}") 
+        print(f"  - {name}: {status}")
+
+    # Create and initialize system loader
+    system_loader = get_system_loader()
+    
+    # Initialize UI service
+    ui_service = system_loader.initialize_cursor_ui_service(debug_mode=True)
+    
+    # Get service
+    retrieved_service = system_loader.get_service("cursor_ui_service")
+    
+    # List registered services
+    services = system_loader.get_registered_services()
+    print(f"Registered services: {services}")
+    
+    # Shutdown
+    system_loader.shutdown() 

@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-from core.memory_utils import load_memory_file
+from core.memory.utils import load_memory_file
 from core.interfaces.IDreamscapeService import IDreamscapeService
 
 logger = logging.getLogger("DreamscapeGenerationFactory")

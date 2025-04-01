@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Fixed imports
 from ..chat_engine.chat_scraper_service import ChatScraperService as ChatScraperAgent
-from ..services.prompt_execution_service import UnifiedPromptService
+from ..services.prompt_execution_service import PromptService
 from ..chat_engine.feedback_engine import FeedbackEngine
 from ..chat_engine.discord_dispatcher import DiscordDispatcher
 from ..DriverManager import DriverManager
@@ -39,7 +39,7 @@ class AgentDispatcher:
 
         # Initialize agents
         self.scraper_agent = ChatScraperAgent(self.driver_manager)
-        self.prompt_executor = UnifiedPromptService(model=self.config.get("default_model", "gpt-4o-mini"))
+        self.prompt_executor = PromptService(model=self.config.get("default_model", "gpt-4o-mini"))
         self.feedback_engine = FeedbackEngine(memory_file=self.config.get("memory_file", "memory/persistent_memory.json"))
         self.discord_dispatcher = DiscordDispatcher(
             token=self.config.get("discord_token", ""),

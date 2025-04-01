@@ -9,13 +9,12 @@ from typing import Dict, Any, Optional, List
 from core.PathManager import PathManager
 from core.TemplateManager import TemplateManager
 from core.interfaces.IDreamscapeService import IDreamscapeService
-from core.services.dreamscape_episode_chain import (
+from .chain import (
     writeback_to_memory,
     parse_last_episode_summary,
     update_episode_chain,
     get_context_from_chain
 )
-from core.services.prompt_context_synthesizer import PromptContextSynthesizer
 
 
 class DreamscapeGenerationService(IDreamscapeService):
@@ -51,13 +50,6 @@ class DreamscapeGenerationService(IDreamscapeService):
             self.logger.warning(f"Error getting memory paths, using default: {e}")
             self.memory_path = Path(self.MEMORY_FILE)
             self.chain_path = Path(self.CHAIN_FILE)
-            
-        # Initialize the context synthesizer
-        self.context_synthesizer = PromptContextSynthesizer(
-            memory_path=self.memory_path,
-            chain_path=self.chain_path,
-            logger=self.logger
-        )
 
     def load_context_from_file(self, json_path: str) -> Dict[str, Any]:
         """Load rendering context from JSON file."""
@@ -159,45 +151,43 @@ class DreamscapeGenerationService(IDreamscapeService):
         
         return episode_path
 
-    def generate_dreamscape_episode(self, chat_title: str, chat_history: List[str], source: str = "memory") -> Optional[Path]:
+    def generate_episode_from_history(self, chat_title: str, chat_history: List[str]) -> Optional[Path]:
         """
         Generate a dreamscape episode from a chat history.
         
         Args:
             chat_title: Title of the chat
             chat_history: List of messages in the chat
-            source: Source of the chat history ("memory" or "web")
             
         Returns:
             Path to the generated episode file or None if generation failed
         """
         try:
-            self.logger.info(f"Generating dreamscape episode from chat: {chat_title} (source: {source})")
+            self.logger.info(f"Generating dreamscape episode from chat: {chat_title}")
             
-            # Use the context synthesizer to create a rich, unified context
-            # that combines structured memory, episode chain, and chat content
-            unified_context = self.context_synthesizer.synthesize_context(
-                chat_title=chat_title,
-                chat_history=chat_history,
-                additional_context={
-                    "source": source,
-                    "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M")
-                }
-            )
+            # Extract content from chat history and combine for narrative creation
+            combined_content = "\n\n".join(chat_history[-5:])  # Use last 5 messages for conciseness
             
-            # Extract a potential episode title
-            episode_title = self._extract_episode_title(
-                unified_context.get("raw_response", ""),
-                chat_title
-            )
-            unified_context["episode_title"] = episode_title
+            # Extract potential episode title from the content
+            episode_title = self._extract_episode_title(combined_content, chat_title)
+            
+            # Generate a summary from the content
+            summary = self._generate_summary(combined_content)
             
             # Extract potential protocols from the content
-            protocols = self._extract_protocols(unified_context.get("raw_response", ""))
-            unified_context["newly_unlocked_protocols"] = protocols
+            protocols = self._extract_protocols(combined_content)
             
-            # Add specific elements for template rendering
-            unified_context.update({
+            # Get continuity context from previous episodes
+            chain_context = get_context_from_chain(self.chain_path)
+            
+            # Prepare context for template rendering
+            context = {
+                "chat_title": chat_title,
+                "episode_title": episode_title,
+                "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "raw_response": combined_content,
+                "summary": summary,
+                "newly_unlocked_protocols": protocols,
                 "memory_updates": [
                     f"Interaction with {chat_title} yielded new insights",
                     f"Episode '{episode_title}' recorded to memory banks"
@@ -211,10 +201,31 @@ class DreamscapeGenerationService(IDreamscapeService):
                     "Dream Sequence Generator"
                 ],
                 "tags": ["#dreamscape", "#digitalchronicles", "#" + self._slugify(chat_title)]
-            })
+            }
             
-            # Render the episode using the unified context
-            rendered_episode = self.render_episode("dreamscape_episode.j2", unified_context)
+            # Add continuity context from previous episodes if available
+            if chain_context:
+                context.update({
+                    "has_previous_episode": True,
+                    "last_episode": chain_context.get("last_episode"),
+                    "current_emotional_state": chain_context.get("current_emotional_state", "Determined"),
+                    "last_location": chain_context.get("last_location", "The Nexus"),
+                    "ongoing_quests": chain_context.get("ongoing_quests", []),
+                    "completed_quests": chain_context.get("completed_quests", []),
+                    "episode_count": chain_context.get("episode_count", 0) + 1
+                })
+            else:
+                context.update({
+                    "has_previous_episode": False,
+                    "current_emotional_state": "Determined",
+                    "last_location": "The Nexus",
+                    "ongoing_quests": [],
+                    "completed_quests": [],
+                    "episode_count": 1
+                })
+            
+            # Render the episode using the template
+            rendered_episode = self.render_episode("dreamscape_episode.j2", context)
             
             # Create a slugified filename
             date_str = datetime.now().strftime("%Y%m%d")
@@ -225,9 +236,6 @@ class DreamscapeGenerationService(IDreamscapeService):
             
             # Update memory and episode chain
             self._update_memory_and_chain(episode_path)
-            
-            # Update the context synthesizer's memory with insights from this episode
-            self.context_synthesizer.update_memory_with_synthesized_context(unified_context)
             
             # Archive the episode (implementing this would require AletheiaPromptManager integration)
             self._archive_episode(episode_path)

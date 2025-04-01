@@ -8,7 +8,7 @@ from collections import defaultdict
 from core.FileManager import FileManager
 from core.PathManager import PathManager
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class FeedbackEntry:
     """Structured feedback entry for reinforcement learning."""

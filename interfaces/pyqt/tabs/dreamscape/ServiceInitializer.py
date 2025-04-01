@@ -9,6 +9,12 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 
+# Import core services correctly
+from core.services.dreamscape.engine import DreamscapeGenerationService # Renamed from dreamscape_generator_service.py
+from core.TemplateManager import TemplateManager # Assuming a core TemplateManager exists
+from core.PathManager import PathManager # Assuming a core PathManager exists
+# Add other necessary core service imports here (e.g., ChatManager if needed directly)
+
 class ServiceInitializer:
     """Handles initialization of services and components for the Dreamscape Generation tab."""
     
@@ -28,124 +34,53 @@ class ServiceInitializer:
         Returns:
             Dict containing initialized services and components
         """
-        services = {
-            'core_services': self._initialize_core_services(),
-            'component_managers': self._initialize_component_managers()
-        }
+        services = {}
         
-        # Ensure output directory exists
-        output_dir = Path("outputs/dreamscape")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        services['output_dir'] = str(output_dir)
-        
+        # Initialize Core Dreamscape Services
+        try:
+            path_manager = PathManager() # Get or init PathManager
+            template_manager = TemplateManager() # Get or init TemplateManager
+            
+            # Initialize Dreamscape Engine (using its new class name if changed, assuming DreamscapeGenerationService for now)
+            dreamscape_engine = DreamscapeGenerationService(
+                path_manager=path_manager,
+                template_manager=template_manager,
+                logger=self.logger
+            )
+            services['dreamscape_engine'] = dreamscape_engine
+            self.logger.info("Dreamscape Engine initialized successfully")
+            
+            # Provide managers needed by the engine or tab
+            services['path_manager'] = path_manager
+            services['template_manager'] = template_manager
+            
+            # Add other core services if needed by the tab directly
+            # e.g., from core.ChatManager import ChatManager
+            # services['chat_manager'] = ChatManager()
+
+        except Exception as e:
+            self.logger.error(f"Failed to initialize core Dreamscape services: {e}", exc_info=True)
+            # Handle error, maybe provide mock services
+            services['dreamscape_engine'] = None
+            services['path_manager'] = None
+            services['template_manager'] = None
+
+        # Ensure output directory exists (can use path_manager)
+        try:
+            if services.get('path_manager'):
+                output_dir = services['path_manager'].get_path("dreamscape")
+                output_dir.mkdir(parents=True, exist_ok=True)
+                services['output_dir'] = str(output_dir)
+            else:
+                 # Fallback if path_manager failed
+                output_dir = Path("outputs/dreamscape")
+                output_dir.mkdir(parents=True, exist_ok=True)
+                services['output_dir'] = str(output_dir)
+        except Exception as e:
+             self.logger.warning(f"Could not create or verify output directory: {e}")
+             services['output_dir'] = "outputs/dreamscape" # Default fallback
+
         return services
-        
-    def _initialize_core_services(self) -> Dict[str, Any]:
-        """Initialize core services required for episode generation.
-        
-        Returns:
-            Dict containing initialized core services
-        """
-        core_services = {}
-        
-        try:
-            # Initialize Cycle Service
-            from core.services.cycle_service import CycleService
-            cycle_service = CycleService()
-            core_services['cycle_service'] = cycle_service
-            self.logger.info("Cycle Service initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Cycle Service: {e}")
-            core_services['cycle_service'] = None
-            
-        try:
-            # Initialize Prompt Handler
-            from core.services.prompt_handler import PromptHandler
-            prompt_handler = PromptHandler()
-            core_services['prompt_handler'] = prompt_handler
-            self.logger.info("Prompt Handler initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Prompt Handler: {e}")
-            core_services['prompt_handler'] = None
-            
-        try:
-            # Initialize Discord Processor
-            from core.services.discord_processor import DiscordProcessor
-            discord_processor = DiscordProcessor()
-            core_services['discord_processor'] = discord_processor
-            self.logger.info("Discord Processor initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Discord Processor: {e}")
-            core_services['discord_processor'] = None
-            
-        try:
-            # Initialize Task Orchestrator
-            from core.services.task_orchestrator import TaskOrchestrator
-            task_orchestrator = TaskOrchestrator()
-            core_services['task_orchestrator'] = task_orchestrator
-            self.logger.info("Task Orchestrator initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Task Orchestrator: {e}")
-            core_services['task_orchestrator'] = None
-            
-        try:
-            # Initialize Dreamscape Service
-            from core.services.dreamscape_service import DreamscapeService
-            dreamscape_service = DreamscapeService()
-            core_services['dreamscape_service'] = dreamscape_service
-            self.logger.info("Dreamscape Service initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Dreamscape Service: {e}")
-            core_services['dreamscape_service'] = None
-            
-        return core_services
-        
-    def _initialize_component_managers(self) -> Dict[str, Any]:
-        """Initialize component managers required for the UI.
-        
-        Returns:
-            Dict containing initialized component managers
-        """
-        component_managers = {}
-        
-        try:
-            # Initialize Dreamscape Episode Generator
-            from .DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
-            episode_generator = DreamscapeEpisodeGenerator()
-            component_managers['episode_generator'] = episode_generator
-            self.logger.info("Episode Generator initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Episode Generator: {e}")
-            component_managers['episode_generator'] = None
-            
-        try:
-            # Initialize Context Manager
-            from .ContextManager import ContextManager
-            context_manager = ContextManager()
-            component_managers['context_manager'] = context_manager
-            self.logger.info("Context Manager initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Context Manager: {e}")
-            component_managers['context_manager'] = None
-            
-        try:
-            # Initialize UI Manager
-            from .UIManager import UIManager
-            ui_manager = UIManager(self.parent)
-            component_managers['ui_manager'] = ui_manager
-            self.logger.info("UI Manager initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize UI Manager: {e}")
-            component_managers['ui_manager'] = None
-            
-        try:
-            # Initialize Template Manager
-            from .TemplateManager import TemplateManager
-            template_manager = TemplateManager()
-            component_managers['template_manager'] = template_manager
-            self.logger.info("Template Manager initialized successfully")
-        except Exception as e:
-            self.logger.warning(f"Failed to initialize Template Manager: {e}")
-            component_managers['template_manager'] = None
-            
-        return component_managers
+
+    # Removed old _initialize_core_services and _initialize_component_managers
+    # as the logic is now consolidated in initialize_services

@@ -1,7 +1,7 @@
 import asyncio
 from pathlib import Path
 
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 from core.refactor.cursor_dispatcher import CursorDispatcher
 from core.pipelines.project_optimizer_agent import ProjectOptimizerAgent

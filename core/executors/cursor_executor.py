@@ -6,7 +6,7 @@ import websockets
 from pathlib import Path
 
 from core.executors.base_executor import BaseExecutor
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 
 class CursorExecutor(BaseExecutor):

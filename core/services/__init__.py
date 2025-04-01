@@ -10,10 +10,10 @@ from core.services.rollback_service import RollbackService
 
 # Prompt execution
 try:
-    from core.services.prompt_execution_service import UnifiedPromptService
+    from core.services.prompt_execution_service import PromptService
 except ImportError:
     # Fallback for testing
-    UnifiedPromptService = None
+    PromptService = None
 
 # New services
 try:
@@ -47,7 +47,7 @@ __all__ = [
     'DebugService',
     'FixService',
     'RollbackService',
-    'UnifiedPromptService',
+    'PromptService',
     
     # New services
     'TestGeneratorService',

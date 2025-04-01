@@ -10,9 +10,9 @@ import os
 import logging
 
 from core.UnifiedLoggingAgent import UnifiedLoggingAgent
-from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory
+from core.memory import UnifiedFeedbackMemory
 from core.PathManager import PathManager
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class TaskPriority(Enum):
     """Task priority levels for intelligent dispatching."""

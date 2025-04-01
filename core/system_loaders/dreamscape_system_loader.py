@@ -6,19 +6,13 @@ from typing import Optional, Dict, Any
 import time
 
 # Core services and managers
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 from core.services.service_registry import ServiceRegistry
 from core.services.dreamscape_generator_service import DreamscapeGenerationService
 
-# Import factories
-from core.factories.prompt_manager_factory import PromptManagerFactory
-from core.factories.openai_client_factory import OpenAIClientFactory
-from core.factories.chat_manager_factory import ChatManagerFactory
-from core.micro_factories.template_manager_factory import TemplateManagerFactory
-from core.micro_factories.context_manager_factory import ContextManagerFactory
-from core.micro_factories.episode_generator_factory import EpisodeGeneratorFactory
-from core.micro_factories.ui_manager_factory import UIManagerFactory
+# Import unified factory system
+from core.factories import FactoryRegistry
 
 class DreamscapeSystemLoader:
     """
@@ -73,7 +67,7 @@ class DreamscapeSystemLoader:
         # Create PromptManager if not provided
         if not prompt_manager:
             self.logger.info("Creating PromptManager via factory...")
-            prompt_manager = PromptManagerFactory.create(service_registry=self.service_registry)
+            prompt_manager = FactoryRegistry.create_service("prompt_manager", self.service_registry)
             if prompt_manager:
                 self.service_registry.register("prompt_manager", prompt_manager)
                 self.logger.info("✅ PromptManager created and registered")
@@ -84,23 +78,14 @@ class DreamscapeSystemLoader:
         # Create OpenAIClient and ChatManager if not provided
         if not chat_manager:
             self.logger.info("Creating OpenAIClient and ChatManager via factories...")
-            openai_client = OpenAIClientFactory.create(
-                service_registry=self.service_registry,
-                headless=headless
-            )
+            openai_client = FactoryRegistry.create_service("openai_client", self.service_registry)
             if not openai_client:
                 self.logger.error("❌ Failed to create OpenAIClient")
                 return self.service_registry
 
             self.service_registry.register("openai_client", openai_client)
             
-            chat_manager = ChatManagerFactory.create_chat_manager(
-                openai_client=openai_client,
-                config_manager=self.config_manager,
-                logger=self.logger,
-                service_registry=self.service_registry,
-                headless=headless
-            )
+            chat_manager = FactoryRegistry.create_service("chat_manager", self.service_registry)
             if chat_manager:
                 self.service_registry.register("chat_manager", chat_manager)
                 self.logger.info("✅ ChatManager created and registered")
@@ -109,10 +94,7 @@ class DreamscapeSystemLoader:
                 return self.service_registry
 
         # --- Initialize Template Manager ---
-        template_manager = TemplateManagerFactory.create_template_manager(
-            logger_instance=self.logger,
-            path_manager=self.path_manager
-        )
+        template_manager = FactoryRegistry.create_service("template_manager", self.service_registry)
         if not template_manager:
             self.logger.error("❌ Failed to create TemplateManager. Aborting load.")
             return self.service_registry
@@ -134,9 +116,6 @@ class DreamscapeSystemLoader:
         os.makedirs(output_dir, exist_ok=True)
         self.service_registry.register("output_dir", output_dir)
 
-        # --- ADDED DEBUG --- 
-        # --- END DEBUG ---
-
         # --- Initialize Component Managers ---
         context_manager = None # Initialize to None
         episode_generator = None # Initialize to None
@@ -145,68 +124,41 @@ class DreamscapeSystemLoader:
         # Context Manager
         try:
             self.logger.info("Attempting to create ContextManager...")
-            context_manager = ContextManagerFactory.create_context_manager(
-                parent_widget=parent_widget,
-                logger_instance=self.logger,
-                chat_manager=chat_manager,
-                dreamscape_service=dreamscape_service,
-                template_manager=template_manager
-            )
+            context_manager = FactoryRegistry.create_service("context_manager", self.service_registry)
             if context_manager:
                 self.service_registry.register("context_manager", context_manager)
                 self.logger.info("✅ ContextManager created and registered")
             else:
                 self.logger.error("❌ ContextManager creation returned None")
         except Exception as e:
-            self.logger.error(f"❌ ContextManagerFactory failed with args: parent_widget={parent_widget}, chat_manager={chat_manager}, dreamscape_service={dreamscape_service}, template_manager={template_manager}")
+            self.logger.error(f"❌ ContextManager creation failed: {e}")
             self.logger.exception("Full exception trace:")
-            # context_manager remains None
         
         self.logger.info(f"ContextManager creation finished. Instance: {context_manager}")
 
         # Episode Generator
         try:
             self.logger.info("Attempting to create EpisodeGenerator...")
-            episode_generator = EpisodeGeneratorFactory.create_episode_generator(
-                parent_widget=parent_widget,
-                prompt_manager=prompt_manager,
-                chat_manager=chat_manager,
-                dreamscape_service=dreamscape_service,
-                output_dir=output_dir,
-                logger_instance=self.logger
-            )
+            episode_generator = FactoryRegistry.create_service("episode_generator", self.service_registry)
             if episode_generator:
-                # --- Wrap registration in try...except ---
                 try:
                     self.service_registry.register("episode_generator", episode_generator)
                     self.logger.info("✅ EpisodeGenerator created and registered")
                 except Exception as reg_e:
                     self.logger.error(f"❌ Failed during EpisodeGenerator REGISTRATION: {reg_e}", exc_info=True)
-                    episode_generator = None # Ensure it's None if registration fails
-                # --- End wrap ---
+                    episode_generator = None
             else:
                 self.logger.error("❌ EpisodeGenerator creation returned None")
         except Exception as factory_e:
             self.logger.error(f"❌ EpisodeGeneratorFactory failed: {factory_e}", exc_info=True)
-            # episode_generator remains None
 
         self.logger.info(f"EpisodeGenerator processing finished. Instance: {episode_generator}")
 
         # UI Manager (Optional)
-        # --- Remove delay ---
-        # import time # No longer needed
-        # time.sleep(0.1) 
-        
-        # Ensure parent has the necessary base attribute before proceeding
-        if parent_widget and UIManagerFactory: # Simplified check
+        if parent_widget:
             try:
                 self.logger.info("Attempting to create UIManager...")
-                ui_manager = UIManagerFactory.create_dreamscape_ui_manager(
-                    parent_widget=parent_widget,
-                    logger=self.logger,
-                    template_manager=template_manager,
-                    output_dir=output_dir
-                )
+                ui_manager = FactoryRegistry.create_service("ui_manager", self.service_registry)
                 if ui_manager:
                     self.service_registry.register("ui_manager", ui_manager)
                     self.logger.info("✅ UIManager created and registered")

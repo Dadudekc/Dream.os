@@ -3,17 +3,11 @@ import requests
 import openai
 from typing import Optional, Dict, Any
 from datetime import datetime
-from social.social_config_wrapper import get_social_config
-from social.log_writer import logger, write_json_log
-from core.MemoryManager import MemoryManager
+from core.memory import MemoryManager
 from core.PromptEngine import PromptEngine
-
 
 # Constants
 PLATFORM = "AIChatAgent"
-# Use the wrapper to get social_config
-social_config = get_social_config()
-OLLAMA_HOST = social_config.get_env("OLLAMA_HOST") or "http://127.0.0.1:11434"
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +34,11 @@ class AIChatAgent:
         self.provider = provider.lower()
         self.reinforcement_engine = reinforcement_engine
         self.memory_manager = memory_manager or MemoryManager()
+
+        # Lazy import social config
+        from social.social_config_wrapper import get_social_config
+        social_config = get_social_config()
+        self.ollama_host = social_config.get_env("OLLAMA_HOST") or "http://127.0.0.1:11434"
 
         if self.provider == "openai":
             openai.api_key = social_config.get_env("OPENAI_API_KEY")
@@ -81,6 +80,8 @@ class AIChatAgent:
             return response
         except Exception as e:
             logger.error(f" AIChatAgent error ({self.provider}): {e}")
+            # Lazy import log_writer
+            from social.log_writer import write_json_log
             write_json_log(
                 platform=PLATFORM,
                 status="failed",
@@ -109,7 +110,7 @@ class AIChatAgent:
         return content
 
     def _ask_ollama(self, prompt: str) -> str:
-        url = f"{OLLAMA_HOST}/api/generate"
+        url = f"{self.ollama_host}/api/generate"
         payload = {
             "model": self.model,
             "prompt": prompt,
@@ -189,66 +190,12 @@ class AIChatAgent:
             interaction_id=interaction_id,
             chatgpt_url=None
         )
+        # Lazy import log_writer
+        from social.log_writer import write_json_log
         write_json_log(
             platform=PLATFORM,
             status="successful",
             tags=["ai_response", self.provider],
             ai_output=log_data
         )
-        logger.info(" Interaction logged successfully for fine-tuning & memory updates.")
-
-# ----------------------------------------------------------------
-# Example Updated Usage
-# ----------------------------------------------------------------
-if __name__ == "__main__":
-    from social.reinforcement.ReinforcementEngine import ReinforcementEngine
-    from core.MemoryManager import MemoryManager
-    from datetime import datetime
-
-    agent = AIChatAgent(
-        model="mistral",
-        tone="Victor",
-        provider="ollama",
-        reinforcement_engine=ReinforcementEngine(),
-        memory_manager=MemoryManager()
-    )
-
-    prompt = "Explain how system convergence creates exponential momentum in personal workflows."
-    additional_context = "Victor unified social media automation and trading algorithms."
-    interaction_id = "reddit_interaction_001"
-
-    # Create a new chat thread for this interaction
-    response = agent.ask(
-        prompt,
-        additional_context=additional_context,
-        metadata={"platform": "Reddit", "intent": "community_engagement", "persona": "Victor"},
-        create_new_chat_thread=True,
-        interaction_id=interaction_id
-    )
-
-    # Optionally, later in the conversation, append more messages:
-    agent.append_to_chat_thread(interaction_id, "Additional clarification on workflow automation.")
-
-    print("\nAI Response:\n", response)
-
-    # Initialize the engine
-    engine = PromptEngine(
-        prompt_manager=prompt_manager,
-        driver_manager=driver_manager,
-        max_retries=3,
-        feedback_threshold=0.7
-    )
-
-    # Execute a prompt with context
-    response = engine.execute_prompt(
-        prompt_type="creative",
-        chat_title="story_generation",
-        context={
-            "creative_mode": True,
-            "require_precision": False
-        },
-        tags=["story", "creative"]
-    )
-
-    # Get execution statistics
-    stats = engine.get_stats("creative")
+        logger.info(" Interaction logged successfully for fine-tuning & memory updates.") 

@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class CursorDispatcher:
     def __init__(self):
-        self.project_root = PathManager.get_path('base')  # Use PathManager
+        self.project_root = PathManager().get_path('project_root')  # Use project_root instead of base
         self.prompts_dir = os.path.join(self.project_root, "cursor_prompts")
         self.output_dir = os.path.join(self.project_root, "cursor_output")
 
