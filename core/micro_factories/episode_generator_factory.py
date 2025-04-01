@@ -14,6 +14,11 @@ except ImportError:
 
 import logging
 from typing import Optional
+from core.ChatManager import ChatManager
+from core.response_handler import PromptResponseHandler
+from core.services.discord_service import DiscordManager
+from core.services.dreamscape.engine import DreamscapeGenerationService
+from core.dependency_manager import DependencyManager
 
 class EpisodeGeneratorFactory:
     @staticmethod
@@ -24,7 +29,7 @@ class EpisodeGeneratorFactory:
         dreamscape_service=None,
         output_dir=None,
         logger_instance=None,
-    ) -> Optional[DreamscapeEpisodeGenerator]:
+    ) -> Optional[DreamscapeGenerationService]:
         """
         Factory method to create and configure a DreamscapeEpisodeGenerator.
         
@@ -37,26 +42,25 @@ class EpisodeGeneratorFactory:
             logger_instance: Logger instance for the EpisodeGenerator.
         
         Returns:
-            An instance of DreamscapeEpisodeGenerator.
+            An instance of DreamscapeGenerationService.
         """
         logger = logger_instance or logging.getLogger("EpisodeGeneratorFactory")
-        if DreamscapeEpisodeGenerator is None:
-            logger.error("❌ DreamscapeEpisodeGenerator class not available due to import failure.")
+        if DreamscapeGenerationService is None:
+            logger.error("❌ DreamscapeGenerationService class not available due to import failure.")
             return None
             
-        logger.info("🔧 Creating DreamscapeEpisodeGenerator via factory")
+        logger.info("🔧 Creating DreamscapeGenerationService via factory")
         try:
-            # Match the parameters to the DreamscapeEpisodeGenerator constructor
-            instance = DreamscapeEpisodeGenerator(
-                parent_widget=parent_widget,
-                prompt_manager=prompt_manager,
+            # Match the parameters to the DreamscapeGenerationService constructor
+            response_handler = PromptResponseHandler(prompt_manager)
+            discord_manager = DiscordManager()
+            generator = DreamscapeGenerationService(
                 chat_manager=chat_manager,
-                dreamscape_generator=dreamscape_service,  # Rename to match constructor
-                output_dir=output_dir,
-                logger=logger
+                response_handler=response_handler,
+                discord_manager=discord_manager
             )
-            logger.info("✅ DreamscapeEpisodeGenerator created successfully.")
-            return instance
+            logger.info("✅ DreamscapeGenerationService created successfully.")
+            return generator
         except Exception as e:
-            logger.error(f"❌ Failed to create DreamscapeEpisodeGenerator: {e}", exc_info=True)
+            logger.error(f"❌ Failed to create DreamscapeGenerationService: {e}", exc_info=True)
             return None 

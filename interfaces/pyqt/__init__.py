@@ -1,8 +1,16 @@
-# AUTO-GENERATED __init__.py
-# DO NOT EDIT MANUALLY - changes may be overwritten
+"""
+Dream.OS PyQt Interface Module
 
-from . import DreamOsMainWindow
+This module provides the PyQt-based graphical user interface for Dream.OS.
+"""
 
-__all__ = [
-    'DreamOsMainWindow',
-]
+import logging
+
+# Configure package-level logging
+logger = logging.getLogger(__name__)
+
+# Import all interface components
+from .DreamOsMainWindow import DreamOsMainWindow
+
+__version__ = "0.1.0"
+__all__ = ['DreamOsMainWindow']

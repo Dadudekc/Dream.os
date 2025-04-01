@@ -3,6 +3,7 @@
 import os
 import json
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QTextEdit,
@@ -13,7 +14,7 @@ from PyQt5.QtCore import QTimer, Qt
 # Import PathManager for unified log paths
 from core.PathManager import PathManager
 # Get the unified log file path for SyncOps sessions
-SYNCOPS_LOG_FILE = str(PathManager().get_path("logs") / "syncops_sessions.json")
+SYNCOPS_LOG_FILE = str(Path(PathManager().get_path("logs")).joinpath("syncops_sessions.json"))
 
 # Import the backend SyncOpsService for session and pomodoro management
 from sync_ops.services.sync_ops_service import SyncOpsService

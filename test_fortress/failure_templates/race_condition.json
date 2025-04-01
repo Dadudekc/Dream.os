@@ -1,0 +1,52 @@
+{
+    "id": "race_condition_001",
+    "type": "service_failure",
+    "description": "Test system behavior under concurrent task execution race conditions",
+    "service": "task_executor",
+    "failure_type": "race_condition",
+    "scenario": {
+        "concurrent_tasks": [
+            {
+                "task_id": "task1",
+                "type": "write",
+                "target": "shared_memory",
+                "delay_ms": 0
+            },
+            {
+                "task_id": "task2",
+                "type": "read",
+                "target": "shared_memory",
+                "delay_ms": 50
+            },
+            {
+                "task_id": "task3",
+                "type": "write",
+                "target": "shared_memory",
+                "delay_ms": 25
+            }
+        ],
+        "execution_order": "random",
+        "iterations": 100
+    },
+    "expected_behavior": {
+        "should_detect_race": true,
+        "should_use_locks": true,
+        "should_maintain_consistency": true,
+        "should_log_conflicts": true
+    },
+    "validation": {
+        "verify_lock_usage": true,
+        "verify_no_data_corruption": true,
+        "verify_execution_order": true,
+        "verify_log_messages": [
+            "Potential race condition detected",
+            "Acquiring lock for shared resource",
+            "Resource access serialized"
+        ],
+        "verify_final_state": {
+            "all_tasks_completed": true,
+            "data_is_consistent": true,
+            "no_deadlocks": true
+        }
+    }
+} 

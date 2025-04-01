@@ -1,0 +1,125 @@
+---
+type: factory
+usage: DDD micro-factory generation
+output_format: Python
+---
+
+# Factory Class Generation: {{ factory_name }}
+
+## Purpose
+I need to implement a factory for creating `{{ product_class }}` instances in the {{ project_name }} project.
+
+{% if requirements %}
+## Requirements
+{% for req in requirements %}
+- {{ req }}
+{% endfor %}
+{% else %}
+## Requirements
+- Follow Domain-Driven Design micro-factory pattern
+- Ensure proper validation of dependencies
+- Support contextual creation with varying parameters
+- Include appropriate error handling
+- Provide clean, reusable interface
+{% endif %}
+
+## Product Class
+{% if product_code %}
+The product class that this factory will create:
+
+```python
+{{ product_code }}
+```
+{% else %}
+The factory will create instances of `{{ product_class }}`.
+{% endif %}
+
+## Dependencies
+{% if dependencies %}
+The product requires these dependencies:
+{% for dep in dependencies %}
+- `{{ dep.name }}`: {{ dep.purpose }}
+{% endfor %}
+{% else %}
+The product may require various dependencies that should be validated before creation.
+{% endif %}
+
+## Factory Methods
+{% if methods %}
+The factory should implement these methods:
+{% for method in methods %}
+- `{{ method.name }}`: {{ method.description }}
+{% endfor %}
+{% else %}
+The factory should implement these methods:
+- `create`: Main factory method to create a product instance
+- `_validate_dependencies`: Private method to validate all required dependencies
+- Other helper methods as needed for creation variants
+{% endif %}
+
+## Factory Implementation Pattern
+The factory should follow this pattern:
+
+```python
+class {{ factory_name }}:
+    """Factory for creating {{ product_class }} instances."""
+    
+    REQUIRED_DEPENDENCIES = [
+        {% if dependencies %}{% for dep in dependencies %}'{{ dep.name }}',
+        {% endfor %}{% endif %}
+    ]
+    
+    @classmethod
+    def create(cls, {% if params %}{{ params|join(', ') }}{% else %}**kwargs{% endif %}) -> {{ product_class }}:
+        """
+        Create a new {{ product_class }} instance.
+        
+        Args:
+            {% if params %}{% for param in params %}{{ param }}: Description
+            {% endfor %}{% else %}**kwargs: Creation parameters{% endif %}
+            
+        Returns:
+            {{ product_class }}: A new instance
+            
+        Raises:
+            ValueError: If dependencies are missing or invalid
+        """
+        # Validate dependencies
+        {% if validation_code %}{{ validation_code }}{% else %}cls._validate_dependencies(dependencies){% endif %}
+        
+        # Create and return instance
+        return {{ product_class }}({% if creation_params %}{{ creation_params|join(', ') }}{% endif %})
+    
+    @classmethod
+    def _validate_dependencies(cls, dependencies: Dict[str, Any]) -> None:
+        """
+        Validate that all required dependencies are provided.
+        
+        Args:
+            dependencies: Dictionary of dependencies
+            
+        Raises:
+            ValueError: If any required dependencies are missing
+        """
+        missing = [dep for dep in cls.REQUIRED_DEPENDENCIES if dep not in dependencies]
+        if missing:
+            raise ValueError(f"Missing dependencies: {', '.join(missing)}")
+        
+        # Additional validation logic can be added here
+```
+
+## Usage Examples
+{% if examples %}
+{{ examples }}
+{% else %}
+```python
+# Example usage
+factory = {{ factory_name }}()
+product = factory.create(param1=value1, param2=value2)
+```
+{% endif %}
+
+## Output
+Please generate a clean, well-documented implementation of the `{{ factory_name }}` in `{{ output_file }}` following the factory pattern described above.
+
+Thank you! 

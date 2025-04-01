@@ -1,0 +1,56 @@
+{
+  "enabled": true,
+  "global_settings": {
+    "log_all_failures": true,
+    "auto_recovery": true,
+    "max_retry_count": 3
+  },
+  "agent_settings": {
+    "memory_manager": {
+      "enabled": true,
+      "recovery_actions": [
+        "clear_memory",
+        "reload_context"
+      ],
+      "monitored_errors": [
+        "memory_corruption",
+        "cache_error"
+      ]
+    },
+    "prompt_builder": {
+      "enabled": true,
+      "recovery_actions": [
+        "simplify_prompt",
+        "switch_model"
+      ],
+      "monitored_errors": [
+        "token_limit",
+        "hallucination",
+        "complexity_error"
+      ]
+    },
+    "feedback_engine": {
+      "enabled": true,
+      "recovery_actions": [
+        "reload_context",
+        "start_new_chat"
+      ],
+      "monitored_errors": [
+        "feedback_error",
+        "scoring_error"
+      ]
+    },
+    "cursor_session": {
+      "enabled": true,
+      "recovery_actions": [
+        "reset_cursor",
+        "start_new_chat"
+      ],
+      "monitored_errors": [
+        "cursor_error",
+        "ui_error",
+        "visual_corruption"
+      ]
+    }
+  }
+} 

@@ -1,5 +1,5 @@
 from discord.DreamscapeDiscordBot import DreamscapeDiscordBot
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 if __name__ == "__main__":
     config = ConfigManager()

@@ -1,0 +1,25 @@
+{
+  "cursor_exec_df30bcd8": {
+    "created_at": "2025-04-01T11:14:49.127544",
+    "status_history": [
+      {
+        "status": "queued",
+        "timestamp": "2025-04-01T11:14:49.127544",
+        "task_type": "cursor_execution",
+        "context": {}
+      }
+    ],
+    "prompt_count": 0,
+    "execution_cycles": 1,
+    "retry_count": 0,
+    "total_execution_time": 0,
+    "success_count": 0,
+    "error_count": 0,
+    "stall_count": 0,
+    "recovery_attempts": 0,
+    "successful_recoveries": 0,
+    "recovery_actions": {},
+    "success_rate": 0,
+    "recovery_success_rate": 0
+  }
+}

@@ -1,0 +1,79 @@
+---
+type: refactor
+usage: AI-guided refactoring
+output_format: Python
+---
+
+# Guided Refactoring: {{ target_file }}
+
+## Context
+I need to refactor `{{ target_file }}` to improve {{ refactor_goal }}.
+
+{% if original_code %}
+The current implementation:
+
+```python
+{{ original_code }}
+```
+{% endif %}
+
+## Refactoring Requirements
+{% if requirements %}
+{% for req in requirements %}
+- {{ req }}
+{% endfor %}
+{% else %}
+- Improve code quality without changing behavior
+- Reduce complexity and improve maintainability
+- Fix any anti-patterns or code smells
+- Add or improve type hints
+- Add or improve documentation
+- Preserve existing interfaces
+{% endif %}
+
+## Constraints
+{% if constraints %}
+{% for constraint in constraints %}
+- {{ constraint }}
+{% endfor %}
+{% else %}
+- Must maintain backward compatibility
+- Must not introduce new dependencies
+- Must preserve all existing public interfaces
+- Must preserve existing test coverage
+{% endif %}
+
+## Architectural Guidelines
+{% if architecture_guidelines %}
+{{ architecture_guidelines }}
+{% else %}
+- Follow SOLID principles
+- Separate concerns appropriately
+- Use dependency injection where appropriate
+- Follow the existing project's conventions
+{% endif %}
+
+## Code Smells to Address
+{% if code_smells %}
+{% for smell in code_smells %}
+- {{ smell.description }} - Located at {{ smell.location }}
+{% endfor %}
+{% else %}
+- Long methods or functions
+- Duplicate code
+- Complex conditional logic
+- Poor variable or function naming
+- Lack of appropriate abstraction
+{% endif %}
+
+## Testing Considerations
+- Ensure all existing tests pass with the refactored code
+- Consider edge cases and potential regressions
+- Refactor tests if necessary, without changing test coverage
+
+## Output
+Please provide a clean, refactored implementation of `{{ target_file }}` that maintains functionality while addressing the requirements above.
+
+The refactored code should be more maintainable, cleaner, and follow best practices for Python development.
+
+Thank you! 

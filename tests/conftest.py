@@ -1,3 +1,7 @@
+"""
+Test configuration and fixtures for pytest.
+"""
+
 import os
 import sys
 from pathlib import Path
@@ -8,11 +12,23 @@ from datetime import datetime
 import pytest
 from PyQt5.QtWidgets import QApplication
 from fastapi import FastAPI
+import asyncio
+from fastapi.testclient import TestClient
 
-# Add project root to Python path
-project_root = str(Path(__file__).parent.parent)
+# Get the absolute path to the project root
+project_root = str(Path(__file__).resolve().parent.parent)
+
+# Add the project root to the Python path
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
+
+# Add the config directory to the Python path
+config_path = os.path.join(project_root, 'config')
+if config_path not in sys.path:
+    sys.path.insert(0, config_path)
+
+# Create data directory if it doesn't exist
+os.makedirs(os.getenv("DATA_DIR", "./data"), exist_ok=True)
 
 # Mock GUI modules
 mock_gui = mock.MagicMock()
@@ -103,30 +119,14 @@ def sample_bot_config():
     }
 
 @pytest.fixture(autouse=True)
-def setup_test_environment():
-    """Setup test environment for all tests."""
-    # Ensure test data directory exists
-    os.makedirs(os.getenv("DATA_DIR", "./data"), exist_ok=True)
+def setup_test_env():
+    """Set up test environment before each test."""
+    # Set up any environment variables or configurations needed for tests
+    os.environ['TESTING'] = 'true'
     yield
-    # Cleanup after tests
-    test_files = [
-        "chat_history.json",
-        "response_cache.json",
-        "conversation_analytics.json",
-        "prompt_templates.json",
-        "post_history.json",
-        "engagement_metrics.json",
-        "post_analytics.json",
-        "scheduled_tasks.json",
-        "processed_comments.json",
-        "member_interactions.json",
-        "community_metrics.json",
-        "ai_response_history.json"
-    ]
-    for file in test_files:
-        file_path = os.path.join(os.getenv("DATA_DIR", "./data"), file)
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    # Clean up after tests
+    if 'TESTING' in os.environ:
+        del os.environ['TESTING']
 
 @pytest.fixture
 def mock_openai():
@@ -175,7 +175,7 @@ def test_context_data():
 
 @pytest.fixture(scope="session")
 def qapp():
-    """Create a QApplication instance for Qt tests."""
+    """Create a QApplication instance for the entire test session."""
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
@@ -183,33 +183,18 @@ def qapp():
 
 @pytest.fixture
 def mock_services():
-    """Create mock services for testing."""
-    services = {
-        'dispatcher': mock.MagicMock(),
-        'prompt_manager': mock.MagicMock(),
-        'chat_manager': mock.MagicMock(),
-        'response_handler': mock.MagicMock(),
-        'memory_manager': mock.MagicMock(),
-        'discord_manager': mock.MagicMock(),
-        'ui_logic': mock.MagicMock(),
-        'config_manager': mock.MagicMock(),
-        'logger': mock.MagicMock()
+    """Create mock services for components."""
+    return {
+        'dispatcher': None,
+        'prompt_manager': None,
+        'chat_manager': None,
+        'response_handler': None,
+        'memory_manager': None,
+        'discord_manager': None,
+        'ui_logic': None,
+        'config_manager': None,
+        'logger': None
     }
-    
-    # Configure chat manager
-    services['chat_manager'].get_all_chat_titles.return_value = [
-        {"title": "Project Alpha", "link": "https://chat.openai.com/1"},
-        {"title": "System Beta", "link": "https://chat.openai.com/2"},
-        {"title": "ChatGPT", "link": "https://chat.openai.com/3"},  # Should be excluded
-    ]
-    
-    # Configure dreamscape service
-    mock_dreamscape_service = mock.MagicMock()
-    mock_dreamscape_service.send_context_to_chatgpt.return_value = True
-    mock_dreamscape_service.schedule_context_updates.return_value = True
-    services['ui_logic'].get_service.return_value = mock_dreamscape_service
-    
-    return services
 
 @pytest.fixture
 def test_env(tmp_path):
@@ -235,17 +220,12 @@ def test_env(tmp_path):
     
     return test_dir 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def event_loop():
-    loop = asyncio.get_event_loop()
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
-    # Stop the loop before closing it
-    if loop.is_running():
-        loop.call_soon_threadsafe(loop.stop)
-    
-    # Only close if not running
-    if not loop.is_running():
-        loop.close()
+    loop.close()
 
 @pytest.fixture
 async def mock_discord_client():

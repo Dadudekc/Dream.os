@@ -1,0 +1,152 @@
+# Project Context Scanner Template
+{{scanner_name}}Scanner
+
+## Description
+Create a project context scanner that analyzes and extracts information from {{project_type}} codebases.
+This scanner will identify {{context_type}} elements, gather {{stat_type}} statistics, and provide
+structured context for AI prompt generation.
+
+## Requirements
+- Implement the {{scanner_name}}Scanner class with proper configuration options
+- Support recursive directory scanning with configurable ignore patterns
+- Extract {{primary_language}} specific context (imports, classes, functions, etc.)
+- Generate structured JSON output for consumption by other system components
+- Include performance optimizations for large codebases
+- Support incremental scanning to avoid redundant work
+- Provide callback mechanisms for scan progress and completion
+
+## Configuration Options
+- Root directory path
+- Include/exclude patterns (glob syntax)
+- Maximum scan depth
+- Language-specific parsers to use
+- Context format preferences (JSON, YAML, etc.)
+- Scan granularity level (high, medium, low)
+
+## Interface
+```python
+class {{scanner_name}}Scanner:
+    """
+    Scanner that extracts {{context_type}} context from {{project_type}} projects.
+    
+    This scanner analyzes code structure, dependencies, and metrics to provide
+    rich context for AI-assisted code generation and refactoring.
+    """
+    
+    def __init__(self, 
+                 root_dir: str = ".",
+                 include_patterns: List[str] = None,
+                 exclude_patterns: List[str] = None,
+                 max_depth: int = {{default_max_depth}},
+                 granularity: str = "{{default_granularity}}"):
+        """Initialize the scanner with configuration options."""
+        # Initialize configuration
+        
+    def scan(self) -> Dict[str, Any]:
+        """
+        Perform a full scan of the project.
+        
+        Returns:
+            Dictionary containing extracted context
+        """
+        # Scan implementation
+        
+    def incremental_scan(self) -> Dict[str, Any]:
+        """
+        Perform an incremental scan, only analyzing changed files.
+        
+        Returns:
+            Dictionary containing updated context
+        """
+        # Incremental scan implementation
+        
+    def register_progress_callback(self, callback: Callable[[int, int], None]) -> None:
+        """
+        Register a callback for scan progress updates.
+        
+        Args:
+            callback: Function that takes (current, total) parameters
+        """
+        # Callback registration
+        
+    def register_completion_callback(self, callback: Callable[[Dict[str, Any]], None]) -> None:
+        """
+        Register a callback for scan completion.
+        
+        Args:
+            callback: Function that takes the scan results dictionary
+        """
+        # Completion callback registration
+```
+
+## Output Structure
+```json
+{
+  "scan_metadata": {
+    "scanner_version": "{{scanner_version}}",
+    "scan_time": "2025-04-01T12:00:00Z",
+    "scan_duration_seconds": 5.2,
+    "files_scanned": 120,
+    "root_directory": "/path/to/project"
+  },
+  "project_structure": {
+    "directories": 25,
+    "files_by_type": {
+      "{{file_type_1}}": 45,
+      "{{file_type_2}}": 30,
+      "other": 45
+    },
+    "root_files": ["package.json", "README.md", "tsconfig.json"]
+  },
+  "language_stats": {
+    "{{language_1}}": {
+      "files": 75,
+      "lines": 10250,
+      "imports": 320,
+      "exports": 85
+    },
+    "{{language_2}}": {
+      "files": 45,
+      "lines": 6120,
+      "imports": 210,
+      "exports": 40
+    }
+  },
+  "component_analysis": {
+    "{{component_type_1}}": [
+      {
+        "name": "Example{{component_type_1}}",
+        "file": "src/components/Example.{{file_extension}}",
+        "lines": 150,
+        "dependencies": 5,
+        "complexity": "medium"
+      }
+    ],
+    "{{component_type_2}}": [
+      {
+        "name": "Example{{component_type_2}}",
+        "file": "src/services/Example.{{file_extension}}",
+        "lines": 80,
+        "dependencies": 3,
+        "complexity": "low"
+      }
+    ]
+  },
+  "dependency_graph": {
+    // Simplified representation of component dependencies
+  },
+  "scan_notes": [
+    "Found {{note_item_1}}",
+    "Detected {{note_item_2}}",
+    "{{warning_type}} warnings identified"
+  ]
+}
+```
+
+## Implementation Considerations
+- Use multiprocessing for parallel file analysis on large codebases
+- Implement caching to avoid rescanning unchanged files
+- Consider using language-specific parsers for accurate analysis
+- Provide both lightweight quick scans and deep comprehensive scans
+- Ensure error handling for malformed or unsupported files
+- Follow clean code practices and clear documentation 

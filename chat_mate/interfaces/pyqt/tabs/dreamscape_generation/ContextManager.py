@@ -6,7 +6,7 @@ from datetime import datetime
 
 from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QMessageBox
 
-from core.dreamscape.ContextMemoryManager import ContextMemoryManager
+from core.memory import ContextMemoryManager
 from core.TemplateManager import TemplateManager
 from core.ChatManager import ChatManager
 

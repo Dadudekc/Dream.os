@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 from datetime import datetime
 from social.social_config_wrapper import get_social_config
 from social.log_writer import logger, write_json_log
-from core.MemoryManager import MemoryManager
+from core.memory import MemoryManager
 from core.PromptEngine import PromptEngine
 
 
@@ -202,7 +202,7 @@ class AIChatAgent:
 # ----------------------------------------------------------------
 if __name__ == "__main__":
     from social.reinforcement.ReinforcementEngine import ReinforcementEngine
-    from core.MemoryManager import MemoryManager
+    from core.memory import MemoryManager
     from datetime import datetime
 
     agent = AIChatAgent(

@@ -1,0 +1,13 @@
+{
+  "id": "web-002",
+  "description": "Analyze website https://stackoverflow.com",
+  "type": "cursor",
+  "is_cursor_task": true,
+  "template_name": "web/web_analysis_template",
+  "params": {
+    "url": "https://stackoverflow.com",
+    "task_type": "structure_analysis",
+    "timestamp": "2025-04-01T13:46:40Z"
+  },
+  "target_output": "web_analysis"
+}

@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any
-from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory, FeedbackEntry
+from core.memory import UnifiedFeedbackMemory, FeedbackEntry
 
 class FeedbackSingleton:
     """

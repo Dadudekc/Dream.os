@@ -45,6 +45,7 @@ class ChatManager(IChatManager):
         cursor_manager=None,
         discord_dispatcher=None,
         logger=None,
+        path_manager: Optional[PathManager] = None,
         **kwargs
     ):
         """
@@ -59,6 +60,7 @@ class ChatManager(IChatManager):
             cursor_manager: Service for cursor control
             discord_dispatcher: Service for Discord integration
             logger: Logger instance
+            path_manager: Optional pre-initialized PathManager instance
             **kwargs: Additional parameters for backward compatibility
         """
         self.config_manager = config_manager
@@ -71,15 +73,28 @@ class ChatManager(IChatManager):
 
         self.logger.info("🚀 ChatManager initializing...")
 
-        # Handle memory_path initialization
+        # Use provided PathManager or initialize one
+        self.path_manager = path_manager
+        if self.path_manager is None:
+            try:
+                self.path_manager = PathManager()
+                self.logger.info("✨ PathManager initialized internally.")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to initialize internal PathManager: {e}", exc_info=True)
+                # Cannot proceed without path manager? Or raise?
+                raise RuntimeError("PathManager is required for ChatManager") from e
+
+        # Handle memory_path initialization using the instance path_manager
         if memory_path is None:
             try:
-                path_manager = PathManager()
-                self.memory_path = path_manager.get_path("memory") / "chat_memory.json"
+                # Use the instance self.path_manager
+                self.memory_path = Path(self.path_manager.get_path("memory")) / "chat_memory.json"
             except Exception as e:
                 self.logger.warning(f"⚠️ Error getting path from PathManager: {e}")
+                # Fallback might still fail if PathManager is broken
                 self.memory_path = Path("memory/chat_memory.json")
         else:
+            # Ensure passed memory_path is Path object
             self.memory_path = memory_path if isinstance(memory_path, Path) else Path(memory_path)
         
         self.logger.info(f"📂 Chat memory path: {self.memory_path}")
@@ -100,9 +115,10 @@ class ChatManager(IChatManager):
         if self.feedback_engine:
             self.logger.info("✅ FeedbackEngine injected successfully.")
         else:
-            # Initialize FeedbackEngine with proper memory path
+            # Initialize FeedbackEngine with proper memory path using instance path_manager
             try:
-                feedback_memory_path = PathManager().get_path("memory") / "feedback_memory.json"
+                # Use the instance self.path_manager
+                feedback_memory_path = Path(self.path_manager.get_path("memory")) / "feedback_memory.json"
                 self.feedback_engine = FeedbackEngine(memory_file=feedback_memory_path)
                 self.logger.info("✅ FeedbackEngine created internally.")
             except Exception as e:

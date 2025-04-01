@@ -47,7 +47,7 @@ class ConfigService(Protocol):
     def save(self, config_file: Optional[str] = None) -> None: ...
 
 
-class UnifiedPromptService(Protocol):
+class PromptService(Protocol):
     def get_prompt(self, prompt_type: str) -> str: ...
     def save_prompt(self, prompt_type: str, prompt_text: str) -> None: ...
     def get_model(self, prompt_type: str) -> str: ...
@@ -94,7 +94,7 @@ class CursorService(Protocol):
 # -----------------------------------------------------------------------------
 
 def create_config_service(config_name: str = "dreamscape_config.yaml") -> Any:
-    from config.ConfigManager import ConfigManager  # Lazy import
+    from core.config.config_manager import ConfigManager  # Lazy import
     try:
         config = ConfigManager(config_name=config_name)
         logging.info(f"Configuration loaded from {config_name}")
@@ -125,11 +125,11 @@ def create_logging_service() -> Any:
 
 
 def create_prompt_service(config_service: Any = None) -> Any:
-    """Create and configure the UnifiedPromptService with all required dependencies."""
-    from core.services.prompt_execution_service import UnifiedPromptService
+    """Create and configure the PromptService with all required dependencies."""
+    from core.services.prompt_execution_service import PromptService
     from core.PathManager import PathManager
     from core.DriverManager import DriverManager
-    from config.ConfigManager import ConfigManager
+    from core.config.config_manager import ConfigManager
     
     if not config_service:
         logging.error("Cannot create prompt service without configuration")
@@ -149,8 +149,8 @@ def create_prompt_service(config_service: Any = None) -> Any:
         # Get feedback engine from registry or create new
         feedback_engine = get_service("feedback_engine")
         
-        # Create UnifiedPromptService with all dependencies
-        prompt_service = UnifiedPromptService(
+        # Create PromptService with all dependencies
+        prompt_service = PromptService(
             config_manager=config_manager,
             path_manager=path_manager,
             config_service=config_service,
@@ -160,18 +160,18 @@ def create_prompt_service(config_service: Any = None) -> Any:
             model=config_service.get("default_model", "gpt-4o-mini")
         )
         
-        logging.info("UnifiedPromptService initialized successfully")
+        logging.info("PromptService initialized successfully")
         return prompt_service
         
     except Exception as e:
-        logging.error(f"Failed to initialize UnifiedPromptService: {str(e)}")
+        logging.error(f"Failed to initialize PromptService: {str(e)}")
         return _create_empty_service("prompt_service")
 
 
 def create_chat_service(config_service: Any = None) -> Any:
     """Create and configure the chat service."""
     from core.ChatManager import ChatManager  # Lazy import
-    from config.ConfigManager import ConfigManager  # For type-checking
+    from core.config.config_manager import ConfigManager  # For type-checking
     import json
     if not config_service:
         logging.error("Cannot create chat service without configuration")
@@ -329,7 +329,7 @@ def create_dreamscape_generator(*, config_service, chat_service, response_handle
 
 
 def create_memory_service(config_service: Any = None) -> Any:
-    from core.MemoryManager import MemoryManager  # Lazy import
+    from core.memory import MemoryManager  # Lazy import
     try:
         memory_file = "memory/memory.json"
         if config_service:

@@ -1,0 +1,18 @@
+Generated episode using Extended template
+Generated at: 2025-03-31 15:37:28
+Source: Sample Chat
+
+This is a basic episode generated without the Dreamscape service.
+To enable enhanced features, please ensure all required services are available.
+
+Template Features:
+- Standard: Basic episode structure
+- Extended: Detailed analysis and context
+- Summary: Condensed overview
+
+Status:
+- Running in basic mode
+- Service availability:
+  • chat_manager: Available
+  • dreamscape_service: Not available
+  • context_synthesizer: Not available

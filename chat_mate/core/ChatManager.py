@@ -7,12 +7,12 @@ from typing import Any, Dict, List, Optional
 
 from core.DriverManager import DriverManager
 from core.chat_engine.chat_scraper_service import ChatScraperService
-from core.services.prompt_execution_service import UnifiedPromptService
+from core.services.prompt_execution_service import PromptService
 from core.chat_engine.discord_dispatcher import DiscordDispatcher
 from core.chat_engine.feedback_engine import FeedbackEngine
 from core.refactor.CursorSessionManager import CursorSessionManager
 from core.IChatManager import IChatManager  # Import the interface directly
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 
 # Import the WebChatScraper
@@ -129,7 +129,7 @@ class ChatManager(IChatManager):
 
         # Initialize core chat services.
         self.chat_scraper = ChatScraperService(self.driver_manager, self.logger)
-        self.prompt_engine = UnifiedPromptService(
+        self.prompt_engine = PromptService(
             config_manager=self.config,
             path_manager=PathManager(),
             config_service=self.config,

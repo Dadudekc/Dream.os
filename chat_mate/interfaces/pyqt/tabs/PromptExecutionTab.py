@@ -41,7 +41,7 @@ from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
 from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 # Example local LLM wrapper using HuggingFace Transformers
 from transformers import AutoModelForCausalLM, AutoTokenizer

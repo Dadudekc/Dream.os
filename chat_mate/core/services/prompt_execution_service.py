@@ -15,7 +15,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from core.DriverManager import DriverManager
 from core.services.git_integration_service import GitIntegrationService
 from core.PathManager import PathManager
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.executors.cursor_executor import CursorExecutor
 from core.executors.chatgpt_executor import ChatGPTExecutor
 from core.services.discord.DiscordBatchDispatcher import DiscordBatchDispatcher
@@ -30,7 +30,7 @@ class ModelType(Enum):
     CHATGPT = "chatgpt"
 
 
-class UnifiedPromptService(QObject):
+class PromptService(QObject):
     """
     A unified prompt service that combines:
       - Asynchronous prompt execution via ChatGPT and Cursor executors,
@@ -100,7 +100,7 @@ class UnifiedPromptService(QObject):
         self.project_context_cache: Optional[Dict[str, Any]] = None
         self.prompt_cache: Dict[str, str] = {}
 
-        self.logger.info("UnifiedPromptService initialized successfully.")
+        self.logger.info("PromptService initialized successfully.")
 
     # -------------------------------------------------
     # ASYNCHRONOUS PROMPT EXECUTION (Generators via Executors)
@@ -612,7 +612,7 @@ class UnifiedPromptService(QObject):
                 self.discord_dispatcher.stop()
             if self.driver_manager:
                 self.driver_manager.shutdown_driver()
-            self.log_message.emit("UnifiedPromptService shutdown complete.")
-            self.logger.info("UnifiedPromptService successfully shut down.")
+            self.log_message.emit("PromptService shutdown complete.")
+            self.logger.info("PromptService successfully shut down.")
         except Exception as e:
             self.logger.error(f"Error during shutdown: {str(e)}")

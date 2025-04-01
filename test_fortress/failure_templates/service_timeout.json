@@ -1,0 +1,29 @@
+{
+    "id": "service_timeout_001",
+    "type": "service_failure",
+    "description": "Test system behavior when cursor service times out",
+    "service": "cursor_service",
+    "failure_type": "timeout",
+    "timeout_after_seconds": 30,
+    "expected_behavior": {
+        "should_retry": true,
+        "max_retries": 3,
+        "retry_delay_seconds": 5,
+        "should_log_warning": true,
+        "should_update_status": "RETRYING"
+    },
+    "validation": {
+        "verify_retry_count": true,
+        "verify_status_updates": true,
+        "verify_log_messages": [
+            "Cursor service timeout detected",
+            "Retrying operation",
+            "Max retries reached"
+        ],
+        "verify_final_state": {
+            "status": "ERROR",
+            "error_type": "SERVICE_TIMEOUT",
+            "has_retry_metadata": true
+        }
+    }
+} 

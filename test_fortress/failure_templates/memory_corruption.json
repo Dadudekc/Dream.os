@@ -1,0 +1,37 @@
+{
+    "id": "memory_corruption_001",
+    "type": "service_failure",
+    "description": "Test system behavior when memory store is corrupted",
+    "service": "memory_service",
+    "failure_type": "corruption",
+    "corruption_scenario": {
+        "target_file": "memory/task_memory.json",
+        "corruption_type": "partial_json",
+        "corrupt_data": {
+            "task_history": {"incomplete": "data",
+            "execution_results": null,
+            "metadata": {"corrupted": true
+        }
+    },
+    "expected_behavior": {
+        "should_detect_corruption": true,
+        "should_attempt_recovery": true,
+        "should_backup_corrupted": true,
+        "should_reinitialize": true
+    },
+    "validation": {
+        "verify_corruption_detection": true,
+        "verify_backup_created": true,
+        "verify_reinitialization": true,
+        "verify_log_messages": [
+            "Memory corruption detected",
+            "Creating backup of corrupted memory",
+            "Reinitializing memory store"
+        ],
+        "verify_final_state": {
+            "has_valid_memory": true,
+            "has_backup_file": true,
+            "memory_is_empty": true
+        }
+    }
+} 

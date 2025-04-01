@@ -1,69 +1,32 @@
-#!/usr/bin/env python3
-"""
-Main entry point for the PyQT interface.
-
-This allows running the application with:
-    python -m interfaces.pyqt
-"""
-
+"""Entry point for the PyQt interface."""
 import sys
 import logging
-from PyQt5.QtWidgets import QApplication
+from pathlib import Path
 
-from interfaces.pyqt.dreamscape_gui import (
-    initialize_services,
-    initialize_community_manager,
-    DreamscapeMainWindow,
-    DreamscapeUILogic,
-    DreamscapeService
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('dream_os_debug.log')
+    ]
 )
 
-from config.ConfigManager import ConfigManager
-from core.logging.factories.LoggerFactory import LoggerFactory
-from core.micro_factories.chat_factory import create_chat_manager
+logger = logging.getLogger(__name__)
 
 def main():
-    """
-    Main function that initializes and runs the application.
-    Can be called both from __main__ and as an entry point.
-    """
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-
-    app = QApplication(sys.argv)
-
-    # Initialize Config & Logger
-    config_manager = ConfigManager()
-    logger = LoggerFactory.create_standard_logger("Dreamscape", level=logging.INFO)
-    config_manager.set_logger(logger)
-
-    # Initialize services and inject chat_manager
-    services = initialize_services()
-    services['config_manager'] = config_manager
-    services['logger'] = logger
-    services['chat_manager'] = create_chat_manager(config_manager, logger=logger)
-
-    # Initialize community manager (optional)
-    community_manager = initialize_community_manager()
-
-    # UI logic and service binding
-    dreamscape_service = DreamscapeService()
-    ui_logic = DreamscapeUILogic()
-    ui_logic.service = dreamscape_service
-
-    # Create and show main window
-    window = DreamscapeMainWindow(
-        ui_logic=ui_logic,
-        services=services,
-        community_manager=community_manager
-    )
-    window.show()
-
-    # Run event loop
-    return app.exec_()
+    try:
+        from PyQt5.QtWidgets import QApplication
+        from interfaces.pyqt import DreamOsMainWindow
+        
+        app = QApplication(sys.argv)
+        window = DreamOsMainWindow(app)
+        window.show()
+        return app.exec_()
+    except Exception as e:
+        logger.exception("Failed to start Dream.OS:")
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main())

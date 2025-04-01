@@ -1,0 +1,105 @@
+# UI Tab Component Generator
+{{tab_name}}Tab
+
+## Description
+Create a PyQt5 tab component for the {{tab_function}} functionality in the Dream.OS UI.
+This component will support real-time {{data_type}} visualization, user interaction, and
+integration with the {{service_integration}} service.
+
+## Requirements
+- Implement the {{tab_name}}Tab class extending QWidget
+- Create a {{tab_name}}TabFactory for dependency injection
+- Support responsive resizing and proper layout management
+- Handle state changes with appropriate signals and slots
+- Include accessibility features for all controls
+- Implement proper error handling and user feedback
+- Support customization via settings
+- Follow the Dream.OS UI style guidelines
+
+## Dependencies
+- PyQt5 core components
+- {{service_integration}} for backend functionality
+- {{additional_dependency}} for enhanced features
+- Orchestrator bridge for event communication
+
+## Component Structure
+```python
+class {{tab_name}}Tab(QWidget):
+    """
+    Tab for {{tab_function}} in the Dream.OS UI.
+    
+    This tab provides interfaces for {{feature_1}}, {{feature_2}},
+    and integration with {{service_integration}}.
+    """
+    
+    # Signal definitions
+    {{signal_name}} = pyqtSignal({{signal_params}})
+    
+    def __init__(self, parent=None, {{service_param}}=None):
+        """Initialize the {{tab_name}}Tab."""
+        super().__init__(parent)
+        self.{{service_var}} = {{service_param}}
+        self.setup_ui()
+        
+    def setup_ui(self):
+        """Set up the tab UI components."""
+        # Main layout
+        main_layout = QVBoxLayout(self)
+        
+        # Header section
+        header_layout = QHBoxLayout()
+        # TODO: Add header components here
+        
+        # Content section
+        content_layout = QHBoxLayout()
+        # TODO: Add content components here
+        
+        # Footer section
+        footer_layout = QHBoxLayout()
+        # TODO: Add footer components here
+        
+        # Add sections to main layout
+        main_layout.addLayout(header_layout)
+        main_layout.addLayout(content_layout)
+        main_layout.addLayout(footer_layout)
+    
+    def {{primary_method_name}}(self, {{method_params}}):
+        """
+        Handle {{primary_functionality}} functionality.
+        
+        Args:
+            {{param_name}}: {{param_description}}
+        """
+        # Method implementation
+        
+    def connect_signals(self):
+        """Connect UI signals to slots."""
+        # Connect signals
+```
+
+## Factory Class
+```python
+class {{tab_name}}TabFactory:
+    """Factory for creating {{tab_name}}Tab instances."""
+    
+    @staticmethod
+    def create({{factory_params}}) -> {{tab_name}}Tab:
+        """
+        Create a {{tab_name}}Tab instance.
+        
+        Args:
+            {{param_name}}: {{param_description}}
+            
+        Returns:
+            {{tab_name}}Tab instance
+        """
+        # Create and return tab instance
+```
+
+## Style Guidelines
+- Use consistent naming convention (snake_case for variables, PascalCase for classes)
+- Add docstrings to all classes and methods
+- Organize UI creation into logical sections (header, content, footer)
+- Handle all potential errors gracefully
+- Provide user feedback for long-running operations
+- Ensure all UI elements have proper tab order and accessibility properties 

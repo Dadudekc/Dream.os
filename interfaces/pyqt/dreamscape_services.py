@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timedelta
 import sys
 import inspect
+from typing import Optional
 
 from pathlib import Path
 
@@ -45,7 +46,7 @@ from core.CycleExecutionService import CycleExecutionService
 from core.PromptResponseHandler import PromptResponseHandler
 from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 from core.TaskOrchestrator import TaskOrchestrator
-from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from core.services.dreamscape.engine import DreamscapeGenerationService
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 
 logger = logging.getLogger(__name__)
@@ -622,8 +623,7 @@ class DreamscapeService:
         # Initialize the generator if needed
         if not hasattr(self.dreamscape_generator, 'generate_dreamscape_episodes'):
             self.logger.warning("Dreamscape generator doesn't support the original functionality. Re-initializing.")
-            from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
-            self.dreamscape_generator = DreamscapeEpisodeGenerator(
+            self.dreamscape_generator = DreamscapeGenerationService(
                 chat_manager=self.chat_manager,
                 response_handler=self.prompt_handler,
                 output_dir=output_dir,
@@ -983,3 +983,26 @@ class DreamscapeService:
                 self.logger.debug(f"Service {service_name} not available or doesn't have method {method_name}")
         
         self.logger.info("All services shut down successfully")
+
+    def _initialize_dreamscape_generator(self) -> Optional[DreamscapeGenerationService]:
+        """Initialize the Dreamscape Episode Generator service."""
+        if not self.chat_manager or not self.prompt_handler or not self.config:
+            self.logger.warning(
+                "Cannot initialize DreamscapeGenerator: Missing ChatManager, PromptHandler, or Config."
+            )
+            return None
+        try:
+            output_dir = self.path_manager.get_path("dreamscape_episodes", "episodes")
+            # Make sure to instantiate DreamscapeGenerationService here
+            dreamscape_generator = DreamscapeGenerationService(
+                chat_manager=self.chat_manager,
+                response_handler=self.prompt_handler, # Note: Engine expects response_handler, adjust if needed
+                # Assuming engine can get path_manager or output_dir needs to be passed
+                # Assuming TemplateManager is injected or accessible
+                # Assuming discord_manager is optional or passed if needed
+            )
+            self.logger.info("✅ Dreamscape Generation Service Initialized")
+            return dreamscape_generator
+        except Exception as e:
+            self.logger.error(f"❌ Failed to initialize DreamscapeGenerator: {e}", exc_info=True)
+            return None

@@ -41,7 +41,7 @@ def initialize_services():
     """Initialize required services from the service registry."""
     try:
         from core.services.service_registry import ServiceRegistry
-        from config.ConfigManager import ConfigManager
+        from core.config.config_manager import ConfigManager
         from core.ChatManager import ChatManager
         from core.PathManager import PathManager
         from core.TemplateManager import TemplateManager

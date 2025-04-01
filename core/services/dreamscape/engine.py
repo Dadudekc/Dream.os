@@ -38,7 +38,8 @@ class DreamscapeGenerationService(IDreamscapeService):
         self.template_manager = template_manager or TemplateManager()
         self.memory_data = memory_data or {}
 
-        self.output_dir = self.path_manager.get_path("dreamscape")
+        # Ensure output_dir is a Path object
+        self.output_dir = Path(self.path_manager.get_path("dreamscape"))
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.logger.info(f"[DreamscapeService] Output directory set to: {self.output_dir}")
         
@@ -106,10 +107,10 @@ class DreamscapeGenerationService(IDreamscapeService):
         
         return context
 
-    def render_episode(self, template_name: str, context: Dict[str, Any]) -> str:
+    def render_episode(self, template_name: str, context: Dict[str, Any], category: str = "") -> str:
         """Render a Dreamscape episode from a template and context."""
         try:
-            output = self.template_manager.render_general_template(template_name, context)
+            output = self.template_manager.render_general_template(template_name, context, category=category)
             self.logger.info(f"[Rendered] Template: {template_name}")
             return output
         except Exception as e:
@@ -151,100 +152,77 @@ class DreamscapeGenerationService(IDreamscapeService):
         
         return episode_path
 
-    def generate_episode_from_history(self, chat_title: str, chat_history: List[str]) -> Optional[Path]:
+    def generate_episode_from_history(
+        self, chat_title: str, messages: List[str]
+    ) -> Optional[Path]:
         """
-        Generate a dreamscape episode from a chat history.
-        
+        Generates a Dreamscape episode from a given chat history.
+
         Args:
-            chat_title: Title of the chat
-            chat_history: List of messages in the chat
-            
+            chat_title: The title of the chat.
+            messages: A list of messages from the chat history.
+
         Returns:
-            Path to the generated episode file or None if generation failed
+            The path to the generated episode file, or None if generation fails.
         """
+        logging.info(f"Generating dreamscape episode from chat: {chat_title}")
+        # Basic validation
+        if not chat_title or not messages:
+            logging.warning(
+                "Cannot generate episode: Chat title or messages are empty."
+            )
+            return None
+
+        # Prepare data for the template
+        date_str = datetime.now().strftime("%Y%m%d")
+        output_name = f"episode_{self._slugify(chat_title)}_{date_str}" # Expected prefix added
+        # output_name = f"{self._slugify(chat_title)}_{date_str}" # Original filename logic
+
+        # TODO: Enhance context extraction (e.g., key topics, sentiment)
+        context = {
+            "chat_title": chat_title,
+            "episode_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "messages": messages,
+            # Add more context as needed
+            "now": datetime.now() # Pass current datetime to template
+        }
+
+
         try:
-            self.logger.info(f"Generating dreamscape episode from chat: {chat_title}")
-            
-            # Extract content from chat history and combine for narrative creation
-            combined_content = "\n\n".join(chat_history[-5:])  # Use last 5 messages for conciseness
-            
-            # Extract potential episode title from the content
-            episode_title = self._extract_episode_title(combined_content, chat_title)
-            
-            # Generate a summary from the content
-            summary = self._generate_summary(combined_content)
-            
-            # Extract potential protocols from the content
-            protocols = self._extract_protocols(combined_content)
-            
-            # Get continuity context from previous episodes
-            chain_context = get_context_from_chain(self.chain_path)
-            
-            # Prepare context for template rendering
-            context = {
-                "chat_title": chat_title,
-                "episode_title": episode_title,
-                "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "raw_response": combined_content,
-                "summary": summary,
-                "newly_unlocked_protocols": protocols,
-                "memory_updates": [
-                    f"Interaction with {chat_title} yielded new insights",
-                    f"Episode '{episode_title}' recorded to memory banks"
-                ],
-                "skill_level_advancements": {
-                    "System Convergence": "Level 3 → Level 4",
-                    "Automation Engineering": "Level 2 → Level 3"
-                },
-                "newly_stabilized_domains": [
-                    chat_title.replace("ChatGPT - ", ""),
-                    "Dream Sequence Generator"
-                ],
-                "tags": ["#dreamscape", "#digitalchronicles", "#" + self._slugify(chat_title)]
-            }
-            
-            # Add continuity context from previous episodes if available
-            if chain_context:
-                context.update({
-                    "has_previous_episode": True,
-                    "last_episode": chain_context.get("last_episode"),
-                    "current_emotional_state": chain_context.get("current_emotional_state", "Determined"),
-                    "last_location": chain_context.get("last_location", "The Nexus"),
-                    "ongoing_quests": chain_context.get("ongoing_quests", []),
-                    "completed_quests": chain_context.get("completed_quests", []),
-                    "episode_count": chain_context.get("episode_count", 0) + 1
-                })
-            else:
-                context.update({
-                    "has_previous_episode": False,
-                    "current_emotional_state": "Determined",
-                    "last_location": "The Nexus",
-                    "ongoing_quests": [],
-                    "completed_quests": [],
-                    "episode_count": 1
-                })
-            
-            # Render the episode using the template
-            rendered_episode = self.render_episode("dreamscape_episode.j2", context)
-            
-            # Create a slugified filename
-            date_str = datetime.now().strftime("%Y%m%d")
-            output_name = f"{self._slugify(chat_title)}_{date_str}"
-            
-            # Save the episode
-            episode_path = self.save_episode(output_name, rendered_episode)
-            
-            # Update memory and episode chain
-            self._update_memory_and_chain(episode_path)
-            
-            # Archive the episode (implementing this would require AletheiaPromptManager integration)
-            self._archive_episode(episode_path)
-            
-            self.logger.info(f"Dreamscape episode generated and saved to {episode_path}")
+            # Render the episode content using TemplateManager
+            rendered_content = self.render_episode(
+                context, category="dreamscape" # Ensure correct category
+            )
+            if rendered_content is None:
+                 # Log error occurred during rendering
+                logging.error(f"Failed to render episode for chat: {chat_title}")
+                return None # Or raise an exception
+
+            # Save the rendered content
+            episode_path = self.save_episode(rendered_content, output_name, "md")
+            if not episode_path:
+                logging.error(f"Failed to save episode for chat: {chat_title}")
+                return None # Or raise an exception
+
+
+            # Update memory and episode chain after successful save
+            try:
+                # Assume update_memory_and_chain can handle Path object or str
+                self._update_memory_and_chain(episode_path)
+                logging.info(f"Memory and episode chain updated from episode: {episode_path.name}")
+            except Exception as e:
+                logging.error(f"Error updating memory/chain for {episode_path.name}: {e}", exc_info=True)
+                # Decide if failure to update memory should prevent returning the path
+                # For now, we'll log the error and continue
+
+            # Archive the episode (if different from saving, otherwise redundant)
+            # self.archive_episode(episode_path) # Consider if archiving is needed separately
+
+            logging.info(f"Dreamscape episode generated and saved to {episode_path}")
             return episode_path
-            
+
         except Exception as e:
-            self.logger.error(f"Error generating dreamscape episode: {e}")
+            logging.error(f"Error generating dreamscape episode: {e}")
             return None
     
     def _update_memory_and_chain(self, episode_path: Path) -> None:

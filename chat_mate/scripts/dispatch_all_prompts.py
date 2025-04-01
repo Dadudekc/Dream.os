@@ -3,7 +3,7 @@ import asyncio
 from pathlib import Path
 
 from core.dispatchers.cursor_dispatcher import CursorDispatcher
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 
 async def dispatch_all_prompts(prompt_dir: Path, auto: bool = False):

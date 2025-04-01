@@ -41,7 +41,7 @@ def send_discord_status(status_message: str) -> bool:
         # Try to import and use DiscordBot directly
         try:
             from discord_integration.DiscordBot import DiscordBot
-            from config.ConfigManager import ConfigManager
+            from core.config.config_manager import ConfigManager
             
             config = ConfigManager()
             discord_token = config.get("discord_token")

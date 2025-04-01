@@ -1,5 +1,5 @@
 from typing import Optional
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 
 class DiscordLogger(ILoggingAgent):

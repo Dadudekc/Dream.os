@@ -19,7 +19,7 @@ from social.strategies.stocktwits_strategy import StocktwitsStrategy
 from social.strategies.linkedin_strategy import LinkedinStrategy
 
 # Import core components
-from core.UnifiedFeedbackMemory import UnifiedFeedbackMemory
+from core.memory import UnifiedFeedbackMemory
 from utils.SentimentAnalyzer import SentimentAnalyzer
 from social.log_writer import logger, write_json_log
 from core.PathManager import PathManager

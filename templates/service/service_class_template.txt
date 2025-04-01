@@ -1,0 +1,80 @@
+# Service Class Generator
+{{service_name}}Service
+
+## Description
+Create a robust service class that handles {{service_function}} with proper error handling,
+dependency injection, and testability. This service will be part of the {{project_name}} system.
+
+## Requirements
+- Implement the {{service_name}}Service class with appropriate interface
+- Handle all error cases gracefully with custom error types
+- Use dependency injection for all external dependencies
+- Follow SOLID principles, especially single responsibility
+- Include comprehensive TypeDoc comments
+- Support both synchronous and asynchronous operations where appropriate
+- Add unit tests with at least {{test_coverage_percentage}}% coverage
+
+## Dependencies
+- {{dependency_1}}
+- {{dependency_2}}
+- Logger service for error tracking
+- Event system for publishing state changes
+
+## Interface
+```typescript
+export interface I{{service_name}}Service {
+  // Core methods
+  {{primary_method_name}}({{primary_method_params}}): {{return_type}};
+  
+  // Helper methods
+  {{helper_method_name}}?({{helper_method_params}}): void;
+  
+  // Event handlers
+  on{{event_name}}?(callback: (data: {{event_data_type}}) => void): void;
+}
+```
+
+## Implementation
+```typescript
+// Your {{service_name}}Service implementation here
+import { inject, injectable } from 'inversify';
+import { Logger } from '../logger/logger.service';
+import { {{dependency_1}}, {{dependency_2}} } from '../dependencies';
+
+@injectable()
+export class {{service_name}}Service implements I{{service_name}}Service {
+  constructor(
+    @inject(TYPES.Logger) private logger: Logger,
+    @inject(TYPES.{{dependency_1}}) private {{dependency_1_instance}}: {{dependency_1}},
+    @inject(TYPES.{{dependency_2}}) private {{dependency_2_instance}}: {{dependency_2}}
+  ) {}
+  
+  // Implementation goes here
+}
+```
+
+## Unit Tests
+```typescript
+// Unit tests for {{service_name}}Service
+describe('{{service_name}}Service', () => {
+  let service: {{service_name}}Service;
+  let mockLogger: jest.Mocked<Logger>;
+  let mock{{dependency_1}}: jest.Mocked<{{dependency_1}}>;
+  
+  beforeEach(() => {
+    // Setup test environment
+  });
+  
+  it('should {{expected_behavior_1}}', () => {
+    // Test case 1
+  });
+  
+  it('should {{expected_behavior_2}}', () => {
+    // Test case 2
+  });
+  
+  it('should handle errors when {{error_scenario}}', () => {
+    // Error handling test
+  });
+});
+``` 

@@ -41,15 +41,15 @@ class TemplateManager(QObject):
         "general": None
     }
 
-    def __init__(self, template_dir: Optional[str] = None, default_data: Optional[Dict] = None, logger: Optional[logging.Logger] = None):
+    def __init__(self, template_dir: Optional[str] = None, default_data: Optional[Dict] = None, logger: Optional[logging.Logger] = None, path_manager: Optional[PathManager] = None):
         """
         Initialize the TemplateManager.
         
         Args:
             template_dir (Optional[str]): Override for the 'general' templates directory.
-                If not provided and PathManager is available, uses PathManager's path.
             default_data (Optional[Dict]): Data to inject into all templates by default.
-            logger (Optional[logging.Logger]): Logger instance to use. If not provided, creates a new one.
+            logger (Optional[logging.Logger]): Logger instance.
+            path_manager (Optional[PathManager]): Pre-initialized PathManager instance.
         """
         super().__init__()
 
@@ -59,19 +59,32 @@ class TemplateManager(QObject):
         # Set default data
         self.default_data = default_data or {}
 
-        # Use PathManager if available; otherwise, use a fallback based on this file's location.
+        # Use provided PathManager or initialize one if PathManager class is available
+        self.path_manager = path_manager
+        if self.path_manager is None and PathManager:
+            try:
+                self.path_manager = PathManager()
+            except Exception as e:
+                 self.logger.warning(f"Could not initialize internal PathManager: {e}")
+                 self.path_manager = None # Ensure it's None if init fails
+
+        # Determine general template directory
         if template_dir:
             general_dir = str(Path(template_dir))
-        elif PathManager:
-            general_dir = str(PathManager().get_path('templates'))
+        elif self.path_manager:
+            try:
+                 general_dir = self.path_manager.get_path('templates')
+            except KeyError:
+                 self.logger.warning("'templates' key not found in PathManager, using fallback.")
+                 general_dir = str(self.get_base_template_dir())
         else:
             general_dir = str(self.get_base_template_dir())
 
-        # Setup directories for each category. If using PathManager, get paths; else use subfolders.
+        # Setup directories for each category using the instance self.path_manager
         self.template_categories = {
-            "discord": str(PathManager().get_path('discord_templates')) if PathManager else os.path.join(general_dir, "discord_templates"),
-            "messages": str(PathManager().get_path('message_templates')) if PathManager else os.path.join(general_dir, "message_templates"),
-            "dreamscape": str(PathManager().get_path('dreamscape_templates')) if PathManager else os.path.join(general_dir, "dreamscape_templates"),
+            "discord": str(self.path_manager.get_path('discord_templates')) if self.path_manager else os.path.join(general_dir, "discord_templates"),
+            "messages": str(self.path_manager.get_path('message_templates')) if self.path_manager else os.path.join(general_dir, "message_templates"),
+            "dreamscape": str(self.path_manager.get_path('dreamscape_templates')) if self.path_manager else os.path.join(general_dir, "dreamscape_templates"),
             "general": general_dir
         }
         # Ensure all template directories exist
@@ -333,9 +346,40 @@ class TemplateManager(QObject):
         """Convenience method to render a message/engagement template."""
         return self.render("messages", template_filename, data)
 
-    def render_general_template(self, template_filename: str, data: Dict) -> str:
-        """Convenience method to render a general template."""
-        return self.render("general", template_filename, data)
+    def render_general_template(self, template_name: str, data: Dict[str, Any], category: str = "general") -> str:
+        """
+        Renders a template from the specified category using the provided data.
+        Merges default data with provided data.
+        
+        Args:
+            template_name (str): Name of the template file (e.g., 'my_template.j2')
+            data (Dict[str, Any]): Dictionary of data for template context.
+            category (str): The category environment to use (default: "general").
+            
+        Returns:
+            str: Rendered template output, or error message on failure.
+        """
+        
+        # Select the correct environment based on category
+        env = self.environments.get(category)
+        if not env:
+            self.logger.error(f"Template category '{category}' not found.")
+            return f"Error: Template category '{category}' not found."
+        
+        # Merge default data with provided data
+        context = {**self.default_data, **data}
+
+        try:
+            template = env.get_template(template_name)
+            rendered = template.render(context)
+            self.logger.info(f"Successfully rendered template '{template_name}' from category '{category}'.")
+            return rendered
+        except TemplateNotFound:
+            self.logger.error(f"Template '{template_name}' not found in category '{category}'.")
+            return f"Template '{template_name}' not found in category '{category}'."
+        except Exception as e:
+            self.logger.error(f"Error rendering template '{template_name}' from category '{category}': {e}")
+            return f"Error rendering template '{template_name}': {e}"
 
     def render_template(self, context: Dict) -> str:
         """

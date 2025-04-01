@@ -1,0 +1,62 @@
+{% if SERVICE_NAME is defined %}
+class {{ SERVICE_NAME }}Service:
+    """
+    Service class for {{ SERVICE_NAME }} that follows the Single Responsibility Principle.
+    """
+
+    def __init__(self, {% if DEPENDENCIES is defined %}{{ DEPENDENCIES | join(', ') }}{% endif %}):
+        {% if DEPENDENCIES is defined %}
+        {% for dep in DEPENDENCIES %}
+        self.{{ dep }} = {{ dep }}
+        {% endfor %}
+        {% endif %}
+
+    {% if PUBLIC_METHODS is defined %}
+    {% for method in PUBLIC_METHODS %}
+    def {{ method }}(self, *args, **kwargs):
+        """
+        {{ method }} method description.
+        """
+        pass
+
+    {% endfor %}
+    {% else %}
+    def create(self, data: dict) -> dict:
+        """
+        Create a new {{ SERVICE_NAME }} entity.
+        """
+        pass
+
+    def read(self, id: int) -> dict:
+        """
+        Read a {{ SERVICE_NAME }} entity by its ID.
+        """
+        pass
+
+    def update(self, id: int, data: dict) -> dict:
+        """
+        Update a {{ SERVICE_NAME }} entity by its ID.
+        """
+        pass
+
+    def delete(self, id: int) -> None:
+        """
+        Delete a {{ SERVICE_NAME }} entity by its ID.
+        """
+        pass
+
+    def query(self, *args, **kwargs) -> list:
+        """
+        Query {{ SERVICE_NAME }} entities based on provided parameters.
+        """
+        pass
+
+    def validate(self, data: dict) -> bool:
+        """
+        Validate the data for creating or updating a {{ SERVICE_NAME }} entity.
+        """
+        pass
+    {% endif %}
+{% else %}
+# SERVICE_NAME is not defined
+{% endif %}

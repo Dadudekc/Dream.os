@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 # Bootstrap paths early
 from core.bootstrap import get_bootstrap_paths
 from core.AgentDispatcher import AgentDispatcher
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.DriverManager import DriverManager
 from core.logging.factories.LoggerFactory import LoggerFactory
 
@@ -25,7 +25,7 @@ from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
 from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
 from web.app import start_flask_app
 from core.services.config_service import ConfigService
-from core.services.prompt_execution_service import UnifiedPromptService
+from core.services.prompt_execution_service import PromptService
 from utils.signal_dispatcher import SignalDispatcher
 from core.services.fix_service import FixService
 from core.services.debug_service import DebugService
@@ -48,7 +48,7 @@ def initialize_services():
     services['config'] = config_service
 
     # Initialize prompt service
-    prompt_service = UnifiedPromptService(config_service)
+    prompt_service = PromptService(config_service)
     services['prompt'] = prompt_service
 
     # Initialize fix service

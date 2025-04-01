@@ -1,0 +1,94 @@
+---
+type: test
+usage: Unit test generation
+output_format: Python
+---
+
+# Test Generation: {{ test_target }}
+
+## Target Information
+I need comprehensive tests for the `{{ test_target }}` {% if is_class %}class{% else %}module{% endif %}.
+
+{% if source_code %}
+The source code to test:
+```python
+{{ source_code }}
+```
+{% else %}
+Please generate tests for the file at `{{ source_file_path }}`.
+{% endif %}
+
+## Testing Requirements
+{% if requirements %}
+{% for req in requirements %}
+- {{ req }}
+{% endfor %}
+{% else %}
+- Achieve high code coverage (aim for >85%)
+- Use pytest for all tests
+- Create appropriate mocks for all dependencies
+- Test both happy paths and error cases
+- Test edge cases and boundary conditions
+{% endif %}
+
+## Dependencies to Mock
+{% if dependencies %}
+Dependencies that should be mocked:
+{% for dep in dependencies %}
+- `{{ dep }}` - {% if dep_details and dep_details[dep] %}{{ dep_details[dep] }}{% else %}Mock as appropriate{% endif %}
+{% endfor %}
+{% endif %}
+
+## Test Cases to Include
+{% if test_cases %}
+Please implement the following test cases:
+{% for case in test_cases %}
+1. **{{ case.name }}**: {{ case.description }}
+   - Input: `{{ case.input }}`
+   - Expected output: `{{ case.expected }}`
+{% endfor %}
+{% else %}
+Include tests for at least these scenarios:
+1. Initialization with valid parameters
+2. Proper handling of typical use cases
+3. Proper error handling for invalid inputs
+4. Edge cases where applicable
+5. Integration with mocked dependencies
+{% endif %}
+
+## Test Framework Structure
+The tests should follow this structure:
+```python
+import pytest
+from unittest import mock
+{% if imports %}
+{% for imp in imports %}
+{{ imp }}
+{% endfor %}
+{% endif %}
+
+# Setup fixtures
+
+@pytest.fixture
+def subject_under_test():
+    # Setup the subject being tested with appropriate mocks
+    pass
+
+# Tests for different scenarios
+
+def test_initialization(subject_under_test):
+    # Test initialization
+
+def test_typical_usage(subject_under_test):
+    # Test typical usage
+
+def test_error_handling(subject_under_test):
+    # Test error scenarios
+
+# Add more tests as needed
+```
+
+## Output
+Please generate a comprehensive test file in `{{ output_file }}` that follows best practices for Python testing.
+
+Thank you! 

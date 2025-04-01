@@ -1,0 +1,12 @@
+{
+  "id": "task-001",
+  "template": "service/service_class_template",
+  "params": {
+    "service_name": "AuthService",
+    "service_function": "handling authentication and authorization",
+    "dependency_1": "DatabaseService",
+    "dependency_2": "TokenManager"
+  },
+  "target_output": "typescript_service",
+  "auto": false
+}

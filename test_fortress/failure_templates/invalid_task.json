@@ -1,0 +1,21 @@
+{
+    "id": "invalid_task_001",
+    "type": "invalid_input",
+    "description": "Test system behavior when task JSON is malformed",
+    "input": {
+        "task_id": "test_001",
+        "type": "INVALID_TYPE",
+        "malformed_field": {"unclosed": "object",
+        "execution_context": null
+    },
+    "expected_error": "ValidationError: Invalid task format",
+    "validation": {
+        "should_reject_task": true,
+        "should_log_error": true,
+        "should_not_crash": true,
+        "error_details": {
+            "contains_field": "malformed_field",
+            "contains_message": "Invalid task format"
+        }
+    }
+} 

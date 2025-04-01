@@ -1,0 +1,68 @@
+name: Test Fortress CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-fortress:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r test_fortress/requirements.txt
+    
+    - name: Run Test Fortress Preflight
+      run: |
+        chmod +x test_fortress/fortress_preflight.sh
+        ./test_fortress/fortress_preflight.sh
+    
+    - name: Upload Test Report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-report
+        path: |
+          test_report.json
+          test_fortress.log
+          .coverage
+          mutation.json
+    
+    - name: Check Test Results
+      if: always()
+      run: |
+        if [ -f "test_report.json" ]; then
+          echo "Test Report Summary:"
+          cat test_report.json | jq '.'
+        else
+          echo "❌ Test report not found"
+          exit 1
+        fi
+    
+    - name: Notify on Failure
+      if: failure()
+      run: |
+        echo "::error::Test Fortress checks failed! Check the logs for details."
+        
+    - name: Update Status Badge
+      if: success()
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: test_fortress_status
+        filename: status.json
+        label: fortress
+        message: passing
+        color: success 

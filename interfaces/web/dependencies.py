@@ -1,29 +1,29 @@
 from typing import Optional
 from fastapi import Depends, HTTPException, status
-from core.agents.chat_agent import ChatAgent
-from core.memory.memory_manager import MemoryManager
+from social.AIChatAgent import AIChatAgent
+from core.memory import MemoryManager
 import logging
 from functools import lru_cache
 
 logger = logging.getLogger(__name__)
 
 class Dependencies:
-    _chat_agent: Optional[ChatAgent] = None
+    _chat_agent: Optional[AIChatAgent] = None
     _memory_manager: Optional[MemoryManager] = None
 
     @classmethod
     @lru_cache()
-    def get_chat_agent(cls) -> ChatAgent:
+    def get_chat_agent(cls) -> AIChatAgent:
         """Get or create ChatAgent singleton instance."""
         if cls._chat_agent is None:
             try:
-                cls._chat_agent = ChatAgent()
-                logger.info("ChatAgent initialized successfully")
+                cls._chat_agent = AIChatAgent()
+                logger.info("AIChatAgent initialized successfully")
             except Exception as e:
-                logger.error(f"Failed to initialize ChatAgent: {str(e)}")
+                logger.error(f"Failed to initialize AIChatAgent: {str(e)}")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Failed to initialize ChatAgent"
+                    detail="Failed to initialize AIChatAgent"
                 )
         return cls._chat_agent
 
@@ -44,7 +44,7 @@ class Dependencies:
         return cls._memory_manager
 
 # Dependency injection functions
-async def get_chat_agent() -> ChatAgent:
+async def get_chat_agent() -> AIChatAgent:
     """Async dependency for ChatAgent."""
     return Dependencies.get_chat_agent()
 

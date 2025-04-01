@@ -1,0 +1,108 @@
+{
+  "templates": [
+    {
+      "name": "task_timeout_recovery",
+      "description": "Tests recovery from a task timeout",
+      "type": "task_timeout",
+      "task_id": "{{task_id}}",
+      "timeout_duration": 30,
+      "validation": {
+        "verify_retry_count": 3,
+        "tasks_recovered": true,
+        "state_consistent": true,
+        "logs_valid": true,
+        "resources_cleaned": true
+      },
+      "expected_logs": [
+        "Task {{task_id}} timed out after 30s",
+        "Initiating retry sequence for task {{task_id}}",
+        "Task recovery completed successfully"
+      ]
+    },
+    {
+      "name": "concurrent_task_race",
+      "description": "Tests handling of race conditions between concurrent tasks",
+      "type": "race_condition",
+      "concurrent_tasks": [
+        {
+          "id": "task1",
+          "priority": 1,
+          "dependencies": []
+        },
+        {
+          "id": "task2",
+          "priority": 2,
+          "dependencies": ["task1"]
+        }
+      ],
+      "validation": {
+        "verify_task_order": ["task1", "task2"],
+        "state_consistent": true,
+        "logs_valid": true,
+        "resources_cleaned": true
+      },
+      "expected_logs": [
+        "Detected potential race condition",
+        "Enforcing task dependency order",
+        "Race condition resolved"
+      ]
+    },
+    {
+      "name": "execution_error_recovery",
+      "description": "Tests recovery from task execution errors",
+      "type": "execution_error",
+      "task_id": "{{task_id}}",
+      "error_type": "memory_allocation_error",
+      "validation": {
+        "verify_retry_count": 2,
+        "tasks_recovered": true,
+        "state_consistent": true,
+        "logs_valid": true,
+        "resources_cleaned": true
+      },
+      "expected_logs": [
+        "Task {{task_id}} failed with memory_allocation_error",
+        "Attempting recovery with reduced memory allocation",
+        "Recovery successful"
+      ]
+    },
+    {
+      "name": "invalid_state_recovery",
+      "description": "Tests recovery from corrupted orchestrator state",
+      "type": "invalid_state",
+      "invalid_state": {
+        "active_tasks": {
+          "task1": {
+            "status": "unknown",
+            "corrupted": true
+          }
+        }
+      },
+      "validation": {
+        "state_consistent": true,
+        "logs_valid": true,
+        "resources_cleaned": true
+      },
+      "expected_logs": [
+        "Detected invalid orchestrator state",
+        "Initiating state recovery procedure",
+        "State consistency restored"
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "target_subsystem": "PromptCycleOrchestrator",
+    "required_capabilities": [
+      "task_timeout_injection",
+      "race_condition_simulation",
+      "error_injection",
+      "state_corruption"
+    ],
+    "validation_rules": {
+      "retry_limit": 3,
+      "cleanup_timeout": 30,
+      "state_recovery_timeout": 60
+    }
+  }
+} 

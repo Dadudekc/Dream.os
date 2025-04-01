@@ -1,38 +1,56 @@
 """
-Configuration manager for loading, validating, and managing application configuration.
+Configuration manager for handling application settings and configuration.
 """
 
 import os
-import logging
 import json
+import yaml
+import logging
 from typing import Dict, Any, Optional
 from pathlib import Path
 
 from config.default_config import get_default_config
 from config.logger_utils import get_logger
-from config.driver_factory import DriverFactory
 
 class ConfigManager:
     """
-    Manages application configuration, including loading from files,
-    environment variables, and providing access to configuration values.
+    Manages application configuration settings.
     """
     
-    def __init__(self, config_name: str = None, config_file: str = "config.json"):
+    _instance = None
+    
+    def __new__(cls, config_name: str = None, config_file: str = None):
         """
-        Initialize ConfigManager with optional config name and file.
+        Create or return the singleton instance of ConfigManager.
         
         Args:
-            config_name: Optional name for this configuration instance
-            config_file: Path to the config file (default: config.json)
+            config_name (str): Optional name for this configuration instance
+            config_file (str): Path to the config file
         """
-        self.config_name = config_name
-        self.config_file = config_file
-        self._config = {}
-        self.driver_factory = None  # Initialize as None for safe cleanup
-        self._load_config()
+        if cls._instance is None:
+            cls._instance = super(ConfigManager, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
     
-    def _load_config(self):
+    def __init__(self, config_name: str = None, config_file: str = None):
+        """
+        Initialize the configuration manager.
+        
+        Args:
+            config_name (str): Optional name for this configuration instance
+            config_file (str): Path to the config file
+        """
+        if self._initialized:
+            return
+            
+        self.config_name = config_name
+        self.config_file = config_file or os.path.join(os.getenv('DATA_DIR', './data'), 'config.json')
+        self._config = {}
+        self._logger = get_logger(__name__)
+        self._load_config()
+        self._initialized = True
+    
+    def _load_config(self) -> None:
         """Load configuration from file, creating if necessary."""
         try:
             if os.path.exists(self.config_file):
@@ -40,69 +58,35 @@ class ConfigManager:
                     with open(self.config_file, 'r', encoding='utf-8') as f:
                         self._config = json.load(f)
                 else:
-                    self._config = {}
+                    self._config = get_default_config()
                     self._save_config()
             else:
                 os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
-                self._config = {}
+                self._config = get_default_config()
                 self._save_config()
         except Exception as e:
-            print(f"Error loading config: {str(e)}")
-            self._config = {}
+            self._logger.error(f"Error loading config: {str(e)}")
+            self._config = get_default_config()
     
-    def _init_services(self) -> None:
-        """Initialize required services."""
+    def _save_config(self) -> None:
+        """Save current configuration to file."""
         try:
-            # Initialize driver factory if webdriver config is present
-            if "webdriver" in self._config:
-                self.driver_factory = DriverFactory(self._config, self._logger)
+            os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
+            with open(self.config_file, 'w', encoding='utf-8') as f:
+                json.dump(self._config, f, indent=2)
         except Exception as e:
-            self._logger.error(f"Error initializing services: {str(e)}")
-    
-    def load_config(self, config_file: str) -> None:
-        """
-        Load configuration from a file.
-        
-        Args:
-            config_file: Path to configuration file
-        """
-        try:
-            import yaml
-            with open(config_file, 'r') as f:
-                loaded_config = yaml.safe_load(f)
-                if loaded_config:
-                    self._merge_config(loaded_config)
-                    self._logger.info(f"Loaded configuration from {config_file}")
-        except Exception as e:
-            self._logger.error(f"Error loading config from {config_file}: {str(e)}")
-    
-    def _merge_config(self, new_config: Dict[str, Any]) -> None:
-        """
-        Merge new configuration with existing config.
-        
-        Args:
-            new_config: New configuration to merge
-        """
-        def merge_dicts(base: Dict[str, Any], update: Dict[str, Any]) -> Dict[str, Any]:
-            for key, value in update.items():
-                if isinstance(value, dict) and key in base and isinstance(base[key], dict):
-                    merge_dicts(base[key], value)
-                else:
-                    base[key] = value
-            return base
-        
-        self._config = merge_dicts(self._config, new_config)
+            self._logger.error(f"Error saving config: {str(e)}")
     
     def get(self, key: str, default: Any = None) -> Any:
         """
-        Get a configuration value by key.
+        Get a configuration value.
         
         Args:
-            key: Configuration key (supports dot notation)
-            default: Default value if key not found
+            key (str): Configuration key (supports dot notation)
+            default (Any): Default value if key not found
             
         Returns:
-            Configuration value or default
+            Any: Configuration value or default
         """
         try:
             value = self._config
@@ -118,8 +102,8 @@ class ConfigManager:
         Set a configuration value.
         
         Args:
-            key: Configuration key (supports dot notation)
-            value: Value to set
+            key (str): Configuration key (supports dot notation)
+            value (Any): Value to set
         """
         try:
             parts = key.split('.')
@@ -127,71 +111,77 @@ class ConfigManager:
             for part in parts[:-1]:
                 config = config.setdefault(part, {})
             config[parts[-1]] = value
-            self._logger.debug(f"Set config key '{key}' to {value}")
+            self._save_config()
         except Exception as e:
             self._logger.error(f"Error setting config key '{key}': {str(e)}")
     
-    def save_config(self, config_file: Optional[str] = None) -> None:
+    def delete(self, key: str) -> None:
         """
-        Save current configuration to a file.
+        Delete a configuration value.
         
         Args:
-            config_file: Optional path to save configuration
+            key (str): Configuration key to delete
         """
-        if not config_file:
-            config_file = Path(self._config["paths"]["config"]) / "config.yaml"
-        
         try:
-            import yaml
-            with open(config_file, 'w') as f:
-                yaml.safe_dump(self._config, f, default_flow_style=False)
-            self._logger.info(f"Saved configuration to {config_file}")
+            parts = key.split('.')
+            config = self._config
+            for part in parts[:-1]:
+                config = config.get(part, {})
+            if parts[-1] in config:
+                del config[parts[-1]]
+                self._save_config()
         except Exception as e:
-            self._logger.error(f"Error saving config to {config_file}: {str(e)}")
+            self._logger.error(f"Error deleting config key '{key}': {str(e)}")
     
-    def reset(self) -> None:
-        """Reset configuration to defaults."""
+    def get_all(self) -> Dict[str, Any]:
+        """
+        Get all configuration values.
+        
+        Returns:
+            Dict[str, Any]: All configuration values
+        """
+        return self._config.copy()
+    
+    def clear(self) -> None:
+        """Clear all configuration values and reset to defaults."""
         self._config = get_default_config()
-        self._logger.info("Reset configuration to defaults")
-        self._init_services()
+        self._save_config()
     
-    def create_driver(self, headless: Optional[bool] = None) -> Any:
+    def load_yaml_config(self, config_file: str) -> None:
         """
-        Create a new WebDriver instance using the driver factory.
+        Load configuration from a YAML file.
         
         Args:
-            headless: Override the default headless setting
-            
-        Returns:
-            WebDriver instance
+            config_file (str): Path to YAML configuration file
         """
-        if not self.driver_factory:
-            raise RuntimeError("Driver factory not initialized")
-        return self.driver_factory.create_driver(headless)
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                loaded_config = yaml.safe_load(f)
+                if loaded_config:
+                    self._merge_config(loaded_config)
+                    self._logger.info(f"Loaded configuration from {config_file}")
+        except Exception as e:
+            self._logger.error(f"Error loading config from {config_file}: {str(e)}")
     
-    def get_cached_driver(self, cache_key: str = "default") -> Optional[Any]:
+    def _merge_config(self, new_config: Dict[str, Any]) -> None:
         """
-        Get a cached driver instance if available.
+        Merge new configuration with existing config.
         
         Args:
-            cache_key: Key to identify the cached driver
-            
-        Returns:
-            Cached WebDriver instance or None
+            new_config (Dict[str, Any]): New configuration to merge
         """
-        if not self.driver_factory:
-            return None
-        return self.driver_factory.get_cached_driver(cache_key)
+        def merge_dicts(base: Dict[str, Any], update: Dict[str, Any]) -> Dict[str, Any]:
+            for key, value in update.items():
+                if isinstance(value, dict) and key in base and isinstance(base[key], dict):
+                    merge_dicts(base[key], value)
+                else:
+                    base[key] = value
+            return base
+        
+        self._config = merge_dicts(self._config, new_config)
+        self._save_config()
     
-    def clear_driver_cache(self) -> None:
-        """Clear all cached driver instances."""
-        if self.driver_factory:
-            self.driver_factory.clear_cache()
-    
-    def __del__(self):
-        """Safe cleanup of resources."""
-        if hasattr(self, "driver_factory") and self.driver_factory:
-            try:
-                self.clear_driver_cache()
-            except Exception as e:
-                print(f"Error during ConfigManager cleanup: {str(e)}") 
+    @property
+    def config_path(self) -> str:
+        """Get the path to the configuration file."""
+        return self.config_file 

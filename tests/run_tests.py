@@ -1,58 +1,67 @@
-import unittest
-import asyncio
-import os
+#!/usr/bin/env python
 import sys
+import pytest
+import logging
 from pathlib import Path
+import os
 
 # Add project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.append(str(project_root))
+project_root = str(Path(__file__).parent.parent.absolute())
+sys.path.insert(0, project_root)
 
-# Import test modules
-from tests.integration.test_community_integration import TestCommunityIntegration
-from tests.test_community_scheduler import TestCommunityScheduler
+# Configure logging
+log_file = os.path.join(project_root, "test_run.log")
+if os.path.exists(log_file):
+    os.remove(log_file)
 
-def run_async_tests(test_class):
-    """Run async test cases."""
-    loop = asyncio.get_event_loop()
-    
-    # Get all test methods
-    test_methods = [m for m in dir(test_class) if m.startswith('test_')]
-    suite = unittest.TestSuite()
-    
-    for method in test_methods:
-        test_case = test_class(method)
-        if asyncio.iscoroutinefunction(getattr(test_class, method)):
-            # Wrap async test in sync wrapper
-            def wrapper(test_case, method):
-                def run_async():
-                    loop.run_until_complete(getattr(test_case, method)())
-                return run_async
-            setattr(test_case, method, wrapper(test_case, method))
-        suite.addTest(test_case)
-    
-    return suite
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler()
+    ]
+)
 
-def main():
-    """Run all tests."""
-    # Ensure data directory exists
-    os.makedirs(os.getenv("DATA_DIR", "./data"), exist_ok=True)
-    
-    # Create test suite
-    suite = unittest.TestSuite()
-    
-    # Add async tests
-    suite.addTests(run_async_tests(TestCommunityIntegration))
-    
-    # Add sync tests
-    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestCommunityScheduler))
-    
-    # Run tests with verbosity
-    runner = unittest.TextTestRunner(verbosity=2)
-    result = runner.run(suite)
-    
-    # Exit with appropriate code
-    sys.exit(not result.wasSuccessful())
+logger = logging.getLogger(__name__)
+
+def run_tests():
+    try:
+        logger.info("Starting test run...")
+        
+        # Set up test arguments
+        test_args = [
+            'tests/unit',
+            'tests/integration',
+            '--verbose',
+            '--capture=no',
+            '--tb=short',
+            '-p', 'no:warnings',
+            '--asyncio-mode=auto',
+            '--durations=10',
+            '--showlocals',
+            '-v',
+            '--cov=interfaces',
+            '--cov-report=term-missing',
+            '--cov-report=html:coverage_report'
+        ]
+        
+        logger.info("Coverage reporting enabled")
+        logger.info(f"Running tests with arguments: {test_args}")
+        
+        import pytest
+        exit_code = pytest.main(test_args)
+        
+        if exit_code != 0:
+            logger.error(f"Test run failed with exit code: {exit_code}")
+        else:
+            logger.info("Test run completed successfully")
+            
+        return exit_code
+        
+    except Exception as e:
+        logger.error(f"Error running tests: {str(e)}", exc_info=True)
+        return 1
 
 if __name__ == '__main__':
-    main() 
+    sys.exit(run_tests()) 

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QTabWidget
 from interfaces.pyqt.tabs.PromptExecutionTab import PromptExecutionTab
-from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
+from interfaces.pyqt.tabs.dreamscape.DreamscapeGenerationTab import DreamscapeGenerationTab
 from interfaces.pyqt.components.discord_tab import DiscordTab
 from interfaces.pyqt.tabs.LogsTab import LogsTab
 from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab

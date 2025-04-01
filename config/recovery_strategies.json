@@ -1,0 +1,87 @@
+{
+  "start_new_chat": {
+    "weight": 0.7,
+    "conditions": ["retry_count > 2", "error_type == 'context'"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "reload_context": {
+    "weight": 0.8,
+    "conditions": ["error_type == 'parsing'", "retry_count < 3"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "reset_cursor": {
+    "weight": 0.6,
+    "conditions": ["error_type == 'ui'", "retry_count < 2"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "retry_last_command": {
+    "weight": 0.5,
+    "conditions": ["error_type == 'timeout'", "error_type == 'connection'"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "simplify_prompt": {
+    "weight": 0.7,
+    "conditions": ["error_type == 'context'", "retry_count > 1"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "restart_application": {
+    "weight": 0.3,
+    "conditions": ["retry_count > 3", "error_type == 'internal'"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "clear_memory": {
+    "weight": 0.4,
+    "conditions": ["error_type == 'resource'", "retry_count > 2"],
+    "success_rate": 0.0,
+    "attempts": 0,
+    "successes": 0
+  },
+  "retry_with_backoff": {
+    "description": "Retry the operation with exponential backoff",
+    "weight": 0.6,
+    "conditions": [
+      "network_error",
+      "rate_limit",
+      "timeout"
+    ],
+    "dependencies": []
+  },
+  "switch_model": {
+    "description": "Switch to a different model",
+    "weight": 0.5,
+    "conditions": [
+      "model_error",
+      "hallucination",
+      "token_limit"
+    ],
+    "dependencies": []
+  },
+  "clear_and_reset": {
+    "weight": 0.4,
+    "conditions": ["retry_count > 3"],
+    "success_rate": 0.4,
+    "attempts": 5,
+    "successes": 2
+  },
+  "debug_mode": {
+    "description": "Switch to debug mode with more verbose output",
+    "weight": 0.3,
+    "conditions": [
+      "unknown_error",
+      "internal_error"
+    ],
+    "dependencies": []
+  }
+}

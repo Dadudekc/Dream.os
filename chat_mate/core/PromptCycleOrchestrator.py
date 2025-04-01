@@ -5,7 +5,7 @@ from core.IChatManager import IChatManager
 from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
 from core.interfaces.IPromptManager import IPromptManager
 from core.micro_factories.prompt_factory import PromptFactory
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class PromptCycleOrchestrator(IPromptOrchestrator):
     """Orchestrates prompt cycles with injected chat management."""

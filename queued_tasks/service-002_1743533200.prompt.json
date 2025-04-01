@@ -1,0 +1,14 @@
+{
+  "id": "service-002",
+  "description": "Generate UserService class",
+  "type": "cursor",
+  "is_cursor_task": true,
+  "template_name": "service/service_class_template",
+  "params": {
+    "service_name": "UserService",
+    "service_function": "user management and profile operations",
+    "dependency_1": "DatabaseService",
+    "dependency_2": "CacheManager"
+  },
+  "target_output": "typescript_service"
+}

@@ -1,152 +1,222 @@
 import pytest
-import os
-import json
-from unittest.mock import MagicMock, patch
+import sys
+import asyncio
+from pathlib import Path
+from unittest.mock import MagicMock, patch, PropertyMock
+
+# Mock undetected_chromedriver before importing DreamscapeGenerationTab
+sys.modules['undetected_chromedriver'] = MagicMock()
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
-from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
+from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeGenerationTab import DreamscapeGenerationTab
+from interfaces.pyqt.tabs.dreamscape_generation.services.ServiceInitializer import ServiceInitializer
 
-# Create QApplication instance for tests
+# Initialize QApplication for tests
 @pytest.fixture(scope="session")
 def qapp():
-    app = QApplication([])
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication(sys.argv)
     yield app
-    app.quit()
 
-# Mock services
 @pytest.fixture
 def mock_services():
+    template_manager = MagicMock()
+    template_manager.get_available_templates.return_value = ['Template1', 'Template2']
+    
+    episode_generator = MagicMock()
+    episode_generator.get_episodes.return_value = []
+    
     return {
-        'dispatcher': MagicMock(),
-        'prompt_manager': MagicMock(),
-        'chat_manager': MagicMock(),
-        'response_handler': MagicMock(),
-        'memory_manager': MagicMock(),
-        'discord_manager': MagicMock(),
-        'ui_logic': MagicMock(),
-        'config_manager': MagicMock(),
-        'logger': MagicMock()
+        'core_services': {
+            'cycle_service': MagicMock(),
+            'prompt_handler': MagicMock(),
+            'discord_processor': MagicMock(),
+            'task_orchestrator': MagicMock(),
+            'dreamscape_service': MagicMock(),
+        },
+        'component_managers': {
+            'template_manager': template_manager,
+            'episode_generator': episode_generator,
+            'context_manager': MagicMock(),
+            'ui_manager': MagicMock(),
+        },
+        'output_dir': str(Path.cwd() / 'test_output')
     }
 
 @pytest.fixture
-def dreamscape_tab(qapp, mock_services, tmp_path):
-    # Create a temporary output directory
-    output_dir = tmp_path / "dreamscape_output"
-    output_dir.mkdir()
-    mock_services['config_manager'].get.return_value = str(output_dir)
-    
-    tab = DreamscapeGenerationTab(**mock_services)
-    return tab
+def tab(qapp, mock_services):
+    return DreamscapeGenerationTab(services=mock_services)
 
-def test_init(dreamscape_tab):
-    """Test initialization of DreamscapeGenerationTab"""
-    assert dreamscape_tab is not None
-    assert dreamscape_tab.episode_list is not None
-    assert dreamscape_tab.episode_content is not None
-    assert dreamscape_tab.output_display is not None
+def test_init(tab, mock_services):
+    """Test initialization of DreamscapeGenerationTab."""
+    assert tab is not None
+    assert tab.services == mock_services
+    assert hasattr(tab, 'generation_controls')
+    assert hasattr(tab, 'episode_list')
+    assert hasattr(tab, 'context_tree')
 
-def test_refresh_episode_list(dreamscape_tab, tmp_path):
-    """Test episode list refresh functionality"""
-    # Create a test episode file
-    output_dir = tmp_path / "dreamscape_output"
-    test_episode = output_dir / "20240325_test_episode.txt"
-    test_episode.write_text("Test episode content")
+def test_template_loading(tab, mock_services):
+    """Test template loading functionality."""
+    mock_templates = ['Template1', 'Template2']
+    tab.template_manager.get_available_templates.return_value = mock_templates
+    tab._load_initial_data()
     
-    # Refresh episode list
-    dreamscape_tab.refresh_episode_list()
-    
-    # Check if episode appears in list
-    assert dreamscape_tab.episode_list.count() == 1
-    item_text = dreamscape_tab.episode_list.item(0).text()
-    assert "test episode" in item_text.lower()
+    assert tab.generation_controls.template_dropdown.count() == 2
+    assert [tab.generation_controls.template_dropdown.itemText(i) for i in range(2)] == mock_templates
 
 @pytest.mark.asyncio
-async def test_generate_dreamscape_episodes(dreamscape_tab, mock_services):
-    """Test episode generation process"""
-    # Mock the dreamscape generator
-    mock_generator = MagicMock()
-    mock_generator.get_episode_number.return_value = 1
-    mock_generator.generate_dreamscape_episodes.return_value = ["Episode 1"]
-    dreamscape_tab.dreamscape_generator = mock_generator
+async def test_generate_episode_success(tab, mock_services):
+    """Test successful episode generation."""
+    # Setup mock episode
+    mock_episode = {
+        'content': "Test episode content",
+        'title': "Test Episode",
+        'id': "test-id",
+        'context': {'key': 'value'}
+    }
     
-    # Enable Discord posting
-    dreamscape_tab.post_discord_checkbox.setChecked(True)
+    # Setup async mock
+    async def mock_generate(*args, **kwargs):
+        return mock_episode
+    tab.episode_generator.generate_episode.side_effect = mock_generate
+    
+    # Set UI state
+    tab.generation_controls.target_chat_input.setText("test-chat")
+    tab.generation_controls.model_dropdown.setCurrentText("GPT-4o")
     
     # Trigger generation
-    await dreamscape_tab.generate_dreamscape_episodes()
+    await tab._on_generate_clicked({
+        'template_name': "Template1",
+        'target_chat': "test-chat",
+        'model': "gpt-4o",
+        'process_all': False,
+        'reverse_order': False,
+        'headless': False,
+        'post_discord': False
+    })
     
-    # Verify generator was called
-    mock_generator.generate_dreamscape_episodes.assert_called_once()
+    # Verify episode generation was called with correct parameters
+    tab.episode_generator.generate_episode.assert_called_once()
     
     # Verify UI updates
-    assert dreamscape_tab.generate_episodes_btn.isEnabled()
+    assert tab.episode_list.episode_content.toPlainText() == "Test episode content"
 
-def test_share_to_discord(dreamscape_tab, mock_services):
-    """Test Discord sharing functionality"""
-    # Set up test content
+@pytest.mark.asyncio
+async def test_generate_episode_failure(tab, mock_services):
+    """Test episode generation failure handling."""
+    tab.episode_generator.generate_episode.side_effect = Exception("Generation failed")
+    
+    # Trigger generation
+    await tab._on_generate_clicked({
+        'template_name': "Template1",
+        'target_chat': "test-chat",
+        'model': "gpt-4o",
+        'process_all': False,
+        'reverse_order': False,
+        'headless': False,
+        'post_discord': False
+    })
+
+def test_cancel_generation(tab, mock_services):
+    """Test cancellation of episode generation."""
+    tab._on_cancel_clicked()
+    tab.task_orchestrator.cancel_current_task.assert_called_once()
+
+def test_episode_selection(tab, mock_services):
+    """Test episode selection handling."""
+    # Setup mock episode data
+    mock_episode = {
+        'content': "Selected episode content",
+        'title': "Test Episode",
+        'id': "test-id",
+        'context': {'key': 'value'}
+    }
+    
+    # Add and select episode
+    tab.episode_list.add_episode(mock_episode)
+    tab.episode_list.episode_list.setCurrentRow(0)
+    
+    # Verify content and context updates
+    assert tab.episode_list.episode_content.toPlainText() == "Selected episode content"
+    
+    # Verify context tree update was triggered
+    assert tab.context_tree.tree.topLevelItemCount() > 0
+
+def test_context_tree_filtering(tab):
+    """Test context tree filtering functionality."""
+    # Setup mock context data
+    context_data = {
+        "test_key": "test_value",
+        "other_key": "other_value"
+    }
+    
+    # Update context tree
+    tab.context_tree.update_context(context_data)
+    
+    # Test filtering
+    tab.context_tree.filter_input.setText("test")
+    
+    # Verify filtering results
+    root = tab.context_tree.tree.invisibleRootItem()
+    visible_items = []
+    for i in range(root.childCount()):
+        item = root.child(i)
+        if not item.isHidden():
+            visible_items.append(item.text(0))
+    
+    assert "test_key" in visible_items
+    assert "other_key" not in visible_items
+
+@pytest.mark.asyncio
+async def test_save_episode(tab, tmp_path):
+    """Test episode saving functionality."""
     test_content = "Test episode content"
-    dreamscape_tab.episode_content.setPlainText(test_content)
+    tab.episode_list.episode_content.setPlainText(test_content)
     
-    # Trigger sharing
-    dreamscape_tab.share_to_discord()
+    # Mock QFileDialog.getSaveFileName
+    with patch('PyQt5.QtWidgets.QFileDialog.getSaveFileName', 
+              return_value=(str(tmp_path / "test_episode.txt"), "Text files (*.txt)")):
+        await tab.episode_list._save_episode("txt")
     
-    # Verify Discord manager was called
-    mock_services['discord_manager'].send_message.assert_called_once_with(test_content)
+    # Verify file was saved correctly
+    saved_file = tmp_path / "test_episode.txt"
+    assert saved_file.exists()
+    assert saved_file.read_text() == test_content
 
-def test_context_memory_refresh(dreamscape_tab):
-    """Test context memory refresh functionality"""
-    # Mock context data
-    mock_context = {
-        "episode_count": 5,
-        "last_updated": "2024-03-25",
-        "active_themes": ["Adventure", "Mystery"],
-        "recent_episodes": [
-            {
-                "title": "Test Episode",
-                "timestamp": "2024-03-25",
-                "themes": ["Adventure"]
-            }
-        ]
+def test_service_initialization_without_services(qtbot):
+    """Test that services are initialized correctly when none are provided."""
+    # Create a mock ServiceInitializer instance
+    mock_initializer = MagicMock(spec=ServiceInitializer)
+    mock_services = {
+        'core_services': {
+            'cycle_service': None,
+            'prompt_handler': None,
+            'discord_processor': None,
+            'task_orchestrator': None,
+            'dreamscape_service': None,
+        },
+        'component_managers': {
+            'template_manager': None,
+            'episode_generator': None,
+            'context_manager': None,
+            'ui_manager': None,
+        },
+        'output_dir': 'test_output'
     }
-    
-    # Mock the generator's get_context_summary method
-    dreamscape_tab.dreamscape_generator = MagicMock()
-    dreamscape_tab.dreamscape_generator.get_context_summary.return_value = mock_context
-    
-    # Refresh context memory
-    dreamscape_tab.refresh_context_memory()
-    
-    # Verify tree widget was populated
-    assert dreamscape_tab.context_tree.topLevelItemCount() > 0
+    mock_initializer.initialize_services.return_value = mock_services
 
-def test_load_schedule_settings(dreamscape_tab, tmp_path):
-    """Test loading schedule settings"""
-    # Create test schedule file
-    output_dir = tmp_path / "dreamscape_output"
-    schedule_file = output_dir / "context_update_schedule.json"
-    schedule_data = {
-        "enabled": True,
-        "interval_days": 7,
-        "target_chat": "Dreamscape Chat",
-        "next_update": "2024-03-32T12:00:00Z"
-    }
-    schedule_file.write_text(json.dumps(schedule_data))
-    
-    # Load settings
-    dreamscape_tab.load_schedule_settings()
-    
-    # Verify settings were applied
-    assert dreamscape_tab.auto_update_checkbox.isChecked()
-    assert "7" in dreamscape_tab.update_interval_combo.currentText()
-
-def test_validate_schedule_settings(dreamscape_tab):
-    """Test schedule settings validation"""
-    # Test with checkbox unchecked
-    dreamscape_tab.auto_update_checkbox.setChecked(False)
-    assert not dreamscape_tab._validate_schedule_settings()
-    
-    # Test with checkbox checked
-    dreamscape_tab.auto_update_checkbox.setChecked(True)
-    assert dreamscape_tab._validate_schedule_settings()
+    # Patch the ServiceInitializer class to return our mock
+    with patch('interfaces.pyqt.tabs.dreamscape_generation.DreamscapeGenerationTab.ServiceInitializer', return_value=mock_initializer):
+        tab = DreamscapeGenerationTab()
+        
+        # Verify the ServiceInitializer was created and used
+        assert hasattr(tab, 'service_initializer')
+        assert tab.service_initializer == mock_initializer
+        mock_initializer.initialize_services.assert_called_once()
+        
+        # Verify the services were stored correctly
+        assert tab.services == mock_services
 
 # Add more test cases as needed 

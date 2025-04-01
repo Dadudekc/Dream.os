@@ -1,7 +1,7 @@
 # core/micro_factories/chat_factory.py
 import logging
 from typing import Optional
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 def create_chat_manager(config_manager: ConfigManager, logger: Optional[logging.Logger] = None, prompt_manager=None):
     """

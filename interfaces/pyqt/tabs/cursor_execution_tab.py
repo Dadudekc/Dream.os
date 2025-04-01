@@ -14,7 +14,8 @@ import sys
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
+from datetime import datetime
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
@@ -25,6 +26,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 
 from core.refactor.cursor_dispatcher import CursorDispatcher, logger
+from core.PromptExecutionService import PromptExecutionService
+from interfaces.pyqt.tabs.task_history_modal import TaskDetailsModal
 
 # Setup logging for this UI module
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +64,7 @@ class CursorExecutionTab(QWidget):
     - Running prompt sequences
     - Generating and running tests
     - Performing Git operations (install hooks, commit changes)
+    - *NEW* Direct Cursor Task Injection for automated processing
     """
     
     # Signals to report status back to the main window or logging agent
@@ -69,12 +73,24 @@ class CursorExecutionTab(QWidget):
     tests_generated = pyqtSignal(bool, str, str)       # success, file_path, error
     tests_run = pyqtSignal(bool, str, str)             # success, output, error
     git_operation_completed = pyqtSignal(bool, str)    # success, message
+    cursor_task_injected = pyqtSignal(bool, str)       # success, task_path
     
-    def __init__(self, parent=None):
+    def __init__(self, services: Dict[str, Any], parent: Optional[QWidget] = None):
+        """
+        Initialize the CursorExecutionTab.
+        
+        Args:
+            services: Dictionary of application services
+            parent: Optional parent widget
+        """
         super().__init__(parent)
+        self.services = services
         
         # Initialize the backend CursorDispatcher (which now encapsulates our micro-factory architecture)
         self.dispatcher = CursorDispatcher()
+        
+        # Initialize PromptExecutionService for direct task injection
+        self.prompt_service = PromptExecutionService()
         
         # Setup UI components
         self.init_ui()
@@ -107,6 +123,14 @@ class CursorExecutionTab(QWidget):
         # Tab for Git integration
         git_tab = self._create_git_tab()
         tabs.addTab(git_tab, "Git Integration")
+        
+        # New tab for Cursor Task Injection
+        cursor_task_tab = self._create_cursor_task_tab()
+        tabs.addTab(cursor_task_tab, "Cursor Task Injection")
+        
+        # New tab for Task History
+        task_history_tab = self._create_task_history_tab()
+        tabs.addTab(task_history_tab, "Task History")
         
     def _create_prompt_tab(self) -> QWidget:
         """Create the prompt execution tab."""
@@ -300,6 +324,145 @@ class CursorExecutionTab(QWidget):
         
         return tab
         
+    def _create_cursor_task_tab(self) -> QWidget:
+        """Create the Cursor task injection tab."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        
+        # Template selection
+        template_group = QGroupBox("Template Selection")
+        template_layout = QVBoxLayout(template_group)
+        
+        template_header = QHBoxLayout()
+        template_header.addWidget(QLabel("Select Template:"))
+        self.cursor_template_combo = QComboBox()
+        template_header.addWidget(self.cursor_template_combo)
+        refresh_btn = QPushButton("Refresh")
+        refresh_btn.clicked.connect(self._load_cursor_templates)
+        template_header.addWidget(refresh_btn)
+        template_layout.addLayout(template_header)
+        
+        # Context input group
+        context_group = QGroupBox("Context Variables")
+        context_layout = QVBoxLayout(context_group)
+        self.cursor_context_edit = QTextEdit()
+        self.cursor_context_edit.setPlaceholderText('{"STRATEGY_DESCRIPTION": "Create a modular PyQt5 tab..."}')
+        context_layout.addWidget(QLabel("Context JSON:"))
+        context_layout.addWidget(self.cursor_context_edit)
+        
+        # Target output
+        target_group = QGroupBox("Output Target")
+        target_layout = QHBoxLayout(target_group)
+        target_layout.addWidget(QLabel("Target Output File/Folder:"))
+        self.cursor_target_edit = QLineEdit()
+        self.cursor_target_edit.setPlaceholderText("output/path/filename.py")
+        target_layout.addWidget(self.cursor_target_edit)
+        browse_btn = QPushButton("Browse...")
+        browse_btn.clicked.connect(self._browse_cursor_target)
+        target_layout.addWidget(browse_btn)
+        
+        # Controls - Add auto-execute checkbox
+        controls_layout = QHBoxLayout()
+        self.auto_execute_checkbox = QCheckBox("⚡ Auto-execute after injection")
+        self.auto_execute_checkbox.setToolTip("Mark the task for automatic execution by Cursor without requiring manual approval")
+        controls_layout.addWidget(self.auto_execute_checkbox)
+        controls_layout.addStretch()
+        self.create_task_btn = QPushButton("Create Cursor Task")
+        self.create_task_btn.setMinimumHeight(40)
+        self.create_task_btn.clicked.connect(self._create_cursor_task)
+        controls_layout.addWidget(self.create_task_btn)
+        
+        # Task list display
+        task_list_group = QGroupBox("Queued Tasks")
+        task_list_layout = QVBoxLayout(task_list_group)
+        self.task_table = QTableWidget(0, 4)
+        self.task_table.setHorizontalHeaderLabels(["ID", "Template", "Target", "Timestamp"])
+        self.task_table.horizontalHeader().setStretchLastSection(True)
+        task_list_layout.addWidget(self.task_table)
+        
+        task_controls = QHBoxLayout()
+        self.refresh_tasks_btn = QPushButton("Refresh Task List")
+        self.refresh_tasks_btn.clicked.connect(self._refresh_cursor_tasks)
+        task_controls.addWidget(self.refresh_tasks_btn)
+        self.delete_task_btn = QPushButton("Delete Selected Task")
+        self.delete_task_btn.clicked.connect(self._delete_cursor_task)
+        task_controls.addWidget(self.delete_task_btn)
+        task_list_layout.addLayout(task_controls)
+        
+        # Result display
+        result_group = QGroupBox("Task Creation Result")
+        result_layout = QVBoxLayout(result_group)
+        self.cursor_result_text = QTextEdit()
+        self.cursor_result_text.setReadOnly(True)
+        result_layout.addWidget(self.cursor_result_text)
+        
+        # Assemble the tab
+        layout.addWidget(template_group)
+        layout.addWidget(context_group)
+        layout.addWidget(target_group)
+        layout.addLayout(controls_layout)
+        layout.addWidget(task_list_group)
+        layout.addWidget(result_group)
+        
+        # Load available templates and initial task list
+        self._load_cursor_templates()
+        self._refresh_cursor_tasks()
+        
+        return tab
+        
+    def _create_task_history_tab(self) -> QWidget:
+        """Create the task history tab."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        
+        # Filter controls
+        filter_group = QGroupBox("Filter Options")
+        filter_layout = QHBoxLayout(filter_group)
+        
+        # Status filter
+        filter_layout.addWidget(QLabel("Status:"))
+        self.status_filter = QComboBox()
+        self.status_filter.addItems(["All", "Queued", "Completed", "Failed"])
+        self.status_filter.currentTextChanged.connect(self._refresh_task_history)
+        filter_layout.addWidget(self.status_filter)
+        
+        # Template filter
+        filter_layout.addWidget(QLabel("Template:"))
+        self.template_filter = QComboBox()
+        self.template_filter.addItem("All")
+        self.template_filter.currentTextChanged.connect(self._refresh_task_history)
+        filter_layout.addWidget(self.template_filter)
+        
+        # Search
+        filter_layout.addWidget(QLabel("Search:"))
+        self.search_edit = QLineEdit()
+        self.search_edit.setPlaceholderText("Search tasks...")
+        self.search_edit.textChanged.connect(self._refresh_task_history)
+        filter_layout.addWidget(self.search_edit)
+        
+        # Refresh button
+        refresh_btn = QPushButton("Refresh")
+        refresh_btn.clicked.connect(self._refresh_task_history)
+        filter_layout.addWidget(refresh_btn)
+        
+        layout.addWidget(filter_group)
+        
+        # Task history table
+        self.history_table = QTableWidget(0, 6)
+        self.history_table.setHorizontalHeaderLabels([
+            "ID", "Template", "Target", "Status", "Timestamp", "Actions"
+        ])
+        self.history_table.horizontalHeader().setStretchLastSection(True)
+        self.history_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.history_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        layout.addWidget(self.history_table)
+        
+        # Initialize task history
+        self._refresh_task_history()
+        self._update_template_filter()
+        
+        return tab
+    
     def load_templates(self):
         """Load available templates into the UI."""
         try:
@@ -630,6 +793,303 @@ class CursorExecutionTab(QWidget):
         self.install_hooks_button.setEnabled(True)
         self.commit_button.setEnabled(True)
         self.git_operation_completed.emit(success, message)
+    
+    def _load_cursor_templates(self):
+        """Load templates for Cursor task injection."""
+        try:
+            templates_dir = Path("templates")
+            if not templates_dir.exists():
+                templates_dir.mkdir(parents=True, exist_ok=True)
+                
+            templates = [
+                f.name for f in templates_dir.iterdir() 
+                if f.is_file() and f.suffix in ['.txt', '.md', '.jinja']
+            ]
+            
+            self.cursor_template_combo.clear()
+            self.cursor_template_combo.addItems(templates)
+            
+            if not templates:
+                self.log_message("No templates found in 'templates' directory")
+        except Exception as e:
+            self.log_message(f"Error loading cursor templates: {e}")
+    
+    def _browse_cursor_target(self):
+        """Browse for target output file."""
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Select Target Output", "", "All Files (*)"
+        )
+        if path:
+            self.cursor_target_edit.setText(path)
+    
+    def _create_cursor_task(self):
+        """Create a new Cursor queued task."""
+        template_name = self.cursor_template_combo.currentText()
+        if not template_name:
+            self.cursor_result_text.setText("Please select a template")
+            return
+            
+        context_str = self.cursor_context_edit.toPlainText().strip()
+        target_output = self.cursor_target_edit.text().strip() or "output.py"
+        auto_execute = self.auto_execute_checkbox.isChecked()
+        
+        try:
+            if context_str:
+                context = json.loads(context_str)
+            else:
+                context = {}
+                
+            self.cursor_result_text.clear()
+            self.cursor_result_text.append("Creating Cursor task...")
+            
+            # Create the task
+            task_path = self.prompt_service.execute_prompt(
+                template_name, 
+                context, 
+                target_output,
+                auto_execute=auto_execute
+            )
+            
+            self.cursor_result_text.append(f"✅ Task created successfully at: {task_path}")
+            if auto_execute:
+                self.cursor_result_text.append("⚡ Task is marked for auto-execution by Cursor.")
+            else:
+                self.cursor_result_text.append("Cursor will process this task when approved.")
+            
+            # Refresh the task list
+            self._refresh_cursor_tasks()
+            self._refresh_task_history()
+            
+            # Emit signal
+            self.cursor_task_injected.emit(True, task_path)
+            
+        except json.JSONDecodeError as e:
+            self.cursor_result_text.setText(f"Invalid JSON context: {str(e)}")
+            self.cursor_task_injected.emit(False, str(e))
+        except Exception as e:
+            self.cursor_result_text.setText(f"Error creating task: {str(e)}")
+            self.cursor_task_injected.emit(False, str(e))
+    
+    def _refresh_cursor_tasks(self):
+        """Refresh the list of queued Cursor tasks."""
+        try:
+            tasks = self.prompt_service.get_queued_tasks()
+            
+            self.task_table.setRowCount(len(tasks))
+            for row, task in enumerate(tasks):
+                # ID
+                id_item = QTableWidgetItem(task["id"][:8] + "...")
+                id_item.setData(Qt.UserRole, task["id"])  # Store full ID
+                self.task_table.setItem(row, 0, id_item)
+                
+                # Template
+                self.task_table.setItem(row, 1, QTableWidgetItem(task["template_name"]))
+                
+                # Target
+                self.task_table.setItem(row, 2, QTableWidgetItem(task["target_output"]))
+                
+                # Timestamp
+                timestamp = datetime.fromisoformat(task["timestamp"]).strftime("%Y-%m-%d %H:%M:%S")
+                self.task_table.setItem(row, 3, QTableWidgetItem(timestamp))
+        except Exception as e:
+            self.cursor_result_text.setText(f"Error refreshing task list: {str(e)}")
+    
+    def _delete_cursor_task(self):
+        """Delete the selected task."""
+        selected_items = self.task_table.selectedItems()
+        if not selected_items:
+            self.cursor_result_text.setText("No task selected")
+            return
+            
+        # Get the task ID from the first column
+        row = selected_items[0].row()
+        task_id = self.task_table.item(row, 0).data(Qt.UserRole)
+        
+        try:
+            if self.prompt_service.delete_task(task_id):
+                self.cursor_result_text.setText(f"Task {task_id[:8]}... deleted successfully")
+                self._refresh_cursor_tasks()
+            else:
+                self.cursor_result_text.setText(f"Failed to delete task {task_id[:8]}...")
+        except Exception as e:
+            self.cursor_result_text.setText(f"Error deleting task: {str(e)}")
+    
+    def _refresh_task_history(self):
+        """Refresh the task history display with filtering."""
+        try:
+            # Get all tasks
+            all_tasks = self.prompt_service.get_all_tasks()
+            
+            # Apply filters
+            filtered_tasks = self._apply_task_filters(all_tasks)
+            
+            # Update table
+            self.history_table.setRowCount(len(filtered_tasks))
+            for row, task in enumerate(filtered_tasks):
+                # ID
+                id_item = QTableWidgetItem(task["id"][:8] + "...")
+                id_item.setData(Qt.UserRole, task["id"])  # Store full ID
+                self.history_table.setItem(row, 0, id_item)
+                
+                # Template
+                self.history_table.setItem(row, 1, QTableWidgetItem(task.get("template_name", "Unknown")))
+                
+                # Target
+                self.history_table.setItem(row, 2, QTableWidgetItem(task.get("target_output", "Unknown")))
+                
+                # Status with color
+                status = task.get("status", "unknown")
+                status_item = QTableWidgetItem(status)
+                status_color = {
+                    'queued': Qt.blue,
+                    'running': Qt.darkYellow,
+                    'completed': Qt.darkGreen,
+                    'failed': Qt.darkRed
+                }.get(status.lower(), Qt.gray)
+                status_item.setForeground(status_color)
+                status_item.setFont(QFont("", -1, QFont.Bold))
+                self.history_table.setItem(row, 3, status_item)
+                
+                # Timestamp
+                timestamp = task.get("completed_at", task.get("timestamp", "Unknown"))
+                if timestamp != "Unknown":
+                    try:
+                        dt = datetime.fromisoformat(timestamp)
+                        timestamp = dt.strftime("%Y-%m-%d %H:%M:%S")
+                    except (ValueError, TypeError):
+                        pass
+                self.history_table.setItem(row, 4, QTableWidgetItem(timestamp))
+                
+                # Actions
+                actions_cell = QWidget()
+                actions_layout = QHBoxLayout(actions_cell)
+                actions_layout.setContentsMargins(2, 2, 2, 2)
+                
+                view_btn = QPushButton("View")
+                view_btn.setProperty("task_id", task["id"])
+                view_btn.clicked.connect(self._view_task_details)
+                actions_layout.addWidget(view_btn)
+                
+                delete_btn = QPushButton("Delete")
+                delete_btn.setProperty("task_id", task["id"])
+                delete_btn.clicked.connect(self._delete_history_task)
+                actions_layout.addWidget(delete_btn)
+                
+                if task.get("status") == "queued":
+                    complete_btn = QPushButton("Mark Complete")
+                    complete_btn.setProperty("task_id", task["id"])
+                    complete_btn.clicked.connect(lambda: self._mark_task_complete(task["id"]))
+                    actions_layout.addWidget(complete_btn)
+                
+                self.history_table.setCellWidget(row, 5, actions_cell)
+            
+            # Adjust column widths
+            self.history_table.resizeColumnsToContents()
+            self.history_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
+            
+        except Exception as e:
+            logger.error(f"Error refreshing task history: {e}")
+    
+    def _apply_task_filters(self, tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Apply filters to the task list."""
+        # Status filter
+        status_filter = self.status_filter.currentText().lower()
+        if status_filter != "all":
+            tasks = [t for t in tasks if t.get("status", "").lower() == status_filter]
+        
+        # Template filter
+        template_filter = self.template_filter.currentText()
+        if template_filter != "All":
+            tasks = [t for t in tasks if t.get("template_name") == template_filter]
+        
+        # Search filter
+        search_text = self.search_edit.text().lower()
+        if search_text:
+            filtered_tasks = []
+            for task in tasks:
+                task_id = task.get("id", "").lower()
+                template = task.get("template_name", "").lower()
+                target = task.get("target_output", "").lower()
+                if (search_text in task_id or 
+                    search_text in template or 
+                    search_text in target):
+                    filtered_tasks.append(task)
+            tasks = filtered_tasks
+        
+        return tasks
+    
+    def _update_template_filter(self):
+        """Update the template filter combobox with available templates."""
+        try:
+            # Get all unique template names
+            all_tasks = self.prompt_service.get_all_tasks()
+            templates = sorted(set(t.get("template_name", "") for t in all_tasks if t.get("template_name")))
+            
+            # Save current selection
+            current = self.template_filter.currentText()
+            
+            # Clear and repopulate
+            self.template_filter.clear()
+            self.template_filter.addItem("All")
+            self.template_filter.addItems(templates)
+            
+            # Restore selection if still available
+            index = self.template_filter.findText(current)
+            if index >= 0:
+                self.template_filter.setCurrentIndex(index)
+        except Exception as e:
+            logger.error(f"Error updating template filter: {e}")
+    
+    def _view_task_details(self):
+        """View details of the selected task."""
+        try:
+            # Get the sender button
+            sender = self.sender()
+            task_id = sender.property("task_id")
+            
+            # Find the task data
+            task_data = None
+            all_tasks = self.prompt_service.get_all_tasks()
+            for task in all_tasks:
+                if task.get("id") == task_id:
+                    task_data = task
+                    break
+            
+            if task_data:
+                # Show the task details modal
+                dialog = TaskDetailsModal(task_data, self)
+                dialog.exec_()
+            else:
+                logger.warning(f"Task not found: {task_id}")
+        except Exception as e:
+            logger.error(f"Error viewing task details: {e}")
+    
+    def _delete_history_task(self):
+        """Delete a task from history via the action button."""
+        try:
+            # Get the sender button
+            sender = self.sender()
+            task_id = sender.property("task_id")
+            
+            # Delete the task
+            if self.prompt_service.delete_task(task_id):
+                self._refresh_task_history()
+                self._refresh_cursor_tasks()
+            else:
+                logger.warning(f"Failed to delete task: {task_id}")
+        except Exception as e:
+            logger.error(f"Error deleting task: {e}")
+    
+    def _mark_task_complete(self, task_id: str):
+        """Mark a task as complete."""
+        try:
+            if self.prompt_service.mark_task_complete(task_id):
+                self._refresh_task_history()
+                self._refresh_cursor_tasks()
+            else:
+                logger.warning(f"Failed to mark task as complete: {task_id}")
+        except Exception as e:
+            logger.error(f"Error marking task as complete: {e}")
 
 class CursorExecutionWindow(QWidget):
     """Main window wrapper for CursorExecutionTab with proper close event handling."""

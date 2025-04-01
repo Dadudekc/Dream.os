@@ -4,7 +4,7 @@ Using a factory pattern to handle the creation of PromptCycleOrchestrator implem
 and resolve circular dependencies.
 """
 from typing import Optional, Any
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.IChatManager import IChatManager
 from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
 

@@ -1,11 +1,28 @@
-# AUTO-GENERATED __init__.py
-# DO NOT EDIT MANUALLY - changes may be overwritten
+"""
+PyQt Interface Tabs Module
 
-# Import necessary modules
+This module provides the tab implementations for the Dream.OS PyQt interface.
+"""
 
-# Explicit exports to prevent circular imports
-from . import PromptExecutionTab
+from .main_tab import MainTab
+from .chat_tab.ChatTab import ChatTab
+from .chat_tab.ChatTabManager import ChatTabManager
+from .chat_tab.ChatTabWidget import ChatTabWidget
+from .chat_tab.ChatTabWidgetManager import ChatTabWidgetManager
+from .ConfigurationTab import ConfigurationTab
+from .LogsTab import LogsTab
+from .SocialDashboardTab import SocialDashboardTab
+from .SyncOpsTab import SyncOpsTab
 
 __all__ = [
-    'PromptExecutionTab',
+    "MainTab",
+    "DreamscapeGenerationTab",
+    "ConfigurationTab",
+    "LogsTab",
+    "SocialDashboardTab",
+    "SyncOpsTab"
 ]
+
+"""
+PyQt tab interfaces for Dream.OS
+"""

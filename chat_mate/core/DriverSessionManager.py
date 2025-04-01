@@ -5,7 +5,7 @@ import time
 from selenium import webdriver
 
 from .DriverManager import DriverManager
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class DriverSessionManager:
     """

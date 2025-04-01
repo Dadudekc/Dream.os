@@ -147,7 +147,7 @@ class ServiceInitializer:
         """Initialize ConfigManager if needed."""
         if not self.config_service:
             try:
-                from config.ConfigManager import ConfigManager
+                from core.config.config_manager import ConfigManager
                 self.config_service = ConfigManager()
                 self.logger.info("✅ ConfigManager initialized directly")
             except ImportError:

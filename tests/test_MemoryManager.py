@@ -3,7 +3,7 @@ import os
 import json
 import shutil
 from datetime import datetime
-from core.MemoryManager import MemoryManager
+from config.MemoryManager import MemoryManager
 
 class TestMemoryManager(unittest.TestCase):
     def setUp(self):

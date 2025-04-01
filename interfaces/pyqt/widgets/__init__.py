@@ -12,3 +12,7 @@ __all__ = [
     'assistant_mode_toggle_widget',
     'file_browser_widget',
 ]
+
+"""
+PyQt widgets for Dream.OS
+"""

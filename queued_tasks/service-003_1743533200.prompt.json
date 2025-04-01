@@ -1,0 +1,14 @@
+{
+  "id": "service-003",
+  "description": "Generate PaymentProcessor class",
+  "type": "cursor",
+  "is_cursor_task": true,
+  "template_name": "service/service_class_template",
+  "params": {
+    "service_name": "PaymentProcessor",
+    "service_function": "handling financial transactions and payment processing",
+    "dependency_1": "PaymentGateway",
+    "dependency_2": "SecurityService"
+  },
+  "target_output": "typescript_service"
+}

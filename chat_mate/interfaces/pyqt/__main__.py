@@ -18,7 +18,7 @@ from interfaces.pyqt.dreamscape_gui import (
     DreamscapeService
 )
 
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.logging.factories.LoggerFactory import LoggerFactory
 from core.micro_factories.chat_factory import create_chat_manager
 

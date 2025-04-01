@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch, MagicMock
 # Add the parent directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 
 class TestConfigManager(unittest.TestCase):
     def setUp(self):

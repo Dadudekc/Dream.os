@@ -1,0 +1,62 @@
+# Chat Mate Configuration
+
+# Agent Configuration
+agent:
+  chat:
+    model: "gpt-4"
+    tone: "Victor"
+    temperature: 0.7
+    max_tokens: 400
+    provider: "openai"
+  
+  engagement:
+    model: "gpt-4"
+    tone: "Victor"
+    temperature: 0.7
+    max_tokens: 400
+    provider: "openai"
+    platform_strategies:
+      twitter:
+        enabled: true
+        max_tweets_per_hour: 10
+      linkedin:
+        enabled: true
+        max_posts_per_day: 3
+
+# Memory Configuration
+memory:
+  chat:
+    file: "memory/chat_memory.json"
+    max_entries: 1000
+    cache_size: 100
+  engagement:
+    file: "memory/engagement_memory.json"
+    max_entries: 5000
+    cache_size: 200
+
+# Service Configuration
+services:
+  openai:
+    api_key_env: "OPENAI_API_KEY"
+    organization_id_env: "OPENAI_ORG_ID"
+    default_model: "gpt-4"
+    timeout: 30
+  
+  database:
+    path: "data/chat_mate.db"
+    backup_interval: 3600  # 1 hour in seconds
+    max_backup_files: 5
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/chat_mate.log"
+  max_size: 10485760  # 10MB
+  backup_count: 5
+
+# Development Configuration
+development:
+  debug: false
+  profile: false
+  test_mode: false 

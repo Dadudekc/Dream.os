@@ -23,7 +23,7 @@ from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
 from utils.signal_dispatcher import SignalDispatcher
 
 # Import configuration and service loader
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 from core.chatgpt_automation.automation_engine import AutomationEngine
 from core.chatgpt_automation.controllers.assistant_mode_controller import AssistantModeController
@@ -642,7 +642,7 @@ def initialize_services():
         from core.services.service_registry import create_prompt_service
         prompt_service = create_prompt_service(config_manager)
         if not prompt_service:
-            raise RuntimeError("Failed to create UnifiedPromptService")
+            raise RuntimeError("Failed to create PromptService")
         
         # Create chat manager with prompt service
         chat_manager = create_chat_manager(config_manager, logger, prompt_service)

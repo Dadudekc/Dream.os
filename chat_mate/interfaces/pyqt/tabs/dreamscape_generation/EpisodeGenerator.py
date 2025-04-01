@@ -2,7 +2,7 @@
 
 import logging
 from typing import Any, Optional
-from core.dreamscape.ContextMemoryManager import ContextMemoryManager
+from core.memory import ContextMemoryManager
 from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 import asyncio
 

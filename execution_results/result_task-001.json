@@ -1,0 +1,11 @@
+{
+  "success": false,
+  "return_code": 9,
+  "execution_time": 0.0640559196472168,
+  "error": "electron: [DEP0062]: `node --debug` and `node --debug-brk` are invalid. Please use `node --inspect` and `node --inspect-brk` instead.\n",
+  "output": "\n",
+  "task_id": "task-001",
+  "prompt_path": "D:\\overnight_scripts\\chat_mate\\prompts\\prompt_task-001.prompt.md",
+  "json_path": "D:\\overnight_scripts\\chat_mate\\prompts\\prompt_task-001.prompt.json",
+  "timestamp": "2025-04-01T13:45:59Z"
+}

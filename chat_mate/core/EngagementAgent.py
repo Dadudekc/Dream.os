@@ -10,7 +10,7 @@ from social.social_config_wrapper import get_social_config
 from social.log_writer import logger, write_json_log
 from social.TaskQueueManager import TaskQueueManager
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from core.MemoryManager import MemoryManager
+from core.memory import MemoryManager
 from core.AletheiaFeedbackLoopManager import AletheiaFeedbackLoopManager
 from core.ReinforcementEngine import ReinforcementEngine
 

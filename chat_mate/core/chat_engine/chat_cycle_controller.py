@@ -8,7 +8,7 @@ from typing import Dict, List, Any, Optional
 
 # UTILS
 from core.FileManager import FileManager
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.services.output_handler import OutputHandler
 
 logger = logging.getLogger("ChatCycleController")
@@ -60,8 +60,8 @@ class ChatCycleController:
             self.scraper = ChatScraperService(headless=self.config.get("headless", True))
             
         if not self.executor:
-            from core.services.prompt_execution_service import UnifiedPromptService
-            self.executor = UnifiedPromptService(model=self.model)
+            from core.services.prompt_execution_service import PromptService
+            self.executor = PromptService(model=self.model)
             
         if not self.feedback_engine:
             from core.chat_engine.feedback_engine import FeedbackEngine

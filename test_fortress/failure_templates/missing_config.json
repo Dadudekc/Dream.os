@@ -1,0 +1,16 @@
+{
+    "id": "missing_config_001",
+    "type": "file_not_found",
+    "description": "Test system behavior when config file is missing",
+    "file_path": "config/orchestrator_config.json",
+    "expected_behavior": {
+        "should_create_default": true,
+        "should_log_warning": true,
+        "should_continue": true
+    },
+    "validation": {
+        "check_default_config": true,
+        "verify_log_message": "Configuration file not found, using defaults",
+        "verify_system_continues": true
+    }
+} 

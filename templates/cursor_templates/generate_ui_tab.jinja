@@ -1,0 +1,108 @@
+---
+type: ui
+usage: PyQt5 UI tab generation
+output_format: Python
+---
+
+# PyQt5 Tab/Dialog Generation: {{ ui_component_name }}
+
+## Component Requirements
+I need to build a PyQt5 {% if component_type %}{{ component_type }}{% else %}tab{% endif %} named `{{ ui_component_name }}` that:
+
+{% if requirements %}
+{% for req in requirements %}
+- {{ req }}
+{% endfor %}
+{% else %}
+- Provides a user interface for {{ primary_purpose }}
+- Has a clean, usable layout with appropriate UI controls
+- Follows the factory pattern for initialization 
+- Connects properly to backend services
+- Handles user interactions with signal/slot connections
+{% endif %}
+
+## UI Elements
+{% if ui_elements %}
+The component should include these UI elements:
+{% for element in ui_elements %}
+- **{{ element.type }}**: {{ element.purpose }}{% if element.details %} ({{ element.details }}){% endif %}
+{% endfor %}
+{% else %}
+The component should include appropriate UI elements for {{ primary_purpose }}. Consider including:
+- Labels for information display
+- Input fields for user data entry
+- Buttons for user actions
+- Tables/lists for data display
+- Status indicators
+{% endif %}
+
+## Data Model
+{% if data_model %}
+The component will work with this data model:
+```python
+{{ data_model }}
+```
+{% else %}
+The component should handle appropriate data for {{ primary_purpose }}.
+{% endif %}
+
+## Service Integration
+{% if services %}
+This component interacts with the following services:
+{% for service in services %}
+- `{{ service.name }}`: {{ service.purpose }}
+  - Methods: {{ service.methods|join(', ') }}
+{% endfor %}
+{% else %}
+This component should integrate with backend services as needed, injected through the constructor.
+{% endif %}
+
+## Signal/Slot Connections
+{% if signals %}
+The component should emit these signals:
+{% for signal in signals %}
+- `{{ signal.name }}`: {{ signal.description }}{% if signal.params %} (Parameters: {{ signal.params|join(', ') }}){% endif %}
+{% endfor %}
+{% else %}
+The component should emit appropriate signals to communicate state changes to parent components.
+{% endif %}
+
+## UI Layout Structure
+The layout should be organized logically, with:
+- Clear grouping of related elements
+- Proper spacing and margins
+- Responsive resizing behavior
+- Consistent styling
+
+## Output
+Please generate a complete PyQt5 {% if component_type %}{{ component_type }}{% else %}tab{% endif %} implementation in `{{ output_file }}` that follows best practices:
+
+- Factory pattern for initialization
+- Clear separation of UI setup from business logic
+- Proper signal/slot connections
+- Clean, maintainable code with comments
+- Type hints where appropriate
+
+Additionally, please include a factory class for proper dependency injection:
+
+```python
+class {{ ui_component_name }}Factory:
+    """Factory for creating {{ ui_component_name }} instances with validated dependencies."""
+    
+    REQUIRED_SERVICES = [
+        # List required services here
+    ]
+    
+    @classmethod
+    def create(cls, services: Dict[str, Any], parent: Optional[QWidget] = None) -> {{ ui_component_name }}:
+        cls._validate_services(services)
+        return {{ ui_component_name }}(services=services, parent=parent)
+    
+    @classmethod
+    def _validate_services(cls, services: Dict[str, Any]) -> None:
+        missing_services = [service for service in cls.REQUIRED_SERVICES if service not in services]
+        if missing_services:
+            raise ValueError(f"Missing required services for {{ ui_component_name }}: {', '.join(missing_services)}")
+```
+
+Thank you! 

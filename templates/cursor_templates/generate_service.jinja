@@ -1,0 +1,80 @@
+---
+type: service
+usage: Backend service generation
+output_format: Python
+---
+
+# Service Generation: {{ service_name }}
+
+## Requirements
+I need to implement a {{ service_name }} service for the {{ project_name }} project that:
+
+{% if requirements %}
+{% for req in requirements %}
+- {{ req }}
+{% endfor %}
+{% else %}
+- Handles {{ primary_responsibility }}
+- Follows Domain-Driven Design principles
+- Supports dependency injection
+- Includes proper error handling
+- Has comprehensive documentation
+{% endif %}
+
+## Service Interface
+The service should implement:
+
+```python
+class {{ service_name }}:
+    {% if methods %}
+    {% for method in methods %}
+    def {{ method.name }}({{ method.params }}): 
+        """{{ method.description }}"""
+        # Implementation needed
+    {% endfor %}
+    {% else %}
+    def __init__(self{% if dependencies %}, {{ dependencies|join(', ') }}{% endif %}):
+        """Initialize the {{ service_name }} service."""
+        # Initialize the service
+        
+    def execute(self, input_data):
+        """Execute the primary functionality of the service."""
+        # Main implementation
+    {% endif %}
+```
+
+## Context
+{% if context %}
+{{ context }}
+{% else %}
+This service is part of the core business logic layer and will be used by:
+- REST API endpoints
+- CLI commands
+- Other business logic services
+{% endif %}
+
+{% if existing_structure %}
+The existing code structure:
+```
+{{ existing_structure }}
+```
+{% endif %}
+
+## Dependencies
+{% if dependencies %}
+This service depends on:
+{% for dep in dependencies %}
+- {{ dep }}
+{% endfor %}
+{% endif %}
+
+## Output
+Please generate a clean, well-documented implementation of the {{ service_name }} service in {{ output_file }}. The code should be:
+
+- Well-tested
+- Highly maintainable
+- Following Python best practices
+- Using type hints
+- Following the dependency injection pattern
+
+Thank you! 

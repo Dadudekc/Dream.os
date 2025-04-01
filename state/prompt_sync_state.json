@@ -1,0 +1,42 @@
+{
+  "ingest": {
+    "url": "",
+    "options": {
+      "extract_title": false,
+      "extract_meta": false,
+      "extract_body": false,
+      "custom_selector": "",
+      "token_limit": 2000,
+      "format": "markdown"
+    },
+    "content": "",
+    "token_count": 0
+  },
+  "prompt": {
+    "template": "",
+    "model": "GPT-4o",
+    "content": null,
+    "prompt": "",
+    "token_count": 0
+  },
+  "sync": {
+    "temperature": 0.7,
+    "max_tokens": 2048,
+    "response": "",
+    "status": "Ready",
+    "progress": 0
+  },
+  "episode": {
+    "content": "",
+    "format": "Markdown",
+    "metadata": {
+      "title": "",
+      "category": "Story",
+      "tags": [],
+      "description": "",
+      "created_at": "2025-03-31T21:46:14.524186"
+    },
+    "export_format": "JSON",
+    "include_metadata": true
+  }
+}

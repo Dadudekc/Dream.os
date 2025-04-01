@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 from core.logging.factories.LoggerFactory import LoggerFactory
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.ConsoleLogger import ConsoleLogger
 from core.FileLogger import FileLogger
 from core.DiscordLogger import DiscordLogger

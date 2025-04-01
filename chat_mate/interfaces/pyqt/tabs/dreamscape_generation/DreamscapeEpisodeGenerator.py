@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNotFound
 from core.TemplateManager import TemplateManager
-from core.dreamscape.ContextMemoryManager import ContextMemoryManager
+from core.memory import ContextMemoryManager
 from core.services.service_registry import ServiceRegistry
 from core.services.dreamscape_generator_service import DreamscapeGenerationService
 
@@ -783,7 +783,7 @@ You don't need to use all elements, but reference enough to create a sense of a 
             self.append_log("⚠️ No prompt entered. Please provide a prompt.")
             return
 
-        result = UnifiedPromptService.run_episode_generation(
+        result = PromptService.run_episode_generation(
             prompt, model, target_chat, headless, reverse, post_to_discord
         )
         self.content_output.setPlainText(result)
@@ -794,8 +794,8 @@ You don't need to use all elements, but reference enough to create a sense of a 
         current = self.log_output.toPlainText()
         self.log_output.setPlainText(current + f"\n{message}")
 
-# Mocking the UnifiedPromptService if it doesn't exist
-class UnifiedPromptService:
+# Mocking the PromptService if it doesn't exist
+class PromptService:
     @staticmethod
     def run_episode_generation(prompt, model, target_chat, headless, reverse, post_to_discord):
         return f"Mock episode generated using {model} for chat '{target_chat}'\nPrompt:\n{prompt}"

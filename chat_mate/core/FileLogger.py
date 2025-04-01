@@ -3,7 +3,7 @@ import json
 import glob
 from datetime import datetime
 from typing import Optional, Dict, Any
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from interfaces.pyqt.ILoggingAgent import ILoggingAgent
 from core.PathManager import PathManager
 

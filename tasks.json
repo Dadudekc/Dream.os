@@ -1,0 +1,86 @@
+[
+  {
+    "task_id": "core-cycle-001",
+    "description": "Verify prompt cycle orchestration works end-to-end",
+    "target": "PromptCycleOrchestrator",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "core-cycle-002",
+    "description": "Test simulation mode completes successfully",
+    "target": "PromptExecutionService",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "core-cycle-003",
+    "description": "Dispatch real task to Cursor and confirm completion",
+    "target": "CursorDispatcher",
+    "mode": "execute"
+  },
+  {
+    "task_id": "core-cycle-004",
+    "description": "Validate .prompt.md generation from task JSON",
+    "target": "PromptRenderer",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "core-cycle-005",
+    "description": "Ensure prompt requeue logic updates metadata properly",
+    "target": "PromptCycleOrchestrator",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "memory-001",
+    "description": "Verify feedback memory stores results per task",
+    "target": "FeedbackEngine",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "memory-002",
+    "description": "Validate persistent memory writes and file integrity",
+    "target": "MemoryManager",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "testing-001",
+    "description": "Trigger test generation on recent output files",
+    "target": "TestGenerationService",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "ui-001",
+    "description": "Ensure Prompt Console renders preview and vars",
+    "target": "PromptConsoleTab",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "config-001",
+    "description": "Validate all file paths resolved via PathManager",
+    "target": "PathManager",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "dispatch-001",
+    "description": "Run full dry-run dispatch cycle for all queued_tasks",
+    "target": "PromptExecutionService",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "task-001",
+    "description": "Add a new task manually and confirm execution",
+    "target": "task_queue/manual_add",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "fail-safe-001",
+    "description": "Simulate failure and confirm fallback kicks in",
+    "target": "SafeExecutionWrapper",
+    "mode": "simulate"
+  },
+  {
+    "task_id": "release-001",
+    "description": "Tag the repo with v0.9-beta and generate release log",
+    "target": "git+release_notes",
+    "mode": "simulate"
+  }
+] 

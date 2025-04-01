@@ -1,0 +1,13 @@
+{
+  "id": "project-001",
+  "description": "Analyze project in ./src",
+  "type": "cursor",
+  "is_cursor_task": true,
+  "template_name": "project/project_analysis_template",
+  "params": {
+    "project_path": "./src",
+    "task_type": "code_review",
+    "timestamp": "2025-04-01T13:46:40Z"
+  },
+  "target_output": "project_analysis"
+}

@@ -40,7 +40,7 @@ from core.PathManager import PathManager
 from core.recovery.recovery_engine import RecoveryEngine
 
 # Import tabs
-from .tabs.dreamscape.DreamscapeTab import DreamscapeGenerationTab
+from .tabs.dreamscape.DreamscapeGenerationTab import DreamscapeGenerationTab
 from .tabs.prompt_sync.PromptSyncTab import PromptSyncTab
 from .tabs.chat_tab.ChatTabWidget import ChatTabWidget
 from .tabs.chat_tab.ChatTabWidgetManager import ChatTabWidgetManager

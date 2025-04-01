@@ -2,7 +2,7 @@ from dependency_injector import containers, providers
 
 # Standard services
 from core.PromptResponseHandler import PromptResponseHandler
-from config.ConfigManager import ConfigManager
+from core.config.config_manager import ConfigManager
 from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 
 # Import factories

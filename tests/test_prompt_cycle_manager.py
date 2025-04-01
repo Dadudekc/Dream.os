@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.PromptCycleOrchestrator import PromptCycleOrchestrator
 from core.AletheiaPromptManager import AletheiaPromptManager
-from core.MemoryManager import MemoryManager
+from config.MemoryManager import MemoryManager
 from core.ReinforcementEngine import ReinforcementEngine
 from core.FileManager import FileManager
 from core.CycleExecutionService import CycleExecutionService

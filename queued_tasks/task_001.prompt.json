@@ -1,0 +1,14 @@
+{
+  "id": "task-001",
+  "description": "Generate AuthService class",
+  "type": "cursor",
+  "is_cursor_task": true,
+  "template_name": "service/service_class_template",
+  "params": {
+    "service_name": "AuthService",
+    "service_function": "handling authentication and authorization",
+    "dependency_1": "DatabaseService",
+    "dependency_2": "TokenManager"
+  },
+  "target_output": "typescript_service"
+} 
