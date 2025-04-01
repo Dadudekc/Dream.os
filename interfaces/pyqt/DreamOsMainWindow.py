@@ -1,735 +1,702 @@
-#!/usr/bin/env python3
+"""
+Main Window Module
+
+This module provides the main window implementation for the Dream.OS PyQt interface.
+"""
+
 import sys
-import os
 import logging
-import asyncio
 import warnings
-import signal
-from PyQt5 import QtCore, QtWidgets
+import time
+import uuid
+from typing import Dict, Any, Optional
+from pathlib import Path
+from datetime import datetime
 
+# Suppress specific warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning, message=".*found in sys.modules after import of package.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*sipPyTypeDict.*")
+
+logger = logging.getLogger(__name__)
+
+# PyQt imports
 from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QApplication, QLabel, QHBoxLayout,
-    QPushButton, QTextEdit, QMessageBox, QTabWidget
+    QApplication, 
+    QMainWindow,
+    QTabWidget,
+    QWidget,
+    QVBoxLayout,
+    QMessageBox,
+    QLabel,
+    QMenuBar,
+    QStatusBar
 )
-from PyQt5.QtCore import pyqtSlot, Qt, QThread
+from PyQt5.QtCore import Qt, pyqtSignal
 
-from qasync import QEventLoop
-
-# Import our tab container and UI logic
-from interfaces.pyqt.tabs.MainTabs import MainTabs
-from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
-
-# Import our centralized signal dispatcher
-from utils.signal_dispatcher import SignalDispatcher
-
-# Import configuration and service loader
-from config.ConfigManager import ConfigManager
-from interfaces.pyqt.dreamscape_services import DreamscapeService
-from core.chatgpt_automation.automation_engine import AutomationEngine
-from core.chatgpt_automation.controllers.assistant_mode_controller import AssistantModeController
-from core.chatgpt_automation.OpenAIClient import OpenAIClient
-from core.system.startup_validator import StartupValidator
+# Import core components
+from core.TemplateManager import TemplateManager
+from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
-# ✅ Ensure we import the factory class, not a missing function
-from core.micro_factories.chat_factory import ChatFactory
-from core.PromptCycleOrchestrator import PromptCycleOrchestrator
+from core.recovery.recovery_engine import RecoveryEngine
 
-# Suppress SIP deprecation warning
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+# Import tabs
+from .tabs.dreamscape.DreamscapeTab import DreamscapeGenerationTab
+from .tabs.prompt_sync.PromptSyncTab import PromptSyncTab
+from .tabs.chat_tab.ChatTabWidget import ChatTabWidget
+from .tabs.chat_tab.ChatTabWidgetManager import ChatTabWidgetManager
+from .tabs.contextual_chat.ContextualChatTab import ContextualChatTab
+from .tabs.task_board.TaskBoardTab import TaskBoardTab
+from .tabs.ConfigurationTab import ConfigurationTab
+from .tabs.settings_tab import SettingsTab
+from .tabs.main_tab import MainTab
+from .tabs.SyncOpsTab import SyncOpsTab
+from .tabs.SocialDashboardTab import SocialDashboardTab
+from .tabs.PromptExecutionTab import PromptExecutionTab
+from .tabs.LogsTab import LogsTab
+from .tabs.DependencyMapTab import DependencyMapTab
+from micro_factories.cursor_execution_tab_factory import CursorExecutionTabFactory
+from .tabs.dream_os_tab_factory import (
+    TaskStatusIntegrationFactory, 
+    PromptPreviewIntegrationFactory,
+    SuccessDashboardIntegrationFactory
+)
+from .services.MetricsService import MetricsService
+from .widgets.RecoveryDashboardWidget import RecoveryDashboardWidget
+from .services.AdaptiveRecoveryService import AdaptiveRecoveryService
+from .tabs.metrics_viewer.MetricsViewerTab import MetricsViewerTab
+from .services.TabValidatorService import TabValidatorService
 
-
-class DreamscapeMainWindow(QMainWindow):
-    """
-    Main window for the Dreamscape application.
-    Provides a decoupled interface with signal dispatching and async task support.
-    """
-
-    def __init__(self, ui_logic: DreamscapeUILogic, dispatcher: SignalDispatcher, services=None, event_loop_manager=None):
-        """
-        Initialize the main window with UI logic, signal dispatcher, and services.
-        """
-        super().__init__()
-        self.ui_logic = ui_logic
-        self.dispatcher = dispatcher
-        self.services = services or {}
-        self.logger = self.services.get('logger', logging.getLogger("DreamscapeMainWindow"))
-        self.event_loop_manager = event_loop_manager
+class MockService:
+    """Mock service for development/testing."""
+    def __init__(self, name: str):
+        self.name = name
+        self.logger = logging.getLogger(f"mock.{name}")
         
+    def __getattr__(self, name):
+        def mock_method(*args, **kwargs):
+            self.logger.warning(f"Mock {self.name}.{name} called")
+            return None
+        return mock_method
+
+class DreamOsMainWindow(QMainWindow):
+    """Main window for the Dream.OS interface."""
+    
+    def __init__(self):
+        """Initialize the main window."""
+        super().__init__()
+        
+        # Configure logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        
+        self.setWindowTitle("Dream.OS")
+        self.setGeometry(100, 100, 1200, 800)
+        
+        # Initialize core managers
+        self.config_manager = ConfigManager()
         self.path_manager = PathManager()
         
-        # Initialize OpenAI client
-        try:
-            profile_dir = os.path.join(self.path_manager.get_path("cache"), "openai_profile")
-            self.openai_client = OpenAIClient(profile_dir=profile_dir)
-            self.logger.info("OpenAI client initialized")
-        except Exception as e:
-            self.logger.error(f"Failed to initialize OpenAI client: {e}")
-            self.openai_client = None
+        # Initialize services
+        self.services = self._initialize_services()
         
-        # Initialize assistant controller
-        try:
-            self.assistant_controller = AssistantModeController(engine=self.openai_client)
-            self.logger.info("Assistant controller initialized")
-        except Exception as e:
-            self.logger.error(f"Failed to initialize assistant controller: {e}")
-            self.assistant_controller = None
+        # Validate tab constructors
+        self.tab_validator = TabValidatorService(self.services)
+        validation_results = self.tab_validator.validate_all_tabs()
         
-        # Run startup validation
-        self._run_startup_validation()
+        # Initialize UI
+        self._init_ui()
         
-        self.verify_services()
-        self.setup_ui()
-        self.setup_signals()
-
-        self.logger.info("DreamscapeMainWindow initialized")
-
-        self.engine = AutomationEngine()  # Initialize engine for project scanning
-
-        self._setup_signal_handlers()
-
-    def verify_services(self):
-        """
-        Verify that essential services are available and log any issues.
-        """
-        essential_services = [
-            'prompt_manager', 'chat_manager', 'response_handler',
-            'memory_manager', 'discord_service'
-        ]
-        for service_name in essential_services:
-            service = self.services.get(service_name)
-            if service is None:
-                self.logger.error(f"Error: Service '{service_name}' not available - services not initialized")
-            elif hasattr(service, '__class__') and service.__class__.__name__ == "EmptyService":
-                self.logger.warning(f"Warning: Service '{service_name}' is using an empty implementation")
-        extra_deps = self.services.get('extra_dependencies', {})
-        if not extra_deps:
-            self.logger.warning("No extra dependencies provided - some functionality may be limited")
-        else:
-            extra_essentials = ['cycle_service', 'task_orchestrator', 'dreamscape_generator']
-            for dep_name in extra_essentials:
-                if dep_name not in extra_deps or extra_deps[dep_name] is None:
-                    self.logger.warning(f"Missing extra dependency: '{dep_name}'")
-
-    def setup_ui(self):
-        """
-        Set up the user interface components.
-        """
-        self.setWindowTitle("Dreamscape - AI-Powered Community Management")
-        self.setMinimumSize(1200, 800)
-
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
-
-        try:
-            self.tabs = MainTabs(
-                dispatcher=self.dispatcher,
-                ui_logic=self.ui_logic,
-                config_manager=self.services.get('config_manager'),
-                logger=self.services.get('logger'),
-                prompt_manager=self.services.get('prompt_manager'),
-                chat_manager=self.services.get('chat_manager'),
-                memory_manager=self.services.get('memory_manager'),
-                discord_manager=self.services.get('discord_service'),
-                cursor_manager=self.services.get('cursor_manager'),
-                **self.services.get('extra_dependencies', {})
-            )
-            layout.addWidget(self.tabs)
-            self.logger.info("MainTabs initialized successfully")
-        except Exception as e:
-            self.logger.error(f"Failed to initialize MainTabs: {e}")
-            self.tabs = None
-            fallback_tabs = QTabWidget()
-            layout.addWidget(fallback_tabs)
-            fallback_text = QTextEdit()
-            fallback_text.setReadOnly(True)
-            fallback_text.append("Tab initialization failed. Check logs for details.")
-            fallback_text.append(f"Error: {str(e)}")
-            fallback_tabs.addTab(fallback_text, "Error Info")
-            self.fallback_output = fallback_text
-
-        self.button_layout = QHBoxLayout()
-
-        # Add OpenAI Login Button
-        self.openai_login_button = QPushButton("🔓 Check OpenAI Login")
-        self.openai_login_button.clicked.connect(self.handle_openai_login)
-        self.button_layout.addWidget(self.openai_login_button)
-
-        self.scan_button = QPushButton("Scan Project")
-        self.scan_button.clicked.connect(self.handle_scan)
-        self.button_layout.addWidget(self.scan_button)
-
-        self.start_button = QPushButton("Start Assistant")
-        self.start_button.clicked.connect(self.start_assistant)
-        self.button_layout.addWidget(self.start_button)
-
-        self.stop_button = QPushButton("Stop Assistant")
-        self.stop_button.clicked.connect(self.stop_assistant)
-        self.stop_button.setEnabled(False)
-        self.button_layout.addWidget(self.stop_button)
-
-        layout.addLayout(self.button_layout)
-
-        self.chat_display = QTextEdit()
-        self.chat_display.setReadOnly(True)
-        layout.addWidget(self.chat_display)
-
-        self.input_layout = QHBoxLayout()
-        self.input_field = QTextEdit()
-        self.input_field.setMaximumHeight(100)
-        self.input_layout.addWidget(self.input_field)
-
-        self.send_button = QPushButton("Send")
-        self.send_button.clicked.connect(self.send_message)
-        self.input_layout.addWidget(self.send_button)
-
-        layout.addLayout(self.input_layout)
-
-        self.statusBar().showMessage("Ready")
-
-    def setup_signals(self):
-        """
-        Connect signals between components.
-        """
-        try:
-            self.dispatcher.append_output.connect(self.on_append_output)
-            self.dispatcher.status_update.connect(self.on_status_update)
-            self.dispatcher.discord_log.connect(self.on_discord_log)
-            self.dispatcher.task_started.connect(self.on_task_started)
-            self.dispatcher.task_progress.connect(self.on_task_progress)
-            self.dispatcher.task_completed.connect(self.on_task_completed)
-            self.dispatcher.task_failed.connect(self.on_task_failed)
-            if self.ui_logic:
-                self.ui_logic.set_output_signal(self.dispatcher.emit_append_output)
-                self.ui_logic.set_status_update_signal(self.dispatcher.emit_status_update)
-                self.ui_logic.set_discord_log_signal(self.dispatcher.emit_discord_log)
-        except Exception as e:
-            self.logger.error(f"Failed to set up signals: {str(e)}")
-
-    @pyqtSlot(str)
-    def on_append_output(self, message):
-        """
-        Append a message to the output area.
-        """
-        if self.tabs:
-            self.tabs.append_output(message)
-        else:
-            self.chat_display.append(message)
-        self.statusBar().showMessage(message.split('\n')[0])
-
-    @pyqtSlot(str)
-    def on_status_update(self, message):
-        """
-        Update the status bar with a message.
-        """
-        if self.tabs:
-            self.tabs.append_output(f"[Status] {message}")
-        else:
-            self.statusBar().showMessage(message)
-        self.statusBar().showMessage(message)
-
-    @pyqtSlot(str)
-    def on_discord_log(self, message):
-        """
-        Log a Discord-related message.
-        """
-        output_text = f"[Discord] {message}"
-        if self.tabs:
-            self.tabs.append_output(output_text)
-        elif hasattr(self, 'fallback_output'):
-            self.fallback_output.append(output_text)
-        else:
-            self.chat_display.append(output_text)
-        self.logger.info(output_text)
-
-    @pyqtSlot(str)
-    def on_task_started(self, task_id):
-        status_message = f"Task {task_id} started"
-        self.statusBar().showMessage(status_message)
-        output_text = f"[Task] {task_id} started"
-        if self.tabs:
-            self.tabs.append_output(output_text)
-        elif hasattr(self, 'fallback_output'):
-            self.fallback_output.append(output_text)
-        else:
-            self.chat_display.append(output_text)
-        self.logger.info(output_text)
-
-    @pyqtSlot(str, int, str)
-    def on_task_progress(self, task_id, progress, message):
-        status_message = f"Task {task_id}: {progress}% - {message}"
-        self.statusBar().showMessage(status_message)
-        output_text = f"[Task] {task_id}: {progress}% - {message}"
-        if self.tabs:
-            self.tabs.append_output(output_text)
-        elif hasattr(self, 'fallback_output'):
-            self.fallback_output.append(output_text)
-        else:
-            self.chat_display.append(output_text)
-        self.logger.info(output_text)
-
-    @pyqtSlot(str, dict)
-    def on_task_completed(self, task_id, result):
-        status_message = f"Task {task_id} completed"
-        self.statusBar().showMessage(status_message)
-        output_text = f"[Task] {task_id} completed successfully"
-        if self.tabs:
-            self.tabs.append_output(output_text)
-        elif hasattr(self, 'fallback_output'):
-            self.fallback_output.append(output_text)
-        else:
-            self.chat_display.append(output_text)
-        self.logger.info(output_text)
-
-    @pyqtSlot(str, str)
-    def on_task_failed(self, task_id, error):
-        error_msg = f"Task {task_id} failed: {error}"
-        self.statusBar().showMessage(error_msg)
-        output_text = f"[Error] {error_msg}"
-        if self.tabs:
-            self.tabs.append_output(output_text)
-        elif hasattr(self, 'fallback_output'):
-            self.fallback_output.append(output_text)
-        else:
-            self.chat_display.append(output_text)
-        self.logger.error(output_text)
-
-    def handle_openai_login(self):
-        """Handle OpenAI login process with proper initialization sequence."""
-        try:
-            if not self.openai_client:
-                self.logger.error("OpenAI client not initialized")
-                self.statusBar().showMessage("OpenAI client not initialized", 5000)
-                return
-                
-            if not hasattr(self.openai_client, 'is_booted') or not self.openai_client.is_booted():
-                self.logger.info("Manually booting OpenAI client...")
-                self.openai_client.boot()
-
-            if self.openai_client.login_openai():
-                self.logger.info("✅ OpenAI login successful")
-                self.statusBar().showMessage("OpenAI login successful", 5000)
-            else:
-                self.logger.error("❌ OpenAI login failed")
-                self.statusBar().showMessage("OpenAI login failed", 5000)
-        except Exception as e:
-            self.logger.error(f"OpenAI login error: {e}")
-            try:
-                if self.openai_client and hasattr(self.openai_client, 'is_booted') and self.openai_client.is_booted():
-                    self.openai_client.shutdown()
-            except Exception as shutdown_error:
-                self.logger.error(f"OpenAI shutdown error: {shutdown_error}")
-            self.statusBar().showMessage(f"OpenAI error: {str(e)}", 5000)
-
-    def handle_scan(self):
-        """Handle the scan project button click."""
-        success, message = self.engine.scan_project_gui()
-        QMessageBox.information(self, "Project Scan", message)
-
-    def start_assistant(self):
-        """Start the assistant mode and monitor browser login."""
-        if not self.assistant_controller:
-            self.logger.error("Cannot start assistant: AssistantModeController not initialized")
-            QMessageBox.warning(self, "Error", "Assistant controller not initialized. Please check logs.")
-            return
-            
-        self.assistant_controller.start()
-        self.start_button.setEnabled(False)
-        self.stop_button.setEnabled(True)
-        try:
-            if self.engine and hasattr(self.engine, 'chat_manager'):
-                chat_manager = self.engine.chat_manager
-                if hasattr(chat_manager, 'is_logged_in') and chat_manager.is_logged_in():
-                    self.logger.info("Browser login verified. Enabling voice mode...")
-                    if hasattr(self.engine, 'enable_voice_mode'):
-                        self.engine.enable_voice_mode()
-                else:
-                    self.logger.warning("Browser login not verified. Voice mode not enabled.")
-        except Exception as e:
-            self.logger.error(f"Error monitoring browser login: {str(e)}")
-
-    def stop_assistant(self):
-        """Stop the assistant mode."""
-        if not self.assistant_controller:
-            self.logger.error("Cannot stop assistant: AssistantModeController not initialized")
-            return
-            
-        self.assistant_controller.stop()
-        self.start_button.setEnabled(True)
-        self.stop_button.setEnabled(False)
-
-    def send_message(self):
-        """Send a message to the assistant."""
-        message = self.input_field.toPlainText()
-        if message:
-            self.chat_display.append(f"You: {message}")
-            response = self.engine.get_chatgpt_response(message)
-            self.chat_display.append(f"Assistant: {response}")
-            self.input_field.clear()
-
-    def closeEvent(self, event):
-        """
-        Handle the window close event to ensure proper shutdown of all resources
-        """
-        self.logger.info("🛑 Shutting down DreamOs...")
-
-        # Cleanup tabs first
-        if hasattr(self, 'tabs') and self.tabs:
-            try:
-                if hasattr(self.tabs, 'cleanup'):
-                    self.logger.info("Cleaning up tabs...")
-                    self.tabs.cleanup()
-                elif isinstance(self.tabs, QTabWidget):
-                    self.logger.info("Cleaning up individual tabs...")
-                    for tab_index in range(self.tabs.count()):
-                        try:
-                            tab_widget = self.tabs.widget(tab_index)
-                            tab_name = self.tabs.tabText(tab_index)
-                            if tab_widget and hasattr(tab_widget, 'cleanup'):
-                                self.logger.info(f"Cleaning up tab: {tab_name}")
-                                tab_widget.cleanup()
-                        except Exception as tab_e:
-                            self.logger.error(f"Error cleaning up tab: {tab_e}")
-            except Exception as e:
-                self.logger.error(f"Error during tab cleanup: {e}")
-
-        # Shutdown any OpenAI clients
-        if hasattr(self, 'openai_client') and self.openai_client:
-            try:
-                # Check if the client is booted before attempting shutdown
-                if hasattr(self.openai_client, 'is_booted') and self.openai_client.is_booted():
-                    self.logger.info("Shutting down OpenAI client...")
-                    self.openai_client.shutdown()
-                    self.logger.info("✅ OpenAI client shut down successfully")
-                else:
-                    self.logger.info("ℹ️ OpenAI client was not booted, skipping shutdown")
-            except Exception as e:
-                self.logger.error(f"❌ Error shutting down OpenAI client: {e}")
-                # If shutdown fails, try to force kill chromedrivers
-                try:
-                    if hasattr(self.openai_client, '_force_kill_chromedriver'):
-                        self.openai_client._force_kill_chromedriver()
-                        self.logger.info("Attempted to force kill chromedriver processes")
-                except Exception as kill_e:
-                    self.logger.error(f"Error force killing chromedriver: {kill_e}")
-            finally:
-                # Last resort - try to kill any remaining Chrome processes
-                try:
-                    import subprocess
-                    import platform
-                    
-                    self.logger.info("Attempting to kill any remaining browser processes...")
-                    if platform.system() == "Windows":
-                        subprocess.call("taskkill /f /im chromedriver.exe", shell=True)
-                        subprocess.call("taskkill /f /im chrome.exe", shell=True)
-                    else:
-                        subprocess.call("pkill -f chromedriver", shell=True)
-                        subprocess.call("pkill -f chrome", shell=True)
-                except Exception as force_e:
-                    self.logger.error(f"Error force killing browser processes: {force_e}")
+        # Log validation results
+        for tab_name, is_valid in validation_results.items():
+            status = "✅" if is_valid else "❌"
+            logger.info(f"{status} Tab '{tab_name}' validation: {'passed' if is_valid else 'failed'}")
         
-        # Shutdown any service containers
-        if hasattr(self, 'container') and self.container:
-            try:
-                for service_name in ['orchestrator', 'prompt_manager', 'chat_manager']:
-                    service = getattr(self.container, service_name, None)
-                    if service and hasattr(service, 'shutdown'):
-                        service.shutdown()
-                        self.logger.info(f"✅ Service {service_name} shut down successfully")
-            except Exception as e:
-                self.logger.error(f"❌ Error shutting down services: {e}")
+        # Show ready status
+        self.statusBar().showMessage("Dream.OS Ready")
         
-        # Clean up any registered services via the ServiceRegistry
-        try:
-            from core.services.service_registry import ServiceRegistry
-            services_to_clean = ["openai_client", "chat_manager", "prompt_manager", "dreamscape_generator"]
-            
-            for service_name in services_to_clean:
-                service = ServiceRegistry.get(service_name)
-                if service and hasattr(service, 'shutdown'):
-                    try:
-                        self.logger.info(f"Shutting down registered service: {service_name}")
-                        service.shutdown()
-                    except Exception as svc_e:
-                        self.logger.error(f"Error shutting down {service_name}: {svc_e}")
-        except Exception as reg_e:
-            self.logger.error(f"Error cleaning up registered services: {reg_e}")
+    def _initialize_services(self) -> Dict[str, Any]:
+        """Initialize required services.
         
-        # Process any pending events before closing
-        QtWidgets.QApplication.processEvents()
-        
-        # Accept the event to close the window
-        event.accept()
-        
-        self.logger.info("App shutdown process completed, forcing exit...")
-        # Ensure application fully exits
-        try:
-            # Use a timer to allow event processing and ensure clean quit
-            QtCore.QTimer.singleShot(100, lambda: QtWidgets.QApplication.exit(0))
-        except Exception as exit_e:
-            self.logger.error(f"Error during final exit: {exit_e}")
-            # Force quit if clean exit fails
-            import os
-            os._exit(0)
-
-    def _run_startup_validation(self):
-        """Run startup validation and handle results."""
-        validator = StartupValidator(self.path_manager, logger=self.logger)
-        startup_report = validator.run_all_checks()
-
-        if startup_report["errors"]:
-            self.logger.error("❌ Critical startup validation errors occurred:")
-            for error in startup_report["errors"]:
-                self.logger.error(f"  - {error}")
-        else:
-            self.logger.info("✅ Dream.OS validated and ready.")
-
-        # Store warnings for display in status area
-        self.startup_warnings = startup_report.get("warnings", [])
-
-    def _init_ui(self):
-        """Initialize the main UI components."""
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        
-        layout = QVBoxLayout(central_widget)
-        
-        # Add status bar for startup warnings
-        if self.startup_warnings:
-            warning_label = QLabel("⚠️ Startup Warnings Present")
-            warning_label.setStyleSheet("color: orange;")
-            layout.addWidget(warning_label)
-        
-        # Initialize tab widget
-        self.tabs = QTabWidget()
-        layout.addWidget(self.tabs)
-
-    def _init_tabs(self):
-        """Initialize and add all tab widgets."""
-        # Implementation if needed
-
-    def log_message(self, message: str, level: str = "info"):
-        """Log a message to both logger and relevant UI components."""
-        if level == "error":
-            self.logger.error(message)
-        elif level == "warning":
-            self.logger.warning(message)
-        else:
-            self.logger.info(message)
-            
-        # Update status bar or relevant UI component
-        self.statusBar().showMessage(message, 5000)  # Show for 5 seconds
-
-    def edit_file(self, target_file: str, instructions: str, code_edit: str) -> None:
-        """Edit a file with the given instructions and code edit."""
-        try:
-            with open(target_file, 'w', encoding='utf-8') as f:
-                f.write(code_edit)
-        except Exception as e:
-            self.logger.error(f"Failed to edit file {target_file}: {e}")
-
-    def _setup_signal_handlers(self):
+        Returns:
+            Dictionary of initialized services
         """
-        Set up signal handlers to ensure proper application shutdown
-        on Ctrl+C or SIGINT events.
-        """
-        def signal_handler(sig, frame):
-            self.logger.info("Received interrupt signal, shutting down...")
-            if hasattr(self, 'window') and self.window:
-                self.window.close()
-            else:
-                QtWidgets.QApplication.quit()
-        
-        # Only set handler if in the main thread
-        if QtCore.QThread.currentThread() == QtCore.QCoreApplication.instance().thread():
-            signal.signal(signal.SIGINT, signal_handler)
-            self.logger.info("Signal handlers set up successfully")
-
-
-class EmptyService:
-    """
-    Empty service implementation for graceful fallback when a service is unavailable.
-    """
-    def __init__(self, name):
-        self.service_name = name
-        self.logger = logging.getLogger(f"EmptyService.{name}")
-
-    def __getattr__(self, attr_name):
-        def method(*args, **kwargs):
-            self.logger.warning(
-                f"Call to unavailable service '{self.service_name}.{attr_name}()'. Service not initialized."
-            )
-            return None
-        return method
-
-
-def main():
-    """
-    Main entry point for the DreamscapeMainWindow application.
-    """
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    logger = logging.getLogger()
-    logger.info("Starting DreamscapeMainWindow application")
-
-    app = QApplication(sys.argv)
-
-    # Create and configure event loop
-    from utils.qasync_event_loop_manager import QAsyncEventLoopManager
-    event_loop_manager = QAsyncEventLoopManager(app, logger=logging.getLogger("QAsyncEventLoop"))
-    logger.info("Async event loop initialized")
-
-    dispatcher = SignalDispatcher()
-
-    try:
-        # Initialize core services with the new SystemLoader
-        services = initialize_services()
-        from core.services.service_registry import ServiceRegistry
-        
-        # Extract key services from registry
-        config_manager = ServiceRegistry.get("config_manager")
-        
-        logger.info("✅ Core services initialized successfully via SystemLoader")
-    except Exception as e:
-        logger.error(f"❌ Failed to initialize core services: {str(e)}")
-        # Create fallback config if not available
-        config_manager = ConfigManager()
-
-    # Always initialize UI regardless of service status
-    ui_logic = DreamscapeUILogic()
-    
-    # Initialize DreamscapeService with the environment
-    try:
-        dreamscape_service = ServiceRegistry.get("dreamscape_generator")
-        if not dreamscape_service:
-            logger.warning("⚠️ DreamscapeService not found in registry, creating a new instance")
-            dreamscape_service = DreamscapeService(config=config_manager)
-            
-        ui_logic.service = dreamscape_service
-        logger.info("✅ UI logic initialized with dreamscape service")
-    except Exception as e:
-        logger.error(f"❌ Failed to initialize DreamscapeService: {str(e)}")
-        # Create a stub for UI to use
-        dreamscape_service = type('ServiceStub', (), {
-            'get_service': lambda name: None,
-            'discord': None
-        })
-        ui_logic.service = dreamscape_service
-
-    # Build service dictionary with fallbacks from registry
-    services = {
-        'config_manager': config_manager,
-        'logger': logger,
-        'dreamscape_service': dreamscape_service,
-        'prompt_manager': _ensure_service(ServiceRegistry.get("prompt_manager"), "prompt_manager", logger),
-        'chat_manager': _ensure_service(ServiceRegistry.get("chat_manager"), "chat_manager", logger),
-        'response_handler': _ensure_service(ServiceRegistry.get("feedback_engine"), "response_handler", logger),
-        'memory_manager': _ensure_service(ServiceRegistry.get("prompt_manager"), "memory_manager", logger),
-        'discord_service': _ensure_service(ServiceRegistry.get("discord_service"), "discord_service", logger),
-        'cursor_manager': None,
-        'extra_dependencies': {
-            'cycle_service': _ensure_service(ServiceRegistry.get("cycle_service"), "cycle_service", logger),
-            'task_orchestrator': _ensure_service(ServiceRegistry.get("task_orchestrator"), "task_orchestrator", logger),
-            'dreamscape_generator': _ensure_service(ServiceRegistry.get("dreamscape_generator"), "dreamscape_generator", logger),
-            'prompt_handler': _ensure_service(ServiceRegistry.get("feedback_engine"), "prompt_handler", logger),
-            'response_handler': _ensure_service(ServiceRegistry.get("feedback_engine"), "response_handler", logger),
-            'service': dreamscape_service
+        services = {
+            'core_services': {},
+            'component_managers': {}
         }
-    }
-
-    # Initialize cursor manager if available
-    try:
-        from core.refactor.CursorSessionManager import CursorSessionManager
-        # Correctly get project_root and dry_run from config_manager
-        project_root = config_manager.get("project_root", ".") 
-        dry_run = config_manager.get("dry_run", False) 
         
-        # Initialize with correct arguments
-        services['cursor_manager'] = CursorSessionManager(project_root=project_root, dry_run=dry_run)
-        logger.info("✅ Cursor manager initialized successfully")
-    except (ImportError, Exception) as e:
-        logger.warning(f"⚠️ Cursor manager could not be initialized: {str(e)}")
-        services['cursor_manager'] = _create_empty_service("cursor_manager", logger)
-
-    # Log service status
-    for service_name, service_obj in services.items():
-        if service_name != 'extra_dependencies':
-            status = "available" if service_obj is not None else "unavailable"
-            logger.info(f"Service '{service_name}' is {status}")
-
-    try:
-        # Create and show main window
-        window = DreamscapeMainWindow(ui_logic=ui_logic, 
-                                      dispatcher=dispatcher, 
-                                      services=services,
-                                      event_loop_manager=event_loop_manager)
-        window.show()  # Make window visible
-        window.raise_()  # Bring window to front
-        window.activateWindow()  # Give window focus
-        logger.info("Main window initialized and displayed")
+        # Initialize template manager
+        try:
+            template_manager = TemplateManager(
+                template_dir=self.path_manager.get_path('templates'),
+                logger=logger
+            )
+            services['component_managers']['template_manager'] = template_manager
+            logger.info("Template manager initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize template manager: {str(e)}")
+            services['component_managers']['template_manager'] = MockService('template_manager')
+            
+        # Initialize system loader for dependency injection
+        try:
+            from core.system_loader import DreamscapeSystemLoader
+            system_loader = DreamscapeSystemLoader.get_instance()
+            system_loader.load_config()
+            services['system_loader'] = system_loader
+            logger.info("DreamscapeSystemLoader initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize DreamscapeSystemLoader: {str(e)}")
+            services['system_loader'] = MockService('system_loader')
         
-        # Start event loop
-        event_loop_manager.start()
-        logger.info("Application event loop started")
-        
-        # Run main loop
-        return app.exec_()
-    except Exception as e:
-        logger.critical(f"Failed to start application: {str(e)}")
-        return 1
+        # Initialize prompt cycle orchestrator
+        try:
+            from core.prompt_cycle_orchestrator import PromptCycleOrchestrator
+            orchestrator = PromptCycleOrchestrator()
+            services['prompt_cycle_orchestrator'] = orchestrator
+            
+            # Register with system loader
+            if 'system_loader' in services and not isinstance(services['system_loader'], MockService):
+                services['system_loader'].register_service('prompt_cycle_orchestrator', orchestrator)
+                
+            logger.info("PromptCycleOrchestrator initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize PromptCycleOrchestrator: {str(e)}")
+            services['prompt_cycle_orchestrator'] = MockService('prompt_cycle_orchestrator')
+            
+        # Initialize other critical core services (mock if needed)
+        core_service_names = ['task_orchestrator']
+        for name in core_service_names:
+             if name not in services['core_services']:
+                 services['core_services'][name] = MockService(name)
+                 logger.info(f"Using mock {name} for development")
 
-
-def _ensure_service(service, service_name, logger):
-    if service is None:
-        logger.warning(f"Service '{service_name}' not available - creating empty implementation")
-        return _create_empty_service(service_name, logger)
-    return service
-
-
-def _create_empty_service(service_name, logger):
-    return EmptyService(service_name)
-
-
-def initialize_services():
-    """Initialize and connect core services with proper dependency injection."""
-    logger = logging.getLogger("Services")
-    
-    try:
-        # Use the SystemLoader to initialize all services with micro-factories
-        from core.system_loader import SystemLoader
-        from core.services.service_registry import ServiceRegistry
+        # Initialize other component managers (mock if needed)
+        component_manager_names = ['episode_generator', 'ui_manager'] # Add others as needed
+        for name in component_manager_names:
+             if name not in services['component_managers']:
+                 services['component_managers'][name] = MockService(name)
+                 logger.info(f"Using mock {name} for development")
+            
+        # Keep flat structure for other base services if used directly
+        base_service_names = [
+            'prompt_service',
+            'web_scraper',
+            'episode_service', # Keep this if PromptSyncTab uses it directly
+            'export_service'
+        ]
+        for name in base_service_names:
+            if name not in services:
+                 services[name] = MockService(name)
+                 logger.info(f"Using mock {name} for development")
         
-        # Create and boot the system loader
-        logger.info("🚀 Initializing core services using SystemLoader...")
-        loader = SystemLoader()
-        services = loader.boot()
-        
-        # Log initialization status
-        for name, service in services.items():
-            status = "✅ Available" if service else "⚠️ Empty implementation"
-            logger.info(f"Service '{name}': {status}")
-        
-        # Validate that essential services are available
-        essential_services = ["prompt_manager", "feedback_engine", "prompt_service"]
-        missing_services = []
-        
-        for service_name in essential_services:
-            if not ServiceRegistry.has_service(service_name):
-                missing_services.append(service_name)
-        
-        if missing_services:
-            logger.warning(f"⚠️ Missing essential services: {missing_services}")
-        else:
-            logger.info("✅ All essential services are available")
+        # Initialize CursorSessionManager
+        try:
+            from chat_mate.core.refactor.CursorSessionManager import CursorSessionManager
+            cursor_session_manager = CursorSessionManager(
+                project_root=str(self.path_manager.get_path('project_root')),
+                dry_run=False  # Set to True for testing without actual UI interaction
+            )
+            # Start the background loop
+            cursor_session_manager.start_loop()
+            services['cursor_session_manager'] = cursor_session_manager
+            logger.info("CursorSessionManager initialized and started")
+        except Exception as e:
+            logger.warning(f"Failed to initialize CursorSessionManager: {str(e)}")
+            services['cursor_session_manager'] = MockService('cursor_session_manager')
+            
+        # Initialize ProjectScanner
+        try:
+            from interfaces.pyqt.services.ProjectScanner import ProjectScanner
+            project_scanner = ProjectScanner(
+                project_root=str(self.path_manager.get_path('project_root')),
+                cache_path=str(self.path_manager.get_path('cache') / 'analysis_cache.json')
+            )
+            # Load existing cache or perform initial scan
+            if not project_scanner.load_cache()["files"]:
+                # Perform initial scan with limited scope for speed
+                project_scanner.scan_project(max_files=100)
+            services['project_scanner'] = project_scanner
+            logger.info("ProjectScanner initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize ProjectScanner: {str(e)}")
+            services['project_scanner'] = MockService('project_scanner')
+            
+        # Initialize metrics service
+        try:
+            metrics_dir = Path("metrics")
+            self.metrics_service = MetricsService(metrics_dir)
+            logger.info("Initialized metrics service")
+            
+            # Initialize recovery engine
+            self.recovery_engine = RecoveryEngine(
+                cursor_session=services.get('cursor_session_manager'),
+                metrics_service=self.metrics_service
+            )
+            logger.info("Initialized recovery engine")
+            
+            # Add services to services dict
+            services["metrics"] = self.metrics_service
+            services["recovery"] = self.recovery_engine
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize services: {e}")
+            raise
         
         return services
-    except Exception as e:
-        logger.error(f"❌ Failed to initialize services: {e}", exc_info=True)
-        # Return empty dict instead of raising to allow app to at least start
-        return {}
+        
+    def _init_ui(self):
+        """Initialize the user interface."""
+        # Create central widget
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        # Create main layout
+        layout = QVBoxLayout(central_widget)
+        
+        # Create tab widget
+        self.tab_widget = QTabWidget()
+        
+        # Initialize tab managers
+        self.chat_tab_manager = ChatTabWidgetManager(self.services)
+        
+        # Create and add tabs in logical groups
+        
+        # Group 1: Main Development Interface
+        self.main_tab = MainTab(self.services)
+        self.tab_widget.addTab(self.main_tab, "Main")
+        
+        self.task_board_tab = TaskBoardTab(self.services)
+        self.tab_widget.addTab(self.task_board_tab, "Task Board")
+        
+        self.cursor_execution_tab = CursorExecutionTabFactory.create(services=self.services, parent=self)
+        self.tab_widget.addTab(self.cursor_execution_tab, "Cursor Execution")
+        
+        # Create the task status tab for orchestration monitoring
+        self.task_status_tab = TaskStatusIntegrationFactory.create(services=self.services, parent=self)
+        self.tab_widget.addTab(self.task_status_tab, "Task Status")
+        
+        # Create the prompt preview tab for template and task management
+        self.prompt_preview_tab = PromptPreviewIntegrationFactory.create(services=self.services, parent=self)
+        self.tab_widget.addTab(self.prompt_preview_tab, "Prompt Preview")
+        
+        # Create the success dashboard tab for metrics visualization
+        self.success_dashboard_tab = SuccessDashboardIntegrationFactory.create(services=self.services, parent=self)
+        self.tab_widget.addTab(self.success_dashboard_tab, "Success Dashboard")
+        
+        # Group 2: Chat and Communication
+        self.contextual_chat_tab = ContextualChatTab(self.services)
+        self.tab_widget.addTab(self.contextual_chat_tab, "Contextual Chat")
+        
+        self.chat_widget = self.chat_tab_manager.get_widget()
+        self.tab_widget.addTab(self.chat_widget, "Chat")
+        
+        # Group 3: Content Generation
+        self.dreamscape_tab = DreamscapeGenerationTab(self.services)
+        self.tab_widget.addTab(self.dreamscape_tab, "Dreamscape Generation")
+        
+        self.prompt_execution_tab = PromptExecutionTab(self.services)
+        self.tab_widget.addTab(self.prompt_execution_tab, "Prompt Execution")
+        
+        # Group 4: Social and Dashboard
+        self.social_dashboard_tab = SocialDashboardTab(self.services)
+        self.tab_widget.addTab(self.social_dashboard_tab, "Social Dashboard")
+        
+        self.metrics_viewer_tab = MetricsViewerTab(self.services)
+        self.tab_widget.addTab(self.metrics_viewer_tab, "Metrics Viewer")
+        
+        # Group 5: System and Configuration
+        self.settings_tab = SettingsTab(self.services)
+        self.tab_widget.addTab(self.settings_tab, "Settings")
+        
+        self.configuration_tab = ConfigurationTab(self.services)
+        self.tab_widget.addTab(self.configuration_tab, "Configuration")
+        
+        self.sync_ops_tab = SyncOpsTab(self.services)
+        self.tab_widget.addTab(self.sync_ops_tab, "Sync Operations")
+        
+        self.prompt_sync_tab = PromptSyncTab(self.services)
+        self.tab_widget.addTab(self.prompt_sync_tab, "Prompt Sync")
+        
+        # Group 6: Development Tools
+        self.dependency_map_tab = DependencyMapTab(self.services)
+        self.tab_widget.addTab(self.dependency_map_tab, "Dependency Map")
+        
+        self.logs_tab = LogsTab(self.services)
+        self.tab_widget.addTab(self.logs_tab, "Logs")
+        
+        # Create recovery dashboard
+        self.recovery_dashboard = RecoveryDashboardWidget(self.metrics_service)
+        self.tab_widget.addTab(self.recovery_dashboard, "Recovery Dashboard")
+        
+        # Connect signals
+        self.task_board_tab.task_queued.connect(self._handle_queued_task)
+        self._connect_tab_signals()
+        self.recovery_dashboard.refresh_requested.connect(self._on_recovery_dashboard_refresh)
+        
+        # Add tab widget to layout
+        layout.addWidget(self.tab_widget)
+        
+        # Create menu bar
+        self._create_menu_bar()
+        
+        # Create status bar
+        self.setStatusBar(QStatusBar())
+        
+    def _connect_tab_signals(self):
+        """Connect signals between tabs for inter-tab communication."""
+        # Connect TaskBoard to CursorExecution
+        if hasattr(self.task_board_tab, 'task_queued') and hasattr(self.cursor_execution_tab, 'execute_task'):
+            self.task_board_tab.task_queued.connect(self.cursor_execution_tab.execute_task)
+        
+        # Connect PromptExecution to Logs
+        if hasattr(self.prompt_execution_tab, 'log_message') and hasattr(self.logs_tab, 'add_log'):
+            self.prompt_execution_tab.log_message.connect(self.logs_tab.add_log)
+        
+        # Connect SyncOps to SocialDashboard
+        if hasattr(self.sync_ops_tab, 'sync_completed') and hasattr(self.social_dashboard_tab, 'refresh_data'):
+            self.sync_ops_tab.sync_completed.connect(self.social_dashboard_tab.refresh_data)
+        
+    def _create_menu_bar(self):
+        """Create the application menu bar."""
+        menu_bar = QMenuBar()
+        
+        # File menu
+        file_menu = menu_bar.addMenu("File")
+        file_menu.addAction("Exit", self.close)
+        
+        # View menu
+        view_menu = menu_bar.addMenu("View")
+        view_menu.addAction("Reset Layout", self._reset_layout)
+        
+        # Help menu
+        help_menu = menu_bar.addMenu("Help")
+        help_menu.addAction("About", self._show_about)
+        
+        self.setMenuBar(menu_bar)
+        
+    def _reset_layout(self):
+        """Reset the window layout to default."""
+        self.resize(1200, 800)
+        self.prompt_sync_tab.main_splitter.setSizes([800, 200])
+        
+    def _show_about(self):
+        """Show the about dialog."""
+        QMessageBox.about(
+            self,
+            "About Dream.OS",
+            "Dream.OS - The AI Content Generation Studio\n\n"
+            "Version: 0.1.0\n"
+            "© 2024 Dream.OS Team"
+        )
+        
+    def closeEvent(self, event):
+        """Handle window close event."""
+        # Save any necessary state
+        if hasattr(self.prompt_sync_tab, '_save_state'):
+            self.prompt_sync_tab._save_state()
+            
+        super().closeEvent(event)
 
+    def _handle_queued_task(self, task: Dict[str, Any]):
+        """Handle a queued task with metrics tracking."""
+        task_id = task.get("id", str(uuid.uuid4()))
+        start_time = time.time()
+        
+        try:
+            # Update initial metrics
+            self.metrics_service.update_task_metrics(
+                task_id,
+                "queued",
+                task_type=task.get("action", "unknown"),
+                title=task.get("title", "Untitled Task")
+            )
+            
+            # Create new chat tab
+            chat_tab = self.chat_tab_manager.create_new_tab(
+                title=f"Task: {task.get('title', 'New Task')}"
+            )
+            self.tab_widget.setCurrentWidget(chat_tab)
+            
+            # Gather context and build prompt
+            context = self._gather_task_context(task)
+            prompt = self._build_task_prompt(task, context)
+            
+            # Initialize task context for recovery
+            task_context = {
+                "task_id": task_id,
+                "max_retries": 3,
+                "retry_delay": 5,
+                "timeout": 300,
+                "metrics": {
+                    "retry_count": 0,
+                    "start_time": datetime.now().isoformat(),
+                    "status": "queued"
+                },
+                "error_type": "unknown"  # Will be updated if error occurs
+            }
+            
+            # Queue task to cursor with recovery handling
+            cursor_session = self.services.get("cursor_session_manager")
+            if not cursor_session:
+                raise RuntimeError("CursorSessionManager not available")
+                
+            result = cursor_session.queue_prompt(
+                prompt,
+                isolation_level="high",
+                on_stall=lambda: self.recovery_engine.handle_stall(task_context),
+                timeout=task_context["timeout"]
+            )
+            
+            # Update completion metrics
+            execution_time = time.time() - start_time
+            self.metrics_service.update_task_metrics(
+                task_id,
+                "completed",
+                execution_time=execution_time,
+                result=result
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Task execution failed: {e}")
+            self.metrics_service.update_task_metrics(
+                task_id,
+                "error",
+                error=str(e),
+                execution_time=time.time() - start_time
+            )
+            raise
+    
+    def _gather_task_context(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """Gather context for task execution with metrics."""
+        context = {
+            "conversation": self._gather_conversation_context(task),
+            "project": self._gather_project_context(task),
+            "metrics": self.metrics_service.get_global_metrics(),
+            "task_history": self.metrics_service.get_task_metrics(task.get("id", ""))
+        }
+        return context
+    
+    def _gather_conversation_context(self, task: Dict[str, Any]) -> str:
+        """
+        Gather conversation context for the task.
+        
+        Args:
+            task: The task dictionary
+            
+        Returns:
+            String containing conversation context
+        """
+        conversation_context = ""
+        episode_generator = self.services.get('component_managers', {}).get('episode_generator')
+        
+        if episode_generator and task.get("conversation_id"):
+            try:
+                history = episode_generator.get_episode_history(task["conversation_id"])
+                if isinstance(history, list) and history:
+                    conversation_context = "\n".join(history[-3:])  # Last 3 messages
+                elif isinstance(history, str):
+                    conversation_context = history
+                self.logger.debug(f"Retrieved conversation context for task {task['id']}")
+            except Exception as e:
+                self.logger.warning(f"Failed to get conversation history: {e}")
+        
+        return conversation_context
+    
+    def _gather_project_context(self, task: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Gather project context using ProjectScanner.
+        
+        Args:
+            task: The task dictionary
+            
+        Returns:
+            Dictionary containing project context
+        """
+        project_context = {}
+        project_scanner = self.services.get('project_scanner')
+        
+        if project_scanner:
+            try:
+                # First try to load from cache
+                project_context = project_scanner.load_cache()
+                
+                # If cache is empty or task requires fresh scan
+                if not project_context.get("files") or task.get("force_rescan"):
+                    project_context = project_scanner.scan_project(max_files=100)
+                    
+                self.logger.debug(f"Retrieved project context for task {task['id']}")
+            except Exception as e:
+                self.logger.warning(f"Failed to get project context: {e}")
+        
+        return project_context
+    
+    def _build_task_prompt(self, task: Dict[str, Any], conversation_context: str, project_context: Dict[str, Any]) -> str:
+        """
+        Build the dynamic prompt for task execution based on task type.
+        
+        Args:
+            task: The task dictionary
+            conversation_context: String containing conversation history
+            project_context: Dictionary containing project analysis
+            
+        Returns:
+            String containing the complete prompt
+        """
+        template_manager = self.services.get('component_managers', {}).get('template_manager')
+        action = task.get("action", "Continue Thought").lower()
+        
+        if template_manager and hasattr(template_manager, "render_template_by_action"):
+            try:
+                # Build template context with all available data
+                template_context = {
+                    "conversation": conversation_context,
+                    "project": project_context,
+                    "task": task,
+                    "metrics": self._get_task_metrics(task["id"]) if task.get("id") else {},
+                    "cursor_rules": self._get_cursor_rules()
+                }
+                
+                # Try to use a specific template for the action type
+                if hasattr(template_manager, f"render_{action}_template"):
+                    prompt = getattr(template_manager, f"render_{action}_template")(template_context)
+                else:
+                    # Fallback to generic template with action-specific sections
+                    prompt = template_manager.render_template_by_action(action, template_context)
+                
+                self.logger.debug(f"Built prompt using template for task {task['id']} (action: {action})")
+                return prompt
+            except Exception as e:
+                self.logger.warning(f"Failed to render template: {e}")
+                return self._build_action_specific_fallback(task, conversation_context, project_context)
+        else:
+            return self._build_action_specific_fallback(task, conversation_context, project_context)
+    
+    def _build_action_specific_fallback(self, task: Dict[str, Any], conversation_context: str, project_context: Dict[str, Any]) -> str:
+        """Build action-specific fallback prompts when template manager is unavailable."""
+        action = task.get("action", "Continue Thought").lower()
+        base_prompt = (
+            f"Task ID: {task['id']}\n"
+            f"Action: {task.get('action', 'Continue Thought')}\n\n"
+            f"Task Description:\n{task.get('title', 'No title')}\n\n"
+            f"Task Prompt:\n{task.get('prompt', 'No prompt provided')}\n\n"
+            f"Conversation Context:\n{conversation_context}\n\n"
+            f"Project Context Summary:\n"
+            f"Files analyzed: {len(project_context.get('files', []))}\n"
+            f"Project root: {project_context.get('project_root', 'Unknown')}\n\n"
+        )
+        
+        # Add action-specific instructions
+        if action == "implement":
+            base_prompt += (
+                "Implementation Instructions:\n"
+                "1. Analyze requirements and project context\n"
+                "2. Design a modular, testable solution\n"
+                "3. Implement with proper error handling\n"
+                "4. Add necessary documentation\n"
+                "5. Consider adding unit tests\n"
+            )
+        elif action == "refactor":
+            base_prompt += (
+                "Refactoring Instructions:\n"
+                "1. Analyze current code structure\n"
+                "2. Identify code smells and improvement areas\n"
+                "3. Apply SOLID principles\n"
+                "4. Ensure test coverage is maintained\n"
+                "5. Document architectural decisions\n"
+            )
+        elif action == "test":
+            base_prompt += (
+                "Testing Instructions:\n"
+                "1. Identify critical test scenarios\n"
+                "2. Write comprehensive unit tests\n"
+                "3. Include edge cases and error conditions\n"
+                "4. Ensure proper test isolation\n"
+                "5. Add test documentation\n"
+            )
+        elif action == "debug":
+            base_prompt += (
+                "Debugging Instructions:\n"
+                "1. Analyze error symptoms and context\n"
+                "2. Add strategic logging/debugging\n"
+                "3. Identify and fix root cause\n"
+                "4. Add regression tests\n"
+                "5. Document the fix and prevention\n"
+            )
+        else:
+            base_prompt += (
+                "General Instructions:\n"
+                "1. Analyze the task and context\n"
+                "2. Execute the required changes\n"
+                "3. Provide clear documentation\n"
+            )
+        
+        return base_prompt
+    
+    def _get_task_metrics(self, task_id: str) -> Dict[str, Any]:
+        """Get metrics for a specific task."""
+        metrics = {
+            "prompt_count": 0,
+            "execution_cycles": 0,
+            "average_completion_time": 0,
+            "success_rate": 0.0
+        }
+        
+        # Try to get metrics from services
+        metrics_service = self.services.get('metrics_service')
+        if metrics_service and hasattr(metrics_service, 'get_task_metrics'):
+            try:
+                metrics.update(metrics_service.get_task_metrics(task_id))
+            except Exception as e:
+                self.logger.warning(f"Failed to get metrics for task {task_id}: {e}")
+        
+        return metrics
+    
+    def _get_cursor_rules(self) -> Dict[str, Any]:
+        """Get current Cursor rules and constraints."""
+        rules = {
+            "max_file_length": 400,
+            "require_tests": True,
+            "enforce_architecture": True
+        }
+        
+        # Try to get rules from services
+        rules_service = self.services.get('rules_service')
+        if rules_service and hasattr(rules_service, 'get_current_rules'):
+            try:
+                rules.update(rules_service.get_current_rules())
+            except Exception as e:
+                self.logger.warning(f"Failed to get Cursor rules: {e}")
+        
+        return rules
+
+    def _on_recovery_dashboard_refresh(self):
+        """Handle recovery dashboard refresh request."""
+        try:
+            stats = self.recovery_engine.get_recovery_stats()
+            self.statusBar().showMessage(
+                f"Recovery insights updated - Success rate: {stats['global_metrics']['recovery_success_rate']:.1f}%"
+            )
+        except Exception as e:
+            logger.error(f"Failed to refresh recovery insights: {e}")
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        # Create the application
+        app = QApplication(sys.argv)
+        
+        # Create and show the main window
+        window = DreamOsMainWindow()
+        window.show()
+        
+        logger.info("Dream.OS application started")
+        
+        # Start the event loop
+        sys.exit(app.exec_())
+        
+    except Exception as e:
+        logger.error(f"Failed to start Dream.OS: {e}")
+        raise
