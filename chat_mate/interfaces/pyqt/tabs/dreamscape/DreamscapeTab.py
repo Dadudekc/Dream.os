@@ -13,8 +13,28 @@ from PyQt5.QtCore import Qt, pyqtSignal, QSize, QTimer
 
 from interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer import ServiceInitializer
 
+# Assuming these components and the controller will be created
+# We'll need to import them properly once they exist
+try:
+    from .components.EpisodeList import EpisodeList
+    from .components.TemplateEditor import TemplateEditor
+    from .components.ContextViewer import ContextViewer
+    from .dreamscape_controller import DreamscapeController
+    COMPONENTS_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"DreamscapeTab: Could not import components or controller: {e}")
+    COMPONENTS_AVAILABLE = False
+    # Define dummy classes if imports fail to allow basic structure loading
+    class EpisodeList(QWidget):
+        def __init__(self, ctrl): super().__init__(); self.layout = QVBoxLayout(self); self.layout.addWidget(QLabel("EpisodeList (Not Loaded)"))
+    class TemplateEditor(QWidget):
+        def __init__(self, ctrl): super().__init__(); self.layout = QVBoxLayout(self); self.layout.addWidget(QLabel("TemplateEditor (Not Loaded)"))
+    class ContextViewer(QWidget):
+        def __init__(self, ctrl): super().__init__(); self.layout = QVBoxLayout(self); self.layout.addWidget(QLabel("ContextViewer (Not Loaded)"))
+    class DreamscapeController:
+        def __init__(self, service, chat_manager): pass # Dummy controller
 
-class DreamscapeGenerationTab(QWidget):
+class DreamscapeTab(QWidget):
     """
     UI tab for generating Digital Dreamscape episodes from chat history.
     Provides interface to select past chats, generate episodes, and view results.
@@ -22,13 +42,32 @@ class DreamscapeGenerationTab(QWidget):
     
     statusUpdated = pyqtSignal(str)
     
-    def __init__(self, parent=None):
+    def __init__(self, dreamscape_service, chat_manager, parent=None):
+        """
+        Initializes the DreamscapeTab.
+
+        Args:
+            dreamscape_service: Instance of DreamscapeGenerationService.
+            chat_manager: Instance of ChatManager.
+            parent: Optional parent widget.
+        """
         super().__init__(parent)
         self.logger = logging.getLogger(__name__)
         
+        if not COMPONENTS_AVAILABLE:
+             self.logger.error("Cannot initialize DreamscapeTab properly: Components or Controller failed to import.")
+             # Basic fallback UI
+             layout = QVBoxLayout(self)
+             layout.addWidget(QLabel("Error: DreamscapeTab components failed to load."))
+             self.setLayout(layout)
+             return
+
         # Initialize services (chat manager, template manager, etc.)
         self.service_initializer = ServiceInitializer(parent_widget=self)
         self.service_initializer.initialize_all()
+        
+        # Initialize controller with required services
+        self.controller = DreamscapeController(dreamscape_service, chat_manager)
         
         # UI Setup
         self.init_ui()
@@ -41,108 +80,46 @@ class DreamscapeGenerationTab(QWidget):
         
     def init_ui(self):
         """Initialize the UI components."""
-        main_layout = QVBoxLayout(self)
-        
-        # Title
-        title_label = QLabel("Digital Dreamscape Episode Generator")
-        title_label.setStyleSheet("font-size: 16pt; font-weight: bold;")
-        main_layout.addWidget(title_label)
-        
-        # Splitter for main sections
-        splitter = QSplitter(Qt.Horizontal)
-        main_layout.addWidget(splitter)
-        
-        # Left panel - Chat selection and generation
-        left_panel = QWidget()
-        left_layout = QVBoxLayout(left_panel)
-        
-        # Chat selection
-        chat_label = QLabel("Select Chat:")
-        left_layout.addWidget(chat_label)
-        
-        self.chat_combo = QComboBox()
-        self.chat_combo.setMinimumWidth(300)
-        left_layout.addWidget(self.chat_combo)
-        
-        # Generate episode button
-        generate_button = QPushButton("Generate Episode")
-        generate_button.clicked.connect(self.generate_episode_from_selected_chat)
-        left_layout.addWidget(generate_button)
-        
-        # Generate all checkbox
-        self.generate_all_checkbox = QCheckBox("Generate for All Chats")
-        left_layout.addWidget(self.generate_all_checkbox)
-        
-        # Refresh button
-        refresh_button = QPushButton("Refresh Chat List")
-        refresh_button.clicked.connect(self.load_available_chats)
-        left_layout.addWidget(refresh_button)
-        
-        # Progress bar
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setRange(0, 100)
-        self.progress_bar.setValue(0)
-        left_layout.addWidget(self.progress_bar)
-        
-        # Status label
-        self.status_label = QLabel("Ready")
-        left_layout.addWidget(self.status_label)
-        
-        # Add stretch
-        left_layout.addStretch()
-        
-        # Right panel - Episode list and viewer
-        right_panel = QWidget()
-        right_layout = QVBoxLayout(right_panel)
-        
-        episode_label = QLabel("Generated Episodes:")
-        right_layout.addWidget(episode_label)
-        
-        # Episode list
-        self.episode_list = QListWidget()
-        self.episode_list.setMinimumWidth(400)
-        self.episode_list.currentItemChanged.connect(self.load_selected_episode)
-        right_layout.addWidget(self.episode_list)
-        
-        # Episode viewer
-        viewer_label = QLabel("Episode Content:")
-        right_layout.addWidget(viewer_label)
-        
-        self.episode_viewer = QTextEdit()
-        self.episode_viewer.setReadOnly(True)
-        right_layout.addWidget(self.episode_viewer)
-        
-        # Add panels to splitter
-        splitter.addWidget(left_panel)
-        splitter.addWidget(right_panel)
-        
-        # Set initial sizes
-        splitter.setSizes([300, 500])
+        self.setWindowTitle("Dreamscape")
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(5, 5, 5, 5)
+
+        # Use QSplitter for resizable sections
+        main_splitter = QSplitter(Qt.Horizontal)
+        left_pane = QWidget()
+        left_layout = QVBoxLayout(left_pane)
+        left_layout.setContentsMargins(0,0,0,0)
+
+        right_pane = QWidget()
+        right_layout = QVBoxLayout(right_pane)
+        right_layout.setContentsMargins(0,0,0,0)
+
+        # Instantiate components with the controller
+        self.episode_list = EpisodeList(self.controller)
+        self.template_editor = TemplateEditor(self.controller)
+        self.context_viewer = ContextViewer(self.controller)
+
+        # Arrange components (Example Layout)
+        left_layout.addWidget(self.episode_list)
+        right_layout.addWidget(self.context_viewer) # Show context on the right initially
+
+        main_splitter.addWidget(left_pane)
+        main_splitter.addWidget(right_pane)
+        # Adjust initial sizes if needed
+        main_splitter.setSizes([300, 500])
+
+        # Add main splitter and template editor below
+        self.layout.addWidget(main_splitter, 1) # Give splitter more stretch factor
+        self.layout.addWidget(self.template_editor, 1) # Give editor stretch factor
+
+        self.setLayout(self.layout)
+        self.logger.info("DreamscapeTab initialized.")
         
     def load_available_chats(self):
         """Load the list of available chats from the chat service."""
         try:
             self.update_status("Loading available chats...")
-            self.chat_combo.clear()
-            
-            # Get chat manager from the service initializer
-            chat_manager = self.service_initializer.get_chat_manager()
-            if not chat_manager:
-                self.update_status("Error: Chat manager not available")
-                return
-                
-            # Get chat titles
-            chats = chat_manager.get_all_chat_titles()
-            if not chats:
-                self.update_status("No chats found")
-                return
-                
-            # Add chats to the dropdown
-            for chat in chats:
-                title = chat.get('title', 'Untitled')
-                self.chat_combo.addItem(title)
-                
-            self.update_status(f"Loaded {len(chats)} chats")
+            self.episode_list.refresh()
             
         except Exception as e:
             self.logger.error(f"Error loading chat list: {e}")
@@ -152,60 +129,11 @@ class DreamscapeGenerationTab(QWidget):
         """Load the list of existing episodes in the output directory."""
         try:
             self.update_status("Loading episode list...")
-            self.episode_list.clear()
+            self.episode_list.refresh()
             
-            # Get the dreamscape output directory
-            output_dir = Path("outputs/dreamscape")
-            if not output_dir.exists():
-                output_dir.mkdir(parents=True, exist_ok=True)
-                self.update_status("Created new episode directory")
-                return
-                
-            # List episode files
-            episode_files = list(output_dir.glob("*.md"))
-            if not episode_files:
-                self.update_status("No episodes found")
-                return
-                
-            # Add episodes to the list widget
-            for episode_file in sorted(episode_files, key=os.path.getmtime, reverse=True):
-                item = QListWidgetItem(episode_file.name)
-                item.setData(Qt.UserRole, str(episode_file))
-                self.episode_list.addItem(item)
-                
-            self.update_status(f"Loaded {len(episode_files)} episodes")
-            
-            # Select the first episode
-            if self.episode_list.count() > 0:
-                self.episode_list.setCurrentRow(0)
-                
         except Exception as e:
             self.logger.error(f"Error loading episode list: {e}")
             self.update_status(f"Error loading episode list: {str(e)}")
-    
-    def load_selected_episode(self, current, previous):
-        """Load the selected episode content into the viewer."""
-        try:
-            if not current:
-                self.episode_viewer.clear()
-                return
-                
-            # Get the file path from the item data
-            file_path = current.data(Qt.UserRole)
-            if not file_path or not Path(file_path).exists():
-                self.episode_viewer.setText("Episode file not found")
-                return
-                
-            # Load and display the episode content
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                
-            self.episode_viewer.setText(content)
-            self.update_status(f"Loaded episode: {Path(file_path).name}")
-            
-        except Exception as e:
-            self.logger.error(f"Error loading episode content: {e}")
-            self.update_status(f"Error loading episode content: {str(e)}")
     
     def generate_episode_from_selected_chat(self):
         """Generate a dreamscape episode from the selected chat."""
@@ -320,4 +248,12 @@ class DreamscapeGenerationTab(QWidget):
         """Update the status label and emit the statusUpdated signal."""
         self.status_label.setText(message)
         self.statusUpdated.emit(message)
-        self.logger.info(message) 
+        self.logger.info(message)
+
+    def refresh_context(self):
+        if hasattr(self, 'context_viewer') and self.context_viewer:
+            self.context_viewer.refresh()
+
+    def refresh_chats(self):
+        if hasattr(self, 'episode_list') and self.episode_list:
+            self.episode_list.refresh() 
