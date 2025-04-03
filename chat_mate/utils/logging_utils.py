@@ -1,12 +1,13 @@
 import os
 import json
 import logging
+import functools
 from typing import Optional
-from core.logging.utils.setup import setup_logging
+from chat_mate.core.logging.utils.setup import setup_logging
 from datetime import datetime
 
 # -------------------------------------------------------------------
-# Directory & Log Setup
+# Directory Setup
 # -------------------------------------------------------------------
 
 BASE_DIR = os.getcwd()  # Could use PathManager if available
@@ -16,26 +17,29 @@ JSON_LOG_DIR = os.path.join(UTILS_LOG_DIR, "json_logs")
 os.makedirs(JSON_LOG_DIR, exist_ok=True)
 
 # -------------------------------------------------------------------
-# Python Logger Setup (Plain Text)
+# Logger Setup (Deferred)
 # -------------------------------------------------------------------
 
-PLAIN_LOG_FILE = os.path.join(UTILS_LOG_DIR, "utils_activity.log")
+@functools.lru_cache(maxsize=None) # Ensure logger is configured only once
+def get_utils_logger() -> logging.Logger:
+    """Gets and configures the AletheiaUtilsLogs logger."""
+    logger_instance = logging.getLogger("AletheiaUtilsLogs")
+    # Prevent adding handlers multiple times if called again (though lru_cache helps)
+    if not logger_instance.handlers: 
+        logger_instance.setLevel(logging.DEBUG)  # Capture all levels for flexibility
 
-logger = logging.getLogger("AletheiaUtilsLogs")
-logger.setLevel(logging.DEBUG)  # Capture all levels for flexibility
+        # File handler for persistent logs
+        plain_log_file = os.path.join(UTILS_LOG_DIR, "utils_activity.log")
+        file_handler = logging.FileHandler(plain_log_file, encoding="utf-8")
+        file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+        logger_instance.addHandler(file_handler)
 
-# File handler for persistent logs
-file_handler = logging.FileHandler(PLAIN_LOG_FILE, encoding="utf-8")
-file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+        # Note: Console handler removed previously for pytest compatibility
 
-# Optional: Console handler for immediate feedback
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
-
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
-
-logger.debug(f" Logging initialized at {UTILS_LOG_DIR}")
+        # Initial log message (only runs once due to lru_cache)
+        # logger_instance.debug(f" AletheiaUtilsLogs logger initialized at {UTILS_LOG_DIR}")
+        
+    return logger_instance
 
 # -------------------------------------------------------------------
 # Aletheia JSON Log Writer
@@ -52,6 +56,7 @@ def write_json_log(
     """
     Unified JSON logger for all utility events.
     """
+    logger = get_utils_logger() # Get logger instance
     tags = tags or []
     log_entry = {
         "timestamp": datetime.utcnow().isoformat() + "Z",
@@ -81,11 +86,17 @@ def write_json_log(
 # -------------------------------------------------------------------
 
 def log_success(component, message, tags=None, ai_output=None):
+    # message param seems unused, keeping signature for now
     write_json_log(component, "successful", tags or ["success"], ai_output, event_type="success")
 
 def log_error(component, error_msg, tags=None):
+    logger = get_utils_logger() # Get logger instance
     write_json_log(component, "failed", tags or ["error"], ai_output=error_msg, event_type="error")
     logger.error(f"[{component.upper()}] ERROR: {error_msg}")
+
+# -------------------------------------------------------------------
+# Basic Logging Setup Wrapper (Keep as is)
+# -------------------------------------------------------------------
 
 def setup_basic_logging(
     logger_name: str,
@@ -96,6 +107,7 @@ def setup_basic_logging(
     log_format: Optional[str] = None
 ) -> logging.Logger:
     """A simple wrapper around the advanced setup_logging function."""
+    # This function relies on a different setup mechanism, so it should be okay.
     return setup_logging(
         logger_name=logger_name,
         log_level=log_level,

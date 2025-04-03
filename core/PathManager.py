@@ -155,15 +155,15 @@ class PathManager:
             logger.error(f"Failed to load paths config: {e}", exc_info=True) # Log traceback
             raise
             
-    def get_path(self, key: str) -> str:
+    def get_path(self, key: str) -> Path:
         """
-        Get a path by key.
+        Get a path by key as a Path object.
         
         Args:
             key: The path key from the config
             
         Returns:
-            str: The resolved path
+            Path: The resolved path as a Path object
             
         Raises:
             KeyError: If the path key is not found
@@ -172,16 +172,16 @@ class PathManager:
             logger.warning(f"Path key '{key}' not found.")
             raise KeyError(f"Path key '{key}' not found.")
             
-        return self.paths[key]
+        return Path(self.paths[key])
         
-    def get_all_paths(self) -> Dict[str, str]:
+    def get_all_paths(self) -> Dict[str, Path]:
         """
-        Get all configured paths.
+        Get all configured paths as Path objects.
         
         Returns:
-            Dict[str, str]: Mapping of path keys to paths
+            Dict[str, Path]: Mapping of path keys to Path objects
         """
-        return self.paths.copy()
+        return {key: Path(path_str) for key, path_str in self.paths.items()}
         
     def get_env_path(self, filename: str = ".env") -> Union[str, Path]:
         """

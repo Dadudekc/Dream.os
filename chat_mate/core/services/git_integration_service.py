@@ -1,10 +1,12 @@
 import logging
-from typing import Dict, Any, Optional
-import asyncio
 from pathlib import Path
-import git
+from typing import Optional, Dict, Any, List
+import asyncio
 
-from core.PathManager import PathManager
+from git import Repo, InvalidGitRepositoryError
+
+from chat_mate.core.PathManager import PathManager
+from chat_mate.core.config.ConfigManager import ConfigManager
 
 class GitIntegrationService:
     """Service for handling Git operations."""
@@ -21,11 +23,11 @@ class GitIntegrationService:
         self.logger = logger or logging.getLogger(__name__)
         self.repo = self._get_repo()
         
-    def _get_repo(self) -> Optional[git.Repo]:
+    def _get_repo(self) -> Optional[Repo]:
         """Get Git repository instance for the workspace."""
         try:
-            return git.Repo(str(self.path_manager.get_workspace_path()))
-        except Exception as e:
+            return Repo(str(self.path_manager.get_workspace_path()))
+        except InvalidGitRepositoryError as e:
             self.logger.error(f"Error getting Git repo: {str(e)}")
             return None
             

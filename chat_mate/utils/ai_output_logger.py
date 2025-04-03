@@ -7,13 +7,13 @@ to maintain backward compatibility while avoiding circular dependencies.
 
 import logging
 from typing import Optional, List, Dict, Any
-from core.PathManager import PathManager
+from chat_mate.core.PathManager import PathManager
 # Import reinforcement trainer only if needed
-from utils.reinforcement_trainer import process_feedback
+from chat_mate.utils.reinforcement_trainer import process_feedback
 
 # Import the core service
-from core.logging.services.ai_output_service import log_ai_output as core_log_ai_output
-from core.logging.services.ai_output_service import sanitize_filename
+from chat_mate.core.logging.services.ai_output_service import log_ai_output as core_log_ai_output
+from chat_mate.core.logging.services.ai_output_service import sanitize_filename
 
 # Initialize the logger
 logger = logging.getLogger("ai_output_logger")

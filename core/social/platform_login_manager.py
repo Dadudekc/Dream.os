@@ -15,7 +15,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # ✅ Fixed Imports
 from social.social_config import social_config
-from social.log_writer import write_json_log, logger
+from social.log_writer import write_json_log, get_social_logger
 from social.strategies import (
     twitter_strategy,
     facebook_strategy,
@@ -26,7 +26,7 @@ from social.strategies import (
 )
 from social.DriverSession import get_multi_driver_sessions
 
-# Everything else stays the same...
+logger = get_social_logger()
 
 COOKIES_DIR = os.path.join(os.getcwd(), "social", "cookies")
 os.makedirs(COOKIES_DIR, exist_ok=True)

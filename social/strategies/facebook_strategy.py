@@ -23,10 +23,12 @@ load_dotenv()
 
 # Absolute imports from our codebase
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
+
+logger = get_social_logger()
 
 MAX_ATTEMPTS = 3
 DEFAULT_WAIT = 10

@@ -32,13 +32,68 @@
       "emotional_state": "Neutral",
       "ongoing_quests": [],
       "completed_quests": []
+    },
+    {
+      "id": 4,
+      "timestamp": "2025-04-01T16:07:10.296631",
+      "filename": "Error rendering template 'dreamscape_episode.j2': 'datetime.datetime' object is not callable.md",
+      "title": "Error rendering template 'dreamscape_episode.j2': 'datetime.datetime' object is not callable",
+      "summary": "",
+      "location": "The Nexus",
+      "emotional_state": "Neutral",
+      "ongoing_quests": [],
+      "completed_quests": []
+    },
+    {
+      "id": 5,
+      "timestamp": "2025-04-01T16:08:16.937100",
+      "filename": "episode_e2e_test_chat_20250401.md",
+      "title": "\ud83c\udf00 Digital Dreamscape MMO Log: Untitled Chronicle",
+      "summary": "",
+      "location": "** The Nexus",
+      "emotional_state": "** Determined",
+      "ongoing_quests": [],
+      "completed_quests": []
+    },
+    {
+      "id": 6,
+      "timestamp": "2025-04-01T16:08:58.192173",
+      "filename": "episode_e2e_test_chat_20250401.md",
+      "title": "\ud83c\udf00 Digital Dreamscape MMO Log: Untitled Chronicle",
+      "summary": "",
+      "location": "** The Nexus",
+      "emotional_state": "** Determined",
+      "ongoing_quests": [],
+      "completed_quests": []
+    },
+    {
+      "id": 7,
+      "timestamp": "2025-04-01T16:09:30.581412",
+      "filename": "episode_e2e_test_chat_20250401.md",
+      "title": "\ud83c\udf00 Digital Dreamscape MMO Log: Untitled Chronicle",
+      "summary": "",
+      "location": "** The Nexus",
+      "emotional_state": "** Determined",
+      "ongoing_quests": [],
+      "completed_quests": []
+    },
+    {
+      "id": 8,
+      "timestamp": "2025-04-01T16:10:05.506076",
+      "filename": "episode_e2e_test_chat_20250401.md",
+      "title": "\ud83c\udf00 Digital Dreamscape MMO Log: Untitled Chronicle",
+      "summary": "",
+      "location": "** The Nexus",
+      "emotional_state": "** Determined",
+      "ongoing_quests": [],
+      "completed_quests": []
     }
   ],
-  "episode_count": 3,
-  "last_episode": "episode_e2e_test_chat_20250401",
-  "current_emotional_state": "Neutral",
-  "last_location": "The Nexus",
-  "last_updated": "2025-04-01T16:00:46.355136",
+  "episode_count": 8,
+  "last_episode": "\ud83c\udf00 Digital Dreamscape MMO Log: Untitled Chronicle",
+  "current_emotional_state": "** Determined",
+  "last_location": "** The Nexus",
+  "last_updated": "2025-04-01T16:10:05.506076",
   "ongoing_quests": [],
   "completed_quests": []
 }

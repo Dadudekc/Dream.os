@@ -16,11 +16,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
-from utils.cookie_manager import CookieManager
-from social.social_config import social_config
-from social.log_writer import logger, write_json_log
-from social.AIChatAgent import AIChatAgent
-from social.strategies.base_platform_strategy import BasePlatformStrategy
+from chat_mate.utils.cookie_manager import CookieManager
+from chat_mate.social.social_config import social_config
+from chat_mate.social.log_writer import logger, write_json_log
+from chat_mate.social.strategies.base_platform_strategy import BasePlatformStrategy
 
 # Load environment variables
 load_dotenv()
@@ -59,6 +58,7 @@ class BaseEngagementBot(ABC):
       - Daily session orchestration
     """
     def __init__(self, platform, driver=None, wait_range=(3, 6), follow_db_path=None):
+        from chat_mate.social.AIChatAgent import AIChatAgent
         self.platform = platform.lower()
         self.driver = driver or self._get_driver()
         self.wait_min, self.wait_max = wait_range

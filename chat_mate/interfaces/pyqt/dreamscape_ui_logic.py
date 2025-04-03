@@ -1,6 +1,5 @@
 import threading
 import logging
-from interfaces.pyqt.dreamscape_services import DreamscapeService
 
 class DreamscapeUILogic:
     """

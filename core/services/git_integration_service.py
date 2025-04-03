@@ -4,7 +4,8 @@ import asyncio
 from pathlib import Path
 import git
 
-from core.PathManager import PathManager
+# Use the more complete PathManager from chat_mate.core
+from chat_mate.core.PathManager import PathManager
 
 class GitIntegrationService:
     """Service for handling Git operations."""

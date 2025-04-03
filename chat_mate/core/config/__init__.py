@@ -1,8 +1,8 @@
 # AUTO-GENERATED __init__.py
 # DO NOT EDIT MANUALLY - changes may be overwritten
 
-from . import config_manager
+from . import ConfigManager
 
 __all__ = [
-    'config_manager',
+    'ConfigManager',
 ]

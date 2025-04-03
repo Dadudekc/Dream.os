@@ -18,10 +18,12 @@ from selenium.common.exceptions import (
 
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from utils.SentimentAnalyzer import SentimentAnalyzer
+
+logger = get_social_logger()
 
 class RedditStrategy(BasePlatformStrategy):
     """
@@ -51,7 +53,7 @@ class RedditStrategy(BasePlatformStrategy):
                 self.driver = self._get_driver()
             return self.login()
         except Exception as e:
-            self.logger.error(f"Failed to initialize Reddit strategy: {e}")
+            logger.error(f"Failed to initialize Reddit strategy: {e}")
             return False
     
     def cleanup(self) -> bool:
@@ -61,7 +63,7 @@ class RedditStrategy(BasePlatformStrategy):
                 self.driver.quit()
             return True
         except Exception as e:
-            self.logger.error(f"Error during Reddit cleanup: {e}")
+            logger.error(f"Error during Reddit cleanup: {e}")
             return False
     
     def get_community_metrics(self) -> Dict[str, Any]:
@@ -87,7 +89,7 @@ class RedditStrategy(BasePlatformStrategy):
                 metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
                 metrics["active_members"] = total_interactions
         except Exception as e:
-            self.logger.error(f"Error calculating Reddit metrics: {e}")
+            logger.error(f"Error calculating Reddit metrics: {e}")
         
         return metrics
     
@@ -115,7 +117,7 @@ class RedditStrategy(BasePlatformStrategy):
                 top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
                 top_members = top_members[:20]  # Keep top 20
         except Exception as e:
-            self.logger.error(f"Error getting top Reddit members: {e}")
+            logger.error(f"Error getting top Reddit members: {e}")
         
         return top_members
     
@@ -151,10 +153,10 @@ class RedditStrategy(BasePlatformStrategy):
             with open(self.follow_db, "w") as f:
                 json.dump(follow_data, f, indent=4)
             
-            self.logger.info(f"Tracked {interaction_type} interaction with Reddit member {member_id}")
+            logger.info(f"Tracked {interaction_type} interaction with Reddit member {member_id}")
             return True
         except Exception as e:
-            self.logger.error(f"Error tracking Reddit member interaction: {e}")
+            logger.error(f"Error tracking Reddit member interaction: {e}")
             return False
     
     def _get_driver(self, headless=False):
@@ -165,18 +167,18 @@ class RedditStrategy(BasePlatformStrategy):
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_argument("--disable-infobars")
         driver = webdriver.Chrome(options=options)
-        self.logger.info(" Reddit driver initialized")
+        logger.info(" Reddit driver initialized")
         return driver
     
     def _wait(self, custom_range=None):
         """Wait for a random duration."""
         wait_time = random.uniform(*(custom_range or self.wait_range))
-        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
         time.sleep(wait_time)
     
     def login(self) -> bool:
         """Log in to Reddit."""
-        self.logger.info(" Initiating Reddit login...")
+        logger.info(" Initiating Reddit login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -187,7 +189,7 @@ class RedditStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info(" Logged into Reddit via cookies")
+                logger.info(" Logged into Reddit via cookies")
                 return True
             
             # Try credential login
@@ -207,10 +209,10 @@ class RedditStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "reddit")
-                        self.logger.info(" Logged into Reddit via credentials")
+                        logger.info(" Logged into Reddit via credentials")
                         return True
                 except Exception as e:
-                    self.logger.error(f"Reddit auto-login failed: {e}")
+                    logger.error(f"Reddit auto-login failed: {e}")
             
             # Manual login fallback
             if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "reddit"):
@@ -219,7 +221,7 @@ class RedditStrategy(BasePlatformStrategy):
             
             return False
         except Exception as e:
-            self.logger.error(f"Reddit login error: {e}")
+            logger.error(f"Reddit login error: {e}")
             return False
     
     def is_logged_in(self) -> bool:
@@ -234,7 +236,7 @@ class RedditStrategy(BasePlatformStrategy):
     
     def post_content(self, subreddit: str, title: str, body: str = None) -> bool:
         """Post content to Reddit."""
-        self.logger.info(f" Posting content to r/{subreddit}...")
+        logger.info(f" Posting content to r/{subreddit}...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -269,16 +271,16 @@ class RedditStrategy(BasePlatformStrategy):
             post_button.click()
             self._wait((3, 5))
             
-            self.logger.info(f" Successfully posted to r/{subreddit}")
+            logger.info(f" Successfully posted to r/{subreddit}")
             write_json_log("reddit", "success", f"Posted to r/{subreddit}")
             return True
         except Exception as e:
-            self.logger.error(f"Error posting to Reddit: {e}")
+            logger.error(f"Error posting to Reddit: {e}")
             return False
     
     def run_daily_strategy_session(self):
         """Run complete daily Reddit strategy session."""
-        self.logger.info(" Starting Full Reddit Strategy Session")
+        logger.info(" Starting Full Reddit Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -319,9 +321,9 @@ class RedditStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info(" Reddit Strategy Session Complete")
+            logger.info(" Reddit Strategy Session Complete")
         except Exception as e:
-            self.logger.error(f"Error in Reddit strategy session: {e}")
+            logger.error(f"Error in Reddit strategy session: {e}")
             self.cleanup()
 
     def _load_feedback_data(self):
@@ -338,13 +340,13 @@ class RedditStrategy(BasePlatformStrategy):
 
     def analyze_engagement_metrics(self):
         """Analyze engagement results to optimize strategy."""
-        self.logger.info(" Analyzing Reddit engagement metrics...")
+        logger.info(" Analyzing Reddit engagement metrics...")
         self.feedback_data["upvotes"] = self.feedback_data.get("upvotes", 0) + random.randint(5, 10)
         self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
         self.feedback_data["subscriptions"] = self.feedback_data.get("subscriptions", 0) + random.randint(1, 3)
-        self.logger.info(f" Total Upvotes: {self.feedback_data['upvotes']}")
-        self.logger.info(f" Total Comments: {self.feedback_data['comments']}")
-        self.logger.info(f" Total Subscriptions: {self.feedback_data['subscriptions']}")
+        logger.info(f" Total Upvotes: {self.feedback_data['upvotes']}")
+        logger.info(f" Total Comments: {self.feedback_data['comments']}")
+        logger.info(f" Total Subscriptions: {self.feedback_data['subscriptions']}")
         self._save_feedback_data()
 
     def run_feedback_loop(self):
@@ -354,8 +356,8 @@ class RedditStrategy(BasePlatformStrategy):
 
     def adaptive_posting_strategy(self):
         """Adjust posting strategy based on engagement feedback."""
-        self.logger.info(" Adapting Reddit posting strategy based on feedback...")
+        logger.info(" Adapting Reddit posting strategy based on feedback...")
         if self.feedback_data.get("upvotes", 0) > 100:
-            self.logger.info(" High engagement detected! Consider increasing post frequency.")
+            logger.info(" High engagement detected! Consider increasing post frequency.")
         if self.feedback_data.get("comments", 0) > 50:
-            self.logger.info(" More discussion-oriented posts may yield better community interaction.")
+            logger.info(" More discussion-oriented posts may yield better community interaction.")

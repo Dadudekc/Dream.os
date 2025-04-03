@@ -13,8 +13,9 @@ from social.strategies.stocktwits_strategy import StocktwitsStrategy
 from social.strategies.linkedin_strategy import LinkedinStrategy
 
 # Import logging tools
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 
+logger = get_social_logger()
 
 class SocialPostManager:
     """

@@ -18,9 +18,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from utils.cookie_manager import CookieManager
 from social.social_config import social_config
-from social.log_writer import logger, write_json_log
-from social.AIChatAgent import AIChatAgent
+from social.log_writer import get_social_logger, write_json_log
 from social.strategies.base_platform_strategy import BasePlatformStrategy
+
+logger = get_social_logger()
 
 # Load environment variables
 load_dotenv()
@@ -68,8 +69,14 @@ class BaseEngagementBot(ABC):
         self.login_url = social_config.get_platform_url(self.platform, "login")
         self.settings_url = social_config.get_platform_url(self.platform, "settings")
         self.trending_url = social_config.get_platform_url(self.platform, "trending")
-        self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
         self.follow_db = follow_db_path or f"social/data/{self.platform}_follow_tracker.json"
+        self.ai_agent = None
+
+    def _get_ai_agent(self):
+        if self.ai_agent is None:
+            from social.AIChatAgent import AIChatAgent
+            self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
+        return self.ai_agent
 
     def _get_driver(self):
         options = webdriver.ChromeOptions()
@@ -229,7 +236,7 @@ class BaseEngagementBot(ABC):
             try:
                 like_button = self._find_like_button(post)
                 like_button.click()
-                comment = self.ai_agent.ask(prompt=viral_prompt)
+                comment = self._get_ai_agent().ask(prompt=viral_prompt)
                 comment_box = self._find_comment_box(post)
                 comment_box.click()
                 comment_box.send_keys(comment)
@@ -294,7 +301,7 @@ class BaseEngagementBot(ABC):
         comments = []
         for tag in hashtags:
             prompt = f"You are Victor. Write a raw, authentic comment about #{tag}."
-            comments.append(self.ai_agent.ask(prompt).strip())
+            comments.append(self._get_ai_agent().ask(prompt).strip())
         self.like_posts()
         self.comment_on_posts(comments)
         self.follow_users()
@@ -345,7 +352,7 @@ class LinkedInEngagementBot(BaseEngagementBot):
         if not self.login():
             logger.error(" LinkedIn login failed. Cannot post.")
             return {"platform": "linkedin", "status": "failed", "details": "Not logged in"}
-        content = self.ai_agent.ask(
+        content = self._get_ai_agent().ask(
             prompt=content_prompt,
             additional_context="Write a raw, insightful LinkedIn post in Victor's voice.",
             metadata={"platform": "LinkedIn", "persona": "Victor"}
@@ -676,7 +683,7 @@ class LinkedinStrategy(BasePlatformStrategy):
                 "Write an insightful LinkedIn post about system convergence and "
                 "community building in the digital age. Include relevant hashtags."
             )
-            content = self.ai_agent.ask(
+            content = self._get_ai_agent().ask(
                 prompt=content_prompt,
                 metadata={"platform": "linkedin", "persona": "Victor"}
             )

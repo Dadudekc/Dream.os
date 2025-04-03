@@ -13,11 +13,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from typing import Dict, Any, List, Optional
 
 from utils.cookie_manager import CookieManager
-from social.log_writer import write_json_log, logger
+from social.log_writer import write_json_log, get_social_logger
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from utils.SentimentAnalyzer import SentimentAnalyzer
 from social.strategies.base_platform_strategy import BasePlatformStrategy
+
+logger = get_social_logger()
 
 PLATFORM = "stocktwits"
 FOLLOW_DB = "social/data/stocktwits_follow_tracker.json"

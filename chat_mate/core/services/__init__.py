@@ -5,7 +5,6 @@ from . import chat_service
 from . import config_service
 from . import debug_service
 from . import discord_service
-from . import dreamscape_generator_service
 from . import fix_service
 from . import full_sync_pipeline_runner
 from . import git_integration_service
@@ -18,7 +17,6 @@ __all__ = [
     'config_service',
     'debug_service',
     'discord_service',
-    'dreamscape_generator_service',
     'fix_service',
     'full_sync_pipeline_runner',
     'git_integration_service',

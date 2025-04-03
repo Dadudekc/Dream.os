@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal
 
 # Custom imports
 from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
-from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
 
 
 class DreamscapeGUI(QWidget):
@@ -17,7 +17,7 @@ class DreamscapeGUI(QWidget):
 
         self.ui_logic = ui_logic
 
-        self.main_window = DreamscapeMainWindow(ui_logic=self.ui_logic)
+        self.main_window = DreamOsMainWindow(ui_logic=self.ui_logic)
         self.initUI()
 
     def initUI(self):

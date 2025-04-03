@@ -27,7 +27,7 @@ from .components.SyncPanel import SyncPanel
 from .components.EpisodePanel import EpisodePanel
 
 logger = logging.getLogger(__name__)
-
+ 
 class PromptSyncTab(QWidget):
     """
     Main tab for the Prompt Sync Engine

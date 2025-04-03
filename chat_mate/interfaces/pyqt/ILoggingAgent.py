@@ -1,30 +1,8 @@
-from abc import ABC, abstractmethod
+"""
+Interface for logging agents in the PyQt interface.
+Re-exports the core ILoggingAgent interface.
+"""
 
-class ILoggingAgent(ABC):
-    @abstractmethod
-    def log(self, message: str) -> None:
-        """
-        Logs a simple text message.
-        """
-        pass
+from chat_mate.core.interfaces.logging import ILoggingAgent
 
-    @abstractmethod
-    def log_error(self, message: str) -> None:
-        """
-        Logs an error message.
-        """
-        pass
-
-    @abstractmethod
-    def log_debug(self, message: str) -> None:
-        """
-        Logs a debug message.
-        """
-        pass
-
-    @abstractmethod
-    def log_event(self, event_name: str, payload: dict) -> None:
-        """
-        Logs structured event data.
-        """
-        pass
+__all__ = ['ILoggingAgent'] 

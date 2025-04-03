@@ -6,16 +6,16 @@ from typing import Dict, Any, Optional
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QListWidget
 
-from core.CycleExecutionService import CycleExecutionService
-from core.PromptResponseHandler import PromptResponseHandler
-from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
-from core.TaskOrchestrator import TaskOrchestrator
-from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
-from core.TemplateManager import TemplateManager
-from interfaces.pyqt.tabs.dreamscape_generation.ContextManager import ContextManager
-from interfaces.pyqt.tabs.dreamscape_generation.UIManager import UIManager
-from core.PathManager import PathManager
-from core.services.dreamscape_generator_service import DreamscapeGenerationService
+from chat_mate.core.CycleExecutionService import CycleExecutionService
+from chat_mate.core.PromptResponseHandler import PromptResponseHandler
+from chat_mate.core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
+from chat_mate.core.TaskOrchestrator import TaskOrchestrator
+from .DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from chat_mate.core.TemplateManager import TemplateManager
+from .ContextManager import ContextManager
+from .UIManager import UIManager
+from chat_mate.core.PathManager import PathManager
+from chat_mate.core.services.dreamscape.engine import DreamscapeGenerationService
 
 
 class ServiceInitializer:
@@ -61,7 +61,7 @@ class ServiceInitializer:
 
         # Service registry instance for accessing global services
         try:
-            from core.services.service_registry import ServiceRegistry
+            from chat_mate.core.services.service_registry import ServiceRegistry
             self.service_registry = ServiceRegistry()
         except ImportError:
             self.logger.warning("❌ ServiceRegistry not available")
@@ -147,7 +147,7 @@ class ServiceInitializer:
         """Initialize ConfigManager if needed."""
         if not self.config_service:
             try:
-                from core.config.config_manager import ConfigManager
+                from chat_mate.core.config.ConfigManager import ConfigManager
                 self.config_service = ConfigManager()
                 self.logger.info("✅ ConfigManager initialized directly")
             except ImportError:
@@ -157,7 +157,7 @@ class ServiceInitializer:
         """Initialize ChatManager if needed."""
         if not self.chat_manager:
             try:
-                from core.ChatManager import ChatManager
+                from chat_mate.core.ChatManager import ChatManager
                 
                 # Default headless mode for UI usage
                 self.chat_manager = ChatManager(
@@ -179,14 +179,7 @@ class ServiceInitializer:
         
         # Initialize DreamscapeGenerationService
         try:
-            path_manager = PathManager()
-            template_manager = self.initialize_template_manager()
-            
-            self.dreamscape_generator = DreamscapeGenerationService(
-                path_manager=path_manager,
-                template_manager=template_manager,
-                logger=self.logger
-            )
+            self.dreamscape_generator = DreamscapeGenerationService()
             self.logger.info("✅ DreamscapeGenerationService initialized successfully")
             
             # Set the dreamscape service on the chat manager if available

@@ -1,9 +1,10 @@
 from typing import Dict, Any, Optional
-from core.config.config_manager import ConfigManager
-from core.AletheiaPromptManager import AletheiaPromptManager
-from core.PromptResponseHandler import PromptResponseHandler
-from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
-from core.logging.CompositeLogger import CompositeLogger
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
+from chat_mate.core.AletheiaPromptManager import AletheiaPromptManager
+from chat_mate.core.PromptResponseHandler import PromptResponseHandler
+from chat_mate.core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
+from chat_mate.core.TaskOrchestrator import TaskOrchestrator
 
 class CycleExecutionService:
     """Handles prompt cycle execution and orchestration in a scalable way using dependency injection."""
@@ -12,7 +13,7 @@ class CycleExecutionService:
         self,
         prompt_manager: AletheiaPromptManager,
         config_manager: ConfigManager,
-        logger: CompositeLogger,
+        logger: ILoggingAgent,
         chat_manager: Optional[Any] = None,
         response_handler: Optional[PromptResponseHandler] = None,
         memory_manager: Optional[Any] = None,
@@ -29,6 +30,7 @@ class CycleExecutionService:
         self.discord_manager = discord_manager
 
         self.discord_queue_processor = DiscordQueueProcessor(config_manager, logger)
+        self.task_orchestrator = TaskOrchestrator(config_manager, logger)
 
     def run_cycle(self, payload: Dict[str, Any], cycle_type: str = "single") -> Dict[str, Any]:
         """

@@ -15,20 +15,30 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException
 
 # Ensure .env variables are loaded
 load_dotenv()
 
 # Unified project imports
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
+from social.strategies.strategy_config_loader import StrategyConfigLoader
+
+logger = get_social_logger()
 
 # Constants
 DEFAULT_WAIT = 10
 MAX_ATTEMPTS = 3
+
+# Define constants
+PLATFORM = "instagram"
+FEEDBACK_DB = "social/data/instagram_feedback_tracker.json"
+REWARD_DB = "social/data/instagram_reward_tracker.json"
+FOLLOW_DB = "social/data/instagram_follow_tracker.json"
 
 # -------------------------------------------------
 # Retry Decorator
@@ -411,535 +421,188 @@ Speak directly and authentically, inspiring community discussion.
             response = self.ai.ask(prompt)
             logger.info(f" Generated comment for #{tag}: {response}")
             comments.append(response.strip())
-        return comments
 
-    def like_posts(self):
-        for tag in self.hashtags:
-            max_likes = random.randint(3, 6)
-            logger.info(f"️ Liking {max_likes} posts for #{tag}")
-            InstagramBot(driver=self.driver).like_posts(tag, max_likes=max_likes)
+    @retry_on_failure()
+    def post_content(self, caption: str, image_path: str) -> bool:
+         """Post an image with a caption to Instagram using the mobile UI flow."""
+         logger.info(f"Attempting to post content to {self.PLATFORM.capitalize()}...")
+         if not self._get_driver(): return False
+         if not os.path.exists(image_path):
+              logger.error(f"Image file not found at: {image_path}. Cannot post.")
+              write_json_log(self.PLATFORM, "failed", tags=["post_content", "file_not_found"], ai_output=image_path)
+              return False
 
-    def comment_on_posts(self, comments):
-        for tag, comment in zip(self.hashtags, comments):
-            max_comments = random.randint(2, 4)
-            logger.info(f" Commenting on posts for #{tag}")
-            InstagramBot(driver=self.driver).comment_on_posts(tag, [comment], max_comments=max_comments)
+         if not self.is_logged_in():
+              logger.warning("Not logged in. Attempting login before posting.")
+              if not self.login():
+                   logger.error("Login failed. Cannot post content.")
+                   write_json_log(self.PLATFORM, "failed", tags=["post_content", "login_required"], ai_output="Login failed")
+                   return False
 
-    def follow_users(self):
-        users_followed = []
-        for tag in self.hashtags:
-            max_follows = random.randint(2, 5)
-            logger.info(f" Following {max_follows} users from #{tag}")
-            users = InstagramBot(driver=self.driver).follow_users(tag, max_follows=max_follows)
-            users_followed.extend(users)
-        if users_followed:
-            self._log_followed_users(users_followed)
+         base_url = self.config_loader.get_platform_url("base")
+         post_url = self.config_loader.get_platform_url("post") # Often same as base for mobile flow
+         default_wait = self.config_loader.get_parameter("default_selenium_wait", default=15)
 
-    def unfollow_non_returners(self, days_threshold=3):
-        if not os.path.exists(self.FOLLOW_DB):
-            logger.warning("️ No follow data found.")
-            return
-        with open(self.FOLLOW_DB, "r") as f:
-            follow_data = json.load(f)
-        now = datetime.utcnow()
-        unfollowed = []
-        for user, data in follow_data.items():
-            followed_at = datetime.fromisoformat(data["followed_at"])
-            if (now - followed_at).days >= days_threshold and data.get("status") == "followed":
-                if InstagramBot(driver=self.driver).unfollow_user(user):
-                    follow_data[user]["status"] = "unfollowed"
-                    unfollowed.append(user)
-        with open(self.FOLLOW_DB, "w") as f:
-            json.dump(follow_data, f, indent=4)
-        logger.info(f" Unfollowed {len(unfollowed)} users not following back.")
+         try:
+              # Ensure we are on the main feed page
+              current_url = self.driver.current_url
+              if base_url not in current_url:
+                  logger.debug(f"Navigating to {base_url} before starting post flow.")
+                  self.driver.get(base_url)
+                  self._wait((3, 5))
 
-    def _log_followed_users(self, users):
-        if not users:
-            return
-        if os.path.exists(self.FOLLOW_DB):
-            with open(self.FOLLOW_DB, "r") as f:
-                follow_data = json.load(f)
-        else:
-            follow_data = {}
-        for user in users:
-            follow_data[user] = {"followed_at": datetime.utcnow().isoformat(), "status": "followed"}
-        with open(self.FOLLOW_DB, "w") as f:
-            json.dump(follow_data, f, indent=4)
-        logger.info(f" Logged {len(users)} new follows.")
+              # Dismiss any initial popups (e.g., add to home screen)
+              self.handle_common_popups()
 
-    def go_viral(self):
-        viral_prompt = (
-            "Compose a brief, authentic comment that is energetic, engaging, and invites discussion "
-            "about market trends and system convergence."
-        )
-        trending_url = social_config.get_platform_url("instagram", "trending")
-        self.driver.get(trending_url)
-        time.sleep(random.uniform(3, 5))
-        posts = self.driver.find_elements("css selector", "article")
-        if not posts:
-            logger.warning("️ No trending posts found for viral engagement.")
-            return
-        random.shuffle(posts)
-        for post in posts[:3]:
-            try:
-                like_button = post.find_element("xpath", ".//span[@aria-label='Like']")
-                like_button.click()
-                logger.info("⬆️ Viral mode: Liked a trending post.")
-                time.sleep(random.uniform(1, 2))
-                post_content = post.text
-                comment = self.ai.ask(
-                    prompt=viral_prompt,
-                    additional_context=f"Post content: {post_content}",
-                    metadata={"platform": "Instagram", "persona": "Victor", "engagement": "viral"}
-                )
-                comment_field = post.find_element("xpath", ".//textarea[@aria-label='Add a comment…']")
-                comment_field.click()
-                time.sleep(random.uniform(1, 2))
-                comment_field.send_keys(comment)
-                comment_field.send_keys(Keys.RETURN)
-                logger.info(f" Viral mode: Commented on trending post: {comment}")
-                time.sleep(random.uniform(2, 3))
-            except Exception as e:
-                logger.warning(f"️ Viral engagement error on a trending post: {e}")
-                continue
-
-# -------------------------------------------------
-# InstagramStrategy Class (Unified Approach)
-# -------------------------------------------------
-class InstagramStrategy(BasePlatformStrategy):
-    """
-    Centralized strategy class for Instagram automation and community building.
-    Extends BasePlatformStrategy with Instagram-specific implementations.
-    Features:
-      - Dynamic feedback loops with AI sentiment analysis
-      - Reinforcement loops using ChatGPT responses
-      - Reward system for top engaging followers
-      - Cross-platform feedback integration
-    """
-    
-    def __init__(self, driver=None):
-        """Initialize Instagram strategy with browser automation."""
-        super().__init__(platform_id="instagram", driver=driver)
-        self.login_url = social_config.get_platform_url("instagram", "login")
-        self.post_url = social_config.get_platform_url("instagram", "post")
-        self.settings_url = social_config.get_platform_url("instagram", "settings")
-        self.email = social_config.get_env("INSTAGRAM_EMAIL")
-        self.password = social_config.get_env("INSTAGRAM_PASSWORD")
-        self.wait_range = (3, 6)
-        self.feedback_data = self._load_feedback_data()
-        self.hashtags = ["daytrading", "systembuilder", "automation", "personalfinance"]
-    
-    def initialize(self, credentials: Dict[str, str]) -> bool:
-        """Initialize Instagram strategy with credentials."""
-        try:
-            if not self.driver:
-                self.driver = self._get_driver(mobile=True)
-            return self.login()
-        except Exception as e:
-            self.logger.error(f"Failed to initialize Instagram strategy: {e}")
-            return False
-    
-    def cleanup(self) -> bool:
-        """Clean up resources."""
-        try:
-            if self.driver:
-                self.driver.quit()
-            return True
-        except Exception as e:
-            self.logger.error(f"Error during Instagram cleanup: {e}")
-            return False
-    
-    def get_community_metrics(self) -> Dict[str, Any]:
-        """Get Instagram-specific community metrics."""
-        metrics = {
-            "engagement_rate": 0.0,
-            "growth_rate": 0.0,
-            "sentiment_score": 0.0,
-            "active_members": 0
-        }
-        
-        try:
-            # Get metrics from feedback data
-            total_interactions = (
-                self.feedback_data.get("likes", 0) +
-                self.feedback_data.get("comments", 0) +
-                self.feedback_data.get("follows", 0)
-            )
-            
-            if total_interactions > 0:
-                metrics["engagement_rate"] = min(1.0, total_interactions / 1000)  # Normalize to [0,1]
-                metrics["growth_rate"] = min(1.0, self.feedback_data.get("follows", 0) / 100)
-                metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
-                metrics["active_members"] = total_interactions
-        except Exception as e:
-            self.logger.error(f"Error calculating Instagram metrics: {e}")
-        
-        return metrics
-    
-    def get_top_members(self) -> List[Dict[str, Any]]:
-        """Get list of top Instagram community members."""
-        top_members = []
-        try:
-            if os.path.exists(self.FOLLOW_DB):
-                with open(self.FOLLOW_DB, "r") as f:
-                    follow_data = json.load(f)
-                
-                # Convert follow data to member list
-                for profile_url, data in follow_data.items():
-                    if data.get("status") == "followed":
-                        member = {
-                            "id": profile_url,
-                            "platform": "instagram",
-                            "engagement_score": random.uniform(0.5, 1.0),  # Replace with real metrics
-                            "followed_at": data.get("followed_at"),
-                            "recent_interactions": []
-                        }
-                        top_members.append(member)
-                
-                # Sort by engagement score
-                top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
-                top_members = top_members[:20]  # Keep top 20
-        except Exception as e:
-            self.logger.error(f"Error getting top Instagram members: {e}")
-        
-        return top_members
-    
-    def track_member_interaction(self, member_id: str, interaction_type: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
-        """Track an interaction with an Instagram member."""
-        try:
-            if not os.path.exists(self.FOLLOW_DB):
-                return False
-            
-            with open(self.FOLLOW_DB, "r") as f:
-                follow_data = json.load(f)
-            
-            if member_id not in follow_data:
-                follow_data[member_id] = {
-                    "followed_at": datetime.utcnow().isoformat(),
-                    "status": "followed",
-                    "interactions": []
-                }
-            
-            # Add interaction
-            interaction = {
-                "type": interaction_type,
-                "timestamp": datetime.utcnow().isoformat(),
-                "metadata": metadata or {}
-            }
-            
-            if "interactions" not in follow_data[member_id]:
-                follow_data[member_id]["interactions"] = []
-            
-            follow_data[member_id]["interactions"].append(interaction)
-            
-            # Save updated data
-            with open(self.FOLLOW_DB, "w") as f:
-                json.dump(follow_data, f, indent=4)
-            
-            self.logger.info(f"Tracked {interaction_type} interaction with Instagram member {member_id}")
-            return True
-        except Exception as e:
-            self.logger.error(f"Error tracking Instagram member interaction: {e}")
-            return False
-    
-    def _get_driver(self, mobile=True, headless=False):
-        """Get configured Chrome WebDriver for Instagram."""
-        options = webdriver.ChromeOptions()
-        if headless:
-            options.add_argument("--headless=new")
-        if mobile:
-            mobile_emulation = {"deviceName": "Pixel 5"}
-            options.add_experimental_option("mobileEmulation", mobile_emulation)
-            options.add_argument(f"user-agent={get_random_mobile_user_agent()}")
-        options.add_argument("--disable-blink-features=AutomationControlled")
-        options.add_argument("--disable-infobars")
-        profile_path = social_config.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
-        options.add_argument(f"--user-data-dir={profile_path}")
-        driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=options
-        )
-        self.logger.info(" Instagram driver initialized with mobile emulation.")
-        return driver
-    
-    def _wait(self, custom_range=None):
-        """Wait for a random duration."""
-        wait_time = random.uniform(*(custom_range or self.wait_range))
-        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
-        time.sleep(wait_time)
-    
-    def login(self) -> bool:
-        """Log in to Instagram."""
-        self.logger.info(" Initiating Instagram login...")
-        try:
-            self.driver.get(self.login_url)
-            self._wait()
-            
-            # Try cookie login first
-            self.cookie_manager.load_cookies(self.driver, "instagram")
-            self.driver.refresh()
-            self._wait()
-            
-            if self.is_logged_in():
-                self.logger.info(" Logged into Instagram via cookies")
-                return True
-            
-            # Try credential login
-            if self.email and self.password:
-                try:
-                    username_input = self.driver.find_element("name", "username")
-                    password_input = self.driver.find_element("name", "password")
-                    username_input.clear()
-                    password_input.clear()
-                    username_input.send_keys(self.email)
-                    password_input.send_keys(self.password)
-                    password_input.send_keys(Keys.RETURN)
-                    self._wait((5, 8))
-                    
-                    if self.is_logged_in():
-                        self.cookie_manager.save_cookies(self.driver, "instagram")
-                        self.logger.info(" Logged into Instagram via credentials")
-                        return True
-                except Exception as e:
-                    self.logger.error(f"Instagram auto-login failed: {e}")
-            
-            # Manual login fallback
-            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "instagram"):
-                self.cookie_manager.save_cookies(self.driver, "instagram")
-                return True
-            
-            return False
-        except Exception as e:
-            self.logger.error(f"Instagram login error: {e}")
-            return False
-    
-    def is_logged_in(self) -> bool:
-        """Check if logged into Instagram."""
-        try:
-            self.driver.get("https://www.instagram.com/")
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            self._wait((3, 5))
-            return "login" not in self.driver.current_url.lower()
-        except Exception:
-            return False
-    
-    def post_content(self, content: str, image_path: str = None) -> bool:
-        """Post content to Instagram."""
-        self.logger.info(" Posting content to Instagram...")
-        try:
-            if not self.is_logged_in():
-                if not self.login():
+              # Click the "+" (Create Post) button - Mobile UI
+              # Common XPaths for the create button (may vary based on updates)
+              create_button_xpaths = [
+                   "//div[@role='menuitem'][@tabindex='0']", # Often the middle item
+                   "//span[@aria-label='New post']/ancestor::a",
+                   "//a[@aria-label='New post']",
+                   "//*[@aria-label='New post']",
+                   "//div[@role='button'][contains(.,'New post') or @aria-label='New post']"
+              ]
+              create_button = self.find_element_sequentially(create_button_xpaths, default_wait)
+              if not create_button:
+                    logger.error("Could not find the 'Create Post' (+) button.")
+                    self.save_screenshot(f"logs/{self.PLATFORM}_create_button_fail.png")
+                    write_json_log(self.PLATFORM, "failed", tags=["post_content", "create_button_not_found"], ai_output="Failed to find create button")
                     return False
-            
-            if not image_path:
-                self.logger.error("Cannot post to Instagram without an image")
-                return False
-            
-            self.driver.get("https://www.instagram.com/")
-            self._wait((3, 5))
-            
-            # Click the "+" (Create Post) button on mobile
-            upload_button = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//div[@role='menuitem']"))
-            )
-            upload_button.click()
-            self._wait()
-            
-            # Upload the image file
-            file_input = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@accept='image/jpeg,image/png']"))
-            )
-            file_input.send_keys(image_path)
-            self.logger.info(" Image uploaded.")
-            self._wait((3, 5))
-            
-            # Click "Next" (may need to repeat if UI requires two steps)
-            for _ in range(2):
-                next_button = WebDriverWait(self.driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[text()='Next']"))
-                )
-                next_button.click()
-                self._wait((2, 3))
-            
-            # Enter caption text
-            caption_box = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='Write a caption…']"))
-            )
-            caption_box.send_keys(content)
-            self.logger.info(f" Caption added: {content[:50]}...")
-            self._wait((2, 3))
-            
-            # Share the post
-            share_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[text()='Share']"))
-            )
-            share_button.click()
-            self._wait((5, 7))
-            
-            self.logger.info(" Instagram post shared successfully")
-            return True
-        except Exception as e:
-            self.logger.error(f"Error posting to Instagram: {e}")
-            return False
-    
-    def run_daily_strategy_session(self):
-        """Run complete daily Instagram strategy session."""
-        self.logger.info(" Starting Full Instagram Strategy Session")
-        try:
-            if not self.initialize({}):
-                return
-            
-            # Post AI-generated content
-            content_prompt = (
-                "Write an engaging Instagram caption about community building and "
-                "system convergence. Include relevant hashtags and a call to action."
-            )
-            content = self.ai_agent.ask(
-                prompt=content_prompt,
-                metadata={"platform": "instagram", "persona": "Victor"}
-            )
-            
-            # Process engagement metrics
-            self.analyze_engagement_metrics()
-            
-            # Sample engagement reinforcement
-            sample_comments = [
-                "This is exactly what I needed to see!",
-                "Not sure about this approach.",
-                "Your insights are always valuable!"
-            ]
-            for comment in sample_comments:
-                self.reinforce_engagement(comment)
-            
-            # Run feedback and reward systems
-            self.run_feedback_loop()
-            self.reward_top_engagers()
-            self.cross_platform_feedback_loop()
-            
-            self.cleanup()
-            self.logger.info(" Instagram Strategy Session Complete")
-        except Exception as e:
-            self.logger.error(f"Error in Instagram strategy session: {e}")
-            self.cleanup()
 
-    def _load_feedback_data(self):
-        """Load or initialize feedback data."""
-        if os.path.exists(self.FEEDBACK_DB):
-            with open(self.FEEDBACK_DB, "r") as f:
-                return json.load(f)
-        return {}
+              create_button.click()
+              logger.info("Clicked the 'Create Post' button.")
+              self._wait()
 
-    def _save_feedback_data(self):
-        """Save updated feedback data."""
-        with open(self.FEEDBACK_DB, "w") as f:
-            json.dump(self.feedback_data, f, indent=4)
+              # Locate and upload the image file
+              # The input might be hidden, find the right one
+              file_input_xpaths = [
+                   "//input[@type='file'][@accept='image/jpeg,image/png,image/heic,image/heif,video/mp4,video/quicktime']",
+                   "//input[@type='file'][@accept='image/*,video/*']",
+                   "//input[@type='file']",
+              ]
+              file_input = self.find_element_sequentially(file_input_xpaths, default_wait, visible_only=False)
+              if not file_input:
+                  logger.error("Could not find the file input element for upload.")
+                  self.save_screenshot(f"logs/{self.PLATFORM}_file_input_fail.png")
+                  write_json_log(self.PLATFORM, "failed", tags=["post_content", "file_input_not_found"], ai_output="Failed to find file input")
+                  return False
 
-    def analyze_engagement_metrics(self):
-        """Analyze engagement results to optimize strategy."""
-        self.logger.info(" Analyzing Instagram engagement metrics...")
-        self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
-        self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
-        self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
-        self.logger.info(f" Total Likes: {self.feedback_data['likes']}")
-        self.logger.info(f" Total Comments: {self.feedback_data['comments']}")
-        self.logger.info(f" Total Follows: {self.feedback_data['follows']}")
-        self._save_feedback_data()
+              # Make the input visible if needed (common trick)
+              self.driver.execute_script("arguments[0].style.display = 'block'; arguments[0].style.visibility = 'visible';", file_input)
+              self._wait((0.5, 1))
+              file_input.send_keys(image_path)
+              logger.info(f"Image file selected: {image_path}")
+              self._wait((3, 5)) # Allow time for preview to load
 
-    def analyze_comment_sentiment(self, comment):
-        """Analyze comment sentiment using AI."""
-        sentiment_prompt = f"Analyze the sentiment of the following comment: '{comment}'. Respond with positive, neutral, or negative."
-        sentiment = self.ai_agent.ask(prompt=sentiment_prompt, metadata={"platform": "Instagram", "persona": "Victor"})
-        sentiment = sentiment.strip().lower() if sentiment else "neutral"
-        self.logger.info(f"Sentiment for comment '{comment}': {sentiment}")
-        return sentiment
+              # Click "Next" button (usually appears after upload)
+              next_button_xpath = "//button[contains(text(), 'Next')] | //div[@role='button'][contains(text(), 'Next')]"
+              try:
+                  # Instagram sometimes has two "Next" screens (filter/edit, then caption)
+                  for i in range(1, 3): # Try up to two times
+                      logger.debug(f"Looking for 'Next' button (attempt {i})...")
+                      next_button = WebDriverWait(self.driver, default_wait).until(
+                          EC.element_to_be_clickable((By.XPATH, next_button_xpath))
+                      )
+                      next_button.click()
+                      logger.info(f"Clicked 'Next' button ({i}).")
+                      self._wait((2, 4))
+              except TimeoutException:
+                  # If the second 'Next' isn't found, maybe it went straight to caption? Or failed?
+                  logger.warning("Could not find 'Next' button after one click, proceeding to caption stage. This might indicate an issue.")
+              except Exception as e:
+                  logger.error(f"Error clicking 'Next' button: {e}", exc_info=True)
+                  self.save_screenshot(f"logs/{self.PLATFORM}_next_button_fail.png")
+                  write_json_log(self.PLATFORM, "failed", tags=["post_content", "next_button_error"], ai_output=str(e))
+                  return False
 
-    def reinforce_engagement(self, comment):
-        """Generate response to positive comments."""
-        sentiment = self.analyze_comment_sentiment(comment)
-        if sentiment == "positive":
-            reinforcement_prompt = f"As Victor, write an engaging response to: '{comment}' to reinforce community growth."
-            response = self.ai_agent.ask(prompt=reinforcement_prompt, metadata={"platform": "Instagram", "persona": "Victor"})
-            self.logger.info(f"Reinforcement response generated: {response}")
-            return response
+              # Enter caption
+              caption_area_xpath = "//textarea[@aria-label='Write a caption...'] | //div[@aria-label='Write a caption...']"
+              try:
+                   caption_box = WebDriverWait(self.driver, default_wait).until(
+                        EC.visibility_of_element_located((By.XPATH, caption_area_xpath))
+                   )
+                   # Using JS click and send_keys can be more reliable sometimes
+                   self.driver.execute_script("arguments[0].click();", caption_box)
+                   self._wait((0.5, 1))
+                   caption_box.clear()
+                   caption_box.send_keys(caption)
+                   logger.info(f"Caption entered: {caption[:50]}...")
+                   self._wait((1, 2))
+              except Exception as e:
+                   logger.error(f"Error entering caption: {e}", exc_info=True)
+                   self.save_screenshot(f"logs/{self.PLATFORM}_caption_fail.png")
+                   write_json_log(self.PLATFORM, "failed", tags=["post_content", "caption_error"], ai_output=str(e))
+                   return False
+
+              # Click "Share" button
+              share_button_xpath = "//button[contains(text(), 'Share')] | //div[@role='button'][contains(text(), 'Share')]"
+              try:
+                   share_button = WebDriverWait(self.driver, default_wait).until(
+                        EC.element_to_be_clickable((By.XPATH, share_button_xpath))
+                   )
+                   share_button.click()
+                   logger.info("Clicked 'Share' button. Waiting for post confirmation...")
+                   self._wait((8, 15)) # Wait longer for post processing
+              except Exception as e:
+                   logger.error(f"Error clicking 'Share' button: {e}", exc_info=True)
+                   self.save_screenshot(f"logs/{self.PLATFORM}_share_button_fail.png")
+                   write_json_log(self.PLATFORM, "failed", tags=["post_content", "share_button_error"], ai_output=str(e))
+                   return False
+
+              # Basic check: Did it redirect or show a success message (hard to verify robustly)?
+              # Check if we are back on the main feed or if URL changed significantly.
+              final_url = self.driver.current_url
+              if "upload" not in final_url and "create" not in final_url:
+                   logger.info(f"{self.PLATFORM.capitalize()} post shared successfully (based on URL change). Final URL: {final_url}")
+                   write_json_log(self.PLATFORM, "successful", tags=["post_content"], ai_output=f"Caption: {caption[:50]}... Image: {os.path.basename(image_path)}")
+                   return True
+              else:
+                   # It might still be processing, or failed silently
+                   logger.warning(f"Post may not have completed successfully. URL still contains 'upload' or 'create': {final_url}")
+                   # Check for common failure indicators if possible
+                   try:
+                        error_msg = self.driver.find_element(By.XPATH, "//*[contains(text(), 'failed') or contains(text(), 'error')]")
+                        logger.error(f"Found potential error message on page: {error_msg.text}")
+                        write_json_log(self.PLATFORM, "failed", tags=["post_content", "post_failed_message"], ai_output=error_msg.text)
+                        return False
+                   except:
+                        logger.info("No explicit error message found, but confirmation unclear.")
+                        write_json_log(self.PLATFORM, "uncertain", tags=["post_content", "confirmation_unclear"], ai_output=f"URL remained: {final_url}")
+                        # Consider it successful for now, but log uncertainty
+                        return True # Or False depending on desired strictness
+
+         except Exception as e:
+              logger.error(f"Unexpected error during Instagram post_content: {e}", exc_info=True)
+              self.save_screenshot(f"logs/{self.PLATFORM}_post_content_error.png")
+              write_json_log(self.PLATFORM, "failed", tags=["post_content", "unexpected_error"], ai_output=str(e))
+              return False
+
+    # Placeholder for find_element_sequentially helper (if not already in Base)
+    def find_element_sequentially(self, xpaths: list, wait_time: int, visible_only=True):
+        """Tries multiple XPaths sequentially to find an element."""
+        last_exception = None
+        for xpath in xpaths:
+            try:
+                if visible_only:
+                     element = WebDriverWait(self.driver, wait_time).until(
+                         EC.visibility_of_element_located((By.XPATH, xpath))
+                     )
+                else:
+                     element = WebDriverWait(self.driver, wait_time).until(
+                         EC.presence_of_element_located((By.XPATH, xpath))
+                     )
+                logger.debug(f"Element found using XPath: {xpath}")
+                return element
+            except TimeoutException:
+                last_exception = TimeoutException(f"Element not found with XPath: {xpath}")
+                continue # Try next xpath
+            except Exception as e:
+                 last_exception = e
+                 logger.warning(f"Error checking XPath {xpath}: {e}")
+                 continue
+        logger.warning(f"Element not found using any provided XPaths. Last error: {last_exception}")
         return None
 
-    def reward_top_engagers(self):
-        """Reward top engaging followers."""
-        self.logger.info(" Evaluating top engaging followers for rewards...")
-        if os.path.exists(self.REWARD_DB):
-            with open(self.REWARD_DB, "r") as f:
-                reward_data = json.load(f)
-        else:
-            reward_data = {}
-
-        if os.path.exists(self.FOLLOW_DB):
-            with open(self.FOLLOW_DB, "r") as f:
-                follow_data = json.load(f)
-            top_follower = max(follow_data.items(), key=lambda x: random.random(), default=(None, None))[0]
-            if top_follower and top_follower not in reward_data:
-                custom_message = "Hey, thanks for your amazing engagement! Your support fuels our community."
-                reward_data[top_follower] = {"rewarded_at": datetime.utcnow().isoformat(), "message": custom_message}
-                self.logger.info(f"Reward issued to top follower: {top_follower}")
-                write_json_log("instagram", "successful", tags=["reward"], ai_output=top_follower)
-        else:
-            self.logger.warning("No follower data available for rewards.")
-
-        with open(self.REWARD_DB, "w") as f:
-            json.dump(reward_data, f, indent=4)
-
-    def cross_platform_feedback_loop(self):
-        """Merge engagement data from other platforms."""
-        self.logger.info(" Merging cross-platform feedback loops for Instagram...")
-        twitter_data = {"likes": random.randint(8, 15), "comments": random.randint(3, 8)}
-        facebook_data = {"likes": random.randint(10, 20), "comments": random.randint(5, 10)}
-        unified_metrics = {
-            "instagram": self.feedback_data,
-            "twitter": twitter_data,
-            "facebook": facebook_data
-        }
-        self.logger.info(f"Unified Metrics: {unified_metrics}")
-
-    def run_feedback_loop(self):
-        """Run the dynamic feedback loop process."""
-        self.analyze_engagement_metrics()
-        self.adaptive_posting_strategy()
-
-# -------------------------------------------------
-# Scheduler Setup for Instagram Strategy Engagement
-# -------------------------------------------------
-def start_scheduler():
-    from apscheduler.schedulers.background import BackgroundScheduler
-    # Initialize mobile-emulated driver via InstagramBot helper
-    driver = InstagramBot().get_driver(mobile=True)
-    bot = InstagramStrategy(driver=driver)
-    scheduler = BackgroundScheduler()
-    # Schedule 3 strategy sessions per day at randomized times
-    for _ in range(3):
-        hour = random.randint(8, 22)
-        minute = random.randint(0, 59)
-        scheduler.add_job(bot.run_daily_strategy_session, 'cron', hour=hour, minute=minute)
-    scheduler.start()
-    logger.info(" Scheduler started for Instagram strategy engagement.")
-
-# -------------------------------------------------
-# Quick Functional Wrapper for Instagram Posting
-# -------------------------------------------------
-def post_to_instagram(driver, caption, image_path):
-    """
-    Quick wrapper to log in and create a post on Instagram.
-    """
-    bot = InstagramBot(driver=driver)
-    if bot.login():
-        return bot.create_post(caption, image_path)
-    return False
-
-# -------------------------------------------------
-# Main Entry Point for Autonomous Execution
-# -------------------------------------------------
-if __name__ == "__main__":
-    start_scheduler()
-    try:
-        while True:
-            time.sleep(60)
-    except (KeyboardInterrupt, SystemExit):
-        logger.info(" Scheduler stopped by user.")
+    def like_posts_by_hashtag(self, hashtag: str, max_likes: int) -> int:
+         # Placeholder - Will be implemented next

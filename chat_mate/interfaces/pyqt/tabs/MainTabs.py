@@ -1,14 +1,8 @@
+"""
+Main tabs container for the DreamOS application.
+"""
+
 from PyQt5.QtWidgets import QTabWidget
-from interfaces.pyqt.tabs.PromptExecutionTab import PromptExecutionTab
-from interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
-from interfaces.pyqt.components.discord_tab import DiscordTab
-from interfaces.pyqt.tabs.LogsTab import LogsTab
-from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
-from interfaces.pyqt.tabs.SocialDashboardTab import SocialDashboardTab
-from interfaces.pyqt.tabs.AIDE import AIDE
-from interfaces.pyqt.tabs.meredith_tab import MeredithTab  # NEW
-from interfaces.pyqt.tabs.SyncOpsTab import SyncOpsTab        # ADDED
-from interfaces.pyqt.widgets.file_browser_widget import FileBrowserWidget
 import logging
 
 class MainTabs(QTabWidget):
@@ -20,14 +14,13 @@ class MainTabs(QTabWidget):
     which improves readability and extensibility while retaining all original features.
     """
 
-    def __init__(self, dispatcher=None, ui_logic=None, config_manager=None, logger=None,
+    def __init__(self, ui_logic=None, config_manager=None, logger=None,
                  prompt_manager=None, chat_manager=None, memory_manager=None,
                  discord_manager=None, cursor_manager=None, **extra_dependencies):
         """
         Initialize MainTabs with all required services and a SignalDispatcher.
         """
         super().__init__()
-        self.dispatcher = dispatcher
         self.ui_logic = ui_logic
         self.config_manager = config_manager
         self.logger = logger or logging.getLogger("MainTabs")
@@ -38,6 +31,30 @@ class MainTabs(QTabWidget):
         self.cursor_manager = cursor_manager
         self.extra_dependencies = extra_dependencies
         
+        # Store services passed via extra_dependencies if needed later
+        # Combine standard args and extra_dependencies for easier access?
+        self.all_services = {
+            'ui_logic': ui_logic,
+            'config_manager': config_manager,
+            'logger': self.logger,
+            'prompt_manager': prompt_manager,
+            'chat_manager': chat_manager,
+            'memory_manager': memory_manager,
+            'discord_manager': discord_manager,
+            'cursor_manager': cursor_manager,
+            **extra_dependencies
+        }
+
+        # Get the dispatcher from services
+        self.dispatcher = self.all_services.get('dispatcher')
+        if not self.dispatcher:
+            self.logger.warning("MainTabs did not receive 'dispatcher' in services or extra_dependencies.")
+
+        # Attempt to get the AutomationEngine - it might be in extra_dependencies
+        self.engine = self.all_services.get('automation_engine')
+        if not self.engine:
+             self.logger.warning("MainTabs did not receive 'automation_engine' in services or extra_dependencies.")
+
         self.init_tabs()
         self.logger.info("MainTabs initialized")
 
@@ -45,6 +62,8 @@ class MainTabs(QTabWidget):
         self._init_tabs()
         self._connect_signals()
 
+        # Import FileBrowserWidget lazily to avoid circular imports
+        from chat_mate.interfaces.pyqt.widgets.file_browser_widget import FileBrowserWidget
         self.file_browser = FileBrowserWidget()
 
     def init_tabs(self):
@@ -106,6 +125,20 @@ class MainTabs(QTabWidget):
         Initialize all tabs using a data-driven method for improved flow.
         The order here determines the order of tabs in the UI.
         """
+        
+        # Import tab classes lazily to avoid circular imports
+        from chat_mate.interfaces.pyqt.tabs.PromptExecutionTab import PromptExecutionTab
+        from chat_mate.interfaces.pyqt.tabs.DreamscapeGenerationTab import DreamscapeGenerationTab
+        from chat_mate.interfaces.pyqt.tabs.LogsTab import LogsTab
+        from chat_mate.interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
+        from chat_mate.interfaces.pyqt.tabs.AIDE import AIDE
+        from chat_mate.interfaces.pyqt.tabs.meredith_tab import MeredithTab
+        from chat_mate.interfaces.pyqt.tabs.SyncOpsTab import SyncOpsTab
+        from chat_mate.interfaces.pyqt.tabs.SocialSetupTab import SocialSetupTab
+        
+        # Retrieve engine instance safely
+        engine_instance = self.engine
+        
         tabs_config = [
             {
                 "name": "Prompt",
@@ -134,14 +167,12 @@ class MainTabs(QTabWidget):
                 }
             },
             {
-                "name": "Discord",
-                "widget": DiscordTab,
-                "label": "Discord",
+                "name": "Social",
+                "widget": SocialSetupTab,
+                "label": "Social Setup",
                 "kwargs": {
-                    "dispatcher": self.dispatcher,
-                    "config": self.config_manager,
-                    "logger": self.logger,
-                    "discord_manager": self.discord_manager
+                    "config_manager": self.config_manager,
+                    "logger": self.logger
                 }
             },
             {
@@ -151,10 +182,12 @@ class MainTabs(QTabWidget):
                 "kwargs": {
                     "dispatcher": self.dispatcher,
                     "logger": self.logger,
-                    "debug_service": self.extra_dependencies.get('debug_service'),
-                    "fix_service": self.extra_dependencies.get('fix_service'),
-                    "rollback_service": self.extra_dependencies.get('rollback_service'),
-                    "cursor_manager": self.cursor_manager
+                    "engine": engine_instance,
+                    "debug_service": self.all_services.get('debug_service'),
+                    "fix_service": self.all_services.get('fix_service'),
+                    "rollback_service": self.all_services.get('rollback_service'),
+                    "cursor_manager": self.cursor_manager,
+                    "project_scanner": self.all_services.get('project_scanner')
                 }
             },
             {
@@ -164,60 +197,36 @@ class MainTabs(QTabWidget):
                 "kwargs": {
                     "logger": self.logger
                 }
-            },
-            {
-                "name": "Social Dashboard",
-                "widget": SocialDashboardTab,
-                "label": "Social Dashboard",
-                "kwargs": {
-                    "dispatcher": self.dispatcher,
-                    "config_manager": self.config_manager,
-                    "discord_manager": (self.discord_manager or 
-                        (self.extra_dependencies.get('service').discord 
-                         if self.extra_dependencies.get('service') else None)),
-                    "logger": self.logger
-                }
-            },
-            {
-                "name": "Meredith",
-                "widget": MeredithTab,
-                "label": "Meredith",
-                "kwargs": {
-                    "private_mode": True
-                }
-            },
-            {
-                "name": "SyncOps",
-                "widget": SyncOpsTab,
-                "label": "SyncOps",
-                "kwargs": {
-                    "user_name": getattr(self.config_manager, "user_name", "Victor"),
-                    "logger": self.logger
-                }
             }
         ]
 
-        # Create and add each tab
-        for config in tabs_config:
-            widget_instance = config["widget"](**config["kwargs"])
-            self.tabs[config["name"]] = widget_instance
-            self.addTab(widget_instance, config["label"])
+        # Initialize each tab
+        for tab_config in tabs_config:
+            try:
+                widget = tab_config["widget"](**tab_config["kwargs"])
+                self.addTab(widget, tab_config["label"])
+                self.tabs[tab_config["name"]] = widget
+            except Exception as e:
+                self.logger.error(f"Error initializing {tab_config['name']} tab: {e}")
 
     def _connect_signals(self):
         """
         Connect signals to the corresponding slot methods to keep tabs in sync.
         """
-        dispatcher = self.dispatcher
-        dispatcher.prompt_executed.connect(self._on_prompt_executed)
-        dispatcher.dreamscape_generated.connect(self._on_dreamscape_generated)
-        dispatcher.discord_event.connect(self._on_discord_event)
+        if not self.dispatcher:
+            self.logger.error("Cannot connect signals: dispatcher not available")
+            return
 
-        if hasattr(dispatcher, "debug_completed"):
-            dispatcher.debug_completed.connect(self._on_debug_completed)
-        if hasattr(dispatcher, "cursor_code_generated"):
-            dispatcher.cursor_code_generated.connect(self._on_cursor_code_generated)
-        if hasattr(dispatcher, "automation_result"):
-            dispatcher.automation_result.connect(self._on_automation_result)
+        self.dispatcher.prompt_executed.connect(self._on_prompt_executed)
+        self.dispatcher.dreamscape_generated.connect(self._on_dreamscape_generated)
+        self.dispatcher.discord_event.connect(self._on_discord_event)
+
+        if hasattr(self.dispatcher, "debug_completed"):
+            self.dispatcher.debug_completed.connect(self._on_debug_completed)
+        if hasattr(self.dispatcher, "cursor_code_generated"):
+            self.dispatcher.cursor_code_generated.connect(self._on_cursor_code_generated)
+        if hasattr(self.dispatcher, "automation_result"):
+            self.dispatcher.automation_result.connect(self._on_automation_result)
 
     def _on_prompt_executed(self, prompt_name, response_data):
         """
@@ -257,7 +266,7 @@ class MainTabs(QTabWidget):
         """
         Handle the debug_completed signal by notifying relevant tabs.
         """
-        self.append_output(f"[Debug] Completed with result: {result}")
+        self.append_output("[Debug] Completed")
 
         aide_tab = self.tabs.get("AIDE")
         if aide_tab and hasattr(aide_tab, "handle_debug_completed"):
@@ -267,7 +276,7 @@ class MainTabs(QTabWidget):
         """
         Handle the cursor_code_generated signal by notifying relevant tabs.
         """
-        self.append_output("[Cursor] Generated new code")
+        self.append_output("[Cursor] Code generated")
 
         aide_tab = self.tabs.get("AIDE")
         if aide_tab and hasattr(aide_tab, "handle_cursor_code_generated"):
@@ -277,23 +286,19 @@ class MainTabs(QTabWidget):
         """
         Handle the automation_result signal by notifying relevant tabs.
         """
-        self.append_output(f"[Automation] {result}")
+        self.append_output("[Automation] Result received")
 
         aide_tab = self.tabs.get("AIDE")
-        if aide_tab and hasattr(aide_tab, "on_automation_result"):
-            aide_tab.on_automation_result(result)
+        if aide_tab and hasattr(aide_tab, "handle_automation_result"):
+            aide_tab.handle_automation_result(result)
 
-    def append_output(self, message: str):
+    def append_output(self, message):
         """
-        Append a message to the Logs tab; fall back to the logger if the Logs tab is unavailable.
+        Append output to the logs tab.
         """
         logs_tab = self.tabs.get("Logs")
         if logs_tab and hasattr(logs_tab, "append_output"):
             logs_tab.append_output(message)
-        elif self.logger:
-            self.logger.info(message)
-        else:
-            print(f"[Fallback Log]: {message}")
 
     def broadcast_message(self, message: str):
         """

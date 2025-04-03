@@ -1,7 +1,10 @@
 {
   "protocols": [],
   "quests": {},
-  "realms": [],
+  "realms": [
+    "** The Nexus",
+    "** The Nexus"
+  ],
   "artifacts": [],
   "characters": [],
   "themes": [],

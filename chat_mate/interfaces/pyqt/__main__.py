@@ -6,21 +6,20 @@ This allows running the application with:
     python -m interfaces.pyqt
 """
 
+# Bootstrap must be imported first to register paths
+from chat_mate.core import bootstrap
+
 import sys
 import logging
 from PyQt5.QtWidgets import QApplication
 
-from interfaces.pyqt.dreamscape_gui import (
-    initialize_services,
-    initialize_community_manager,
-    DreamscapeMainWindow,
-    DreamscapeUILogic,
-    DreamscapeService
-)
-
-from core.config.config_manager import ConfigManager
-from core.logging.factories.LoggerFactory import LoggerFactory
-from core.micro_factories.chat_factory import create_chat_manager
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.logging.factories.LoggerFactory import LoggerFactory
+from chat_mate.core.micro_factories.chat_factory import create_chat_manager
+from chat_mate.core.micro_factories.prompt_factory import PromptFactory
+from chat_mate.interfaces.pyqt.dream_os_window.services.service_factory import ServiceFactory
+from chat_mate.interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
+from chat_mate.utils.signal_dispatcher import SignalDispatcher
 
 def main():
     """
@@ -38,27 +37,40 @@ def main():
     # Initialize Config & Logger
     config_manager = ConfigManager()
     logger = LoggerFactory.create_standard_logger("Dreamscape", level=logging.INFO)
-    config_manager.set_logger(logger)
 
-    # Initialize services and inject chat_manager
-    services = initialize_services()
-    services['config_manager'] = config_manager
-    services['logger'] = logger
-    services['chat_manager'] = create_chat_manager(config_manager, logger=logger)
+    # Create Service Factory
+    service_factory = ServiceFactory(config_manager)
 
-    # Initialize community manager (optional)
-    community_manager = initialize_community_manager()
+    # Create Prompt Manager
+    try:
+        prompt_manager = PromptFactory.create_prompt_manager()
+        if not prompt_manager:
+            logger.error("Failed to create Prompt Manager from factory.")
+            sys.exit(1)
+        logger.info("Prompt Manager created successfully.")
+    except Exception as e:
+        logger.error(f"Error creating Prompt Manager: {e}")
+        sys.exit(1)
 
-    # UI logic and service binding
-    dreamscape_service = DreamscapeService()
-    ui_logic = DreamscapeUILogic()
-    ui_logic.service = dreamscape_service
+    # Create UI Logic and Services using factory
+    ui_logic = service_factory.create_ui_logic()
 
-    # Create and show main window
-    window = DreamscapeMainWindow(
+    # Create and inject chat manager
+    chat_manager = create_chat_manager(config_manager, logger=logger, prompt_manager=prompt_manager)
+
+    # Create signal dispatcher
+    dispatcher = SignalDispatcher()
+
+    # Create main window with injected dependencies
+    window = DreamOsMainWindow(
         ui_logic=ui_logic,
-        services=services,
-        community_manager=community_manager
+        services={
+            'config_manager': config_manager,
+            'logger': logger,
+            'prompt_manager': prompt_manager,
+            'chat_manager': chat_manager,
+            'dispatcher': dispatcher
+        }
     )
     window.show()
 

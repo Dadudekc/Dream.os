@@ -70,8 +70,10 @@ class LoggingService:
         """Log a debug message."""
         self.logger.debug(message, *args, **kwargs)
     
-    def info(self, message: str, *args, **kwargs) -> None:
+    def info(self, message: str, *args, domain: str = None, **kwargs) -> None:
         """Log an info message."""
+        if domain:
+            message = f"[{domain}] {message}"
         self.logger.info(message, *args, **kwargs)
     
     def warning(self, message: str, *args, **kwargs) -> None:
@@ -97,4 +99,19 @@ class LoggingService:
     
     def set_level(self, level: int) -> None:
         """Set the logging level."""
-        self.logger.setLevel(level) 
+        self.logger.setLevel(level)
+
+    def log(self, message: str, level: int = logging.INFO, *args, domain: str = None, **kwargs) -> None:
+        """
+        Log a message with the specified level.
+        
+        Args:
+            message: The message to log
+            level: The logging level (default: INFO)
+            domain: Optional domain to prefix the message with
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments
+        """
+        if domain:
+            message = f"[{domain}] {message}"
+        self.logger.log(level, message, *args, **kwargs) 

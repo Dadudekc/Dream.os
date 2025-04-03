@@ -26,16 +26,16 @@ if config_path not in sys.path:
 from core.config.config_manager import ConfigManager
 
 class PromptCycleOrchestrator(IPromptOrchestrator):
-    """Orchestrates prompt cycles with injected chat management."""
+    """Orchestrates prompt cycles and manages interactions with chat services."""
     
-    def __init__(self, config_manager: ConfigManager, chat_manager: Optional[IChatManager] = None, prompt_service: Any = None, driver_manager: Optional[Any] = None):
+    def __init__(self, config_manager: ConfigManager, chat_manager: Optional[IChatManager] = None, prompt_manager: Any = None, driver_manager: Optional[Any] = None):
         """
         Initialize the orchestrator with required dependencies.
         
         Args:
             config_manager: Configuration manager instance
             chat_manager: Chat manager implementation (optional, can be set later)
-            prompt_service: Prompt service implementation (optional, will use factory if not provided)
+            prompt_manager: Prompt manager implementation (required)
             driver_manager: DriverManager instance (optional)
         """
         self.logger = logging.getLogger(__name__)
@@ -43,14 +43,13 @@ class PromptCycleOrchestrator(IPromptOrchestrator):
         self.chat_manager = chat_manager
         self.driver_manager = driver_manager
         
-        # Use the provided prompt_service if available, otherwise create using factory
-        if prompt_service:
-            self.prompt_manager = prompt_service
-            self.logger.info("Using provided prompt service")
+        # Ensure prompt_manager is provided
+        if prompt_manager:
+            self.prompt_manager = prompt_manager
+            self.logger.info("Prompt manager initialized successfully.")
         else:
-            # Use the factory to create the prompt manager, avoiding circular imports
-            self.prompt_manager = PromptFactory.create_prompt_manager()
-            self.logger.info("Created prompt manager using factory")
+            self.logger.error("Prompt manager is required but was not provided.")
+            raise ValueError("Prompt manager is required for PromptCycleOrchestrator")
         
         self.rate_limit_delay = self.config_manager.get('RATE_LIMIT_DELAY', 2)
         self.cooldown_period = self.config_manager.get('COOLDOWN_PERIOD', 5)

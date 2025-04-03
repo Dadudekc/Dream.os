@@ -1,0 +1,35 @@
+{
+  "platform": "instagram",
+  "enabled": true,
+  "last_updated": "",
+  "parameters": {
+    "post_frequency_per_day": 1,
+    "story_frequency_per_day": 3,
+    "engagement_actions_per_run": 20,
+    "targeting_hashtags": [
+      "artificialintelligence",
+      "datascience",
+      "codinglife",
+      "softwaredeveloper",
+      "innovation"
+    ],
+    "ai_comment_style": "engaging_friendly",
+    "like_weight": 1.0,
+    "comment_weight": 1.2,
+    "save_weight": 1.8, // Saves are valuable on Instagram
+    "share_weight": 1.5, // Shares (to stories/DMs)
+    "follow_weight": 0.7,
+    "unfollow_threshold_days": 10,
+    "max_daily_follows": 15,
+    "content_mix": {
+      "image_post": 0.5,
+      "video_reel": 0.3,
+      "carousel": 0.2
+    },
+    "peak_engagement_hours_utc": [
+      16, 17, 18, 20, 21
+    ],
+    "caption_style": "medium_informative",
+    "emoji_level": 2.0 // Higher emoji use generally acceptable
+  }
+} 

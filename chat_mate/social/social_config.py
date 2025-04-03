@@ -4,8 +4,8 @@ import time
 import logging
 from datetime import datetime, timedelta, UTC
 from collections import defaultdict
-from core.config_base import ConfigBase
-from utils.rate_limit_manager import rate_limit_manager
+from chat_mate.core.config_base import ConfigBase
+from chat_mate.utils.rate_limit_manager import rate_limit_manager
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class SocialConfig(ConfigBase):
         self.last_action_times = defaultdict(lambda: 0)
         self.action_counters = defaultdict(lambda: 0)
         self.last_reset_time = datetime.now(UTC)
-        self.rate_limit_state_path = self.path_manager.get_rate_limit_state_path()
+        self.rate_limit_state_path = self.path_manager.get_path('memory') / 'rate_limit_state.json'
 
         self._validate_required_keys(["STOCKTWITS_USERNAME", "STOCKTWITS_PASSWORD"])
         self._load_rate_limit_state()
@@ -108,7 +108,8 @@ class SocialConfig(ConfigBase):
             logger.error(f" Failed to save rate limit state: {e}")
 
     def _load_rate_limit_state(self):
-        logger.info(f"No saved rate limit state found at {self.rate_limit_state_path}. Starting fresh.")
+        # logger.info(f"No saved rate limit state found at {self.rate_limit_state_path}. Starting fresh.") # Commented out for pytest compatibility
+        pass # Add pass to maintain valid syntax
 
 # ✅ Singleton instance
 social_config = SocialConfig()

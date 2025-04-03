@@ -108,7 +108,8 @@ class SocialConfig(ConfigBase):
             logger.error(f" Failed to save rate limit state: {e}")
 
     def _load_rate_limit_state(self):
-        logger.info(f"No saved rate limit state found at {self.rate_limit_state_path}. Starting fresh.")
+        # logger.info(f"No saved rate limit state found at {self.rate_limit_state_path}. Starting fresh.")
+        pass # Add pass to avoid empty block
 
 # ✅ Singleton instance
 social_config = SocialConfig()

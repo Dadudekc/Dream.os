@@ -1,6 +1,6 @@
 import os
 import pickle
-from .logging_utils import logger, write_json_log
+from .logging_utils import get_utils_logger, write_json_log
 
 class CookieManager:
     """
@@ -18,7 +18,7 @@ class CookieManager:
         self.cookie_dir = cookie_dir
         os.makedirs(self.cookie_dir, exist_ok=True)
 
-        self.logger = logger
+        self.logger = get_utils_logger()
         self.max_attempts = max_attempts
 
     def _get_cookie_path(self, platform):

@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QTabWidget
 from interfaces.pyqt.tabs.PromptExecutionTab import PromptExecutionTab
-from interfaces.pyqt.tabs.dreamscape.DreamscapeGenerationTab import DreamscapeGenerationTab
+from interfaces.pyqt.tabs.dreamscape.DreamscapeGenerationTab import DreamscapeTab
 from interfaces.pyqt.components.discord_tab import DiscordTab
 from interfaces.pyqt.tabs.LogsTab import LogsTab
 from interfaces.pyqt.tabs.ConfigurationTab import ConfigurationTab
@@ -121,17 +121,11 @@ class MainTabs(QTabWidget):
             },
             {
                 "name": "Dreamscape",
-                "widget": DreamscapeGenerationTab,
+                "widget": DreamscapeTab,
                 "label": "Dreamscape",
                 "kwargs": {
-                    "dispatcher": self.dispatcher,
-                    "prompt_manager": self.prompt_manager,
+                    "dreamscape_service": self.extra_dependencies.get('dreamscape_generator'),
                     "chat_manager": self.chat_manager,
-                    "memory_manager": self.memory_manager,
-                    "discord_manager": self.discord_manager,
-                    "ui_logic": self.ui_logic,
-                    "config_manager": self.config_manager,
-                    "logger": self.logger
                 }
             },
             {
@@ -200,9 +194,24 @@ class MainTabs(QTabWidget):
 
         # Create and add each tab
         for config in tabs_config:
-            widget_instance = config["widget"](**config["kwargs"])
-            self.tabs[config["name"]] = widget_instance
-            self.addTab(widget_instance, config["label"])
+            try:
+                # Check if essential services for this tab are present
+                required_services = config.get("kwargs", {})
+                if config["name"] == "Dreamscape":
+                    if not required_services.get("dreamscape_service"):
+                        self.logger.warning("Skipping DreamscapeTab: Dreamscape Generator service not provided in extra_dependencies.")
+                        continue
+                    if not required_services.get("chat_manager"):
+                         self.logger.warning("Skipping DreamscapeTab: ChatManager not provided.")
+                         continue
+                
+                widget_instance = config["widget"](**required_services)
+                self.tabs[config["name"]] = widget_instance
+                self.addTab(widget_instance, config["label"])
+                self.logger.info(f"Successfully added tab: {config['label']}")
+            except Exception as e:
+                 # Log error if a specific tab fails to initialize
+                 self.logger.error(f"Failed to initialize tab '{config.get('label', 'Unknown')}': {e}", exc_info=True)
 
     def _connect_signals(self):
         """

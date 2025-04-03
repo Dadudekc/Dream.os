@@ -22,8 +22,8 @@ from core.services.discord_service import DiscordService
 # Import community components
 from core.social.community_integration import CommunityIntegrationManager
 
-# Import the main window from DreamscapeMainWindow.py
-from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
+# Import the main window from DreamOsMainWindow.py
+from interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
 from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 
@@ -97,7 +97,7 @@ def main():
     ui_logic.service = dreamscape_service
     
     # Create main window
-    window = DreamscapeMainWindow(
+    window = DreamOsMainWindow(
         ui_logic=ui_logic,
         services=services,
         community_manager=community_manager

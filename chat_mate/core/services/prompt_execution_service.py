@@ -12,16 +12,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
 # Project-specific imports (ensure these modules are in your PYTHONPATH)
-from core.DriverManager import DriverManager
-from core.services.git_integration_service import GitIntegrationService
-from core.PathManager import PathManager
-from core.config.config_manager import ConfigManager
-from core.executors.cursor_executor import CursorExecutor
-from core.executors.chatgpt_executor import ChatGPTExecutor
-from core.services.discord.DiscordBatchDispatcher import DiscordBatchDispatcher
-from core.ReinforcementEvaluator import ReinforcementEvaluator
-from core.DriverSessionManager import DriverSessionManager
-from core.services.config_service import ConfigService
+from chat_mate.core.DriverManager import DriverManager
+from chat_mate.core.services.git_integration_service import GitIntegrationService
+from chat_mate.core.PathManager import PathManager
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.executors.cursor_executor import CursorExecutor
+from chat_mate.core.executors.chatgpt_executor import ChatGPTExecutor
+from chat_mate.core.services.discord.DiscordBatchDispatcher import DiscordBatchDispatcher
+from chat_mate.core.ReinforcementEvaluator import ReinforcementEvaluator
+from chat_mate.core.DriverSessionManager import DriverSessionManager
+from chat_mate.core.services.config_service import ConfigService
 
 
 class ModelType(Enum):
@@ -78,10 +78,14 @@ class PromptService(QObject):
         # Use delayed import to avoid circular dependencies
         try:
             # Late import to avoid circular dependency
-            from core.PromptCycleOrchestrator import PromptCycleOrchestrator
-            self.orchestrator = PromptCycleOrchestrator(self.config_service)
-        except ImportError:
-            self.logger.warning("PromptCycleOrchestrator not imported due to circular dependency. Will initialize later if needed.")
+            from chat_mate.core.PromptCycleOrchestrator import PromptCycleOrchestrator
+            self.orchestrator = PromptCycleOrchestrator(
+                config_manager=self.config_service,
+                prompt_manager=self.prompt_manager,
+                chat_manager=None
+            )
+        except Exception as e:
+            self.logger.error(f"Error initializing PromptCycleOrchestrator: {str(e)}")
             self.orchestrator = None
             
         self.discord_dispatcher = DiscordBatchDispatcher(self.config_service)
@@ -189,7 +193,7 @@ class PromptService(QObject):
         Run tests using the specified test file.
         """
         try:
-            from core.testing.test_runner import TestRunner
+            from chat_mate.testing.test_runner import TestRunner
             runner = TestRunner(self.path_manager)
             return await runner.run_tests(test_file)
         except Exception as e:
@@ -547,7 +551,7 @@ class PromptService(QObject):
                 self.logger.warning(f"project_analysis.json not found at {context_path}")
                 if self.auto_generate_if_missing:
                     self.logger.info("AutoScan enabled: Triggering project scan...")
-                    from core.ProjectScanner import ProjectScanner
+                    from chat_mate.ProjectScanner import ProjectScanner
                     scanner = ProjectScanner(project_dir=base_dir)
                     scanner.scan()  # Should generate project_analysis.json
                     if not context_path.exists():

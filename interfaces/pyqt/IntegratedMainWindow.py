@@ -1,12 +1,12 @@
 import sys
 import threading
 from PyQt5.QtWidgets import QApplication, QMessageBox
-from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
 from interfaces.pyqt.dreamscape_services import DreamscapeService
 from interfaces.pyqt.feedback_dashboard import FeedbackDashboard
 
 
-class IntegratedMainWindow(DreamscapeMainWindow):
+class IntegratedMainWindow(DreamOsMainWindow):
     def __init__(self):
         super().__init__()
 

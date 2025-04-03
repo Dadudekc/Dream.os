@@ -18,12 +18,15 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from utils.cookie_manager import CookieManager
 from social.social_config import social_config
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 
 # Load environment variables
 load_dotenv()
+
+# Add module-level logger
+logger = get_social_logger()
 
 DEFAULT_WAIT = 10
 MAX_ATTEMPTS = 3
@@ -209,8 +212,9 @@ class BaseEngagementBot(ABC):
                     unfollow_button.click()
                     follow_data[user]["status"] = "unfollowed"
                     unfollowed.append(user)
+                    logger.info(f" Unfollowed {user}")
                 except Exception as e:
-                    logger.warning(f"️ Could not unfollow {user}: {e}")
+                    logger.warning(f"️ Failed to unfollow {user}: {e}")
         with open(self.follow_db, "w") as f:
             json.dump(follow_data, f, indent=4)
         logger.info(f" Unfollowed {len(unfollowed)} users on {self.platform.capitalize()}.")
@@ -423,15 +427,18 @@ class LinkedinStrategy(BasePlatformStrategy):
         self.email = social_config.get_env("LINKEDIN_EMAIL")
         self.password = social_config.get_env("LINKEDIN_PASSWORD")
         self.wait_range = (3, 6)
+        self.feedback_data = self._load_feedback_data()
+        self.engagement_bot = LinkedInEngagementBot(self.driver)
     
     def initialize(self, credentials: Dict[str, str]) -> bool:
         """Initialize LinkedIn strategy with credentials."""
         try:
             if not self.driver:
                 self.driver = self._get_driver()
-            return self.login()
+            self.engagement_bot.driver = self.driver # Ensure bot uses the strategy's driver
+            return self.engagement_bot.login()
         except Exception as e:
-            self.logger.error(f"Failed to initialize LinkedIn strategy: {e}")
+            logger.error(f"Failed to initialize LinkedIn strategy: {e}")
             return False
     
     def cleanup(self) -> bool:
@@ -441,7 +448,7 @@ class LinkedinStrategy(BasePlatformStrategy):
                 self.driver.quit()
             return True
         except Exception as e:
-            self.logger.error(f"Error during LinkedIn cleanup: {e}")
+            logger.error(f"Error during LinkedIn cleanup: {e}")
             return False
     
     def get_community_metrics(self) -> Dict[str, Any]:
@@ -467,7 +474,7 @@ class LinkedinStrategy(BasePlatformStrategy):
                 metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
                 metrics["active_members"] = total_interactions
         except Exception as e:
-            self.logger.error(f"Error calculating LinkedIn metrics: {e}")
+            logger.error(f"Error calculating LinkedIn metrics: {e}")
         
         return metrics
     
@@ -495,7 +502,7 @@ class LinkedinStrategy(BasePlatformStrategy):
                 top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
                 top_members = top_members[:20]  # Keep top 20
         except Exception as e:
-            self.logger.error(f"Error getting top LinkedIn members: {e}")
+            logger.error(f"Error getting top LinkedIn members: {e}")
         
         return top_members
     
@@ -531,10 +538,10 @@ class LinkedinStrategy(BasePlatformStrategy):
             with open(self.follow_db, "w") as f:
                 json.dump(follow_data, f, indent=4)
             
-            self.logger.info(f"Tracked {interaction_type} interaction with LinkedIn member {member_id}")
+            logger.info(f"Tracked {interaction_type} interaction with LinkedIn member {member_id}")
             return True
         except Exception as e:
-            self.logger.error(f"Error tracking LinkedIn member interaction: {e}")
+            logger.error(f"Error tracking LinkedIn member interaction: {e}")
             return False
     
     def _get_driver(self):
@@ -546,7 +553,7 @@ class LinkedinStrategy(BasePlatformStrategy):
         options.add_argument(f"user-agent={self.get_random_user_agent()}")
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
-        self.logger.info(f"Chrome driver initialized with profile: {profile_path}")
+        logger.info(f"Chrome driver initialized with profile: {profile_path}")
         return driver
     
     @staticmethod
@@ -561,112 +568,39 @@ class LinkedinStrategy(BasePlatformStrategy):
     def _wait(self, custom_range=None):
         """Wait for a random duration."""
         wait_time = random.uniform(*(custom_range or self.wait_range))
-        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
         time.sleep(wait_time)
     
     def login(self) -> bool:
-        """Log in to LinkedIn."""
-        self.logger.info(" Initiating LinkedIn login...")
+        """Log in to LinkedIn using the engagement bot."""
+        logger.info(" Initiating LinkedIn login via strategy...")
         try:
-            self.driver.get(self.login_url)
-            self._wait()
-            
-            # Try cookie login first
-            self.cookie_manager.load_cookies(self.driver, "linkedin")
-            self.driver.refresh()
-            self._wait()
-            
-            if self.is_logged_in():
-                self.logger.info(" Logged into LinkedIn via cookies")
-                return True
-            
-            # Try credential login
-            if self.email and self.password:
-                try:
-                    email_input = WebDriverWait(self.driver, 10).until(
-                        EC.visibility_of_element_located((By.ID, "username"))
-                    )
-                    password_input = WebDriverWait(self.driver, 10).until(
-                        EC.visibility_of_element_located((By.ID, "password"))
-                    )
-                    
-                    email_input.clear()
-                    email_input.send_keys(self.email)
-                    self._wait((1, 2))
-                    
-                    password_input.clear()
-                    password_input.send_keys(self.password)
-                    self._wait((1, 2))
-                    
-                    password_input.send_keys(Keys.RETURN)
-                    self._wait((4, 6))
-                    
-                    if self.is_logged_in():
-                        self.cookie_manager.save_cookies(self.driver, "linkedin")
-                        self.logger.info(" Logged into LinkedIn via credentials")
-                        return True
-                except Exception as e:
-                    self.logger.error(f"LinkedIn auto-login failed: {e}")
-            
-            # Manual login fallback
-            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "linkedin"):
-                self.cookie_manager.save_cookies(self.driver, "linkedin")
-                return True
-            
-            return False
+            return self.engagement_bot.login()
         except Exception as e:
-            self.logger.error(f"LinkedIn login error: {e}")
+            logger.error(f"LinkedIn login via strategy failed: {e}")
             return False
     
     def is_logged_in(self) -> bool:
-        """Check if logged into LinkedIn."""
+        """Check if logged into LinkedIn using the engagement bot."""
         try:
-            self.driver.get("https://www.linkedin.com/feed/")
-            self._wait((3, 5))
-            return "feed" in self.driver.current_url.lower()
-        except Exception:
+            return self.engagement_bot.is_logged_in()
+        except Exception as e:
+            logger.error(f"Error checking LinkedIn login status: {e}")
             return False
     
     def post_content(self, content: str) -> bool:
-        """Post content to LinkedIn."""
-        self.logger.info(" Posting content to LinkedIn...")
+        """Post content to LinkedIn using the engagement bot."""
+        logger.info(f" Posting content to LinkedIn via strategy: {content[:50]}...")
         try:
-            if not self.is_logged_in():
-                if not self.login():
-                    return False
-            
-            self.driver.get("https://www.linkedin.com/feed/")
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            self._wait((3, 5))
-            
-            start_post_btn = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, "share-box-feed-entry__trigger"))
-            )
-            start_post_btn.click()
-            self._wait((2, 4))
-            
-            post_text_area = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "ql-editor"))
-            )
-            post_text_area.click()
-            post_text_area.send_keys(content)
-            self._wait((2, 3))
-            
-            post_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(@aria-label, 'Post')]"))
-            )
-            post_button.click()
-            self._wait((4, 6))
-            
-            self.logger.info(" LinkedIn post published successfully")
-            return True
+            content_prompt = f"Rewrite the following for a professional LinkedIn audience, focusing on system convergence and strategic growth: {content}"
+            return self.engagement_bot.post(content_prompt)
         except Exception as e:
-            self.logger.error(f"Error posting to LinkedIn: {e}")
+            logger.error(f"Error posting to LinkedIn via strategy: {e}")
             return False
     
     def run_daily_strategy_session(self):
         """Run complete daily LinkedIn strategy session."""
-        self.logger.info(" Starting Full LinkedIn Strategy Session")
+        logger.info(" Starting Full LinkedIn Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -701,10 +635,16 @@ class LinkedinStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info(" LinkedIn Strategy Session Complete")
+            logger.info(" LinkedIn Strategy Session Complete")
         except Exception as e:
-            self.logger.error(f"Error in LinkedIn strategy session: {e}")
+            logger.error(f"Error in LinkedIn strategy session: {e}")
             self.cleanup()
+
+    def _load_feedback_data(self):
+        # Implementation of _load_feedback_data method
+        # This method should return a dictionary containing feedback data
+        # For example, it could read from a file or fetch from an API
+        return {}
 
 # Start the LinkedIn strategy if run directly
 if __name__ == "__main__":

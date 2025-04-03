@@ -3,10 +3,10 @@ import requests
 import openai
 from typing import Optional, Dict, Any
 from datetime import datetime
-from social.social_config_wrapper import get_social_config
-from social.log_writer import logger, write_json_log
-from core.memory import MemoryManager
-from core.PromptEngine import PromptEngine
+from chat_mate.social.social_config_wrapper import get_social_config
+from chat_mate.social.log_writer import logger, write_json_log
+from chat_mate.core.memory import MemoryManager
+from chat_mate.core.PromptEngine import PromptEngine
 
 
 # Constants

@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime
 import os
 import logging
-from social.strategies.config_loader import get_env_or_config
+from chat_mate.social.strategies.config_loader import get_env_or_config
 
 # ------------------------------------------------------
 # Logger Setup

@@ -1,12 +1,12 @@
 from typing import Dict, Any
-from core.config.config_manager import ConfigManager
-from core.ReinforcementEngine import ReinforcementEngine
-from core.logging.CompositeLogger import CompositeLogger
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.ReinforcementEngine import ReinforcementEngine
+from chat_mate.core.interfaces.logging import ILoggingAgent
 
 class PromptResponseHandler:
     """Handles response validation, reinforcement, and logging."""
 
-    def __init__(self, config_manager: ConfigManager, logger: CompositeLogger):
+    def __init__(self, config_manager: ConfigManager, logger: ILoggingAgent):
         self.config_manager = config_manager
         self.logger = logger
         self.reinforcement_engine = ReinforcementEngine(config_manager, logger)

@@ -96,7 +96,7 @@ class PromptService(QObject):
         try:
             # Late import to avoid circular dependency
             from core.PromptCycleOrchestrator import PromptCycleOrchestrator
-            self.orchestrator = PromptCycleOrchestrator(self.config_service)
+            self.orchestrator = PromptCycleOrchestrator(self.config_service, prompt_manager=self.prompt_manager)
         except ImportError:
             self.logger.warning("PromptCycleOrchestrator not imported due to circular dependency. Will initialize later if needed.")
             self.orchestrator = None

@@ -1,0 +1,37 @@
+# .coveragerc
+[run]
+parallel = True
+branch = True
+source = chat_mate
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if self\.debug
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+
+omit =
+    */tests/*
+    */migrations/*
+    */__init__.py
+    */local_llm_engine.py # Assuming this might have external deps hard to mock for now
+
+[html]
+directory = htmlcov
+
+[paths]
+source =
+    chat_mate
+    */site-packages 

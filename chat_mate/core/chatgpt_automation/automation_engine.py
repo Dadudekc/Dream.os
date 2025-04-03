@@ -1,22 +1,33 @@
+"""
+AutomationEngine module for managing automated interactions with ChatGPT.
+"""
+
 import os
+import sys
+import json
+import time
+import queue
+import threading
+import tempfile
+from pathlib import Path
+from typing import Dict, List, Optional, Any, Union, Callable
+
+from chat_mate.core.openai import OpenAIClient  # ChatGPT driver wrapper
+from .driver_factory import DriverFactory
+from .model_registry import ModelRegistry
+from .config import Config
+from .post_process_validator import PostProcessValidator
+from .local_llm_engine import LocalLLMEngine
 import shutil
 import logging
-import json
-from pathlib import Path
 from webdriver_manager.chrome import ChromeDriverManager
 from PyQt5.QtCore import Qt  # For splash screen messages
-from typing import Optional
-import threading
-import queue
-import time
+import re
 
 # External project-specific imports (ensure these are configured correctly)
 from core.chatgpt_automation.config import PROFILE_DIR, CHATGPT_HEADLESS, CHROMEDRIVER_PATH
-from core.chatgpt_automation.ModelRegistry import ModelRegistry  # Central model registry
+# Import ProjectScanner assuming chat_mate is on the path or is the root
 from ProjectScanner import ProjectScanner
-from core.chatgpt_automation.OpenAIClient import OpenAIClient   # ChatGPT driver wrapper
-from core.chatgpt_automation.local_llm_engine import LocalLLMEngine
-from core.chatgpt_automation.driver_factory import DriverFactory
 
 # ------------------------------
 # Logger Setup (UTF-8 logging)
@@ -44,126 +55,169 @@ BACKUP_FOLDER.mkdir(exist_ok=True)
 # Automation Engine Class
 # ------------------------------
 class AutomationEngine:
-    def __init__(self, use_local_llm=True, model_name='mistral', splash_screen=None, beta_mode=False):
-        """Initialize the automation engine with optional local LLM support."""
+    """Engine for automating interactions with ChatGPT."""
+    
+    def __init__(self, use_local_llm: bool = False, model_name: str = 'mistral', 
+                 beta_mode: bool = False, splash_screen: Optional[Any] = None,
+                 config: Optional[Dict[str, Any]] = None):
+        """Initialize the automation engine.
+        
+        Args:
+            use_local_llm (bool): Whether to use a local LLM instead of ChatGPT.
+            model_name (str): Name of the model to use.
+            beta_mode (bool): Whether to enable beta features.
+            splash_screen (Optional[Any]): Splash screen widget for progress updates.
+            config (Optional[Dict[str, Any]]): Custom configuration settings.
+        """
         self.logger = logging.getLogger(__name__)
+        
+        # Validate model_name
+        MAX_MODEL_NAME_LENGTH = 64
+        if not model_name or not isinstance(model_name, str) or not model_name.strip():
+            raise ValueError("Model name must be a non-empty string.")
+        if len(model_name) > MAX_MODEL_NAME_LENGTH:
+            raise ValueError(f"Model name exceeds maximum length of {MAX_MODEL_NAME_LENGTH} characters.")
+        if not re.match(r"^[a-zA-Z0-9_.-]+$", model_name):
+             raise ValueError("Model name contains invalid characters.")
+            
+        # Validate config
+        if config is not None and not isinstance(config, dict):
+            raise ValueError("Config must be a dictionary or None.")
+        
         self.use_local_llm = use_local_llm
         self.model_name = model_name
-        self.splash_screen = splash_screen
         self.beta_mode = beta_mode
+        self.splash_screen = splash_screen
+        self.config = config or {}
+        
+        self.model_registry = ModelRegistry()
+        self.driver_factory = DriverFactory()
+        self.post_process_validator = PostProcessValidator()
+        
+        if use_local_llm:
+            self.local_llm_engine = LocalLLMEngine(model_name=model_name)
+        else:
+            self.local_llm_engine = None
+        
         self.project_analysis = {}  # Initialize as empty
         
-        # Initialize driver
-        self.driver = None
-        self.driver_factory = DriverFactory(use_local_llm=self.use_local_llm, model_name=self.model_name)
-        
-        # Initialize model registry
-        self.model_registry = ModelRegistry()
-        
-        # Initialize components
-        self.initialize_components()
-        
-        # Initialize project analysis as empty
-        self.project_analysis = {}
+        self.project_analysis = {}  # Initialize as empty
         
         self.logger.info("✅ AutomationEngine initialized successfully")
         
     def initialize_components(self):
-        """Initialize core components of the automation engine."""
+        """Initialize all required components."""
         try:
-            # Initialize driver if needed
-            if not self.driver:
-                self.driver = self.driver_factory.create_driver()
-            
-            # Configure model registry with specific model configurations
-            # NOTE: The registry auto-loads models from the models_dir, but we can supplement
-            # with manual configurations for local models if needed
             if self.use_local_llm:
-                # The driver factory has already set up a local LLM driver
-                # We can add a manual entry for the currently active local model
-                logger.info(f"🔧 Setting up local model: {self.model_name}")
-                
-                # Create a model module file in the registry's models directory if needed
-                local_model_file = self.model_registry.models_dir / f"model_{self.model_name}.py"
-                if not local_model_file.exists():
-                    with open(local_model_file, "w", encoding="utf-8") as f:
-                        f.write(f'''
-def register():
-    """Register the {self.model_name} model."""
-    return {{
-        'name': '{self.model_name}',
-        'threshold': 100,  # Suitable for files with >=100 lines
-        'handler': lambda driver, content, endpoint: driver.get_response(content),
-        'endpoint': 'local'
-    }}
-''')
-                    logger.info(f"✅ Created local model file: {local_model_file}")
-                
-                # Reload models to ensure our new model is registered
-                self.model_registry.reload_models()
-            
-            # Log available models
-            logger.info(f"🧠 Available models: {list(self.model_registry.get_registry().keys())}")
-            
+                if not self.local_llm_engine:
+                    self.local_llm_engine = LocalLLMEngine(model_name=self.model_name)
+                if not self.local_llm_engine.initialize():
+                    self.logger.error("❌ Failed to initialize Local LLM Engine.")
+                    return False
+            else:
+                if not self.driver_factory.driver:
+                    self.driver_factory.create_driver()
             self.logger.info("✅ Core components initialized successfully")
+            return True
         except Exception as e:
             self.logger.error(f"❌ Error initializing components: {e}")
-            raise
+            return False
 
     def scan_project_gui(self):
-        """Triggers the ProjectScanner to scan the project and load analysis into the engine."""
-        from ProjectScanner import ProjectScanner  # Import here to avoid circular imports
+        """Runs the project scan and updates GUI elements (if provided)."""
+        logger.info("🔍 Starting project scan with GUI updates...")
+        # Remove the inner import, use the top-level one
+        # from .project_scanner import ProjectScanner 
+        
         try:
-            scanner = ProjectScanner(project_root=".")
-            scanner.scan_project()
-            analysis_path = Path("project_analysis.json")
-            if analysis_path.exists():
-                with open(analysis_path, "r", encoding="utf-8") as f:
+            # Assume project_root needs to be resolved relative to current working dir or a known base
+            # If self.project_root is already set, use it. Otherwise, default? Let's default to "."
+            project_root_to_scan = getattr(self, 'project_root', ".")
+            scanner = ProjectScanner(project_root=project_root_to_scan)
+            scanner.additional_ignore_dirs = self.config.get('scan_ignore_dirs', set())
+            
+            # Connect signals if GUI components are available (conceptual)
+            # if hasattr(self, 'progress_bar') and self.progress_bar:
+            #     scanner.progress.connect(self.progress_bar.setValue)
+            # if hasattr(self, 'status_label') and self.status_label:
+            #     scanner.status_update.connect(self.status_label.setText)
+
+            scan_success = scanner.scan_project()
+            
+            if not scan_success:
+                logger.error("❌ Project scan failed.")
+                return False, "Scan failed. Check logs."
+
+            # Load the analysis results
+            analysis_file = Path("project_analysis.json")
+            if analysis_file.exists():
+                with open(analysis_file, "r", encoding="utf-8") as f:
                     self.project_analysis = json.load(f)
-                self.logger.info("✅ Project analysis loaded successfully.")
+                logger.info("✅ Project analysis loaded successfully.")
                 return True, f"Scan complete. {len(self.project_analysis)} files analyzed."
             else:
-                self.logger.warning("⚠️ No project analysis report found.")
+                logger.warning("⚠️ No project analysis report found after scan.")
                 self.project_analysis = {}
-                return False, "No analysis report found."
+                return False, "Scan finished, but no analysis report found."
+        except ImportError as e:
+            logger.error(f"❌ Error importing ProjectScanner: {e}. Is it installed and in the correct path?")
+            self.project_analysis = {}
+            return False, f"Scanner import error: {e}"    
         except Exception as e:
-            self.logger.error(f"❌ Error running ProjectScanner: {e}")
+            logger.error(f"❌ Error running ProjectScanner: {e}", exc_info=True)
             self.project_analysis = {}
             return False, f"Error during scan: {e}"
 
     def get_chatgpt_response(self, prompt):
-        """Unified call to LLM. Abstracts away driver differences."""
+        """Unified call to LLM. Handles local LLM or OpenAI driver."""
         try:
-            # Instead of calling self.driver.get_response directly,
-            # call a unified method (or use a wrapper) that handles both local and OpenAI responses.
-            response = self.driver.get_response(prompt)
+            if self.use_local_llm:
+                if not self.local_llm_engine:
+                    logger.error("❌ Local LLM engine requested but not initialized.")
+                    raise RuntimeError("Local LLM engine not initialized.")
+                logger.debug("🧠 Using local LLM engine for response.")
+                response = self.local_llm_engine.get_response(prompt)
+            else:
+                # Ensure driver is available via factory
+                driver = self.driver_factory.get_driver()
+                if not driver:
+                     logger.error("❌ OpenAI driver requested but not available.")
+                     raise RuntimeError("OpenAI driver not available.")
+                logger.debug("🧠 Using OpenAI driver for response.")
+                response = driver.get_response(prompt)
+
             return response
         except AttributeError as e:
-            logger.error(f"❌ Driver does not support 'get_response': {e}")
+            # Catch cases where get_response might be missing on the object
+            logger.error(f"❌ Selected engine/driver does not support 'get_response': {e}")
             raise
+        except Exception as e:
+            logger.error(f"❌ Error getting response from LLM: {e}")
+            raise # Re-raise after logging
 
     def switch_model(self, model_name):
         """Switch active LLM (local only for now)."""
         if not self.use_local_llm:
             logger.warning("⚠️ Model switching is currently only supported for local LLMs.")
             return
+        # Use local_llm_engine if use_local_llm is True
+        if not self.local_llm_engine:
+            logger.error("❌ Local LLM engine requested for model switch but not initialized.")
+            return 
         try:
-            self.driver.set_model(model_name)
+            self.local_llm_engine.set_model(model_name)
             logger.info(f"✅ Switched to local model: {model_name}")
         except Exception as e:
             logger.error(f"❌ Failed to switch model: {e}")
 
     def shutdown(self):
-        """Gracefully shut down the active driver."""
+        """Gracefully shut down the automation engine and its components."""
         logger.info("🛑 Shutting down Automation Engine...")
         try:
-            if not self.use_local_llm and hasattr(self, "openai_client"):
-                self.openai_client.shutdown()
-                logger.info("✅ OpenAIClient driver shut down successfully.")
-            else:
-                logger.info("✅ Local LLM engine does not require shutdown.")
+            self.close() # Delegate shutdown logic to the close method
+            logger.info("✅ Automation Engine shutdown complete.")
         except Exception as e:
-            logger.error(f"❌ Error during shutdown: {e}")
+            logger.error(f"❌ Error during engine shutdown: {e}")
 
     def process_file(self, file_path, manual_model=None):
         """Process a single file from analysis to deployment."""
@@ -444,25 +498,19 @@ def register():
         except Exception as e:
             self.logger.error(f"❌ Error rendering Jinja template: {e}")
 
-    def add_manual_model(self, name, threshold, handler_func, endpoint='local'):
-        """
-        Manually add a model to the registry without using file-based loading.
-        This is useful for dynamically adding models at runtime or for testing.
-        
-        Args:
-            name: Model name identifier
-            threshold: Complexity threshold for model selection
-            handler_func: Function that processes content and returns a response
-            endpoint: Endpoint identifier (default: 'local')
-            
-        Returns:
-            bool: True if the model was successfully added
-        """
-        logger.info(f"🧩 Manually adding model: {name}")
-        
+    def add_manual_model(self, name: str, threshold: int, handler_func: Callable, endpoint: Optional[str] = None) -> bool:
+        """Add a custom model programmatically."""
+        # Check if model already exists before proceeding
+        if name in self.model_registry.get_registry():
+            logger.warning(f"⚠️ Model '{name}' already exists. Skipping addition.")
+            return False # Indicate that the model already exists and was not added
+
         try:
-            # Create a model file dynamically
-            model_file = self.model_registry.models_dir / f"model_{name}.py"
+            model_dir = self.model_registry.models_dir
+            if not model_dir.exists():
+                model_dir.mkdir()
+            
+            model_file = model_dir / f"model_{name}.py"
             
             with open(model_file, "w", encoding="utf-8") as f:
                 f.write(f'''
@@ -498,6 +546,39 @@ def register():
             logger.error(f"❌ Error adding model '{name}': {e}")
             return False
 
+    def close(self):
+        """Close and clean up resources."""
+        try:
+            if self.use_local_llm and self.local_llm_engine:
+                self.local_llm_engine.close()
+            # Check for openai_client before closing driver factory
+            elif hasattr(self, "openai_client") and self.openai_client: 
+                # Assume openai_client handles its own closing/shutdown elsewhere
+                # or via its own shutdown method called by the original shutdown.
+                # For now, do nothing here if openai_client exists.
+                logger.info("OpenAIClient present, skipping driver_factory.close_driver().")
+            else:
+                # Close driver factory only if not local and no openai_client
+                self.driver_factory.close_driver()
+        except Exception as e:
+            logger.error(f"❌ Error closing components: {e}")
+
+    def get_config(self) -> Dict[str, Any]:
+        """Get the current configuration.
+        
+        Returns:
+            Dict[str, Any]: Current configuration settings.
+        """
+        return self.config.copy()
+    
+    def update_config(self, new_config: Dict[str, Any]):
+        """Update the configuration.
+        
+        Args:
+            new_config (Dict[str, Any]): New configuration settings.
+        """
+        self.config.update(new_config)
+
 
 # ------------------------------
 # Asynchronous Task Queue Components
@@ -506,26 +587,49 @@ class BotWorker(threading.Thread):
     """
     A background worker that processes file tasks from a queue.
     """
-    def __init__(self, task_queue: queue.Queue, results_list: list, scanner: ProjectScanner, status_callback=None):
+    def __init__(self, task_queue: queue.Queue, results_list: list, scanner: Any, status_callback=None):
         threading.Thread.__init__(self)
         self.task_queue = task_queue
         self.results_list = results_list
         self.scanner = scanner
         self.status_callback = status_callback
         self.daemon = True
-        self.start()
 
     def run(self):
         while True:
-            file_path = self.task_queue.get()
-            if file_path is None:
-                break
-            result = self.scanner._process_file(file_path)
-            if result is not None:
-                self.results_list.append(result)
-            if self.status_callback:
-                self.status_callback(file_path, result)
-            self.task_queue.task_done()
+            task_item = self.task_queue.get()
+            if task_item is None:
+                break # Sentinel value received
+            
+            # Check if the task_item is a valid file path (string)
+            if isinstance(task_item, (str, Path)):
+                file_path = str(task_item)
+                result = None # Initialize result
+                try:
+                    # Delegate processing to the scanner instance
+                    result = self.scanner._process_file(file_path)
+                    if result is not None:
+                        self.results_list.append(result)
+                except Exception as e:
+                    # Log the error, but keep the worker running
+                    logger.error(f"BotWorker error processing {file_path}: {e}")
+                    result = None # Ensure result is None on exception
+                finally:
+                    if self.status_callback:
+                        try:
+                            self.status_callback(file_path, result)
+                        except Exception as cb_e:
+                            logger.error(f"BotWorker status_callback error: {cb_e}")
+                    self.task_queue.task_done()
+            else:
+                # Handle invalid task format
+                logger.warning(f"BotWorker received invalid task format: {type(task_item)}. Skipping.")
+                if self.status_callback:
+                    try:
+                        self.status_callback(task_item, None) # Notify with None result
+                    except Exception as cb_e:
+                        logger.error(f"BotWorker status_callback error for invalid task: {cb_e}")
+                self.task_queue.task_done() # Mark invalid task as done
 
 
 class MultibotManager:
@@ -549,9 +653,27 @@ class MultibotManager:
         self.task_queue.join()
 
     def stop_workers(self):
-        for _ in range(len(self.workers)):
-            self.task_queue.put(None)
-
+        """Signals all workers to stop and waits for them to finish."""
+        num_workers_to_stop = len(self.workers)
+        logger.info(f"🛑 Stopping {num_workers_to_stop} workers...")
+        for _ in range(num_workers_to_stop):
+            self.task_queue.put(None) # Send sentinel value
+            
+        # Wait for all tasks to be processed
+        # self.task_queue.join() # This might block indefinitely if workers crashed
+        
+        # Wait for all worker threads to complete
+        for worker in self.workers:
+            try:
+                # Only join if the thread was actually started and is alive
+                if worker.is_alive(): 
+                    worker.join(timeout=5.0) # Add a timeout
+                    if worker.is_alive():
+                        logger.warning(f"Worker {worker.name} did not exit cleanly after timeout.")
+            except Exception as e:
+                logger.error(f"Error joining worker {worker.name}: {e}")
+        logger.info("✅ All workers stopped.")
+        
 
 # ------------------------------
 # Entry Point

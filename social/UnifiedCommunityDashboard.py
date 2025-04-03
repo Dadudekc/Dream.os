@@ -16,13 +16,14 @@ from social.strategies.facebook_strategy import FacebookStrategy
 from social.strategies.instagram_strategy import InstagramStrategy
 from social.strategies.reddit_strategy import RedditStrategy
 from social.strategies.stocktwits_strategy import StocktwitsStrategy
-from social.strategies.linkedin_strategy import LinkedinStrategy
 
 # Import core components
 from core.memory import UnifiedFeedbackMemory
 from utils.SentimentAnalyzer import SentimentAnalyzer
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from core.PathManager import PathManager
+
+logger = get_social_logger()
 
 @dataclass
 class CommunityMetrics:
@@ -111,6 +112,7 @@ class UnifiedCommunityDashboard(QObject):
             
         # LinkedIn
         try:
+            from social.strategies.linkedin_strategy import LinkedinStrategy
             self.strategies['linkedin'] = LinkedinStrategy()
         except Exception as e:
             print(f"LinkedIn strategy initialization failed: {e}")

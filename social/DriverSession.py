@@ -15,11 +15,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # Use the wrapper to avoid circular imports
 from social.social_config_wrapper import get_social_config
-from social.log_writer import logger
+from social.log_writer import get_social_logger
 from utils.proxy_utils import get_random_proxy
 from utils.ua_utils import get_random_user_agent
 
-logger = logging.getLogger("DriverManager")
+logger = get_social_logger()
 
 
 class DriverSession:

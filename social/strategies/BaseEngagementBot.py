@@ -19,9 +19,11 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from utils.cookie_manager import CookieManager
 from social.social_config_wrapper import get_social_config
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.AIChatAgent import AIChatAgent
 from core.DriverManager import DriverManager
+
+logger = get_social_logger()
 
 DEFAULT_WAIT = 10
 MAX_RETRIES = 3

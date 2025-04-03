@@ -5,27 +5,27 @@ from typing import Optional, Dict
 
 from PyQt5.QtWidgets import QApplication
 
-from core.ChatManager import ChatManager
-from core.AletheiaPromptManager import AletheiaPromptManager
-from core.services.discord.DiscordManager import DiscordManager
-from core.ReinforcementEngine import ReinforcementEngine
-from core.CycleExecutionService import CycleExecutionService
-from core.PromptResponseHandler import PromptResponseHandler
-from core.DiscordQueueProcessor import DiscordQueueProcessor
-from core.TaskOrchestrator import TaskOrchestrator
-from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from chat_mate.core.ChatManager import ChatManager
+from chat_mate.core.AletheiaPromptManager import AletheiaPromptManager
+from chat_mate.core.services.discord.DiscordManager import DiscordManager
+from chat_mate.core.ReinforcementEngine import ReinforcementEngine
+from chat_mate.core.CycleExecutionService import CycleExecutionService
+from chat_mate.core.PromptResponseHandler import PromptResponseHandler
+from chat_mate.core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
+from chat_mate.core.TaskOrchestrator import TaskOrchestrator
+from chat_mate.interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 
 # Import services
-from core.services.prompt_execution_service import PromptService
-from core.services.discord_service import DiscordService
+from chat_mate.core.services.prompt_execution_service import PromptService
+from chat_mate.core.services.discord_service import DiscordService
 
 # Import community components
-from core.social.community_integration import CommunityIntegrationManager
+from chat_mate.core.social.community_integration import CommunityIntegrationManager
 
-# Import the main window from DreamscapeMainWindow.py
-from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
-from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
-from interfaces.pyqt.dreamscape_services import DreamscapeService
+# Import the main window from the correct module
+from chat_mate.interfaces.pyqt.dream_os_window.main_window import DreamOsMainWindow
+from chat_mate.interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
+from chat_mate.interfaces.pyqt.dreamscape_services import DreamscapeService
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ def main():
     ui_logic.service = dreamscape_service
     
     # Create main window
-    window = DreamscapeMainWindow(
+    window = DreamOsMainWindow(
         ui_logic=ui_logic,
         services=services,
         community_manager=community_manager

@@ -7,8 +7,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from typing import Optional, Any
+import json
 
-from core.micro_factories.chat_factory import create_chat_manager
+from chat_mate.core.micro_factories.chat_factory import create_chat_manager
+from chat_mate.core.chat_message import ChatMessage, MessageEncoder
 
 class ChatService:
     """

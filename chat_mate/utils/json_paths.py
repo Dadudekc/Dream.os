@@ -1,4 +1,4 @@
-from core.PathManager import PathManager
+from chat_mate.core.PathManager import PathManager
 import os
 
 class JsonPaths:

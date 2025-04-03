@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
-from social.AIChatAgent import AIChatAgent
 from utils.cookie_manager import CookieManager
 
 class BasePlatformStrategy(ABC):
@@ -28,6 +27,7 @@ class BasePlatformStrategy(ABC):
             platform_id (str): Platform identifier
             driver: WebDriver instance for browser automation
         """
+        from social.AIChatAgent import AIChatAgent
         self.platform_id = platform_id.lower()
         self.driver = driver
         self.logger = logging.getLogger(__name__)

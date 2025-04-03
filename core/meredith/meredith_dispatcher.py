@@ -16,7 +16,7 @@ from typing import Dict, Any, Optional, List
 from pathlib import Path
 
 from core.TemplateManager import TemplateManager
-from core.openai.OpenAIClient import OpenAIClient  # Replace if you use a different LLM client
+from core.chatgpt_automation.OpenAIClient import OpenAIClient  # Replace if you use a different LLM client
 from core.meritchain.MeritChainManager import MeritChainManager
 from core.PathManager import PathManager
 from core.services.service_registry import ServiceRegistry

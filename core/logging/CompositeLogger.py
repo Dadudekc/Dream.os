@@ -1,8 +1,7 @@
 from typing import List, Dict, Any
-from interfaces.pyqt.ILoggingAgent import ILoggingAgent
+from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
 from core.logging.utils.AsyncDispatcher import AsyncDispatcher
 from core.ConsoleLogger import ConsoleLogger
-
 class CompositeLogger(ILoggingAgent):
     """Composite logger that manages multiple logging handlers."""
     

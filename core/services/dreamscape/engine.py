@@ -183,23 +183,24 @@ class DreamscapeGenerationService(IDreamscapeService):
             "chat_title": chat_title,
             "episode_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "messages": messages,
-            # Add more context as needed
-            "now": datetime.now() # Pass current datetime to template
+            "now": datetime.now(), # Pass current datetime to template
+            # Add the chat title as a newly stabilized domain for memory writeback
+            "newly_stabilized_domains": [chat_title]
         }
 
 
         try:
             # Render the episode content using TemplateManager
             rendered_content = self.render_episode(
-                context, category="dreamscape" # Ensure correct category
+                "dreamscape_episode.j2", context, category="dreamscape" # Ensure correct category and template name
             )
             if rendered_content is None:
                  # Log error occurred during rendering
                 logging.error(f"Failed to render episode for chat: {chat_title}")
                 return None # Or raise an exception
 
-            # Save the rendered content
-            episode_path = self.save_episode(rendered_content, output_name, "md")
+            # Save the rendered content - Correct argument order: name, content, format
+            episode_path = self.save_episode(output_name, rendered_content, "md")
             if not episode_path:
                 logging.error(f"Failed to save episode for chat: {chat_title}")
                 return None # Or raise an exception

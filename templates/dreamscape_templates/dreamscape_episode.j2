@@ -2,7 +2,7 @@
 # 🌀 Digital Dreamscape MMO Log: {{ episode_title | default("Untitled Chronicle") }}
 ---
 
-> 🗓️ *Chronicle generated on {{ generation_date | default(now().strftime("%Y-%m-%d %H:%M")) }} from thread: "{{ chat_title | default("Unknown Origin") }}"*
+> 🗓️ *Chronicle generated on {{ generation_date | default(now.strftime("%Y-%m-%d %H:%M")) }} from thread: "{{ chat_title | default("Unknown Origin") }}"*
 {% if has_previous_episode and episode_count %}
 > 📜 *Episode {{ episode_count }} in the ongoing saga*
 {% endif %}
@@ -54,7 +54,13 @@
 ---
 
 ## 📖 Episode Log
-{{ raw_response | default("⚠️ Episode content unavailable.") }}
+{% if messages %}
+{% for msg in messages %}
+{{ msg }}
+{% endfor %}
+{% else %}
+⚠️ Episode content unavailable.
+{% endif %}
 
 ---
 

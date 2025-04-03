@@ -7,8 +7,9 @@ from typing import Optional, Dict, Any, List, Union
 from pathlib import Path
 
 from core.FileManager import FileManager
-from core.PathManager import PathManager
-from interfaces.pyqt.ILoggingAgent import ILoggingAgent
+from chat_mate.core.interfaces import ILoggingAgent
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.PathManager import PathManager
 
 class UnifiedLoggingAgent(ILoggingAgent):
     """

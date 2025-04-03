@@ -11,7 +11,7 @@ import random
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from core.PathManager import PathManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.strategies.twitter_strategy import TwitterStrategy
 from social.strategies.facebook_strategy import FacebookStrategy
 from social.strategies.reddit_strategy import RedditStrategy
@@ -77,7 +77,7 @@ class CommunityIntegrationManager:
         Args:
             config (dict, optional): Configuration settings for the manager.
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = get_social_logger()
         self.logger.info("Initializing Community Integration Manager")
         
         # Initialize configuration

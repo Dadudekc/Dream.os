@@ -1,7 +1,7 @@
 import os
 import logging
 from typing import Dict
-from core.bootstrap import get_bootstrap_paths
+from chat_mate.core.bootstrap import get_bootstrap_paths
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class PathManager(metaclass=PathManagerMeta):
     def _ensure_initialized(cls) -> None:
         """Ensure paths are initialized from bootstrap if not already done."""
         if not cls._initialized:
-            from core.bootstrap import get_bootstrap_paths
+            from chat_mate.core.bootstrap import get_bootstrap_paths
             cls._paths = get_bootstrap_paths()
 
             # 🔧 Register additional paths not included in bootstrap
@@ -239,10 +239,10 @@ class PathManager(metaclass=PathManagerMeta):
     @classmethod
     def get_workspace_path(cls) -> Path:
         """
-        Get the root workspace path.
+        Get the workspace path.
         
         Returns:
-            Path: The workspace root path
+            Path: The workspace path
         """
         cls._ensure_initialized()
         return cls.get_path("base")

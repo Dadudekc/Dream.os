@@ -159,9 +159,18 @@ class MainTab(QWidget):
             
             # Add service manager status if available
             if self.service_manager:
-                services = self.service_manager.get_services()
+                # --- FIX: Guard against NoneType before calling .items() ---
+                services = self.service_manager.get_services() if hasattr(self.service_manager, 'get_services') else {}
+                services = services or {} # Ensure services is a dict
+                # --- End FIX ---
                 for name, service in services.items():
-                    status = "Running" if service.is_running() else "Stopped"
+                    # Check if service is a real service or a mock
+                    if hasattr(service, 'is_running') and callable(service.is_running):
+                        status = "Running" if service.is_running() else "Stopped"
+                    elif isinstance(service, MockService):
+                        status = "Mocked"
+                    else:
+                        status = "Unknown State"
                     status_text.append(f"{name}: {status}")
             else:
                 status_text.append("Service Manager: Not Available")

@@ -8,13 +8,15 @@ from social.strategies.twitter_strategy import TwitterStrategy
 from social.strategies.facebook_strategy import FacebookStrategy
 from social.strategies.reddit_strategy import RedditStrategy
 from social.strategies.stocktwits_strategy import StocktwitsStrategy
-from social.strategies.linkedin_strategy import LinkedinStrategy
 from social.strategies.instagram_strategy import InstagramStrategy
 
 # Import the unified dashboard
 from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
-from social.social_post_manager import SocialPostManager
-from social.log_writer import logger
+from social.social_config import social_config
+from social.log_writer import get_social_logger
+
+# Initialize logger using the getter function
+logger = get_social_logger()
 
 class CommunityIntegrationManager:
     """
@@ -94,6 +96,7 @@ class CommunityIntegrationManager:
         if platform_configs.get("linkedin", {}).get("enabled", False):
             try:
                 linkedin_config = platform_configs.get("linkedin", {})
+                from social.strategies.linkedin_strategy import LinkedinStrategy
                 self.platform_strategies["linkedin"] = LinkedinStrategy(
                     config=linkedin_config,
                     feedback_file=linkedin_config.get("feedback_file", "social/data/linkedin_feedback.json")
@@ -126,6 +129,7 @@ class CommunityIntegrationManager:
     def _initialize_post_manager(self) -> None:
         """Initialize the social post manager."""
         try:
+            from social.social_post_manager import SocialPostManager
             self.post_manager = SocialPostManager(
                 platform_configs=self.config.get("platforms", {}),
                 platform_strategies=self.platform_strategies

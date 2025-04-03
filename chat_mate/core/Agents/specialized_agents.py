@@ -1,8 +1,9 @@
 from typing import Dict, Any, Optional
 from datetime import datetime
 from .base_agent import BaseAgent
-from core.logging.CompositeLogger import CompositeLogger
-from core.logging.ConsoleLogger import ConsoleLogger
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.interfaces import ILoggingAgent
+from chat_mate.core.Agents.CursorAgentInterface import CursorAgentInterface
 from .refactoring_utils import (
     CodeAnalyzer,
     CodeTransformer,
@@ -13,12 +14,12 @@ from .refactoring_utils import (
     unparse_code
 )
 
-class RefactorAgent(BaseAgent):
-    """Agent responsible for code refactoring tasks."""
-    
-    def __init__(self, name: str = "RefactorAgent"):
-        super().__init__(name)
-        self.logger = CompositeLogger([ConsoleLogger()])
+class SpecializedAgent(CursorAgentInterface):
+    """Base class for specialized agents."""
+
+    def __init__(self, config_manager: ConfigManager, logger: ILoggingAgent):
+        self.config_manager = config_manager
+        self.logger = logger
         self.analyzer = CodeAnalyzer()
         self.transformer = CodeTransformer()
         self.formatter = CodeFormatter()

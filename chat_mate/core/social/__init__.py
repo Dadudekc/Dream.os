@@ -4,9 +4,11 @@
 from . import AIChatAgent
 from . import TaskQueueManager
 from . import community_integration
+from . import services
 
 __all__ = [
     'AIChatAgent',
     'TaskQueueManager',
     'community_integration',
+    'services',
 ]

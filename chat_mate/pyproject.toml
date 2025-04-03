@@ -40,4 +40,4 @@ dev = [
 chat-mate = "interfaces.pyqt.__main__:main"
 
 [tool.setuptools]
-packages = ["core", "interfaces", "utils", "chatgpt_automation", "chat_mate"] 
+packages = ["core", "interfaces", "utils", "chatgpt_automation", "chat_mate", "tests"] 

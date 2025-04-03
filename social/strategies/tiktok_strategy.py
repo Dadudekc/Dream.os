@@ -14,10 +14,12 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from utils.cookie_manager import CookieManager
 from social.social_config import social_config
-from social.log_writer import write_json_log, logger
+from social.log_writer import write_json_log, get_social_logger
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 from utils.SentimentAnalyzer import SentimentAnalyzer
+
+logger = get_social_logger()
 
 class TikTokStrategy(BasePlatformStrategy):
     """
@@ -55,7 +57,7 @@ class TikTokStrategy(BasePlatformStrategy):
                 self.driver = self._get_driver()
             return self.login()
         except Exception as e:
-            self.logger.error(f"Failed to initialize TikTok strategy: {e}")
+            logger.error(f"Failed to initialize TikTok strategy: {e}")
             return False
     
     def cleanup(self) -> bool:
@@ -65,7 +67,7 @@ class TikTokStrategy(BasePlatformStrategy):
                 self.driver.quit()
             return True
         except Exception as e:
-            self.logger.error(f"Error during TikTok cleanup: {e}")
+            logger.error(f"Error during TikTok cleanup: {e}")
             return False
     
     def get_community_metrics(self) -> Dict[str, Any]:
@@ -104,7 +106,7 @@ class TikTokStrategy(BasePlatformStrategy):
                 metrics["video_metrics"]["shares"] = self.feedback_data.get("video_shares", 0)
                 metrics["video_metrics"]["comments"] = self.feedback_data.get("video_comments", 0)
         except Exception as e:
-            self.logger.error(f"Error calculating TikTok metrics: {e}")
+            logger.error(f"Error calculating TikTok metrics: {e}")
         
         return metrics
     
@@ -133,7 +135,7 @@ class TikTokStrategy(BasePlatformStrategy):
                 top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
                 top_members = top_members[:20]  # Keep top 20
         except Exception as e:
-            self.logger.error(f"Error getting top TikTok members: {e}")
+            logger.error(f"Error getting top TikTok members: {e}")
         
         return top_members
     
@@ -170,10 +172,10 @@ class TikTokStrategy(BasePlatformStrategy):
             with open(self.follow_db, "w") as f:
                 json.dump(follow_data, f, indent=4)
             
-            self.logger.info(f"Tracked {interaction_type} interaction with TikTok member {member_id}")
+            logger.info(f"Tracked {interaction_type} interaction with TikTok member {member_id}")
             return True
         except Exception as e:
-            self.logger.error(f"Error tracking TikTok member interaction: {e}")
+            logger.error(f"Error tracking TikTok member interaction: {e}")
             return False
     
     def _get_driver(self, headless=False):
@@ -190,18 +192,18 @@ class TikTokStrategy(BasePlatformStrategy):
         }
         options.add_experimental_option("mobileEmulation", mobile_emulation)
         driver = webdriver.Chrome(options=options)
-        self.logger.info(" TikTok driver initialized")
+        logger.info(" TikTok driver initialized")
         return driver
     
     def _wait(self, custom_range=None):
         """Wait for a random duration."""
         wait_time = random.uniform(*(custom_range or self.wait_range))
-        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
         time.sleep(wait_time)
     
     def login(self) -> bool:
         """Log in to TikTok."""
-        self.logger.info(" Initiating TikTok login...")
+        logger.info(" Initiating TikTok login...")
         try:
             self.driver.get(self.login_url)
             self._wait()
@@ -212,7 +214,7 @@ class TikTokStrategy(BasePlatformStrategy):
             self._wait()
             
             if self.is_logged_in():
-                self.logger.info(" Logged into TikTok via cookies")
+                logger.info(" Logged into TikTok via cookies")
                 return True
             
             # Try credential login
@@ -254,10 +256,10 @@ class TikTokStrategy(BasePlatformStrategy):
                     
                     if self.is_logged_in():
                         self.cookie_manager.save_cookies(self.driver, "tiktok")
-                        self.logger.info(" Logged into TikTok via credentials")
+                        logger.info(" Logged into TikTok via credentials")
                         return True
                 except Exception as e:
-                    self.logger.error(f"TikTok auto-login failed: {e}")
+                    logger.error(f"TikTok auto-login failed: {e}")
             
             # Manual login fallback
             if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "tiktok"):
@@ -266,7 +268,7 @@ class TikTokStrategy(BasePlatformStrategy):
             
             return False
         except Exception as e:
-            self.logger.error(f"TikTok login error: {e}")
+            logger.error(f"TikTok login error: {e}")
             return False
     
     def is_logged_in(self) -> bool:
@@ -281,7 +283,7 @@ class TikTokStrategy(BasePlatformStrategy):
     
     def post_video(self, video_path: str, caption: str, hashtags: List[str] = None) -> bool:
         """Post a video to TikTok."""
-        self.logger.info(" Posting video to TikTok...")
+        logger.info(" Posting video to TikTok...")
         try:
             if not self.is_logged_in():
                 if not self.login():
@@ -316,16 +318,16 @@ class TikTokStrategy(BasePlatformStrategy):
             post_button.click()
             self._wait((5, 10))  # Wait for post to complete
             
-            self.logger.info(" Successfully posted video to TikTok")
+            logger.info(" Successfully posted video to TikTok")
             write_json_log("tiktok", "success", "Posted video")
             return True
         except Exception as e:
-            self.logger.error(f"Error posting video to TikTok: {e}")
+            logger.error(f"Error posting video to TikTok: {e}")
             return False
     
     def run_daily_strategy_session(self):
         """Run complete daily TikTok strategy session."""
-        self.logger.info(" Starting Full TikTok Strategy Session")
+        logger.info(" Starting Full TikTok Strategy Session")
         try:
             if not self.initialize({}):
                 return
@@ -345,7 +347,7 @@ class TikTokStrategy(BasePlatformStrategy):
                 if script:
                     # Here you would generate/prepare the video using the script
                     # For now, we'll just log it
-                    self.logger.info(f"Generated script for {template} video")
+                    logger.info(f"Generated script for {template} video")
                 
                 self._wait((5, 10))
             
@@ -358,9 +360,9 @@ class TikTokStrategy(BasePlatformStrategy):
             self.cross_platform_feedback_loop()
             
             self.cleanup()
-            self.logger.info(" TikTok Strategy Session Complete")
+            logger.info(" TikTok Strategy Session Complete")
         except Exception as e:
-            self.logger.error(f"Error in TikTok strategy session: {e}")
+            logger.error(f"Error in TikTok strategy session: {e}")
             self.cleanup()
 
     def _load_feedback_data(self):
@@ -377,18 +379,18 @@ class TikTokStrategy(BasePlatformStrategy):
 
     def analyze_engagement_metrics(self):
         """Analyze engagement results to optimize strategy."""
-        self.logger.info(" Analyzing TikTok engagement metrics...")
+        logger.info(" Analyzing TikTok engagement metrics...")
         self.feedback_data["video_views"] = self.feedback_data.get("video_views", 0) + random.randint(100, 500)
         self.feedback_data["video_likes"] = self.feedback_data.get("video_likes", 0) + random.randint(10, 50)
         self.feedback_data["video_shares"] = self.feedback_data.get("video_shares", 0) + random.randint(5, 15)
         self.feedback_data["video_comments"] = self.feedback_data.get("video_comments", 0) + random.randint(3, 10)
         self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 5)
         
-        self.logger.info(f" Total Views: {self.feedback_data['video_views']}")
-        self.logger.info(f"️ Total Likes: {self.feedback_data['video_likes']}")
-        self.logger.info(f" Total Shares: {self.feedback_data['video_shares']}")
-        self.logger.info(f" Total Comments: {self.feedback_data['video_comments']}")
-        self.logger.info(f" Total Follows: {self.feedback_data['follows']}")
+        logger.info(f" Total Views: {self.feedback_data['video_views']}")
+        logger.info(f"️ Total Likes: {self.feedback_data['video_likes']}")
+        logger.info(f" Total Shares: {self.feedback_data['video_shares']}")
+        logger.info(f" Total Comments: {self.feedback_data['video_comments']}")
+        logger.info(f" Total Follows: {self.feedback_data['follows']}")
         
         self._save_feedback_data()
 
@@ -399,15 +401,15 @@ class TikTokStrategy(BasePlatformStrategy):
 
     def adaptive_posting_strategy(self):
         """Adjust posting strategy based on engagement feedback."""
-        self.logger.info(" Adapting TikTok posting strategy based on feedback...")
+        logger.info(" Adapting TikTok posting strategy based on feedback...")
         if self.feedback_data.get("video_views", 0) > 1000:
-            self.logger.info(" High view count! Consider creating more similar content.")
+            logger.info(" High view count! Consider creating more similar content.")
         if self.feedback_data.get("video_shares", 0) > 20:
-            self.logger.info(" Great shareability! This content format is working well.")
+            logger.info(" Great shareability! This content format is working well.")
 
     def update_trending_hashtags(self):
         """Update list of trending hashtags in our niche."""
-        self.logger.info(" Updating trending TikTok hashtags...")
+        logger.info(" Updating trending TikTok hashtags...")
         try:
             self.driver.get("https://www.tiktok.com/discover")
             self._wait((3, 5))
@@ -417,13 +419,13 @@ class TikTokStrategy(BasePlatformStrategy):
             )
             
             self.trending_hashtags = [tag.text for tag in trending_tags[:10]]
-            self.logger.info(f"Found trending hashtags: {', '.join(self.trending_hashtags)}")
+            logger.info(f"Found trending hashtags: {', '.join(self.trending_hashtags)}")
         except Exception as e:
-            self.logger.error(f"Error updating trending hashtags: {e}")
+            logger.error(f"Error updating trending hashtags: {e}")
 
     def reward_top_creators(self):
         """Reward top content creators in our community."""
-        self.logger.info(" Identifying and rewarding top TikTok creators...")
+        logger.info(" Identifying and rewarding top TikTok creators...")
         top_members = self.get_top_members()
         
         for member in top_members[:5]:  # Reward top 5
@@ -434,13 +436,13 @@ class TikTokStrategy(BasePlatformStrategy):
                     "reward",
                     {"message": reward_message, "reward_type": "recognition"}
                 )
-                self.logger.info(f"Rewarded creator: {member['id']}")
+                logger.info(f"Rewarded creator: {member['id']}")
             except Exception as e:
-                self.logger.error(f"Error rewarding creator {member['id']}: {e}")
+                logger.error(f"Error rewarding creator {member['id']}: {e}")
 
     def cross_platform_feedback_loop(self):
         """Integrate TikTok performance data with other platforms."""
-        self.logger.info(" Running cross-platform feedback analysis for TikTok...")
+        logger.info(" Running cross-platform feedback analysis for TikTok...")
         try:
             # Simulate cross-platform metrics
             platform_metrics = {
@@ -455,10 +457,10 @@ class TikTokStrategy(BasePlatformStrategy):
                 platform_metrics["youtube"]["shorts_views"]
             )
             
-            self.logger.info(f" Total short-form video views across platforms: {total_short_form_views}")
+            logger.info(f" Total short-form video views across platforms: {total_short_form_views}")
             
             # Update strategy based on cross-platform performance
             if total_short_form_views > 2000:
-                self.logger.info(" Short-form video content is performing well across platforms")
+                logger.info(" Short-form video content is performing well across platforms")
         except Exception as e:
-            self.logger.error(f"Error in cross-platform analysis: {e}") 
+            logger.error(f"Error in cross-platform analysis: {e}") 

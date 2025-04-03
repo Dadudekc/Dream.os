@@ -9,11 +9,11 @@ from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher
 
 # Optional imports from your project
 try:
-    from core.PathManager import PathManager
+    from chat_mate.core.PathManager import PathManager
 except ImportError:
     PathManager = None
 try:
-    from social.log_writer import write_json_log
+    from chat_mate.social.log_writer import write_json_log
 except ImportError:
     def write_json_log(platform, result, tags, ai_output): 
         pass

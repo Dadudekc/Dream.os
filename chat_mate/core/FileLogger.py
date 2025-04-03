@@ -3,9 +3,9 @@ import json
 import glob
 from datetime import datetime
 from typing import Optional, Dict, Any
-from core.config.config_manager import ConfigManager
-from interfaces.pyqt.ILoggingAgent import ILoggingAgent
-from core.PathManager import PathManager
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.interfaces import ILoggingAgent
+from chat_mate.core.PathManager import PathManager
 
 class FileLogger(ILoggingAgent):
     """Logger implementation for file output with rotation."""
@@ -15,7 +15,8 @@ class FileLogger(ILoggingAgent):
         self.debug_mode = config_manager.get('logging.debug_mode', False)
         self.max_file_size = config_manager.get('logging.file.max_size_mb', 10) * 1024 * 1024
         self.max_files = config_manager.get('logging.file.max_files', 5)
-        self.log_dir = os.path.join(PathManager.get_path('logs'), 'system')
+        logs_path = PathManager.get_path('logs')
+        self.log_dir = os.path.join(str(logs_path), 'system')
         os.makedirs(self.log_dir, exist_ok=True)
         
     def _get_log_file(self) -> str:

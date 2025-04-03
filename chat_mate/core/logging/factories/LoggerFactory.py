@@ -3,8 +3,8 @@ import logging
 from typing import Optional, Dict, Any
 from pathlib import Path
 
-from core.logging.LoggingService import LoggingService
-from core.bootstrap import get_bootstrap_paths
+from chat_mate.core.logging.LoggingService import LoggingService
+from chat_mate.core.bootstrap import get_bootstrap_paths
 
 class LoggerFactory:
     """

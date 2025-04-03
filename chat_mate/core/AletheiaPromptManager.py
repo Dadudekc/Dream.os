@@ -7,9 +7,9 @@ import logging
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from jinja2 import Environment, FileSystemLoader
-from utils.json_paths import JsonPaths
-from core.PathManager import PathManager
-from core.interfaces.IPromptManager import IPromptManager
+from chat_mate.utils.json_paths import JsonPaths
+from chat_mate.core.PathManager import PathManager
+from chat_mate.core.interfaces.IPromptManager import IPromptManager
 
 # Setup Logging First
 logger = logging.getLogger("Aletheia_PromptManager")
@@ -23,7 +23,7 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 # Import DiscordManager from your core directory
-from core.services.discord.DiscordManager import DiscordManager
+from chat_mate.core.services.discord.DiscordManager import DiscordManager
 
 
 class AletheiaPromptManager(IPromptManager):

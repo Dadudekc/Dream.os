@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import logging
 from datetime import datetime
 
+from chat_mate.core.PathManager import PathManager
+
 class StartupValidator:
     """
     Validates core system requirements during startup.
@@ -48,9 +50,9 @@ class StartupValidator:
     def check_paths(self):
         """Validate existence of required paths and files."""
         required_paths = [
-            ("config", self.path_manager.get_config_path()),
-            ("memory", self.path_manager.get_memory_path()),
-            ("templates", self.path_manager.get_template_path())
+            ("config", PathManager.get_config_path()),
+            ("memory", PathManager.get_memory_path()),
+            ("templates", PathManager.get_template_path())
         ]
 
         for name, path in required_paths:
@@ -147,7 +149,7 @@ class StartupValidator:
 
     def check_template_dir(self):
         """Validate template directory structure and content."""
-        template_dir = self.path_manager.get_template_path()
+        template_dir = PathManager.get_template_path()
         if not template_dir.exists():
             self.errors.append("Missing templates directory")
             self.logger.error(f"❌ Missing template directory at: {template_dir}")

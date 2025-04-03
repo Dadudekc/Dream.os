@@ -1,12 +1,12 @@
 from typing import Dict, Any
-from core.config.config_manager import ConfigManager
-from core.logging.CompositeLogger import CompositeLogger
-from core.UnifiedDiscordService import UnifiedDiscordService
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
+from chat_mate.core.UnifiedDiscordService import UnifiedDiscordService
 
 class DiscordQueueProcessor:
     """Queues processed responses for Discord or other destinations."""
 
-    def __init__(self, config_manager: ConfigManager, logger: CompositeLogger):
+    def __init__(self, config_manager: ConfigManager, logger: ILoggingAgent):
         self.config_manager = config_manager
         self.logger = logger
         self.discord_service = UnifiedDiscordService(config_manager)

@@ -7,11 +7,14 @@ from typing import List, Dict, Any, Optional
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, 
     QComboBox, QTextEdit, QListWidget, QListWidgetItem, QSplitter,
-    QProgressBar, QCheckBox, QFileDialog, QMessageBox
+    QProgressBar, QCheckBox, QFileDialog, QMessageBox, QScrollArea
 )
 from PyQt5.QtCore import Qt, pyqtSignal, QSize, QTimer
 
-from interfaces.pyqt.tabs.dreamscape_generation.ServiceInitializer import ServiceInitializer
+# from chat_mate.interfaces.pyqt.tabs.dreamscape.ServiceInitializer import ServiceInitializer # Absolute import failed
+from .ServiceInitializer import ServiceInitializer # Use relative import
+
+from core.services.dreamscape.dreamscape_service import DreamscapeGenerationService
 
 # Assuming these components and the controller will be created
 # We'll need to import them properly once they exist

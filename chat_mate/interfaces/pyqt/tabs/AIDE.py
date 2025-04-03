@@ -30,13 +30,14 @@ UPDATED_FOLDER.mkdir(exist_ok=True)
 
 
 class AIDE(QWidget):
-    def __init__(self, dispatcher=None, logger=None, **services):
+    def __init__(self, dispatcher=None, logger=None, engine=None, **services):
         """
         Initializes the AIDE (AI Development Environment).
         
         Args:
             dispatcher: Centralized signal dispatcher.
             logger: Logger instance.
+            engine: Injected AutomationEngine instance.
             services: Additional services including debug_service, fix_service, rollback_service, 
                       cursor_manager, project_scanner.
         """
@@ -46,10 +47,16 @@ class AIDE(QWidget):
         self.services = services
         self.current_file_path = None
         
-        # Initialize helpers and engine
+        # Initialize helpers and use injected engine
         self.helpers = GuiHelpers()
-        self.engine = AutomationEngine(use_local_llm=False, model_name='mistral')
+        self.engine = engine
         
+        if not self.engine:
+            if self.logger:
+                self.logger.warning("AIDE initialized without an AutomationEngine instance!")
+            else:
+                print("AIDE initialized without an AutomationEngine instance!")
+
         # Get debug-related services
         self.debug_service = services.get("debug_service")
         self.fix_service = services.get("fix_service")

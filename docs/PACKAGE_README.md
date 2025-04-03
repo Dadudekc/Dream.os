@@ -62,7 +62,7 @@ The project uses absolute imports for clarity and maintainability:
 ```python
 # Correct import style
 from core.social.CommunityDashboard import CommunityDashboard
-from interfaces.pyqt.DreamscapeMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
 
 # Avoid relative imports or sys.path manipulation
 ```

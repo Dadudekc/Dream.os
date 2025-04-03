@@ -1,32 +1,68 @@
-import requests
+"""
+Local LLM engine for running models locally.
+"""
+
+from typing import Optional, Dict, Any
+import re
+
 
 class LocalLLMEngine:
-    def __init__(self, model='mistral', base_url='http://localhost:11434'):
-        self.model = model
-        self.base_url = base_url
-
-    def set_model(self, model_name):
-        """Switch to a different local model on-the-fly."""
-        self.model = model_name
-        print(f"✅ Switched to local model: {self.model}")
-
-    def get_response(self, prompt, stream=False):
-        """Send prompt to the local LLM and get a response."""
-        endpoint = f"{self.base_url}/api/generate"
-
-        payload = {
-            "model": self.model,
-            "prompt": prompt,
-            "stream": stream
-        }
-
+    """Engine for running local language models."""
+    
+    def __init__(self, model_name: str = 'mistral'):
+        """Initialize the local LLM engine.
+        
+        Args:
+            model_name (str): Name of the model to use.
+        """
+        # Validate model_name
+        MAX_MODEL_NAME_LENGTH = 64
+        if not model_name or not isinstance(model_name, str) or not model_name.strip():
+            raise ValueError("Model name must be a non-empty string.")
+        if len(model_name) > MAX_MODEL_NAME_LENGTH:
+            raise ValueError(f"Model name exceeds maximum length of {MAX_MODEL_NAME_LENGTH} characters.")
+        if not re.match(r"^[a-zA-Z0-9_.-]+$", model_name):
+             raise ValueError("Model name contains invalid characters.")
+            
+        self.model_name = model_name
+        self.model = None
+        self.initialized = False
+    
+    def initialize(self):
+        """Initialize the model."""
         try:
-            response = requests.post(endpoint, json=payload)
-            response.raise_for_status()
-            data = response.json()
-
-            return data.get('response', '').strip()
-
+            # TODO: Implement actual model initialization
+            self.initialized = True
+            return True
         except Exception as e:
-            print(f"❌ LocalLLMEngine error: {e}")
-            return None
+            print(f"Error initializing model: {e}")
+            return False
+    
+    def close(self):
+        """Close and clean up resources."""
+        try:
+            if self.model:
+                # TODO: Implement actual model cleanup
+                self.model = None
+            self.initialized = False
+        except Exception as e:
+            print(f"Error closing model: {e}")
+    
+    def get_response(self, prompt: str) -> str:
+        """Get a response from the model.
+        
+        Args:
+            prompt (str): The input prompt.
+            
+        Returns:
+            str: The model's response.
+        """
+        if not self.initialized:
+            raise RuntimeError("Model not initialized")
+            
+        try:
+            # TODO: Implement actual model inference
+            return f"Response from {self.model_name}: {prompt}"
+        except Exception as e:
+            print(f"Error getting response: {e}")
+            return ""

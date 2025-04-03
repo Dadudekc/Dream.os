@@ -13,7 +13,7 @@ from core.DriverManager import DriverManager
 from core.logging.factories.LoggerFactory import LoggerFactory
 
 # GUI and Web imports
-from interfaces.pyqt.DreamOsMainWindow import DreamscapeMainWindow
+from interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
 from interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
 from interfaces.pyqt.IntegratedMainWindow import IntegratedMainWindow
 from interfaces.pyqt.components.prompt_panel import PromptPanel
@@ -138,7 +138,7 @@ def run_pyqt_gui(app, services):
     )
 
     # Create your main window and set its central widget
-    main_window = DreamscapeMainWindow(ui_logic, dispatcher, services)
+    main_window = DreamOsMainWindow(ui_logic, dispatcher, services)
     main_window.setCentralWidget(main_tabs)
     main_window.show()
     

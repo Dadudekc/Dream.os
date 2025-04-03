@@ -1,8 +1,7 @@
 from typing import Optional
 from datetime import datetime
 from core.config.config_manager import ConfigManager
-from interfaces.pyqt.ILoggingAgent import ILoggingAgent
-
+from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
 class ConsoleLogger(ILoggingAgent):
     """Logger implementation for console output."""
     

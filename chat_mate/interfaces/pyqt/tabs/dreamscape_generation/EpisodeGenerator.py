@@ -2,8 +2,8 @@
 
 import logging
 from typing import Any, Optional
-from core.memory import ContextMemoryManager
-from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from chat_mate.core.memory.context import ContextMemoryManager
+from .DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
 import asyncio
 
 class EpisodeGenerator:

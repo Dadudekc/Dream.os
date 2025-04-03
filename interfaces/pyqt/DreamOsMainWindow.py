@@ -29,7 +29,8 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QLabel,
     QMenuBar,
-    QStatusBar
+    QStatusBar,
+    QAbstractButton
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
@@ -38,9 +39,8 @@ from core.TemplateManager import TemplateManager
 from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 from core.recovery.recovery_engine import RecoveryEngine
-
+ 
 # Import tabs
-from .tabs.dreamscape.DreamscapeGenerationTab import DreamscapeGenerationTab
 from .tabs.prompt_sync.PromptSyncTab import PromptSyncTab
 from .tabs.chat_tab.ChatTabWidget import ChatTabWidget
 from .tabs.chat_tab.ChatTabWidgetManager import ChatTabWidgetManager
@@ -54,6 +54,10 @@ from .tabs.SocialDashboardTab import SocialDashboardTab
 from .tabs.PromptExecutionTab import PromptExecutionTab
 from .tabs.LogsTab import LogsTab
 from .tabs.DependencyMapTab import DependencyMapTab
+from .tabs.voice_mode_tab import VoiceModeTab
+from .tabs.unified_dashboard.UnifiedDashboardTab import UnifiedDashboardTab
+from .tabs.meredith_tab import MeredithTab
+from .tabs.draggable_prompt_board_tab import DraggablePromptBoardTab
 from micro_factories.cursor_execution_tab_factory import CursorExecutionTabFactory
 from .tabs.dream_os_tab_factory import (
     TaskStatusIntegrationFactory, 
@@ -65,6 +69,7 @@ from .widgets.RecoveryDashboardWidget import RecoveryDashboardWidget
 from .services.AdaptiveRecoveryService import AdaptiveRecoveryService
 from .tabs.metrics_viewer.MetricsViewerTab import MetricsViewerTab
 from .services.TabValidatorService import TabValidatorService
+from interfaces.pyqt.tabs.dreamscape.components.OutputDisplay import OutputDisplay
 
 class MockService:
     """Mock service for development/testing."""
@@ -142,13 +147,24 @@ class DreamOsMainWindow(QMainWindow):
         # Initialize system loader for dependency injection
         try:
             from core.system_loader import DreamscapeSystemLoader
-            system_loader = DreamscapeSystemLoader.get_instance()
-            system_loader.load_config()
+            from core.rendering.template_engine import TemplateEngine
+            
+            system_loader = DreamscapeSystemLoader()
+            config_path = self.path_manager.get_path("memory") / "config.yml"
+            system_loader.load_config(config_path=config_path)
             services['system_loader'] = system_loader
             logger.info("DreamscapeSystemLoader initialized")
+
+            template_dir = self.path_manager.get_path("templates")
+            template_manager = TemplateEngine(template_dir=template_dir, logger=logger)
+            system_loader.register_service("template_manager", template_manager)
+            logger.info("TemplateEngine registered as template_manager")
+
         except Exception as e:
-            logger.warning(f"Failed to initialize DreamscapeSystemLoader: {str(e)}")
+            logger.warning(f"Failed to initialize DreamscapeSystemLoader or TemplateManager: {str(e)}")
             services['system_loader'] = MockService('system_loader')
+            if 'template_manager' not in services:
+                 services['template_manager'] = MockService('template_manager')
         
         # Initialize prompt cycle orchestrator
         try:
@@ -178,6 +194,26 @@ class DreamOsMainWindow(QMainWindow):
              if name not in services['component_managers']:
                  services['component_managers'][name] = MockService(name)
                  logger.info(f"Using mock {name} for development")
+
+        # --- Add Mocks for Cursor Execution Tab Dependencies ---
+        cursor_exec_deps = ['cursor_dispatcher', 'test_runner', 'git_manager']
+        # Assuming system_loader holds registered services if available
+        system_loader = services.get('system_loader')
+        if system_loader and not isinstance(system_loader, MockService):
+            for dep_name in cursor_exec_deps:
+                if not system_loader.has_service(dep_name): # Check if service is registered
+                    mock_service = MockService(dep_name)
+                    system_loader.register_service(dep_name, mock_service)
+                    logger.info(f"Registered mock {dep_name} for development")
+                    # Also add to the main services dict for direct access if needed by tabs?
+                    # services[dep_name] = mock_service 
+        else:
+            # Fallback if system_loader itself is mocked or unavailable
+            for dep_name in cursor_exec_deps:
+                 if dep_name not in services:
+                      services[dep_name] = MockService(dep_name)
+                      logger.info(f"Using flat mock {dep_name} for development (SystemLoader unavailable)")
+        # --- End Mocks ---    
             
         # Keep flat structure for other base services if used directly
         base_service_names = [
@@ -264,7 +300,16 @@ class DreamOsMainWindow(QMainWindow):
         # Create and add tabs in logical groups
         
         # Group 1: Main Development Interface
-        self.main_tab = MainTab(self.services)
+        config_mgr = self.services.get('config_manager', self.services.get('component_managers', {}).get('config_manager')) # Check both locations
+        service_mgr = self.services.get('system_loader') # Assuming system_loader acts as service manager
+        main_tab_logger = self.services.get('logger', logger) # Use main logger if specific not found
+        
+        self.main_tab = MainTab(
+            config_manager=config_mgr,
+            service_manager=service_mgr, # Pass system_loader as service_manager
+            logger=main_tab_logger,
+            parent=self
+        )
         self.tab_widget.addTab(self.main_tab, "Main")
         
         self.task_board_tab = TaskBoardTab(self.services)
@@ -289,6 +334,11 @@ class DreamOsMainWindow(QMainWindow):
         self.contextual_chat_tab = ContextualChatTab(self.services)
         self.tab_widget.addTab(self.contextual_chat_tab, "Contextual Chat")
         
+        # REVIEW: Added Voice Mode Tab - V.P. 2024-04-03
+        self.voice_mode_tab = VoiceModeTab(self.services)
+        self.tab_widget.addTab(self.voice_mode_tab, "Voice Mode")
+        # END REVIEW
+        
         self.chat_widget = self.chat_tab_manager.get_widget()
         self.tab_widget.addTab(self.chat_widget, "Chat")
         
@@ -302,6 +352,11 @@ class DreamOsMainWindow(QMainWindow):
         # Group 4: Social and Dashboard
         self.social_dashboard_tab = SocialDashboardTab(self.services)
         self.tab_widget.addTab(self.social_dashboard_tab, "Social Dashboard")
+        
+        # REVIEW: Added Unified Dashboard Tab - V.P. 2024-04-03
+        self.unified_dashboard_tab = UnifiedDashboardTab(self.services)
+        self.tab_widget.addTab(self.unified_dashboard_tab, "Unified Dashboard")
+        # END REVIEW
         
         self.metrics_viewer_tab = MetricsViewerTab(self.services)
         self.tab_widget.addTab(self.metrics_viewer_tab, "Metrics Viewer")
@@ -322,9 +377,20 @@ class DreamOsMainWindow(QMainWindow):
         # Group 6: Development Tools
         self.dependency_map_tab = DependencyMapTab(self.services)
         self.tab_widget.addTab(self.dependency_map_tab, "Dependency Map")
+
+        # REVIEW: Added Draggable Prompt Board Tab - V.P. 2024-04-03
+        self.draggable_prompt_board_tab = DraggablePromptBoardTab(self.services)
+        self.tab_widget.addTab(self.draggable_prompt_board_tab, "Prompt Board")
+        # END REVIEW
         
         self.logs_tab = LogsTab(self.services)
         self.tab_widget.addTab(self.logs_tab, "Logs")
+        
+        # Group 7: Experimental/Other
+        # REVIEW: Added Meredith Tab - V.P. 2024-04-03
+        self.meredith_tab = MeredithTab(self.services)
+        self.tab_widget.addTab(self.meredith_tab, "Meredith")
+        # END REVIEW
         
         # Create recovery dashboard
         self.recovery_dashboard = RecoveryDashboardWidget(self.metrics_service)
@@ -344,6 +410,43 @@ class DreamOsMainWindow(QMainWindow):
         # Create status bar
         self.setStatusBar(QStatusBar())
         
+        # REVIEW: Enable button debugging for all tabs - V.P. 2024-04-03
+        for i in range(self.tab_widget.count()):
+            widget = self.tab_widget.widget(i)
+            if widget: # Ensure widget exists
+                self._enable_button_debugging(widget)
+        # END REVIEW
+
+    # REVIEW: Added method for button debugging - V.P. 2024-04-03
+    def _enable_button_debugging(self, widget: QWidget):
+        """Recursively find buttons and connect their clicked signal to a logger."""
+        try:
+            tab_index = self.tab_widget.indexOf(widget)
+            tab_name = "Unknown Tab"
+            if tab_index != -1:
+                tab_name = self.tab_widget.tabText(tab_index)
+            else: # Maybe it's a top-level widget not directly in tabs?
+                if hasattr(widget, 'windowTitle'):
+                    tab_name = widget.windowTitle() or tab_name
+
+            for button in widget.findChildren(QAbstractButton):
+                # Generate a meaningful name for the button
+                button_identifier = button.objectName() or button.text() or f"Unnamed_{type(button).__name__}"
+                # Sanitize name (remove newlines etc.)
+                button_identifier = button_identifier.replace('\n', ' ').strip()
+                
+                # Use a lambda with default argument to capture current button name and tab name
+                try:
+                    # Disconnect first to prevent duplicate connections if called multiple times
+                    button.clicked.disconnect()
+                except TypeError: # No connection exists
+                    pass
+                button.clicked.connect(lambda checked=False, btn_id=button_identifier, tb_name=tab_name:
+                    logger.info(f"[🟣 Button Clicked | {tb_name}] → {btn_id}"))
+        except Exception as e:
+             logger.error(f"Error setting up button debugging for widget {widget}: {e}")
+    # END REVIEW
+
     def _connect_tab_signals(self):
         """Connect signals between tabs for inter-tab communication."""
         # Connect TaskBoard to CursorExecution

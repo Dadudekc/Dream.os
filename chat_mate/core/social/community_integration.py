@@ -13,8 +13,9 @@ from social.strategies.instagram_strategy import InstagramStrategy
 
 # Import the unified dashboard
 from social.UnifiedCommunityDashboard import UnifiedCommunityDashboard as CommunityDashboard
-from social.social_post_manager import SocialPostManager
-from social.log_writer import logger
+from social.social_config import social_config
+from social.log_writer import get_social_logger
+logger = get_social_logger()
 
 class CommunityIntegrationManager:
     """

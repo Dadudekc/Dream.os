@@ -617,7 +617,7 @@
 
 ---
 
-## File: D:\overnight_scripts\chat_mate\gui_old\DreamscapeMainWindow.py
+## File: D:\overnight_scripts\chat_mate\gui_old\DreamOsMainWindow.py
 
 - ⚠️ Constructor may be missing dependency injection parameters.
 
@@ -744,7 +744,7 @@
 
 ---
 
-## File: D:\overnight_scripts\chat_mate\interfaces\pyqt\DreamscapeMainWindow.py
+## File: D:\overnight_scripts\chat_mate\interfaces\pyqt\DreamOsMainWindow.py
 
 - 🔧 Tight coupling detected between 'core' and 'utils' modules.
 - ⚠️ Potential circular dependency between UI and core modules.

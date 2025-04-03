@@ -16,8 +16,10 @@ from selenium import webdriver
 
 from utils.cookie_manager import CookieManager
 from social.social_config import social_config
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.AIChatAgent import AIChatAgent
+
+logger = get_social_logger()
 
 DEFAULT_WAIT = 10
 MAX_RETRIES = 3

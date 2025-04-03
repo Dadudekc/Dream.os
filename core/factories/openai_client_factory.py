@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, Dict, Any
 
-from core.openai.OpenAIClient import OpenAIClient
+from core.chatgpt_automation.OpenAIClient import OpenAIClient
 from core.services.service_registry import ServiceRegistry
 
 class OpenAIClientFactory:

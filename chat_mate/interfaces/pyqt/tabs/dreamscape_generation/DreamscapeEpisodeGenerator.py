@@ -13,10 +13,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateNotFound
-from core.TemplateManager import TemplateManager
-from core.memory import ContextMemoryManager
-from core.services.service_registry import ServiceRegistry
-from core.services.dreamscape_generator_service import DreamscapeGenerationService
+from chat_mate.core.TemplateManager import TemplateManager
+from chat_mate.core.memory.context import ContextMemoryManager
+from chat_mate.core.services.service_registry import ServiceRegistry
+from chat_mate.core.services.dreamscape.engine import DreamscapeGenerationService
 
 def get_base_template_dir():
     """

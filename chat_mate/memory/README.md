@@ -1,10 +1,10 @@
 # Service Initialization Fixes
 
-This document describes the changes made to fix service initialization issues in the DreamscapeMainWindow application.
+This document describes the changes made to fix service initialization issues in the DreamOsMainWindow application.
 
 ## Issue Summary
 
-The logs indicated that several key services were not available when the GUI (DreamscapeMainWindow) was launched:
+The logs indicated that several key services were not available when the GUI (DreamOsMainWindow) was launched:
 - prompt_manager
 - chat_manager
 - response_handler
@@ -29,7 +29,7 @@ In `interfaces/pyqt/dreamscape_services.py`:
 
 ### 2. Fixed Services Dictionary in Main()
 
-In `interfaces/pyqt/DreamscapeMainWindow.py`:
+In `interfaces/pyqt/DreamOsMainWindow.py`:
 - Expanded the services dictionary to include all required services
 - Added proper error handling during service creation
 - Ensured service names match what's expected by components
@@ -47,7 +47,7 @@ In `interfaces/pyqt/tabs/MainTabs.py`:
 
 ### 4. Enhanced Application Error Handling
 
-In `interfaces/pyqt/DreamscapeMainWindow.py`:
+In `interfaces/pyqt/DreamOsMainWindow.py`:
 - Added service verification in the constructor
 - Added graceful shutdown for all services with detailed logging
 - Improved error handling during closeEvent()

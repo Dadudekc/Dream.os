@@ -1,0 +1,32 @@
+{
+  "platform": "twitter",
+  "enabled": true,
+  "last_updated": "",
+  "parameters": {
+    "post_frequency_per_day": 2,
+    "engagement_actions_per_run": 15,
+    "targeting_keywords": [
+      "AI",
+      "machinelearning",
+      "LLM",
+      "python",
+      "developer"
+    ],
+    "ai_comment_tone": "professional_insightful",
+    "like_weight": 1.0,
+    "comment_weight": 1.5,
+    "retweet_weight": 1.2,
+    "follow_weight": 0.8,
+    "unfollow_threshold_days": 7,
+    "max_daily_follows": 20,
+    "content_mix": {
+      "text_tweet": 0.6,
+      "thread": 0.2,
+      "image_post": 0.1,
+      "poll": 0.1
+    },
+    "peak_engagement_hours_utc": [
+      14, 15, 16, 21, 22
+    ]
+  }
+} 

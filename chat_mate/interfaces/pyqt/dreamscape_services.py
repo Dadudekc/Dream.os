@@ -7,8 +7,11 @@ import re
 from datetime import datetime, timedelta
 import sys
 import inspect
+from typing import Dict, Any, Optional
 
 from pathlib import Path
+
+from PyQt5.QtWidgets import QWidget
 
 def find_project_root(marker: str = ".git", start: Path = None) -> Path:
     """
@@ -32,21 +35,21 @@ if str(project_root) not in sys.path:
 # For debugging: print the project root
 print("Project root detected at:", project_root)
 
-
-from core.ChatManager import ChatManager
-from core.AletheiaPromptManager import AletheiaPromptManager
-from core.FileManager import FileManager
-from core.UnifiedDiscordService import UnifiedDiscordService
-from core.ReinforcementEngine import ReinforcementEngine
-from utils.filesystem import sanitize_filename
-from utils.run_summary import generate_full_run_json
-from core.DriverManager import DriverManager
-from core.CycleExecutionService import CycleExecutionService
-from core.PromptResponseHandler import PromptResponseHandler
-from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
-from core.TaskOrchestrator import TaskOrchestrator
-from interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
-from core.PromptCycleOrchestrator import PromptCycleOrchestrator
+from chat_mate.core.ChatManager import ChatManager
+from chat_mate.core.AletheiaPromptManager import AletheiaPromptManager
+from chat_mate.core.FileManager import FileManager
+from chat_mate.core.UnifiedDiscordService import UnifiedDiscordService
+from chat_mate.core.ReinforcementEngine import ReinforcementEngine
+from chat_mate.utils.filesystem import sanitize_filename
+from chat_mate.utils.run_summary import generate_full_run_json
+from chat_mate.core.DriverManager import DriverManager
+from chat_mate.core.CycleExecutionService import CycleExecutionService
+from chat_mate.core.PromptResponseHandler import PromptResponseHandler
+from chat_mate.core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
+from chat_mate.core.TaskOrchestrator import TaskOrchestrator
+from chat_mate.interfaces.pyqt.tabs.dreamscape_generation.DreamscapeEpisodeGenerator import DreamscapeEpisodeGenerator
+from chat_mate.core.PromptCycleOrchestrator import PromptCycleOrchestrator
+from chat_mate.core.services.dreamscape.engine import DreamscapeGenerationService
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -63,12 +66,14 @@ class DreamscapeService:
     - Supports runtime service creation and health checks
     """
 
-    def __init__(self, config):
+    def __init__(self, config, cycle_service=None, prompt_response_handler=None):
         """
         Initialize DreamscapeService with a configuration object.
         
         Args:
             config: A ConfigManager instance or configuration object that exposes settings.
+            cycle_service: Optional CycleExecutionService instance for dependency injection.
+            prompt_response_handler: Optional PromptResponseHandler instance for dependency injection.
         """
         self.config = config
         self.logger = logging.getLogger("DreamscapeService")
@@ -79,6 +84,10 @@ class DreamscapeService:
 
         # Initialize service registry 
         self._services = {}
+        
+        # Store injected services
+        self.cycle_service = cycle_service
+        self.prompt_response_handler = prompt_response_handler
         
         # Bootstrap all services
         self.bootstrap_services()

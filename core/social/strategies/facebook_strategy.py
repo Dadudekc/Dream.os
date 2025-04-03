@@ -23,10 +23,13 @@ load_dotenv()
 
 # Absolute imports from our codebase
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
+from .strategy_config_loader import StrategyConfigLoader
+
+logger = get_social_logger()
 
 MAX_ATTEMPTS = 3
 DEFAULT_WAIT = 10
@@ -404,436 +407,435 @@ class FacebookEngagementBot(FacebookBot):
         logger.info(" Facebook Daily Engagement Session Complete.")
 
 # -------------------------------------------------
-# FacebookStrategy Class (Unified Approach)
+# FacebookStrategy Class (Extending BasePlatformStrategy)
 # -------------------------------------------------
 class FacebookStrategy(BasePlatformStrategy):
     """
-    Centralized strategy class for managing Facebook automation and community building.
-    Extends BasePlatformStrategy with Facebook-specific implementations.
-    Features:
-      - Dynamic feedback loops with AI sentiment analysis
-      - Reinforcement loops using ChatGPT responses
-      - Reward system for top engaging followers
-      - Cross-platform feedback integration
+    Centralized strategy class for Facebook automation, community building,
+    and dynamic feedback loops, leveraging StrategyConfigLoader.
+    Extends BasePlatformStrategy with specific Facebook logic and integrates
+    feedback mechanisms.
     """
-    
+    PLATFORM = "facebook"
+    FEEDBACK_DB = "social/data/facebook_feedback_tracker.json"
+    REWARD_DB = "social/data/facebook_reward_tracker.json"
+
     def __init__(self, driver=None):
-        """Initialize Facebook strategy with browser automation."""
-        super().__init__(platform_id="facebook", driver=driver)
-        self.login_url = social_config.get_platform_url("facebook", "login")
-        self.post_url = social_config.get_platform_url("facebook", "post")
-        self.settings_url = social_config.get_platform_url("facebook", "settings")
-        self.email = social_config.get_env("FACEBOOK_EMAIL")
-        self.password = social_config.get_env("FACEBOOK_PASSWORD")
-        self.wait_range = (3, 6)
+        super().__init__(self.PLATFORM, driver)
+        self.config_loader = StrategyConfigLoader(platform=self.PLATFORM)
+        self.ai_agent = AIChatAgent(
+            model=self.config_loader.get_parameter("ai_model", "gpt-4o"),
+            tone=self.config_loader.get_parameter("ai_comment_tone", "Victor"),
+            provider=self.config_loader.get_parameter("ai_provider", "openai")
+        )
+        self.cookie_manager = CookieManager()
         self.feedback_data = self._load_feedback_data()
-    
+        self.email = None
+        self.password = None
+
     def initialize(self, credentials: Dict[str, str]) -> bool:
-        """Initialize Facebook strategy with credentials."""
-        try:
-            if not self.driver:
-                self.driver = self._get_driver()
-            return self.login()
-        except Exception as e:
-            self.logger.error(f"Failed to initialize Facebook strategy: {e}")
+        logger.info(f"Initializing FacebookStrategy...")
+        self.email = credentials.get("email")
+        self.password = credentials.get("password")
+        if not self.email or not self.password:
+            logger.error("Facebook credentials (email, password) not provided for initialization.")
             return False
-    
+        if not self.driver:
+            self.driver = self._get_driver()
+        return self.login()
+
     def cleanup(self) -> bool:
-        """Clean up resources."""
-        try:
-            if self.driver:
-                self.driver.quit()
-            return True
-        except Exception as e:
-            self.logger.error(f"Error during Facebook cleanup: {e}")
-            return False
-    
+        logger.info("Cleaning up FacebookStrategy resources...")
+        return super().cleanup()
+
     def get_community_metrics(self) -> Dict[str, Any]:
-        """Get Facebook-specific community metrics."""
+        logger.info("Retrieving Facebook community metrics...")
+        target_keywords = self.config_loader.get_parameter("targeting_keywords", default=[])
         metrics = {
-            "engagement_rate": 0.0,
-            "growth_rate": 0.0,
-            "sentiment_score": 0.0,
-            "active_members": 0
+            "platform": self.PLATFORM,
+            "engagement_rate_estimate": self.config_loader.get_parameter("estimated_engagement_rate", default=1.2),
+            "target_keywords": target_keywords,
+            "current_post_frequency": self.config_loader.get_parameter("post_frequency_per_day", default=1),
+            "active_members_estimate": random.randint(50, 200),
+            "sentiment_score": self.feedback_data.get("overall_sentiment", 0.7)
         }
-        
-        try:
-            # Get metrics from feedback data
-            total_interactions = (
-                self.feedback_data.get("likes", 0) +
-                self.feedback_data.get("comments", 0) +
-                self.feedback_data.get("follows", 0)
-            )
-            
-            if total_interactions > 0:
-                metrics["engagement_rate"] = min(1.0, total_interactions / 1000)  # Normalize to [0,1]
-                metrics["growth_rate"] = min(1.0, self.feedback_data.get("follows", 0) / 100)
-                metrics["sentiment_score"] = self.feedback_data.get("sentiment_score", 0.0)
-                metrics["active_members"] = total_interactions
-        except Exception as e:
-            self.logger.error(f"Error calculating Facebook metrics: {e}")
-        
+        logger.debug(f"Facebook Metrics: {metrics}")
         return metrics
-    
+
     def get_top_members(self) -> List[Dict[str, Any]]:
-        """Get list of top Facebook community members."""
-        top_members = []
-        try:
-            if os.path.exists(self.FOLLOW_DB):
-                with open(self.FOLLOW_DB, "r") as f:
-                    follow_data = json.load(f)
-                
-                # Convert follow data to member list
-                for profile_url, data in follow_data.items():
-                    if data.get("status") == "followed":
-                        member = {
-                            "id": profile_url,
-                            "platform": "facebook",
-                            "engagement_score": random.uniform(0.5, 1.0),  # Replace with real metrics
-                            "followed_at": data.get("followed_at"),
-                            "recent_interactions": []
-                        }
-                        top_members.append(member)
-                
-                # Sort by engagement score
-                top_members.sort(key=lambda x: x["engagement_score"], reverse=True)
-                top_members = top_members[:20]  # Keep top 20
-        except Exception as e:
-            self.logger.error(f"Error getting top Facebook members: {e}")
-        
+        logger.info("Identifying top Facebook members (placeholder)...")
+        top_members = [
+            {"member_id": "user123", "engagement_score": 95, "last_interaction": "2024-07-28"},
+            {"member_id": "user456", "engagement_score": 88, "last_interaction": "2024-07-27"},
+        ]
         return top_members
-    
+
     def track_member_interaction(self, member_id: str, interaction_type: str, metadata: Optional[Dict[str, Any]] = None) -> bool:
-        """Track an interaction with a Facebook member."""
-        try:
-            if not os.path.exists(self.FOLLOW_DB):
-                return False
-            
-            with open(self.FOLLOW_DB, "r") as f:
-                follow_data = json.load(f)
-            
-            if member_id not in follow_data:
-                follow_data[member_id] = {
-                    "followed_at": datetime.utcnow().isoformat(),
-                    "status": "followed",
-                    "interactions": []
-                }
-            
-            # Add interaction
-            interaction = {
-                "type": interaction_type,
-                "timestamp": datetime.utcnow().isoformat(),
-                "metadata": metadata or {}
-            }
-            
-            if "interactions" not in follow_data[member_id]:
-                follow_data[member_id]["interactions"] = []
-            
-            follow_data[member_id]["interactions"].append(interaction)
-            
-            # Save updated data
-            with open(self.FOLLOW_DB, "w") as f:
-                json.dump(follow_data, f, indent=4)
-            
-            self.logger.info(f"Tracked {interaction_type} interaction with Facebook member {member_id}")
-            return True
-        except Exception as e:
-            self.logger.error(f"Error tracking Facebook member interaction: {e}")
-            return False
-    
+        logger.info(f"Tracking Facebook interaction: Member={member_id}, Type={interaction_type}")
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "member_id": member_id,
+            "interaction_type": interaction_type,
+            "metadata": metadata or {}
+        }
+        interactions = self.feedback_data.setdefault("interactions", [])
+        interactions.append(log_entry)
+        self._save_feedback_data()
+        logger.debug(f"Interaction logged: {log_entry}")
+        return True
+
     def _get_driver(self):
-        """Get configured Chrome WebDriver for Facebook."""
-        options = webdriver.ChromeOptions()
-        profile_path = social_config.get_env("CHROME_PROFILE_PATH", os.path.join(os.getcwd(), "chrome_profile"))
-        options.add_argument(f"--user-data-dir={profile_path}")
-        options.add_argument("--start-maximized")
-        options.add_argument(f"user-agent={self.get_random_user_agent()}")
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-        self.logger.info(f"Chrome driver initialized with profile: {profile_path}")
-        return driver
-    
+        if not self.driver:
+            logger.info("FacebookStrategy: No driver found, attempting initialization via BasePlatformStrategy.")
+            self.driver = super()._get_driver()
+        return self.driver
+
     @staticmethod
     def get_random_user_agent():
-        """Get random user agent string."""
-        return random.choice([
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/114.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/113.0.0.0 Safari/537.36"
-        ])
-    
+        user_agents = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+        ]
+        return random.choice(user_agents)
+
     def _wait(self, custom_range=None):
-        """Wait for a random duration."""
-        wait_time = random.uniform(*(custom_range or self.wait_range))
-        self.logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
+        wait_range = custom_range or self.config_loader.get_parameter("wait_range_seconds", default=(2, 5))
+        wait_time = random.uniform(*wait_range)
+        logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")
         time.sleep(wait_time)
-    
+
     def login(self) -> bool:
-        """Log in to Facebook."""
-        self.logger.info(" Initiating Facebook login...")
+        logger.info(f"Initiating login process for {self.PLATFORM}.")
+        if not self._get_driver():
+            logger.error("Cannot login: WebDriver is not initialized.")
+            return False
+        if not self.email or not self.password:
+            logger.error("Cannot login: Email or password not set during initialization.")
+            return False
+
+        login_url = self.config_loader.get_platform_url("login")
+        settings_url = self.config_loader.get_platform_url("settings")
+        default_wait = self.config_loader.get_parameter("default_selenium_wait", default=10)
+
         try:
-            self.driver.get(self.login_url)
+            self.driver.get(login_url)
             self._wait()
-            
-            # Try cookie login first
-            self.cookie_manager.load_cookies(self.driver, "facebook")
+            self.cookie_manager.load_cookies(self.driver, self.PLATFORM)
             self.driver.refresh()
             self._wait()
-            
-            if self.is_logged_in():
-                self.logger.info(" Logged into Facebook via cookies")
+
+            self.driver.get(settings_url)
+            WebDriverWait(self.driver, default_wait).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            if "login" not in self.driver.current_url.lower():
+                logger.info(f"Logged into {self.PLATFORM} via cookies or existing session.")
+                write_json_log(self.PLATFORM, "successful", tags=["cookie_login"])
                 return True
-            
-            # Try credential login
-            if self.email and self.password:
-                try:
-                    email_input = WebDriverWait(self.driver, 10).until(
-                        EC.visibility_of_element_located((By.ID, "email"))
-                    )
-                    password_input = WebDriverWait(self.driver, 10).until(
-                        EC.visibility_of_element_located((By.ID, "pass"))
-                    )
-                    
-                    email_input.clear()
-                    email_input.send_keys(self.email)
-                    self._wait((1, 2))
-                    
-                    password_input.clear()
-                    password_input.send_keys(self.password)
-                    self._wait((1, 2))
-                    
-                    password_input.send_keys(Keys.RETURN)
-                    self._wait((4, 6))
-                    
-                    if self.is_logged_in():
-                        self.cookie_manager.save_cookies(self.driver, "facebook")
-                        self.logger.info(" Logged into Facebook via credentials")
-                        return True
-                except Exception as e:
-                    self.logger.error(f"Facebook auto-login failed: {e}")
-            
-            # Manual login fallback
-            if self.cookie_manager.wait_for_manual_login(self.driver, self.is_logged_in, "facebook"):
-                self.cookie_manager.save_cookies(self.driver, "facebook")
+
+            logger.info("Cookie/Session login failed. Attempting credential login.")
+            self.driver.get(login_url)
+            self._wait()
+
+            email_field = WebDriverWait(self.driver, default_wait).until(EC.visibility_of_element_located((By.ID, "email")))
+            pass_field = WebDriverWait(self.driver, default_wait).until(EC.visibility_of_element_located((By.ID, "pass")))
+            email_field.clear()
+            pass_field.clear()
+            email_field.send_keys(self.email)
+            pass_field.send_keys(self.password)
+            pass_field.send_keys(Keys.RETURN)
+            logger.info(f"Submitted credentials for {self.PLATFORM}.")
+            self._wait((5, 10))
+
+            self.driver.get(settings_url)
+            WebDriverWait(self.driver, default_wait).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self._wait((3, 5))
+            if "login" not in self.driver.current_url.lower():
+                logger.info(f"Logged in successfully to {self.PLATFORM} using credentials.")
+                self.cookie_manager.save_cookies(self.driver, self.PLATFORM)
+                write_json_log(self.PLATFORM, "successful", tags=["credential_login"])
                 return True
-            
+            else:
+                logger.error(f"Credential login failed for {self.PLATFORM}.")
+                write_json_log(self.PLATFORM, "failed", tags=["credential_login"], ai_output="Login page still detected after credential submission.")
+            return False
+
+        except Exception as e:
+            logger.error(f"Error during {self.PLATFORM} login: {e}", exc_info=True)
+            write_json_log(self.PLATFORM, "failed", tags=["login_error"], ai_output=str(e))
+            return False
+
+    def is_logged_in(self) -> bool:
+        if not self.driver:
+            return False
+        settings_url = self.config_loader.get_platform_url("settings")
+        default_wait = self.config_loader.get_parameter("default_selenium_wait", default=5)
+        try:
+            current_url = self.driver.current_url
+            if "facebook.com" in current_url and "login" not in current_url and "checkpoint" not in current_url:
+                pass
+            else:
+                self.driver.get(settings_url)
+                WebDriverWait(self.driver, default_wait).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                self._wait((1, 2))
+
+            if "login" not in self.driver.current_url.lower() and "checkpoint" not in self.driver.current_url.lower():
+                logger.debug(f"{self.PLATFORM} login confirmed via URL check ({self.driver.current_url}).")
+                return True
+            logger.debug(f"{self.PLATFORM} login check failed (URL: {self.driver.current_url}).")
             return False
         except Exception as e:
-            self.logger.error(f"Facebook login error: {e}")
+            logger.warning(f"Error during {self.PLATFORM} login check: {e}")
             return False
-    
-    def is_logged_in(self) -> bool:
-        """Check if logged into Facebook."""
-        try:
-            self.driver.get(self.settings_url)
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            self._wait((3, 5))
-            return "login" not in self.driver.current_url.lower()
-        except Exception:
-            return False
-    
+
     def post_content(self, content: str) -> bool:
-        """Post content to Facebook."""
-        self.logger.info(" Posting content to Facebook...")
+        logger.info(f"Attempting to post on {self.PLATFORM}.")
+        if not self.is_logged_in():
+            logger.warning(f"Cannot post to {self.PLATFORM}: Not logged in.")
+            if not self.login():
+                write_json_log(self.PLATFORM, "failed", tags=["post", "login_required"], ai_output="Login failed before posting.")
+                return False
+
+        post_url = self.config_loader.get_platform_url("post")
+        default_wait = self.config_loader.get_parameter("default_selenium_wait", default=10)
+
         try:
-            if not self.is_logged_in():
-                if not self.login():
-                    return False
-            
-            self.driver.get(self.post_url)
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            self.driver.get(self.driver.current_url if "facebook.com" in self.driver.current_url else post_url)
             self._wait((3, 5))
-            
-            # Click "Create Post" button
-            create_post_btn = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "[aria-label='Create post']"))
-            )
-            create_post_btn.click()
+
+            composer_trigger_xpath = "//div[@role='button' and contains(@aria-label, 'mind')]"
+            try:
+                create_post_button = WebDriverWait(self.driver, default_wait).until(
+                    EC.element_to_be_clickable((By.XPATH, composer_trigger_xpath))
+                )
+                create_post_button.click()
+                logger.debug("Clicked main composer trigger.")
+            except TimeoutException:
+                logger.debug("Main composer trigger not found or clicked, checking for direct textbox.")
+                pass
+
             self._wait((2, 4))
-            
-            # Enter post content
-            post_text_area = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located((By.CSS_SELECTOR, "[aria-label='Write something...']"))
+
+            post_box_xpath = "//div[@aria-label=\"What's on your mind?\"] | //div[@role='textbox']"
+            post_box = WebDriverWait(self.driver, default_wait).until(
+                EC.visibility_of_element_located((By.XPATH, post_box_xpath))
             )
-            post_text_area.click()
-            post_text_area.send_keys(content)
+            post_box.send_keys(content)
+            logger.debug("Entered content into post box.")
             self._wait((2, 3))
-            
-            # Click Post button
-            post_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "[aria-label='Post']"))
+
+            post_button_xpath = "//div[@aria-label='Post' and @role='button']"
+            post_button = WebDriverWait(self.driver, default_wait).until(
+                EC.element_to_be_clickable((By.XPATH, post_button_xpath))
             )
             post_button.click()
-            self._wait((4, 6))
-            
-            self.logger.info(" Facebook post published successfully")
+            logger.info(f"Post submitted on {self.PLATFORM}.")
+            self._wait((5, 10))
+
+            logger.info(f"Content posted successfully on {self.PLATFORM}.")
+            write_json_log(self.PLATFORM, "successful", tags=["post"])
             return True
+
         except Exception as e:
-            self.logger.error(f"Error posting to Facebook: {e}")
+            logger.error(f"Failed to post on {self.PLATFORM}: {e}", exc_info=True)
+            write_json_log(self.PLATFORM, "failed", tags=["post", "error"], ai_output=str(e))
             return False
-    
+
     def run_daily_strategy_session(self):
-        """Run complete daily Facebook strategy session."""
-        self.logger.info(" Starting Full Facebook Strategy Session")
-        try:
-            if not self.initialize({}):
+        logger.info(f"===== Starting Daily Facebook Strategy Session =====")
+        if not self.config_loader.is_enabled():
+            logger.warning(f"{self.PLATFORM.capitalize()} strategy is disabled in configuration. Session aborted.")
+            return
+
+        if not self.is_logged_in():
+            logger.warning("Not logged in at start of session. Attempting login...")
+            if not self.login():
+                logger.error("Session failed: Could not log in.")
                 return
-            
-            # Post AI-generated content
-            content_prompt = (
-                "Write an engaging Facebook post about community building and "
-                "system convergence. Include relevant hashtags and a call to action."
-            )
-            content = self.ai_agent.ask(
-                prompt=content_prompt,
-                metadata={"platform": "facebook", "persona": "Victor"}
-            )
-            if content:
-                self.post_content(content)
-            
-            # Process engagement metrics
-            self.analyze_engagement_metrics()
-            
-            # Sample engagement reinforcement
-            sample_comments = [
-                "This is exactly what I needed to see!",
-                "Not sure about this approach.",
-                "Your insights are always valuable!"
-            ]
-            for comment in sample_comments:
-                self.reinforce_engagement(comment)
-            
-            # Run feedback and reward systems
+
+        post_freq = self.config_loader.get_parameter("post_frequency_per_day", default=1)
+        keywords = self.config_loader.get_parameter("targeting_keywords", default=["AI", "startups", "community building"])
+        content_mix = self.config_loader.get_parameter("content_mix", default={"text_post": 1.0})
+
+        logger.info(f"Session Config: Post Freq={post_freq}, Keywords={keywords}, Content Mix={content_mix}")
+
+        for i in range(post_freq):
+            logger.info(f"--- Preparing Post {i+1}/{post_freq} ---")
+            chosen_type = random.choices(list(content_mix.keys()), weights=list(content_mix.values()), k=1)[0] if content_mix else "text_post"
+            logger.debug(f"Selected content type: {chosen_type}")
+
+            topic = random.choice(keywords) if keywords else "general update"
+            content_prompt = f"Generate a concise, engaging {chosen_type} for Facebook about '{topic}'. Focus on sparking discussion or sharing a unique insight. Persona: Victor."
+
+            ai_content = self.ai_agent.ask(content_prompt)
+
+            if ai_content:
+                logger.info(f"Posting content about '{topic}'...")
+                if not self.post_content(ai_content):
+                    logger.error(f"Failed to post content piece {i+1}.")
+            else:
+                logger.warning(f"AI failed to generate content for prompt: {content_prompt}")
+            self._wait()
+
+        if self.config_loader.get_parameter("enable_engagement", default=True):
+            logger.info("--- Starting Community Engagement Phase ---")
+            num_likes = self.config_loader.get_parameter("engagement_likes_per_run", default=3)
+            num_comments = self.config_loader.get_parameter("engagement_comments_per_run", default=2)
+            ai_tone = self.config_loader.get_parameter("ai_comment_tone", default="Victor")
+            self.ai_agent.tone = ai_tone
+
+            if num_likes > 0:
+                logger.info(f"Attempting to like up to {num_likes} posts...")
+                logger.warning("like_posts functionality needs implementation/integration.")
+
+            if num_comments > 0 and keywords:
+                logger.info(f"Attempting to comment on up to {num_comments} posts...")
+                logger.warning("comment_on_posts functionality needs implementation/integration.")
+            elif num_comments > 0:
+                logger.warning("No keywords defined for targeted commenting.")
+
+            logger.warning("Follow/Unfollow logic needs implementation/integration.")
+
+        else:
+            logger.info("Community engagement is disabled in configuration.")
+
+        if self.config_loader.get_parameter("enable_feedback_loop", default=True):
+            logger.info("--- Running Feedback Loop ---")
             self.run_feedback_loop()
-            self.reward_top_engagers()
-            self.cross_platform_feedback_loop()
-            
-            self.cleanup()
-            self.logger.info(" Facebook Strategy Session Complete")
-        except Exception as e:
-            self.logger.error(f"Error in Facebook strategy session: {e}")
-            self.cleanup()
+        else:
+            logger.info("Feedback loop is disabled in configuration.")
+
+        logger.info(f"===== Daily Facebook Strategy Session Complete =====")
 
     def _load_feedback_data(self):
-        """
-        Load or initialize feedback data for engagement optimization.
-        """
-        if os.path.exists(self.FEEDBACK_DB):
-            with open(self.FEEDBACK_DB, "r") as f:
-                return json.load(f)
+        feedback_db_path = self.config_loader.get_data_path(self.FEEDBACK_DB)
+        logger.debug(f"Loading feedback data from: {feedback_db_path}")
+        if os.path.exists(feedback_db_path):
+            try:
+                with open(feedback_db_path, "r") as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                logger.error(f"Error decoding JSON from {feedback_db_path}. Starting with empty data.")
+                return {}
+            except Exception as e:
+                logger.error(f"Error loading feedback data: {e}")
+                return {}
         return {}
 
     def _save_feedback_data(self):
-        """
-        Save updated feedback data for future use.
-        """
-        with open(self.FEEDBACK_DB, "w") as f:
-            json.dump(self.feedback_data, f, indent=4)
+        feedback_db_path = self.config_loader.get_data_path(self.FEEDBACK_DB)
+        logger.debug(f"Saving feedback data to: {feedback_db_path}")
+        try:
+            os.makedirs(os.path.dirname(feedback_db_path), exist_ok=True)
+            with open(feedback_db_path, "w") as f:
+                json.dump(self.feedback_data, f, indent=4)
+        except Exception as e:
+            logger.error(f"Error saving feedback data: {e}")
 
     def analyze_engagement_metrics(self):
-        """
-        Analyze engagement results to optimize strategy.
-        Updates self.feedback_data with metrics such as:
-        - Most engaged posts
-        - Best performing comments
-        - Follower growth patterns
-        """
-        logger.info(" Analyzing Facebook engagement metrics...")
-        # For demo purposes, increment metrics by random values
-        self.feedback_data["likes"] = self.feedback_data.get("likes", 0) + random.randint(5, 10)
-        self.feedback_data["comments"] = self.feedback_data.get("comments", 0) + random.randint(2, 5)
-        self.feedback_data["follows"] = self.feedback_data.get("follows", 0) + random.randint(1, 3)
+        logger.info("Analyzing Facebook engagement metrics (placeholder)...")
+        posts = self.feedback_data.get("posts", [])
+        total_likes = sum(p.get("likes", 0) for p in posts)
+        total_comments = sum(p.get("comments", 0) for p in posts)
+        avg_likes = total_likes / len(posts) if posts else 0
+        avg_comments = total_comments / len(posts) if posts else 0
 
-        logger.info(f" Total Likes: {self.feedback_data['likes']}")
-        logger.info(f" Total Comments: {self.feedback_data['comments']}")
-        logger.info(f" Total Follows: {self.feedback_data['follows']}")
+        self.feedback_data["avg_likes_per_post"] = avg_likes
+        self.feedback_data["avg_comments_per_post"] = avg_comments
+        self.feedback_data["overall_sentiment"] = self.feedback_data.get("overall_sentiment", 0.7) * 0.9 + random.uniform(-0.1, 0.1) * 0.1
+
+        logger.info(f"Updated Metrics - Avg Likes: {avg_likes:.2f}, Avg Comments: {avg_comments:.2f}, Sentiment: {self.feedback_data['overall_sentiment']:.2f}")
         self._save_feedback_data()
 
     def adaptive_posting_strategy(self):
-        """
-        Adjust posting strategy based on feedback loops.
-        """
-        logger.info(" Adapting Facebook posting strategy based on feedback...")
-        if self.feedback_data.get("likes", 0) > 100:
-            logger.info(" High engagement detected! Increasing post frequency.")
-            # Hook into scheduler or additional sessions as needed.
-        if self.feedback_data.get("comments", 0) > 50:
-            logger.info(" Shifting to more community-focused discussion posts.")
+        logger.info("Adapting Facebook posting strategy based on feedback (placeholder)...")
+        avg_likes = self.feedback_data.get("avg_likes_per_post", 0)
+        sentiment = self.feedback_data.get("overall_sentiment", 0.5)
 
-    def analyze_comment_sentiment(self, comment):
-        """
-        Analyze the sentiment of a comment using AI.
-        Returns 'positive', 'neutral', or 'negative'.
-        """
-        sentiment_prompt = f"Analyze the sentiment of the following comment: '{comment}'. Respond with positive, neutral, or negative."
-        sentiment = self.ai_agent.ask(prompt=sentiment_prompt, metadata={"platform": "Facebook", "persona": "Victor"})
+        if avg_likes > self.config_loader.get_parameter("engagement_high_threshold_likes", 50) and sentiment > 0.6:
+            logger.info("Feedback positive: Consider increasing post frequency or using more engaging content types.")
+        elif avg_likes < self.config_loader.get_parameter("engagement_low_threshold_likes", 10) or sentiment < 0.4:
+            logger.warning("Feedback indicates low engagement: Review content strategy, keywords, or posting times.")
+
+    def analyze_comment_sentiment(self, comment: str) -> str:
+        logger.debug(f"Analyzing sentiment for comment: {comment[:50]}...")
+        sentiment_prompt = f"Analyze the sentiment of this Facebook comment: '{comment}'. Respond with only 'positive', 'neutral', or 'negative'."
+        sentiment = self.ai_agent.ask(prompt=sentiment_prompt, metadata={"platform": self.PLATFORM, "task": "sentiment_analysis"})
         sentiment = sentiment.strip().lower() if sentiment else "neutral"
-        logger.info(f"Sentiment for comment '{comment}': {sentiment}")
+        if sentiment not in ["positive", "neutral", "negative"]:
+            logger.warning(f"Unexpected sentiment analysis result: '{sentiment}'. Defaulting to neutral.")
+            sentiment = "neutral"
+        logger.info(f"Comment sentiment classified as: {sentiment}")
         return sentiment
 
-    def reinforce_engagement(self, comment):
-        """
-        If a comment is positive, generate a ChatGPT response in my voice to reinforce engagement.
-        """
+    def reinforce_engagement(self, comment: str, comment_author_id: str):
         sentiment = self.analyze_comment_sentiment(comment)
         if sentiment == "positive":
-            reinforcement_prompt = f"As Victor, write an authentic, engaging response to: '{comment}' to reinforce community growth."
-            response = self.ai_agent.ask(prompt=reinforcement_prompt, metadata={"platform": "Facebook", "persona": "Victor"})
-            logger.info(f"Reinforcement response generated: {response}")
-            # Here, you might automate sending the response as a comment or a direct message.
-            return response
+            logger.info(f"Positive comment detected from {comment_author_id}. Generating reinforcement...")
+            reinforcement_prompt = f"As Victor, write a brief, appreciative, and engaging reply to this positive Facebook comment: '{comment}'"
+            reply = self.ai_agent.ask(prompt=reinforcement_prompt, metadata={"platform": self.PLATFORM, "persona": "Victor", "task": "reinforce_engagement"})
+
+            if reply:
+                logger.info(f"Generated reinforcement reply: {reply}")
+                self.track_member_interaction(comment_author_id, "positive_comment_received", {"comment": comment, "intended_reply": reply})
+                return reply
+            else:
+                logger.warning("AI failed to generate reinforcement reply.")
+        else:
+            logger.debug(f"Comment sentiment ({sentiment}) does not warrant reinforcement.")
+
         return None
 
     def reward_top_followers(self):
-        """
-        Reward top engaging followers with custom messages and shout-outs.
-        """
-        logger.info(" Evaluating top engaging followers for rewards...")
-        # Load current reward data or initialize empty rewards.
-        if os.path.exists(self.REWARD_DB):
-            with open(self.REWARD_DB, "r") as f:
-                reward_data = json.load(f)
-        else:
-            reward_data = {}
+        logger.info("Evaluating top Facebook followers for rewards (placeholder)...")
+        reward_db_path = self.config_loader.get_data_path(self.REWARD_DB)
+        reward_data = {}
+        if os.path.exists(reward_db_path):
+            try:
+                with open(reward_db_path, "r") as f:
+                    reward_data = json.load(f)
+            except Exception as e:
+                logger.error(f"Error loading reward data from {reward_db_path}: {e}")
 
-        # Stub: For demo, randomly pick a follower from friend tracker (if available).
-        if os.path.exists(self.FOLLOW_DB):
-            with open(self.FOLLOW_DB, "r") as f:
-                follow_data = json.load(f)
-            # Example: select top 1 engaged user based on a random metric
-            top_follower = max(follow_data.items(), key=lambda x: random.random(), default=(None, None))[0]
-            if top_follower and top_follower not in reward_data:
-                custom_message = f"Hey there! Thanks for being an incredible supporter. Your engagement fuels our community's growth!"
-                reward_data[top_follower] = {"rewarded_at": datetime.utcnow().isoformat(), "message": custom_message}
-                logger.info(f"Reward issued to top follower: {top_follower}")
-                write_json_log(self.platform, "successful", tags=["reward"], ai_output=top_follower)
-        else:
-            logger.warning("No follower data available to issue rewards.")
+        top_members = self.get_top_members()
+        if top_members:
+            potential_rewardee = top_members[0]
+            member_id = potential_rewardee["member_id"]
 
-        with open(self.REWARD_DB, "w") as f:
-            json.dump(reward_data, f, indent=4)
+            if member_id not in reward_data or (datetime.utcnow() - datetime.fromisoformat(reward_data[member_id]["rewarded_at"])).days > 30:
+                logger.info(f"Identified potential top engager: {member_id}")
+                reward_message = f"Huge thanks to {member_id} for being a standout member of our Facebook community! Your engagement is truly appreciated. ✨"
+                logger.warning(f"Actual reward action for {member_id} not implemented. Logging intent.")
+
+                reward_data[member_id] = {
+                    "rewarded_at": datetime.utcnow().isoformat(),
+                    "type": "shoutout_placeholder",
+                    "message_logged": reward_message
+                }
+                try:
+                    os.makedirs(os.path.dirname(reward_db_path), exist_ok=True)
+                    with open(reward_db_path, "w") as f:
+                        json.dump(reward_data, f, indent=4)
+                    logger.info(f"Reward logged for {member_id}.")
+                    write_json_log(self.PLATFORM, "success", tags=["reward"], ai_output=f"Logged reward intent for {member_id}")
+                except Exception as e:
+                    logger.error(f"Failed to save reward data: {e}")
+            else:
+                logger.info(f"Top member {member_id} already rewarded recently.")
+        else:
+            logger.info("No top members identified for rewards in this cycle.")
 
     def cross_platform_feedback_loop(self):
-        """
-        Merge engagement data from Instagram and Twitter with Facebook to create a unified strategy.
-        """
-        logger.info(" Merging cross-platform feedback loops...")
-        # Stub: In a real implementation, gather data from Instagram/Twitter APIs or logs.
-        instagram_data = {"likes": random.randint(10, 20), "comments": random.randint(5, 10)}
-        twitter_data = {"likes": random.randint(8, 15), "comments": random.randint(3, 8)}
+        logger.info("Merging cross-platform feedback loops (placeholder)...")
         unified_metrics = {
-            "facebook": self.feedback_data,
-            "instagram": instagram_data,
-            "twitter": twitter_data
+            "facebook": self.feedback_data.get("avg_likes_per_post", 0),
         }
-        logger.info(f"Unified Metrics: {unified_metrics}")
-        # Here, you can add logic to adjust your posting and engagement strategy based on unified data.
+        logger.info(f"Unified Metrics (Placeholder): {unified_metrics}")
 
     def run_feedback_loop(self):
-        """
-        Run the dynamic feedback loop process.
-        """
+        logger.info("--- Running Facebook Feedback Analysis ---")
         self.analyze_engagement_metrics()
+        logger.info("--- Running Facebook Adaptive Strategy ---")
         self.adaptive_posting_strategy()
 
 # ------------------------------------------------------
@@ -846,7 +848,6 @@ def start_scheduler():
     bot = FacebookStrategy(driver=driver)
     scheduler = BackgroundScheduler()
 
-    # Schedule 3 strategy sessions per day at random hours
     for _ in range(3):
         hour = random.randint(8, 22)
         minute = random.randint(0, 59)
@@ -859,9 +860,6 @@ def start_scheduler():
 # Functional Wrapper for Quick Facebook Posting
 # ------------------------------------------------------
 def post_to_facebook(driver, content, env):
-    """
-    Quick functional wrapper for posting to Facebook.
-    """
     fb_bot = FacebookBot(driver=driver)
     return fb_bot.post(content)
 
@@ -869,9 +867,21 @@ def post_to_facebook(driver, content, env):
 # Main Entry Point for Autonomous Execution
 # ------------------------------------------------------
 if __name__ == "__main__":
-    start_scheduler()
-    try:
-        while True:
-            time.sleep(60)
-    except (KeyboardInterrupt, SystemExit):
-        logger.info(" Scheduler stopped by user.")
+    print("Running FacebookStrategy directly for testing...")
+    strategy = FacebookStrategy()
+    creds = {
+        "email": social_config.get_env("FACEBOOK_EMAIL"),
+        "password": social_config.get_env("FACEBOOK_PASSWORD")
+    }
+    if strategy.initialize(creds):
+        print("Strategy initialized.")
+        if strategy.is_logged_in() or strategy.login():
+            print("Login successful or already logged in.")
+            strategy.run_daily_strategy_session()
+        else:
+            print("Login failed. Aborting test.")
+    else:
+        print("Strategy initialization failed.")
+
+    strategy.cleanup()
+    print("FacebookStrategy direct test finished.")

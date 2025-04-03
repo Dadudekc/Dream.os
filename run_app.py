@@ -9,13 +9,17 @@ import traceback
 
 def setup_logging():
     """Set up logging configuration."""
+    # Define handlers with UTF-8 encoding
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    stdout_handler.encoding = 'utf-8' # Specify UTF-8 for stdout
+
+    file_handler = logging.FileHandler('dream_os.log', encoding='utf-8') # Specify UTF-8 for file
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
     logging.basicConfig(
         level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler(sys.stdout),
-            logging.FileHandler('dream_os.log')
-        ]
+        handlers=[stdout_handler, file_handler]
     )
     return logging.getLogger(__name__)
 

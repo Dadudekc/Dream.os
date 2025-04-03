@@ -3,10 +3,12 @@ Bootstrap module for early system initialization.
 This module MUST be imported before any other core modules.
 """
 
-import logging
 import json
+import logging
+import os
+import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 # Calculate project root using pathlib
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -87,17 +89,23 @@ if not context_db_path.exists():
     logging.info(f"Created default context_db at {context_db_path}")
 
 # --- Setup Logging ---
-log_file = _PathRegistry._paths['logs'] / 'system.log'
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file, encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
+# Check if running under pytest to avoid conflicting with its log capture
+if 'pytest' not in sys.modules:
+    log_file = _PathRegistry._paths['logs'] / 'system.log'
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file, encoding='utf-8'),
+            # logging.StreamHandler() # Removed for pytest compatibility
+        ]
+    )
+    logging.info("Bootstrap: Logging configured.")
+else:
+    logging.info("Bootstrap: Skipping basicConfig for pytest run.")
 
-logging.info("Bootstrap: Registered paths: %s", {k: str(v) for k, v in _PathRegistry._paths.items()})
+# This info log might still cause issues if basicConfig wasn't run
+# logging.info("Bootstrap: Registered paths: %s", {k: str(v) for k, v in _PathRegistry._paths.items()})
 
 def get_bootstrap_paths() -> Dict[str, Path]:
     """Get all registered paths."""

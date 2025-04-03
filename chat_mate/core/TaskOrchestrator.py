@@ -1,15 +1,19 @@
-from typing import Dict, Any
-from core.CycleExecutionService import CycleExecutionService
-from core.logging.CompositeLogger import CompositeLogger
+from typing import Dict, Any, TYPE_CHECKING
+from chat_mate.core.config.ConfigManager import ConfigManager
+from chat_mate.core.interfaces import ILoggingAgent
+
+if TYPE_CHECKING:
+    from chat_mate.core.CycleExecutionService import CycleExecutionService
 
 class TaskOrchestrator:
     """Coordinates task execution between agents and cycle services."""
 
-    def __init__(self, logger: CompositeLogger):
+    def __init__(self, config_manager: ConfigManager, logger: ILoggingAgent):
+        self.config_manager = config_manager
         self.logger = logger
         self.cycle_service = None
 
-    def set_cycle_service(self, cycle_service: CycleExecutionService):
+    def set_cycle_service(self, cycle_service: 'CycleExecutionService'):
         """
         Set the cycle service instance to be used by the orchestrator.
         

@@ -1,13 +1,15 @@
-"""Chat tab package."""
+"""
+Chat Tab Components
+"""
 
 from .ChatTab import ChatTab
-from .ChatTabManager import ChatTabManager
 from .ChatTabWidget import ChatTabWidget
+from .ChatTabManager import ChatTabManager
 from .ChatTabWidgetManager import ChatTabWidgetManager
 
 __all__ = [
     'ChatTab',
-    'ChatTabManager',
     'ChatTabWidget',
+    'ChatTabManager',
     'ChatTabWidgetManager'
 ] 
