@@ -61,7 +61,17 @@ class PathManager:
             "reinforcement_logs": "logs/reinforcement",
             "social_logs": "logs/social",
             "utils_logs": "logs/utils",
-            "rate_limits": "cache/rate_limits"
+            "rate_limits": "cache/rate_limits",
+            "resonance_models": "assets/resonance_models",  # �� NEW: Meredith Tab
+            "dreamscape_templates": "templates/dreamscape", # 🤘 Future-proof Dreamscape
+            "message_templates": "templates/message_templates", # Added based on TemplateManager
+            "discord_templates": "templates/discord_templates", # Added based on TemplateManager
+            "dreamscape_memory": "memory/dreamscape",        # 🤘 Optional future key
+            "config": "config",
+            "output": "output",
+            "data": "data",
+            "core": "core",
+            "interfaces": "interfaces",
         }
         
         # Create config directory if it doesn't exist
@@ -100,7 +110,12 @@ class PathManager:
                 "dreamscape_templates": "templates/dreamscape", # 🤘 Future-proof Dreamscape
                 "message_templates": "templates/message_templates", # Added based on TemplateManager
                 "discord_templates": "templates/discord_templates", # Added based on TemplateManager
-                "dreamscape_memory": "memory/dreamscape"        # 🤘 Optional future key
+                "dreamscape_memory": "memory/dreamscape",        # 🤘 Optional future key
+                "config": "config",
+                "output": "output",
+                "data": "data",
+                "core": "core",
+                "interfaces": "interfaces",
             }
 
             # Auto-patch missing paths

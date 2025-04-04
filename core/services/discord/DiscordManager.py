@@ -5,7 +5,7 @@ import logging
 import threading
 import json
 import os
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, Optional
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit,
     QPushButton, QListWidget, QListWidgetItem, QMessageBox, QComboBox
@@ -38,8 +38,22 @@ class DiscordManager:
             "prompt_channel_map": {}
         }
         self.load_config()
-        self.bot_token: str = self.config.get("bot_token", "")
-        self.default_channel_id: int = self.config.get("default_channel_id", 0)
+
+        # --- Prioritize Environment Variable for Token --- 
+        env_token = os.getenv('DISCORD_BOT_TOKEN')
+        if env_token:
+            self.bot_token: str = env_token
+            logger.info("Loaded Discord Bot Token from DISCORD_BOT_TOKEN environment variable.")
+        else:
+            self.bot_token: str = self.config.get("bot_token", "")
+            if self.bot_token:
+                logger.info("Loaded Discord Bot Token from configuration file.")
+            else:
+                logger.warning("Discord Bot Token not found in environment variables or config file.")
+        # ------------------------------------------------
+        
+        # Load other config values
+        self.default_channel_id: int = int(self.config.get("default_channel_id", 0))
         self.prompt_channel_map: Dict[str, int] = self.config.get("prompt_channel_map", {})
 
         self.is_running: bool = False
@@ -64,6 +78,8 @@ class DiscordManager:
 
         # Initialize EventMessageBuilder for templated notifications.
         self.event_message_builder = EventMessageBuilder()
+
+        self._loop = None # Add attribute to store the loop
 
     # ---------------------------
     # Logging Methods
@@ -138,6 +154,10 @@ class DiscordManager:
         @self.bot.event
         async def on_ready() -> None:
             self._log(f"✅ Discord Bot is ready! Logged in as {self.bot.user}")
+            # --- Start the message dispatcher ONLY when the bot is ready --- 
+            if self.is_running: # Check if manager is still supposed to be running
+                self.bot.loop.create_task(self._message_dispatcher())
+            # ------------------------------------------------------------
 
         @self.bot.event
         async def on_command_error(ctx, error) -> None:
@@ -227,15 +247,18 @@ class DiscordManager:
 
     def _run_bot_loop(self) -> None:
         try:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.create_task(self._message_dispatcher())
-            loop.run_until_complete(self.bot.start(self.bot_token))
+            self._loop = asyncio.new_event_loop() # Store loop in instance attribute
+            asyncio.set_event_loop(self._loop)
+            # --- REMOVE Dispatcher creation from here --- 
+            # self._loop.create_task(self._message_dispatcher())
+            # -------------------------------------------
+            self._loop.run_until_complete(self.bot.start(self.bot_token))
         except Exception as e:
             self._log(f"❌ Bot loop error: {e}", level=logging.ERROR)
         finally:
             self._log("🛑 Bot loop closed.")
             self.is_running = False
+            self._loop = None # Clear loop when stopped
 
     def stop_bot(self) -> None:
         """Stop the Discord bot."""
@@ -250,7 +273,7 @@ class DiscordManager:
                 future.result(timeout=10)
             except Exception as e:
                 self._log(f"❌ Failed to stop bot: {e}", level=logging.ERROR)
-        if self.bot_loop_thread:
+        if self.bot_loop_thread and self.bot_loop_thread.is_alive():
             self.bot_loop_thread.join(timeout=5)
             self._log("✅ Bot loop thread stopped.")
 
@@ -421,6 +444,14 @@ class DiscordManager:
         except Exception as e:
             self._log(f"Error testing Discord connection: {str(e)}")
             return False
+
+    def get_loop(self) -> Optional[asyncio.AbstractEventLoop]:
+        """Return the asyncio event loop the bot is running in."""
+        return self._loop
+
+    def get_status(self) -> Dict[str, Any]:
+        """Get current bot status."""
+        return self.status_data
 
 
 class DiscordSettingsDialog(QDialog):

@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
     QComboBox, QTextEdit, QTabWidget, QGroupBox, QCheckBox,
     QFileDialog, QSplitter, QTableWidget, QTableWidgetItem,
-    QProgressBar, QMessageBox, QLineEdit, QApplication
+    QProgressBar, QMessageBox, QLineEdit, QApplication, QHeaderView
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 

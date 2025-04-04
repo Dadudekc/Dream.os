@@ -14,6 +14,7 @@ from core.chat_engine.feedback_engine import FeedbackEngine
 from core.chat_engine.gui_event_handler import GUIEventHandler
 from core.services.prompt_execution_service import PromptService
 from core.IChatManager import IChatManager
+from core.services.discord.DiscordManager import DiscordManager
 
 class ChatEngineManager(IChatManager):
     """
@@ -21,7 +22,7 @@ class ChatEngineManager(IChatManager):
     This class coordinates the various components of the chat engine.
     """
 
-    def __init__(self, config=None, logger=None, prompt_manager=None):
+    def __init__(self, config=None, logger=None, prompt_manager=None, discord_manager: Optional[DiscordManager] = None):
         """
         Initializes all the services required for the chat engine.
         
@@ -29,10 +30,12 @@ class ChatEngineManager(IChatManager):
             config: Configuration object or dictionary
             logger: Optional logger instance
             prompt_manager: Optional prompt manager instance
+            discord_manager: Optional Discord manager instance
         """
         self.config = config or ConfigManager()
         self.logger = logger or logging.getLogger(__name__)
         self.prompt_manager = prompt_manager
+        self.discord_manager = discord_manager
         
         # Initialize memory paths
         self.path_manager = PathManager()
@@ -68,7 +71,8 @@ class ChatEngineManager(IChatManager):
             config_service=self.config,
             prompt_manager=self.prompt_manager,
             driver_manager=self.driver_manager,
-            model=self.model
+            model=self.model,
+            discord_manager=self.discord_manager
         )
         self.feedback_engine = FeedbackEngine(memory_file=self.feedback_memory_path)
         
@@ -106,6 +110,7 @@ class ChatEngineManager(IChatManager):
         self._last_response: Optional[str] = None
         self._prompt_queue: List[str] = []
         self._injected_context: Dict[str, Any] = {}
+        self.logger.info("ChatEngineManager initialized.")
 
     def _load_memory(self):
         """Load or initialize the chat memory file."""

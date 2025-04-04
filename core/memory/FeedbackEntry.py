@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
+logger = logging.getLogger(__name__)
+
 class FeedbackEntry:
     """
     Represents a single feedback entry with metadata.
@@ -47,49 +49,65 @@ class FeedbackEntry:
         entry.metadata = data.get("metadata", {})
         return entry
 
-class UnifiedFeedbackMemory:
-    """
-    Singleton class that provides global access to the UnifiedFeedbackMemory.
-    Handles storage, retrieval, and analysis of system feedback across components.
-    """
+class UnifiedFeedbackManager:
+    """Manages unified feedback across different sources (Discord, UI)."""
     _instance = None
     _initialized = False
 
-    def __new__(cls):
+    def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super(UnifiedFeedbackMemory, cls).__new__(cls)
+            cls._instance = super(UnifiedFeedbackManager, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self):
-        if not UnifiedFeedbackMemory._initialized:
-            self.logger = logging.getLogger(__name__)
-            self.feedback_file = Path("memory/unified_feedback.json")
-            self.entries: List[FeedbackEntry] = []
+    def __init__(self, memory_file: str = "memory/feedback_memory.json", load_on_init: bool = True):
+        """Initialize the UnifiedFeedbackManager."""
+        if self._initialized:
+            return
+
+        self.memory_file = Path(memory_file)
+        self.feedback_data: Dict[str, FeedbackEntry] = {}
+        
+        # Ensure the directory exists
+        self.memory_file.parent.mkdir(parents=True, exist_ok=True)
+
+        if load_on_init:
             self._load_feedback()
-            UnifiedFeedbackMemory._initialized = True
+        
+        self._initialized = True
+        logger.info(f"UnifiedFeedbackManager initialized with {len(self.feedback_data)} entries.")
 
     def _load_feedback(self):
         """Load feedback from file."""
+        self.logger.debug(f"Attempting to load feedback from {self.memory_file}")
         try:
-            if self.feedback_file.exists():
-                with open(self.feedback_file, 'r') as f:
+            if self.memory_file.exists():
+                self.logger.debug(f"Feedback file exists, opening for read...")
+                with open(self.memory_file, 'r') as f:
                     data = json.load(f)
-                    self.entries = [FeedbackEntry.from_dict(entry) for entry in data]
+                    self.feedback_data = {entry["source"]: FeedbackEntry.from_dict(entry) for entry in data}
+                self.logger.debug(f"Successfully loaded {len(self.feedback_data)} entries.")
             else:
-                self.entries = []
+                self.logger.debug(f"Feedback file does not exist, initializing empty and saving.")
+                self.feedback_data = {}
                 self._save_feedback()  # Create initial file
         except Exception as e:
             self.logger.error(f"Failed to load feedback: {e}")
-            self.entries = []
+            self.feedback_data = {}
+        self.logger.debug("Finished feedback load attempt.")
 
     def _save_feedback(self):
         """Save feedback to file."""
+        self.logger.debug(f"Attempting to save feedback to {self.memory_file}")
         try:
-            self.feedback_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.feedback_file, 'w') as f:
-                json.dump([entry.to_dict() for entry in self.entries], f, indent=2)
+            self.logger.debug(f"Ensuring parent directory exists: {self.memory_file.parent}")
+            self.memory_file.parent.mkdir(parents=True, exist_ok=True)
+            self.logger.debug(f"Opening feedback file for write...")
+            with open(self.memory_file, 'w') as f:
+                json.dump([entry.to_dict() for entry in self.feedback_data.values()], f, indent=2)
+            self.logger.debug(f"Successfully saved {len(self.feedback_data)} entries.")
         except Exception as e:
             self.logger.error(f"Failed to save feedback: {e}")
+        self.logger.debug("Finished feedback save attempt.")
 
     def add_feedback(self, content: str, source: str, tags: Optional[List[str]] = None,
                     metadata: Optional[Dict[str, Any]] = None) -> FeedbackEntry:
@@ -110,7 +128,7 @@ class UnifiedFeedbackMemory:
             entry.tags = tags
         if metadata:
             entry.metadata = metadata
-        self.entries.append(entry)
+        self.feedback_data[source] = entry
         self._save_feedback()
         return entry
 
@@ -128,7 +146,7 @@ class UnifiedFeedbackMemory:
         Returns:
             List of matching FeedbackEntry objects.
         """
-        results = self.entries
+        results = list(self.feedback_data.values())
 
         if source:
             results = [e for e in results if e.source == source]
@@ -156,16 +174,19 @@ class UnifiedFeedbackMemory:
 
     def clear_all(self):
         """Clear all feedback entries."""
-        self.entries = []
+        self.feedback_data = {}
         self._save_feedback()
 
     def get_stats(self) -> Dict[str, Any]:
         """Get feedback statistics."""
         return {
-            "total_entries": len(self.entries),
-            "processed_entries": len([e for e in self.entries if e.processed]),
-            "sources": {source: len([e for e in self.entries if e.source == source])
-                       for source in set(e.source for e in self.entries)},
-            "tags": {tag: len([e for e in self.entries if tag in e.tags])
-                    for tag in set(tag for e in self.entries for tag in e.tags)}
-        } 
+            "total_entries": len(self.feedback_data),
+            "processed_entries": len([e for e in self.feedback_data.values() if e.processed]),
+            "sources": {source: len([e for e in self.feedback_data.values() if e.source == source])
+                       for source in set(e.source for e in self.feedback_data.values())},
+            "tags": {tag: len([e for e in self.feedback_data.values() if tag in e.tags])
+                    for tag in set(tag for e in self.feedback_data.values() for tag in e.tags)}
+        }
+
+# Convenience alias
+UnifiedFeedbackMemory = UnifiedFeedbackManager 

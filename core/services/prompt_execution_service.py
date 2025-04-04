@@ -19,6 +19,7 @@ from core.config.config_manager import ConfigManager
 from core.executors.cursor_executor import CursorExecutor
 from core.executors.chatgpt_executor import ChatGPTExecutor
 from core.services.discord.DiscordBatchDispatcher import DiscordBatchDispatcher
+from core.services.discord.DiscordManager import DiscordManager
 from core.ReinforcementEvaluator import ReinforcementEvaluator
 from core.DriverSessionManager import DriverSessionManager
 from core.services.config_service import ConfigService
@@ -55,7 +56,8 @@ class PromptService(QObject):
         cycle_speed: int = 2,
         stable_wait: int = 10,
         cursor_dispatcher: Optional[Any] = None,
-        cursor_manager: Optional[Any] = None
+        cursor_manager: Optional[Any] = None,
+        discord_manager: Optional[DiscordManager] = None
     ) -> None:
         super().__init__()
         self.logger = logging.getLogger(__name__)
@@ -72,6 +74,9 @@ class PromptService(QObject):
         self.cursor_dispatcher = cursor_dispatcher
         self.cursor_manager = cursor_manager
 
+        # Store discord manager
+        self.discord_manager = discord_manager
+
         # Async executors & integrations (for code generation and git integration)
         # Extract configuration values instead of passing the entire config_manager object
         headless = getattr(self.config, "headless", True) if not hasattr(self.config, "get") else self.config.get("headless", True)
@@ -79,17 +84,26 @@ class PromptService(QObject):
         cookie_file = getattr(self.config, "cookie_file", None) if not hasattr(self.config, "get") else self.config.get("cookie_file", None)
         chrome_options = getattr(self.config, "chrome_options", []) if not hasattr(self.config, "get") else self.config.get("chrome_options", [])
         
-        self.driver_manager_instance = DriverManager(
-            headless=headless,
-            profile_dir=profile_dir,
-            cookie_file=cookie_file,
-            undetected_mode=True,
-            additional_arguments=chrome_options,
-            timeout=30
-        )
+        # Initialize DriverManager if not provided
+        if self.driver_manager is None:
+            self.driver_manager_instance = DriverManager(
+                headless=headless,
+                profile_dir=profile_dir,
+                cookie_file=cookie_file,
+                undetected_mode=True,
+                additional_arguments=chrome_options,
+                timeout=30
+            )
+        else:
+            self.driver_manager_instance = self.driver_manager # Use provided one
+
         self.git_service = GitIntegrationService(self.path_manager)
         self.cursor_executor = CursorExecutor(self.config, self.path_manager)
+
+        # ChatGPTExecutor initialization (Uses driver_manager_instance, config, path_manager)
+        self.logger.debug("Initializing ChatGPTExecutor...")
         self.chatgpt_executor = ChatGPTExecutor(self.driver_manager_instance, self.config, self.path_manager)
+        self.logger.debug("ChatGPTExecutor initialized.")
 
         # Orchestration components (for multi–prompt async execution, Discord, and reinforcement learning)
         # Use delayed import to avoid circular dependencies
@@ -101,12 +115,8 @@ class PromptService(QObject):
             self.logger.warning("PromptCycleOrchestrator not imported due to circular dependency. Will initialize later if needed.")
             self.orchestrator = None
             
-        self.discord_dispatcher = DiscordBatchDispatcher(self.config_service)
         self.evaluator = ReinforcementEvaluator(self.config_service)
         self.driver_session_manager = DriverSessionManager(self.config_service)
-
-        # Start any required background services
-        self.discord_dispatcher.start()
 
         # Synchronous (Selenium-based) prompt execution settings
         self.model = model

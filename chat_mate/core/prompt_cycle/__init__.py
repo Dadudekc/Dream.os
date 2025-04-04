@@ -3,7 +3,7 @@
 
 from . import audit
 from . import dialog
-from . import memory
+from . import MemoryManager
 from . import narrative
 from . import scraping
 from . import state
@@ -12,7 +12,7 @@ from . import utils
 __all__ = [
     'audit',
     'dialog',
-    'memory',
+    'MemoryManager',
     'narrative',
     'scraping',
     'state',

@@ -28,6 +28,7 @@ class ChatFactory(BaseFactory):
             
             # Get additional dependencies
             prompt_manager = registry.get("prompt_manager")
+            openai_client = registry.get("openai_client")
             
             # Import here to avoid circular imports
             from core.chat.chat_manager import ChatManager
@@ -36,6 +37,7 @@ class ChatFactory(BaseFactory):
             chat_manager = ChatManager(
                 prompt_manager=prompt_manager,
                 config=config,
+                openai_client=openai_client,
                 logger=logger
             )
             

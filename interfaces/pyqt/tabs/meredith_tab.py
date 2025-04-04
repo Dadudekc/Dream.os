@@ -33,6 +33,8 @@ from PyQt5.QtWidgets import (
     QFrame, QGridLayout
 )
 from PyQt5.QtGui import QIcon, QColor, QBrush, QFont
+from pathlib import Path
+from typing import Dict, Any
 
 # Adjust import paths to your project structure
 from core.meredith.profile_scraper import ScraperManager, ProfileFilter
@@ -40,8 +42,8 @@ from core.meredith.resonance_scorer import ResonanceScorer
 from core.PathManager import PathManager
 from core.meredith.meredith_dispatcher import MeredithDispatcher
 
-# Directory where all resonance JSON models are stored
-MODEL_DIR = PathManager().get_path("resonance_models")
+# Define the MeritChain file path (could be managed by PathManager too)
+MERITCHAIN_FILE = "memory/meritchain.json"
 
 
 ###############################################################################
@@ -294,19 +296,44 @@ class MeredithTab(QWidget):
       - Provides access to view MeritChain entries.
     
     Args:
+        services (Dict[str, Any]): Dictionary of shared services.
         parent (QWidget): Parent widget, if any.
         private_mode (bool): If True, the tab is hidden by default.
     """
-    def __init__(self, parent=None, private_mode=True):
+    def __init__(self, services: Dict[str, Any], parent=None, private_mode=True):
         super().__init__(parent)
+        self.services = services
         self.private_mode = private_mode
         self.filtered_profiles = []
-        self.dispatcher = MeredithDispatcher()  # Instantiate the dispatcher
-        self.analyzed_profiles = set()  # Track which profiles have been analyzed
+        self.analyzed_profiles = set()
+        
+        self.logger = services.get('logger', logging.getLogger(__name__))
+        self.dispatcher = services.get('meredith_dispatcher')
+        path_manager = services.get('path_manager') # Get path_manager
+        
+        if not self.dispatcher:
+            self.logger.error("MeredithDispatcher service not found. Creating a local instance.")
+            self.dispatcher = MeredithDispatcher() 
+        else:
+             self.logger.info("MeredithDispatcher service retrieved successfully.")
 
-        # Load default model (if exists, otherwise you may handle errors)
-        default_model = os.path.join(MODEL_DIR, "romantic.json")
-        self.scorer = ResonanceScorer(default_model)
+        # Initialize ResonanceScorer using path from PathManager
+        self.scorer = None
+        if path_manager:
+            try:
+                model_dir_path = path_manager.get_path("resonance_models")
+                default_model_path = model_dir_path / "romantic.json"
+                if default_model_path.exists():
+                    self.scorer = ResonanceScorer(str(default_model_path))
+                    self.logger.info(f"Initialized ResonanceScorer with default model: {default_model_path}")
+                else:
+                     self.logger.error(f"Default resonance model not found at {default_model_path}. Scorer not functional.")
+            except KeyError:
+                 self.logger.error("PathManager missing 'resonance_models' key. Cannot initialize ResonanceScorer.")
+            except Exception as e:
+                self.logger.error(f"Error initializing ResonanceScorer: {e}")
+        else:
+            self.logger.error("PathManager service not found. Cannot determine model path for ResonanceScorer.")
 
         self.setWindowTitle("Meredith - Private Resonance Scanner")
         self.init_ui()
@@ -401,28 +428,51 @@ class MeredithTab(QWidget):
 
     def populate_model_selector(self):
         """
-        Reads all JSON files in the MODEL_DIR and populates the dropdown with their base names.
+        Reads all JSON files in the model directory (obtained via PathManager) 
+        and populates the dropdown with their base names.
         """
         self.model_selector.clear()
-        if os.path.isdir(MODEL_DIR):
-            files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".json")]
-            files.sort()
-            for file in files:
-                model_name = os.path.splitext(file)[0]
-                self.model_selector.addItem(model_name)
+        path_manager = self.services.get('path_manager')
+        if path_manager:
+            try:
+                model_dir = path_manager.get_path("resonance_models")
+                if model_dir.is_dir():
+                    files = [f for f in model_dir.glob("*.json")]
+                    files.sort()
+                    for file_path in files:
+                        model_name = file_path.stem
+                        self.model_selector.addItem(model_name)
+                else:
+                    self.log(f"Resonance model path is not a directory: {model_dir}")
+            except KeyError:
+                 self.log("PathManager missing 'resonance_models' key. Cannot populate models.")
+            except Exception as e:
+                self.log(f"Error populating model selector: {e}")
         else:
-            self.log("Model directory not found.")
+            self.log("PathManager service not found. Cannot populate models.")
 
     def switch_model(self, model_name):
         """
         Loads the resonance model corresponding to the selected name.
         """
-        path = os.path.join(MODEL_DIR, f"{model_name}.json")
-        if os.path.exists(path):
-            self.scorer.load_model(path)
-            self.log(f"Resonance model switched to '{model_name}'.")
+        path_manager = self.services.get('path_manager')
+        if path_manager and self.scorer is not None: # Check if scorer was initialized
+            try:
+                model_dir = path_manager.get_path("resonance_models")
+                path = model_dir / f"{model_name}.json"
+                if path.exists():
+                    self.scorer.load_model(str(path))
+                    self.log(f"Resonance model switched to '{model_name}'.")
+                else:
+                    self.log(f"Model file '{path}' not found.")
+            except KeyError:
+                 self.log("PathManager missing 'resonance_models' key. Cannot switch model.")
+            except Exception as e:
+                 self.log(f"Error switching model: {e}")
+        elif self.scorer is None:
+            self.log("ResonanceScorer not initialized. Cannot switch model.")
         else:
-            self.log(f"Model '{model_name}' not found.")
+             self.log("PathManager service not found. Cannot switch model.")
 
     def view_meritchain(self):
         """
@@ -440,7 +490,11 @@ class MeredithTab(QWidget):
         Appends a log message to the log output and routes it to the Python logger.
         """
         self.log_output.append(message)
-        logging.info(f"[MeredithTab] {message}")
+        # Use the logger obtained from services
+        if self.logger:
+            self.logger.info(f"[MeredithTab] {message}")
+        else: # Fallback if logger wasn't retrieved
+             print(f"[MeredithTab LOG - NO LOGGER]: {message}") 
 
     ###############################################################################
     #                                SCAN LOGIC                                   #

@@ -70,7 +70,7 @@ Repeat this pattern for every module. If the file already exists, overwrite only
 
 ## 🚫 DO NOT
 
-- Use TODOs, stubs, or placeholders
-- Skip test creation
-- Write explanations outside code blocks
+- DO NOT Use TODOs, stubs, or placeholders
+- DO NOT Skip test creation
+- DO NOT Write explanations outside code blocks
 

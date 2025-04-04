@@ -2,16 +2,16 @@ import discord
 from discord.ext import commands
 from core.ChatManager import ChatManager
 from core.PathManager import PathManager
-from core.services.dreamscape_generator_service import DreamscapeGenerationService
+from chat_mate.core.services.dreamscape.engine import DreamscapeGenerationService
 from core.TemplateManager import TemplateManager
 from pathlib import Path
 import json
 import logging
 
-logger = logging.getLogger("DreamscapeDiscordBot")
+logger = logging.getLogger("DiscordBot")
 logger.setLevel(logging.INFO)
 
-class DreamscapeDiscordBot(commands.Bot):
+class DiscordBot(commands.Bot):
     """
     Discord bot specialized for interacting with Dreamscape episodes.
     """
@@ -23,11 +23,11 @@ class DreamscapeDiscordBot(commands.Bot):
         intents.messages = True
 
         super().__init__(command_prefix=command_prefix, intents=intents)
-        
+
         self.token = token
         self.default_channel_id = default_channel_id
         self.path_manager = PathManager()
-        
+
         # Set up Dreamscape generation service
         self.template_manager = TemplateManager(
             template_dir=self.path_manager.get_path("templates") / "dreamscape_templates"
@@ -64,7 +64,7 @@ class DreamscapeDiscordBot(commands.Bot):
                 if not chat_title:
                     chats = self.chat_manager.get_all_chat_titles()
                     chat_title = chats[0].get('title', 'Untitled') if chats else "Default Adventure"
-                
+
                 episode_path = self.chat_manager.generate_dreamscape_episode(chat_title)
 
                 if episode_path and Path(episode_path).exists():
@@ -125,4 +125,3 @@ class DreamscapeDiscordBot(commands.Bot):
     def run_bot(self):
         logger.info("Launching Dreamscape Discord Bot...")
         super().run(self.token)
-

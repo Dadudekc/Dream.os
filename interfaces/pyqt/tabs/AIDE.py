@@ -483,19 +483,9 @@ class AIDE(QWidget):
                 prompt = "## DEBUG PROMPT\nPlease analyze the current error state and generate a suggested fix."
                 self.cursor_manager.queue_task(prompt)
                 self.append_output(f"✅ Debug task queued: {prompt[:50]}...")
-                # TODO: Refresh queue display
+                # TODO: Refresh queue display - Removed, handled by callback
                 # Consider automatically accepting this specific task if desired,
                 # or rely on manual/auto-accept mechanism.
-
-                # Original code (kept for reference):
-                # generated_code = self.cursor_manager.execute_prompt(prompt)
-                # if generated_code:
-                #     self.append_output("Cursor generated code:")
-                #     self.append_output(generated_code)
-                #     if self.dispatcher:
-                #         self.dispatcher.emit_cursor_code_generated(generated_code)
-                # else:
-                #     self.append_output("Cursor did not generate any code.")
             except Exception as e:
                 error_msg = f"Error queueing prompt via Cursor: {e}"
                 self.append_output(error_msg)
@@ -574,7 +564,7 @@ class AIDE(QWidget):
                 self.cursor_manager.accept_next_task() 
                 # Note: The actual execution happens in the manager.
                 # We might need a signal back from the manager upon completion/error.
-                # TODO: Add logic to refresh self.task_queue_list display
+                # TODO: Add logic to refresh self.task_queue_list display - Removed, handled by callback
             except Exception as e:
                 error_msg = f"❌ Error accepting next task: {e}"
                 self.append_output(error_msg)

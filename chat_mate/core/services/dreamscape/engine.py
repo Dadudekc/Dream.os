@@ -9,17 +9,56 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 
 from .interfaces import IDreamscapeService
-from chat_mate.core.memory.context import ContextMemoryManager
+# Remove top-level import causing circular dependency
+# from chat_mate.core.dreamscape.MemoryManager import MemoryManager 
+from chat_mate.core.PathManager import PathManager
+# REVIEW: Removed incorrect top-level import below
+# from chat_mate.core.prompt_cycle.ContextMemoryManager import ContextMemoryManager
 
 logger = logging.getLogger(__name__)
 
 class DreamscapeGenerationService(IDreamscapeService):
     """Service for generating dreamscape episodes."""
 
-    def __init__(self, context_manager: Optional[ContextMemoryManager] = None):
-        self.context_manager = context_manager or ContextMemoryManager()
-        self.current_generation: Optional[Dict[str, Any]] = None
-        self.output_dir = Path("outputs/dreamscape")
+    def __init__(self, context_manager: Optional[Any] = None): # Use Any temporarily for type hint
+        # Remove the import from here - it's now handled by the package __init__
+        # from chat_mate.core.dreamscape.MemoryManager import MemoryManager 
+        
+        # Need MemoryManager here, let's re-add top-level import temporarily OR rely on caller passing it
+        # For now, assume caller might pass it, otherwise this init fails
+        if not context_manager:
+             # If not passed, we MUST import it here to instantiate
+             # from ...dreamscape.MemoryManager import MemoryManager # REVIEW: Corrected import path 
+             # REVIEW: Removed incorrect import below
+             # from chat_mate.core.prompt_cycle.MemoryManager import MemoryManager 
+             # from ...dreamscape.ContextMemoryManager import ContextMemoryManager # REVIEW: Switched back to absolute import
+             # D:\overnight_scripts\chat_mate\core\memory\ContextMemoryManager.py 
+             from core.memory.ContextMemoryManager import ContextMemoryManager
+             # Get PathManager instance
+             path_manager = PathManager()
+             # Determine the output directory for context memory
+             try:
+                 memory_output_dir = path_manager.get_path('dreamscape_memory')
+             except KeyError:
+                 logger.warning("'dreamscape_memory' path key not found, using memory/dreamscape.")
+                 memory_output_dir = path_manager.get_path('memory') / "dreamscape"
+             memory_output_dir.mkdir(parents=True, exist_ok=True)
+             
+             # Instantiate ContextMemoryManager with the path
+             self.context_manager = ContextMemoryManager(output_dir=str(memory_output_dir))
+        else:
+            # Use the provided one
+            self.context_manager = context_manager
+        
+        # Get PathManager instance for output_dir
+        path_manager = PathManager()
+        # Get the general output dir for episodes using PathManager
+        try:
+            self.output_dir = path_manager.get_path('dreamscape') # Assumes 'dreamscape' key points to outputs/dreamscape
+        except KeyError:
+            logger.error("'dreamscape' path key not found for episode output. Defaulting.")
+            self.output_dir = Path("outputs/dreamscape")
+            
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def generate_episode(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

@@ -25,7 +25,7 @@ class GitIntegrationService:
     def _get_repo(self) -> Optional[git.Repo]:
         """Get Git repository instance for the workspace."""
         try:
-            return git.Repo(str(self.path_manager.get_workspace_path()))
+            return git.Repo(str(self.path_manager.get_path('project_root')))
         except Exception as e:
             self.logger.error(f"Error getting Git repo: {str(e)}")
             return None

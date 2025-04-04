@@ -1,36 +1,41 @@
 from typing import Optional
-from core.config.config_manager import ConfigManager
-from interfaces.pyqt.ILoggingAgent import ILoggingAgent
+from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
+from .DiscordManager import DiscordManager
 
 class DiscordLogger(ILoggingAgent):
-    """Stub implementation for Discord logging."""
+    """Logs messages to Discord using a DiscordManager instance."""
     
-    def __init__(self, config_manager: ConfigManager):
-        self.config_manager = config_manager
-        self.debug_mode = config_manager.get('logging.debug_mode', False)
-        # TODO: Initialize Discord client when implementing
-        
+    def __init__(self, discord_manager: DiscordManager):
+        """
+        Initializes the DiscordLogger.
+
+        Args:
+            discord_manager: An initialized DiscordManager instance.
+        """
+        self.discord_manager = discord_manager
+    
     def log(self, message: str, domain: str = "General", level: str = "INFO") -> None:
-        """Stub for logging to Discord."""
-        # TODO: Implement Discord logging
-        pass
+        """Logs a message to Discord via DiscordManager."""
+        formatted_message = f"**[{level.upper()}]** *({domain})*\\n{message}"
+        self.discord_manager.send_message(prompt_type=domain, message=formatted_message)
         
     def log_error(self, message: str, domain: str = "General") -> None:
-        """Stub for logging errors to Discord."""
-        # TODO: Implement Discord error logging
-        pass
+        """Logs an error message to Discord."""
+        formatted_message = f"**[ERROR]** *({domain})*\\n🚨 {message}"
+        self.discord_manager.send_message(prompt_type=domain, message=formatted_message)
         
     def log_debug(self, message: str, domain: str = "General") -> None:
-        """Stub for logging debug messages to Discord."""
-        # TODO: Implement Discord debug logging
-        pass
+        """Logs a debug message to Discord."""
+        formatted_message = f"**[DEBUG]** *({domain})*\\n🐛 {message}"
+        self.discord_manager.send_message(prompt_type=domain, message=formatted_message)
         
     def log_event(self, event_name: str, payload: dict, domain: str = "General") -> None:
-        """Stub for logging events to Discord."""
-        # TODO: Implement Discord event logging
-        pass
+        """Logs an event to Discord."""
+        payload_str = "\\n".join([f"- `{k}`: `{v}`" for k, v in payload.items()])
+        formatted_message = f"**[EVENT: {event_name.upper()}]** *({domain})*\\n{payload_str}"
+        self.discord_manager.send_message(prompt_type=domain, message=formatted_message)
         
     def log_system_event(self, domain: str, event: str, message: str) -> None:
-        """Stub for logging system events to Discord."""
-        # TODO: Implement Discord system event logging
-        pass 
+        """Logs a system event to Discord."""
+        formatted_message = f"**[SYSTEM: {event.upper()}]** *({domain})*\\n⚙️ {message}"
+        self.discord_manager.send_message(prompt_type=domain, message=formatted_message)

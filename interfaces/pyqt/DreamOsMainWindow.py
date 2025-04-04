@@ -32,14 +32,17 @@ from PyQt5.QtWidgets import (
     QStatusBar,
     QAbstractButton
 )
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 
 # Import core components
 from core.TemplateManager import TemplateManager
 from core.config.config_manager import ConfigManager
 from core.PathManager import PathManager
 from core.recovery.recovery_engine import RecoveryEngine
- 
+from core.chat_engine.chat_engine_manager import ChatEngineManager
+from core.factories.prompt_factory import PromptFactory
+from core.chatgpt_automation.OpenAIClient import OpenAIClient
+from .mock_service import MockService # <-- Import from new file
 # Import tabs
 from .tabs.prompt_sync.PromptSyncTab import PromptSyncTab
 from .tabs.chat_tab.ChatTabWidget import ChatTabWidget
@@ -68,20 +71,19 @@ from .services.MetricsService import MetricsService
 from .widgets.RecoveryDashboardWidget import RecoveryDashboardWidget
 from .services.AdaptiveRecoveryService import AdaptiveRecoveryService
 from .tabs.metrics_viewer.MetricsViewerTab import MetricsViewerTab
+from interfaces.pyqt.tabs.dreamscape.DreamscapeGenerationTab import DreamscapeTab
 from .services.TabValidatorService import TabValidatorService
-from interfaces.pyqt.tabs.dreamscape.components.OutputDisplay import OutputDisplay
+from core.meredith.meredith_dispatcher import MeredithDispatcher
+from core.meredith.profile_scraper import ScraperManager
+from core.meredith.resonance_scorer import ResonanceScorer
+from core.memory.MeritChainManager import MeritChainManager
+from core.init.service_initializer import ServiceInitializer, ServiceInitializationError
 
-class MockService:
-    """Mock service for development/testing."""
-    def __init__(self, name: str):
-        self.name = name
-        self.logger = logging.getLogger(f"mock.{name}")
-        
-    def __getattr__(self, name):
-        def mock_method(*args, **kwargs):
-            self.logger.warning(f"Mock {self.name}.{name} called")
-            return None
-        return mock_method
+# --- Import the correct Discord Manager ---
+import asyncio
+import discord
+import time # Add import for time.sleep
+from core.services.discord.DiscordManager import DiscordManager
 
 class DreamOsMainWindow(QMainWindow):
     """Main window for the Dream.OS interface."""
@@ -90,11 +92,12 @@ class DreamOsMainWindow(QMainWindow):
         """Initialize the main window."""
         super().__init__()
         
-        # Configure logging
+        # Configure logging and initialize self.logger
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
+        self.logger = logging.getLogger(__name__) 
         
         self.setWindowTitle("Dream.OS")
         self.setGeometry(100, 100, 1200, 800)
@@ -103,10 +106,65 @@ class DreamOsMainWindow(QMainWindow):
         self.config_manager = ConfigManager()
         self.path_manager = PathManager()
         
-        # Initialize services
-        self.services = self._initialize_services()
+        # --- Initialize Discord Manager CORRECTLY ---
+        self.discord_manager = None # Renamed from discord_bot_manager
+        discord_client = None
+        loop = None
+        try:
+            # Instantiate the correct DiscordManager
+            # It loads token/channel from config internally if not provided
+            self.discord_manager = DiscordManager()
+            self.discord_manager.run_bot() # Start the bot thread
+            # Wait briefly for thread/loop to potentially initialize
+            # A more robust solution might use signals or futures
+            time.sleep(1.0) 
+            discord_client = self.discord_manager.bot # Get the client instance
+            loop = self.discord_manager.get_loop() # Get the loop instance
+
+            if not discord_client or not loop:
+                 self.logger.warning("DiscordManager did not provide client or loop after start. Discord features may be limited.")
+            else:
+                 self.logger.info("DiscordManager initialized and bot started.")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize or start DiscordManager: {e}. Discord features disabled.", exc_info=True)
+            # Non-fatal, continue without discord features
+
+        # Initialize services using the new initializer, passing client and loop
+        try:
+            self.services = ServiceInitializer.initialize_all(
+                self.logger, 
+                self.path_manager,
+                discord_client=discord_client, 
+                loop=loop
+            )
+        except ServiceInitializationError as e:
+            self.logger.critical(f"Fatal error during service initialization: {e}", exc_info=True)
+            QMessageBox.critical(self, "Initialization Error", f"A critical service failed to initialize: {e}. Application will now exit.")
+            # Exit the application gracefully if possible
+            # For PyQt, closing the main window might trigger shutdown.
+            # If running from a script, sys.exit might be needed.
+            self.close() # Attempt to close the window
+            sys.exit(1) # Ensure exit if close doesn't suffice
+        except Exception as e: # Catch any other unexpected errors during init
+             self.logger.critical(f"Unexpected fatal error during service initialization: {e}", exc_info=True)
+             QMessageBox.critical(self, "Initialization Error", f"An unexpected error occurred during initialization: {e}. Application will now exit.")
+             self.close()
+             sys.exit(1)
         
-        # Validate tab constructors
+        # --- Assign critical services to attributes AFTER initialization ---
+        # This ensures they are available before _init_ui is called
+        self.metrics_service = self.services.get('metrics')
+        if not self.metrics_service:
+             # Handle case where metrics service failed init (though initializer should raise)
+             self.logger.error("Metrics service not found after initialization!")
+             # Decide how to handle - maybe assign a mock or raise error?
+             # For now, let's allow it to proceed but log error.
+             pass 
+        # Assign other services needed directly by the main window here if necessary
+        # e.g., self.some_other_service = self.services.get('some_other_key')
+        # ------------------------------------------------------------------
+        
+        # Validate tab constructors (only if services initialized successfully)
         self.tab_validator = TabValidatorService(self.services)
         validation_results = self.tab_validator.validate_all_tabs()
         
@@ -116,171 +174,10 @@ class DreamOsMainWindow(QMainWindow):
         # Log validation results
         for tab_name, is_valid in validation_results.items():
             status = "✅" if is_valid else "❌"
-            logger.info(f"{status} Tab '{tab_name}' validation: {'passed' if is_valid else 'failed'}")
+            self.logger.info(f"{status} Tab '{tab_name}' validation: {'passed' if is_valid else 'failed'}")
         
         # Show ready status
         self.statusBar().showMessage("Dream.OS Ready")
-        
-    def _initialize_services(self) -> Dict[str, Any]:
-        """Initialize required services.
-        
-        Returns:
-            Dictionary of initialized services
-        """
-        services = {
-            'core_services': {},
-            'component_managers': {}
-        }
-        
-        # Initialize template manager
-        try:
-            template_manager = TemplateManager(
-                template_dir=self.path_manager.get_path('templates'),
-                logger=logger
-            )
-            services['component_managers']['template_manager'] = template_manager
-            logger.info("Template manager initialized")
-        except Exception as e:
-            logger.warning(f"Failed to initialize template manager: {str(e)}")
-            services['component_managers']['template_manager'] = MockService('template_manager')
-            
-        # Initialize system loader for dependency injection
-        try:
-            from core.system_loader import DreamscapeSystemLoader
-            from core.rendering.template_engine import TemplateEngine
-            
-            system_loader = DreamscapeSystemLoader()
-            config_path = self.path_manager.get_path("memory") / "config.yml"
-            system_loader.load_config(config_path=config_path)
-            services['system_loader'] = system_loader
-            logger.info("DreamscapeSystemLoader initialized")
-
-            template_dir = self.path_manager.get_path("templates")
-            template_manager = TemplateEngine(template_dir=template_dir, logger=logger)
-            system_loader.register_service("template_manager", template_manager)
-            logger.info("TemplateEngine registered as template_manager")
-
-        except Exception as e:
-            logger.warning(f"Failed to initialize DreamscapeSystemLoader or TemplateManager: {str(e)}")
-            services['system_loader'] = MockService('system_loader')
-            if 'template_manager' not in services:
-                 services['template_manager'] = MockService('template_manager')
-        
-        # Initialize prompt cycle orchestrator
-        try:
-            from core.prompt_cycle_orchestrator import PromptCycleOrchestrator
-            orchestrator = PromptCycleOrchestrator()
-            services['prompt_cycle_orchestrator'] = orchestrator
-            
-            # Register with system loader
-            if 'system_loader' in services and not isinstance(services['system_loader'], MockService):
-                services['system_loader'].register_service('prompt_cycle_orchestrator', orchestrator)
-                
-            logger.info("PromptCycleOrchestrator initialized")
-        except Exception as e:
-            logger.warning(f"Failed to initialize PromptCycleOrchestrator: {str(e)}")
-            services['prompt_cycle_orchestrator'] = MockService('prompt_cycle_orchestrator')
-            
-        # Initialize other critical core services (mock if needed)
-        core_service_names = ['task_orchestrator']
-        for name in core_service_names:
-             if name not in services['core_services']:
-                 services['core_services'][name] = MockService(name)
-                 logger.info(f"Using mock {name} for development")
-
-        # Initialize other component managers (mock if needed)
-        component_manager_names = ['episode_generator', 'ui_manager'] # Add others as needed
-        for name in component_manager_names:
-             if name not in services['component_managers']:
-                 services['component_managers'][name] = MockService(name)
-                 logger.info(f"Using mock {name} for development")
-
-        # --- Add Mocks for Cursor Execution Tab Dependencies ---
-        cursor_exec_deps = ['cursor_dispatcher', 'test_runner', 'git_manager']
-        # Assuming system_loader holds registered services if available
-        system_loader = services.get('system_loader')
-        if system_loader and not isinstance(system_loader, MockService):
-            for dep_name in cursor_exec_deps:
-                if not system_loader.has_service(dep_name): # Check if service is registered
-                    mock_service = MockService(dep_name)
-                    system_loader.register_service(dep_name, mock_service)
-                    logger.info(f"Registered mock {dep_name} for development")
-                    # Also add to the main services dict for direct access if needed by tabs?
-                    # services[dep_name] = mock_service 
-        else:
-            # Fallback if system_loader itself is mocked or unavailable
-            for dep_name in cursor_exec_deps:
-                 if dep_name not in services:
-                      services[dep_name] = MockService(dep_name)
-                      logger.info(f"Using flat mock {dep_name} for development (SystemLoader unavailable)")
-        # --- End Mocks ---    
-            
-        # Keep flat structure for other base services if used directly
-        base_service_names = [
-            'prompt_service',
-            'web_scraper',
-            'episode_service', # Keep this if PromptSyncTab uses it directly
-            'export_service'
-        ]
-        for name in base_service_names:
-            if name not in services:
-                 services[name] = MockService(name)
-                 logger.info(f"Using mock {name} for development")
-        
-        # Initialize CursorSessionManager
-        try:
-            from chat_mate.core.refactor.CursorSessionManager import CursorSessionManager
-            cursor_session_manager = CursorSessionManager(
-                project_root=str(self.path_manager.get_path('project_root')),
-                dry_run=False  # Set to True for testing without actual UI interaction
-            )
-            # Start the background loop
-            cursor_session_manager.start_loop()
-            services['cursor_session_manager'] = cursor_session_manager
-            logger.info("CursorSessionManager initialized and started")
-        except Exception as e:
-            logger.warning(f"Failed to initialize CursorSessionManager: {str(e)}")
-            services['cursor_session_manager'] = MockService('cursor_session_manager')
-            
-        # Initialize ProjectScanner
-        try:
-            from interfaces.pyqt.services.ProjectScanner import ProjectScanner
-            project_scanner = ProjectScanner(
-                project_root=str(self.path_manager.get_path('project_root')),
-                cache_path=str(self.path_manager.get_path('cache') / 'analysis_cache.json')
-            )
-            # Load existing cache or perform initial scan
-            if not project_scanner.load_cache()["files"]:
-                # Perform initial scan with limited scope for speed
-                project_scanner.scan_project(max_files=100)
-            services['project_scanner'] = project_scanner
-            logger.info("ProjectScanner initialized")
-        except Exception as e:
-            logger.warning(f"Failed to initialize ProjectScanner: {str(e)}")
-            services['project_scanner'] = MockService('project_scanner')
-            
-        # Initialize metrics service
-        try:
-            metrics_dir = Path("metrics")
-            self.metrics_service = MetricsService(metrics_dir)
-            logger.info("Initialized metrics service")
-            
-            # Initialize recovery engine
-            self.recovery_engine = RecoveryEngine(
-                cursor_session=services.get('cursor_session_manager'),
-                metrics_service=self.metrics_service
-            )
-            logger.info("Initialized recovery engine")
-            
-            # Add services to services dict
-            services["metrics"] = self.metrics_service
-            services["recovery"] = self.recovery_engine
-            
-        except Exception as e:
-            logger.error(f"Failed to initialize services: {e}")
-            raise
-        
-        return services
         
     def _init_ui(self):
         """Initialize the user interface."""
@@ -302,7 +199,7 @@ class DreamOsMainWindow(QMainWindow):
         # Group 1: Main Development Interface
         config_mgr = self.services.get('config_manager', self.services.get('component_managers', {}).get('config_manager')) # Check both locations
         service_mgr = self.services.get('system_loader') # Assuming system_loader acts as service manager
-        main_tab_logger = self.services.get('logger', logger) # Use main logger if specific not found
+        main_tab_logger = self.services.get('logger', self.logger) # Use main logger if specific not found
         
         self.main_tab = MainTab(
             config_manager=config_mgr,
@@ -343,8 +240,37 @@ class DreamOsMainWindow(QMainWindow):
         self.tab_widget.addTab(self.chat_widget, "Chat")
         
         # Group 3: Content Generation
-        self.dreamscape_tab = DreamscapeGenerationTab(self.services)
-        self.tab_widget.addTab(self.dreamscape_tab, "Dreamscape Generation")
+        # Retrieve ChatEngineManager instance
+        chat_manager_instance = self.services.get('chat_manager')
+        
+        if chat_manager_instance and not isinstance(chat_manager_instance, MockService):
+            try:
+                # Pass the ChatEngineManager instance as both dreamscape_service and chat_manager
+                self.dreamscape_tab = DreamscapeTab(
+                    dreamscape_service=chat_manager_instance, 
+                    chat_manager=chat_manager_instance,
+                    logger=self.logger # Pass logger if DreamscapeTab accepts it
+                )
+                self.tab_widget.addTab(self.dreamscape_tab, "Dreamscape")
+                self.logger.info("DreamscapeTab added successfully.")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize or add DreamscapeTab: {e}", exc_info=True)
+                # Add a placeholder tab indicating the error
+                error_tab = QWidget()
+                error_layout = QVBoxLayout()
+                error_label = QLabel("Error loading Dreamscape Tab. Check logs.")
+                error_layout.addWidget(error_label)
+                error_tab.setLayout(error_layout)
+                self.tab_widget.addTab(error_tab, "Dreamscape (Error)")
+        else:
+            self.logger.error("Chat Manager service not found or is a mock. Cannot initialize DreamscapeTab.")
+            # Add a placeholder tab indicating the error
+            error_tab = QWidget()
+            error_layout = QVBoxLayout()
+            error_label = QLabel("Error loading Dreamscape Tab (Chat Manager missing/mocked)")
+            error_layout.addWidget(error_label)
+            error_tab.setLayout(error_layout)
+            self.tab_widget.addTab(error_tab, "Dreamscape (Error)")
         
         self.prompt_execution_tab = PromptExecutionTab(self.services)
         self.tab_widget.addTab(self.prompt_execution_tab, "Prompt Execution")
@@ -442,9 +368,9 @@ class DreamOsMainWindow(QMainWindow):
                 except TypeError: # No connection exists
                     pass
                 button.clicked.connect(lambda checked=False, btn_id=button_identifier, tb_name=tab_name:
-                    logger.info(f"[🟣 Button Clicked | {tb_name}] → {btn_id}"))
+                    self.logger.info(f"[🟣 Button Clicked | {tb_name}] → {btn_id}"))
         except Exception as e:
-             logger.error(f"Error setting up button debugging for widget {widget}: {e}")
+             self.logger.error(f"Error setting up button debugging for widget {widget}: {e}")
     # END REVIEW
 
     def _connect_tab_signals(self):
@@ -496,10 +422,71 @@ class DreamOsMainWindow(QMainWindow):
         
     def closeEvent(self, event):
         """Handle window close event."""
-        # Save any necessary state
-        if hasattr(self.prompt_sync_tab, '_save_state'):
-            self.prompt_sync_tab._save_state()
-            
+        self.logger.info("Close event triggered. Initiating shutdown sequence...")
+
+        # Attempt to gracefully shut down services
+        shutdown_errors = []
+        if hasattr(self, 'services') and self.services:
+            # Shutdown order might matter. Reverse of initialization could be safer.
+            # Example: Shutdown chat manager last if it uses other services.
+            service_shutdown_order = [
+                # Start with UI-related or less critical first?
+                'cursor_session_manager', 
+                'chat_manager', # Depends on others, maybe later?
+                'meredith_dispatcher', 
+                'scraper_manager', 
+                'openai_client',
+                # Add other services that need explicit shutdown
+            ]
+
+            for service_name in service_shutdown_order:
+                 service = self.services.get(service_name)
+                 if service and hasattr(service, 'shutdown'):
+                     try:
+                         self.logger.info(f"Shutting down {service_name}...")
+                         if asyncio.iscoroutinefunction(service.shutdown):
+                              # If shutdown is async, need to handle it appropriately.
+                              # Running it synchronously here might block UI.
+                              # This needs a proper async shutdown strategy if required.
+                              self.logger.warning(f"Async shutdown for {service_name} not fully supported in sync closeEvent.")
+                              # asyncio.run(service.shutdown()) # Avoid this in sync event handler
+                         else:
+                             service.shutdown()
+                         self.logger.info(f"{service_name} shut down.")
+                     except Exception as e:
+                         self.logger.error(f"Error shutting down service '{service_name}': {e}", exc_info=True)
+                         shutdown_errors.append(f"{service_name}: {e}")
+        else:
+             self.logger.warning("Services dictionary not found or empty during closeEvent.")
+
+        # --- Shutdown Discord Manager CORRECTLY ---
+        if self.discord_manager: # Check if instance exists
+            try:
+                self.logger.info("Shutting down Discord Manager...")
+                self.discord_manager.stop_bot() # Call the correct stop method
+                self.logger.info("Discord Manager shut down.")
+            except Exception as e:
+                self.logger.error(f"Error shutting down Discord Manager: {e}", exc_info=True)
+                shutdown_errors.append(f"DiscordManager: {e}")
+
+        # --- Save Config (if applicable) ---
+        config_mgr = self.services.get('config_manager') if hasattr(self, 'services') else self.config_manager
+        if config_mgr and hasattr(config_mgr, 'save_config'):
+            try:
+                self.logger.info("Saving configuration...")
+                config_mgr.save_config()
+                self.logger.info("Configuration saved.")
+            except Exception as e:
+                self.logger.error(f"Error saving configuration: {e}", exc_info=True)
+                shutdown_errors.append(f"ConfigManager save: {e}")
+
+        if shutdown_errors:
+            error_msg = "Errors occurred during shutdown:\n" + "\n".join(shutdown_errors)
+            self.logger.error(error_msg)
+            # Optionally show a message box, but be careful not to block exit
+            # QMessageBox.warning(self, "Shutdown Error", error_msg)
+
+        self.logger.info("Shutdown sequence complete. Accepting close event.")
         super().closeEvent(event)
 
     def _handle_queued_task(self, task: Dict[str, Any]):
@@ -564,7 +551,7 @@ class DreamOsMainWindow(QMainWindow):
             return result
             
         except Exception as e:
-            logger.error(f"Task execution failed: {e}")
+            self.logger.error(f"Task execution failed: {e}")
             self.metrics_service.update_task_metrics(
                 task_id,
                 "error",
@@ -784,7 +771,7 @@ class DreamOsMainWindow(QMainWindow):
                 f"Recovery insights updated - Success rate: {stats['global_metrics']['recovery_success_rate']:.1f}%"
             )
         except Exception as e:
-            logger.error(f"Failed to refresh recovery insights: {e}")
+            self.logger.error(f"Failed to refresh recovery insights: {e}")
 
 if __name__ == "__main__":
     try:
@@ -795,11 +782,11 @@ if __name__ == "__main__":
         window = DreamOsMainWindow()
         window.show()
         
-        logger.info("Dream.OS application started")
+        self.logger.info("Dream.OS application started")
         
         # Start the event loop
         sys.exit(app.exec_())
         
     except Exception as e:
-        logger.error(f"Failed to start Dream.OS: {e}")
+        self.logger.error(f"Failed to start Dream.OS: {e}")
         raise

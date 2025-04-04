@@ -1,0 +1,21 @@
+{
+  "project_name": "Neural Sovereign",
+  "vision": "A self-training agent that adapts to Victor's style, learns from mistakes, and evolves new workflows autonomously.",
+  "modules": [
+    {
+      "name": "decision_memory",
+      "type": "memory_service",
+      "goal": "Log and analyze decisions for adaptive feedback."
+    },
+    {
+      "name": "behavior_adapter",
+      "type": "agent",
+      "goal": "Automatically adjust strategies based on decision outcomes."
+    },
+    {
+      "name": "refactor_engine",
+      "type": "code_agent",
+      "goal": "Refactor and optimize code based on detected patterns."
+    }
+  ]
+} 

@@ -15,6 +15,7 @@ from .chain import (
     update_episode_chain,
     get_context_from_chain
 )
+from core.memory.ContextMemoryManager import ContextMemoryManager
 
 
 class DreamscapeGenerationService(IDreamscapeService):
@@ -32,25 +33,68 @@ class DreamscapeGenerationService(IDreamscapeService):
         template_manager: Optional[TemplateManager] = None,
         logger: Optional[logging.Logger] = None,
         memory_data: Optional[Dict[str, Any]] = None,
+        context_manager: Optional[Any] = None,
     ):
         self.logger = logger or logging.getLogger(__name__)
         self.path_manager = path_manager or PathManager()
         self.template_manager = template_manager or TemplateManager()
         self.memory_data = memory_data or {}
 
-        # Ensure output_dir is a Path object
-        self.output_dir = Path(self.path_manager.get_path("dreamscape"))
+        # Ensure output_dir is a Path object and registered
+        try:
+            self.output_dir = Path(self.path_manager.get_path("dreamscape"))
+        except KeyError:
+            self.logger.warning("'dreamscape' path key not found. Defaulting to outputs/dreamscape and attempting registration.")
+            self.output_dir = Path("outputs/dreamscape")
+            try:
+                self.path_manager.add_path("dreamscape", self.output_dir)
+                self.logger.info(f"Registered default path for 'dreamscape': {self.output_dir}")
+            except AttributeError:
+                 self.logger.warning(f"PathManager instance does not support add_path. Cannot register default for 'dreamscape'.")
+            except Exception as e:
+                self.logger.warning(f"Failed to register default path for 'dreamscape': {e}")
+                
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.logger.info(f"[DreamscapeService] Output directory set to: {self.output_dir}")
         
-        # Load memory path
+        # Load memory path and chain path, registering defaults if needed
         try:
             self.memory_path = self.path_manager.get_path("memory") / "dreamscape_memory.json"
+        except KeyError as e:
+            self.logger.warning(f"Error getting base memory path key '{e}', cannot create default dreamscape_memory path.")
+            self.memory_path = Path(self.MEMORY_FILE) # Fallback to original default
+            
+        try:
             self.chain_path = self.path_manager.get_path("memory") / "episode_chain.json"
-        except Exception as e:
-            self.logger.warning(f"Error getting memory paths, using default: {e}")
-            self.memory_path = Path(self.MEMORY_FILE)
-            self.chain_path = Path(self.CHAIN_FILE)
+        except KeyError as e:
+            self.logger.warning(f"Error getting base memory path key '{e}', cannot create default episode_chain path.")
+            self.chain_path = Path(self.CHAIN_FILE) # Fallback to original default
+
+        # Initialize ContextMemoryManager, handling its output path registration if needed
+        if not context_manager:
+            try:
+                memory_output_dir = self.path_manager.get_path('dreamscape_memory')
+            except KeyError:
+                self.logger.warning("'dreamscape_memory' path key not found. Defaulting to memory/dreamscape and attempting registration.")
+                try:
+                    base_memory_path = self.path_manager.get_path('memory')
+                    memory_output_dir = base_memory_path / "dreamscape"
+                    try:
+                        self.path_manager.add_path('dreamscape_memory', memory_output_dir)
+                        self.logger.info(f"Registered default path for 'dreamscape_memory': {memory_output_dir}")
+                    except AttributeError:
+                         self.logger.warning(f"PathManager instance does not support add_path. Cannot register default for 'dreamscape_memory'.")
+                    except Exception as e:
+                        self.logger.warning(f"Failed to register default path for 'dreamscape_memory': {e}")
+                except KeyError:
+                     self.logger.error("Base 'memory' path key not found. Cannot establish default for 'dreamscape_memory'.")
+                     # Handle failure - maybe raise an error or use a very basic default
+                     memory_output_dir = Path("memory/dreamscape") # Last resort default
+                     
+            memory_output_dir.mkdir(parents=True, exist_ok=True)
+            self.context_manager = ContextMemoryManager(output_dir=str(memory_output_dir))
+        else:
+            self.context_manager = context_manager
 
     def load_context_from_file(self, json_path: str) -> Dict[str, Any]:
         """Load rendering context from JSON file."""

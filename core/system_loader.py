@@ -18,6 +18,7 @@ It ensures:
 import logging
 import os
 import json
+import yaml
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 
@@ -138,11 +139,25 @@ class DreamscapeSystemLoader:
             return
         
         try:
-            with open(config_path, 'r') as f:
-                self.config = json.load(f)
+            file_ext = Path(config_path).suffix.lower()
+            with open(config_path, 'r', encoding='utf-8') as f:
+                if file_ext == '.yaml' or file_ext == '.yml':
+                    self.config = yaml.safe_load(f)
+                elif file_ext == '.json':
+                    self.config = json.load(f)
+                else:
+                     logger.warning(f"Unsupported config file format: {file_ext}. Trying JSON.")
+                     self.config = json.load(f)
             logger.info(f"Configuration loaded from {config_path}")
+        except yaml.YAMLError as e:
+            logger.error(f"Error loading YAML configuration: {e}")
+            self.config = {}
+        except json.JSONDecodeError as e:
+             logger.error(f"Error loading JSON configuration: {e}")
+             self.config = {}
         except Exception as e:
             logger.error(f"Error loading configuration: {e}")
+            self.config = {}
     
     def register_service(self, name: str, service: Any):
         """
@@ -166,6 +181,10 @@ class DreamscapeSystemLoader:
             Service instance if found, None otherwise
         """
         return self.services.get(name)
+    
+    def has_service(self, name: str) -> bool:
+        """Check if a service is registered."""
+        return name in self.services
     
     def unregister_service(self, name: str):
         """

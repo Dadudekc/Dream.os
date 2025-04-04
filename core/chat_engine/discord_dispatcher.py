@@ -1,6 +1,7 @@
 import discord
 import logging
 import asyncio
+import sys; print(f"DEBUG sys.path: {sys.path}") # DEBUG: Print sys.path before import
 from discord.ext import commands
 import concurrent.futures
 

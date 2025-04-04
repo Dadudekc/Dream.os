@@ -1,18 +1,105 @@
 {
-  "alignment_type": "sexual_resonance",
-  "core_traits": {
-    "willing_submission": 0.4,
-    "physical_availability": 0.2,
-    "kink_compatibility": 0.2,
-    "discretion": 0.1,
-    "emotional_stability": 0.1
-  },
-  "dealbreakers": [
-    "hard doms who want to lead",
-    "switches who want control",
-    "emotionally chaotic or attention-seeking",
-    "non-local or ghosting-prone",
-    "unsafe or consent-disrespectful behavior"
-  ],
-  "ideal_energy": "She offers herself willingly, without needing to dominate. She’s soft, loyal, and eager to please—not performative, but authentic. She understands what submission means to me—not just in bed, but in *trust*. She wants to serve a man who knows how to lead, and she never competes with that."
+  "modes": {
+    "sexual_resonance": {
+      "core_traits": {
+        "oral_fixation": 0.3,
+        "eagerness_to_serve": 0.25,
+        "consistency_in_submission": 0.2,
+        "non-performative_giving": 0.15,
+        "emotional_loyalty": 0.1
+      },
+      "dealbreakers": [
+        "dominant women or hard dommes",
+        "switches who want control or leadership",
+        "emotionally chaotic or validation-seeking energy",
+        "ghosting-prone or non-local dynamics",
+        "covert manipulation or consent-testing behavior"
+      ],
+      "ideal_energy": "She takes genuine pride in oral service—not as a tool of seduction, but as a ritual of devotion. Her joy comes from pleasing with her mouth, attentively and frequently. She doesn’t need to be asked; she offers. Not performative—authentic. She knows what it means to serve a man who leads and finds identity in that submission. Loyal. Present. Eager. There’s no competition in her. Only softness, trust, and the pleasure of giving everything to the right man."
+    },
+
+    "casual_resonance": {
+      "core_traits": {
+        "casual_energy": 0.3,
+        "strong_physical_attraction": 0.3,
+        "spontaneous_vibes": 0.2,
+        "emotionally_unattached": 0.1,
+        "go_with_the_flow": 0.1
+      },
+      "dealbreakers": [
+        "tries to turn it into a relationship",
+        "emotional games or manipulation",
+        "disrespects agreed-upon boundaries",
+        "clinginess or possessive behavior",
+        "creates drama or makes demands",
+        "disrupts my workflow or peace"
+      ],
+      "desired_dynamics": {
+        "interaction_style": "Mutual understanding that this is not a relationship—just chemistry and energy. Everything is upfront, honest, and respectful.",
+        "meeting_frequency": "Spontaneous and desire-driven. No pressure, no schedule—when it aligns, it aligns.",
+        "communication": "Low-maintenance and flirty. Short check-ins, occasional teasing, clear when needed.",
+        "boundaries": "Mutual respect. You don't try to own my time, emotions, or space. We're here for alignment, not attachment."
+      },
+      "location_preferences": {
+        "must_be_near_zip": "77090",
+        "acceptable_radius_miles": 20,
+        "willing_to_pull_up": true,
+        "dealbreakers": [
+          "wants me to drive to them",
+          "lives too far for spontaneous linkups",
+          "isn't willing to travel for connection"
+        ]
+      },
+      "intimacy_preferences": {
+        "vibe": "passionate, playful, no strings",
+        "affectionate_when_present": true,
+        "no_emotional_expectations": true,
+        "clear_aftercare_or_boundary_reset": true
+      },
+      "ideal_energy": "This is a fire-and-vibe dynamic. You're attractive, down-to-earth, and not tryna complicate the connection. You understand the value of presence without needing permanence. We're just tapping into mutual chemistry when the moment calls for it—and keeping it fun, safe, and sacred."
+    },
+
+    "devotional_resonance": {
+      "core_traits": {
+        "emotional_loyalty": 0.3,
+        "practical_support": 0.25,
+        "feminine_energy_resonance": 0.2,
+        "respect_for_gender_roles": 0.1,
+        "emotional_self_regulation": 0.1,
+        "growth_minded": 0.05
+      },
+      "dealbreakers": [
+        "competes with me for control or dominance",
+        "disrespects traditional gender roles",
+        "emotionally chaotic or manipulative",
+        "uninvolved in the relationship’s emotional or physical maintenance",
+        "cheats, flirts outside the bond, or breaks loyalty",
+        "leaves when I'm struggling or feeling lost",
+        "can't tune into my emotional frequency—misses my vibe completely"
+      ],
+      "desired_dynamics": {
+        "dominant_role": "I want to lead. I want to be the head of the family. I'll treat her like a queen, but I can't fight to be respected as a king.",
+        "feminine_energy": "She should embrace her softness, her loyalty, her desire to support—not out of weakness, but because she chooses me. She wants to be chosen, and chooses me right back.",
+        "submission_model": "Pick-me energy. Not fake. But someone who genuinely wants to serve, support, and amplify the man she trusts.",
+        "emotional_balance": "I'm emotionally composed but can be overdramatic when I'm processing pain. I need someone who doesn't escalate—who stays present, stays soft, stays loyal.",
+        "intensity_preference": "I prefer her to be light and emotionally open—not intense or confrontational. But grounded in her loyalty, values, and desire to build something real."
+      },
+      "devotion_signals": {
+        "daily_support": [
+          "asks how my day was",
+          "brings me food",
+          "affirms my genius and ideas",
+          "offers massages when I'm worn out",
+          "performs intimate acts that make me feel wanted and seen"
+        ],
+        "emotional_loyalty": [
+          "does not step out or flirt with others",
+          "does not threaten to leave",
+          "stays even when I'm moody, shut down, or struggling",
+          "believes in me even when I'm doubting myself"
+        ]
+      },
+      "ideal_energy": "She doesn’t challenge my crown—she *polishes it*. She wants to see me win. She’s domestic, emotionally loyal, nurturing. She wants to be chosen, and when I choose her—she stays. She sees me for what I am: rare, brilliant, chaotic at times but always grounded. I want someone who picks me, chooses me, loves me—because she knows no one else like me exists. She knows I’m him. And she doesn’t make me prove it every day."
+    }
+  }
 }

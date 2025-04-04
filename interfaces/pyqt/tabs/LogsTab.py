@@ -9,18 +9,36 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from core.PathManager import PathManager
+from typing import Dict, Any
 
 class LogsTab(QWidget):
     """
     Provides a unified interface for viewing, filtering, and managing logs.
     """
 
-    def __init__(self, parent=None, logger=None):
+    def __init__(self, services: Dict[str, Any], parent=None):
         super().__init__(parent)
+        self.services = services
         self.parent = parent
-        self.logger = logger or logging.getLogger(__name__)
-        self.path_manager = PathManager()
-        self.logs_path = self.path_manager.get_path("logs")
+        
+        self.logger = services.get('logger', logging.getLogger(__name__))
+        self.path_manager = services.get('path_manager')
+        
+        if self.path_manager:
+            try:
+                self.logs_path = self.path_manager.get_path("logs")
+            except KeyError:
+                self.logger.error("PathManager missing 'logs' key. Falling back to CWD/logs.")
+                self.logs_path = Path(os.getcwd()) / "logs"
+                self.logs_path.mkdir(parents=True, exist_ok=True)
+            except AttributeError:
+                self.logger.warning("PathManager is likely mocked. Falling back to CWD/logs.")
+                self.logs_path = Path(os.getcwd()) / "logs"
+                self.logs_path.mkdir(parents=True, exist_ok=True)
+        else:
+            self.logger.error("PathManager service not found. Falling back to CWD/logs.")
+            self.logs_path = Path(os.getcwd()) / "logs"
+            self.logs_path.mkdir(parents=True, exist_ok=True)
 
         self.initUI()
         self.load_log_files()

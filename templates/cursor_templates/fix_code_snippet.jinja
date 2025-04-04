@@ -1,0 +1,15 @@
+Target File: {{ file_path }}
+
+Context:
+The following comment was found at line {{ line_number }}:
+```
+{{ comment_content }}
+```
+
+Surrounding Code:
+```python
+{{ code_context }}
+```
+
+Instructions:
+Please analyze the comment and the surrounding code. Implement the required functionality, fix the issue described, or refactor the code based on the comment's intent. Ensure the changes integrate correctly with the existing code and maintain functionality. Apply the changes directly to the file '{{ file_path }}'. 

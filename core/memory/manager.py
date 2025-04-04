@@ -20,7 +20,7 @@ from typing import Dict, List, Any, Optional
 from cachetools import LRUCache
 from jinja2 import Environment, FileSystemLoader
 
-from .database import DatabaseManager
+from .DatabaseManager import DatabaseManager
 from .utils import load_memory_file, create_backup, validate_memory_structure
 from core.recovery.agent_failure_hooks import AgentFailureHook
 

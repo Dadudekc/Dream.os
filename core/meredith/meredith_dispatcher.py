@@ -9,73 +9,100 @@ Validates results against the MeritChain schema and logs high resonance matches.
 """
 
 import json
-import uuid
 import logging
 from datetime import datetime
-from typing import Dict, Any, Optional, List
 from pathlib import Path
+from typing import Dict, Any, Optional, List
 
+# Local imports
+from core.chatgpt_automation.OpenAIClient import OpenAIClient
 from core.TemplateManager import TemplateManager
-from core.chatgpt_automation.OpenAIClient import OpenAIClient  # Replace if you use a different LLM client
-from core.meritchain.MeritChainManager import MeritChainManager
-from core.PathManager import PathManager
-from core.services.service_registry import ServiceRegistry
+from core.memory.MeritChainManager import MeritChainManager
+# Removed internal PathManager import, expect it from services
+# from core.PathManager import PathManager 
 
-logger = logging.getLogger("MeredithDispatcher")
+# Removed global ServiceRegistry import
+# from core.registry.ServiceRegistry import ServiceRegistry 
+
+logger = logging.getLogger(__name__)
 
 class MeredithDispatcher:
-    def __init__(self,
-                 model: str = "gpt-4",
-                 prompt_template: str = "MeredithPrompt.jtime",
-                 memory_path: str = None,
-                 schema_path: str = None,
-                 resonance_threshold: float = 75.0):
-        self.engine = TemplateManager()
-        # Fix: Use a safe path for profile_dir (use 'cache' path which is guaranteed to exist)
-        try:
-            profile_dir = Path(PathManager().get_path("cache")) / "browser_profiles" / "default"
-            # Ensure the directory exists
-            profile_dir.mkdir(parents=True, exist_ok=True)
-            self.chat_client = OpenAIClient(profile_dir=str(profile_dir))
-        except Exception as e:
-            logger.error(f"Error initializing OpenAIClient: {e}")
-            # Use a safe fallback (current directory)
-            self.chat_client = OpenAIClient(profile_dir="browser_profiles")
+    """
+    Dispatches profiles to an LLM for analysis based on a template,
+    parses the response, and optionally saves matches to MeritChain.
+    Relies on injected services for dependencies.
+    """
+    def __init__(self, services: Dict[str, Any]):
+        self.services = services
+        self.logger = services.get('logger', logger) # Use injected logger or module default
+        
+        # Get required services
+        self.path_manager = services.get('path_manager')
+        self.engine = services.get('template_manager')
+        self.chat_client = services.get('openai_client') # Assuming OpenAIClient is registered
+        self.memory = services.get('merit_chain_manager') # Assuming MeritChainManager is registered
+        config_manager = services.get('config_manager')
+
+        # --- Validate required services ---
+        if not self.path_manager:
+            self.logger.error("PathManager service is missing. MeredithDispatcher may fail.")
+            # Cannot proceed without path manager for essential paths
+            raise ValueError("PathManager service is required for MeredithDispatcher")
             
-        # Store the model for use in chat completion
-        self.model = model
-        
-        try:
-            self.template_path = PathManager().get_path("meredith_prompts") / prompt_template
-        except ValueError:
-            # Fallback if meredith_prompts path is not registered
-            self.template_path = Path("templates") / "meredith_prompts" / prompt_template
-            logger.warning(f"Using fallback template path: {self.template_path}")
-        
-        self.resonance_threshold = resonance_threshold
-        
-        # Try to get MeritChainManager from service registry
-        self.memory = ServiceRegistry.get("merit_chain_manager")
-        
-        # If not available, create a new instance
+        if not self.engine:
+            self.logger.warning("TemplateManager service is missing. Creating local instance.")
+            self.engine = TemplateManager() # Fallback, less ideal
+            
+        if not self.chat_client:
+            self.logger.error("OpenAIClient service is missing. MeredithDispatcher cannot communicate with LLM.")
+            # Cannot proceed without chat client
+            raise ValueError("OpenAIClient service is required for MeredithDispatcher")
+            
         if not self.memory:
-            try:
-                if not memory_path:
-                    memory_path = PathManager().get_path("data") / "meritchain.json"
-                if not schema_path:
-                    schema_path = PathManager().get_path("core") / "schemas" / "merit_chain_schema.json"
-            except ValueError as e:
-                # Fallback paths if PathManager keys are not available
-                logger.warning(f"PathManager error: {e}. Using fallback paths.")
-                memory_path = memory_path or "data/meritchain.json"
-                schema_path = schema_path or "core/schemas/merit_chain_schema.json"
+            self.logger.error("MeritChainManager service is missing. Matches cannot be saved/retrieved.")
+             # Cannot proceed without memory manager
+            raise ValueError("MeritChainManager service is required for MeredithDispatcher")
             
-            self.memory = MeritChainManager(str(memory_path), str(schema_path))
-            logger.info(f"Created standalone MeritChainManager (not from registry)")
+        if not config_manager:
+             self.logger.error("ConfigManager service is missing. Using default configurations.")
+             # Set default values directly if config is missing
+             self.model = "gpt-4" 
+             prompt_template_name = "MeredithPrompt.jtime"
+             self.resonance_threshold = 75.0
         else:
-            logger.info(f"Using MeritChainManager from service registry")
+             # Get config values using the .get() method
+             meredith_config = config_manager.get('meredith', {}) # Use .get instead of .get_config
+             self.model = meredith_config.get('model', "gpt-4")
+             prompt_template_name = meredith_config.get('prompt_template', "MeredithPrompt.jtime")
+             self.resonance_threshold = float(meredith_config.get('resonance_threshold', 75.0))
+        
+        # Resolve template path using injected PathManager
+        try:
+            # Ensure the key exists before getting it
+            if not self.path_manager.has_path("meredith_prompts"):
+                 self.logger.warning("Path key 'meredith_prompts' not found in PathManager. Attempting fallback relative path.")
+                 # Define a fallback relative path if the key doesn't exist
+                 meredith_prompts_dir = Path("templates/meredith") 
+            else:
+                meredith_prompts_dir = self.path_manager.get_path("meredith_prompts")
             
-        logger.info(f"MeredithDispatcher initialized with model: {model}, threshold: {resonance_threshold}")
+            self.template_path = meredith_prompts_dir / prompt_template_name
+            self.logger.info(f"Using template path: {self.template_path}")
+            # Optionally check if the template file actually exists now
+            if not self.template_path.exists():
+                 self.logger.error(f"Template file does not exist at resolved path: {self.template_path}")
+                 # Decide how to handle - raise error or try to continue?
+                 # For now, log error and continue, hoping template isn't needed immediately
+
+        except Exception as e: # Catch potential errors during path resolution
+            self.logger.error(f"Error resolving template path: {e}. Dispatcher may fail.")
+            # Cannot proceed reliably without a template path
+            raise ValueError(f"Could not resolve template path: {e}")
+
+        # Removed internal initializations of PathManager, OpenAIClient, MeritChainManager
+        # Removed reliance on global ServiceRegistry
+
+        self.logger.info(f"MeredithDispatcher initialized with model: {self.model}, threshold: {self.resonance_threshold}")
 
     def process_profile(self,
                         profile_data: Dict[str, Any],
@@ -104,7 +131,7 @@ class MeredithDispatcher:
         username = profile_data.get("username", "unknown")
         
         try:
-            logger.info(f"Processing profile: {username} from {source_platform}")
+            self.logger.info(f"Processing profile: {username} from {source_platform}")
 
             # Render the template
             rendered_prompt = self.engine.render_file(
@@ -124,7 +151,7 @@ class MeredithDispatcher:
             parsed = self._extract_json(response)
 
             if not parsed:
-                logger.warning(f"Failed to parse JSON from response for {username}")
+                self.logger.warning(f"Failed to parse JSON from response for {username}")
                 return None
 
             # Add platform if not already in the response
@@ -143,7 +170,7 @@ class MeredithDispatcher:
             if "resonance_score" in parsed and parsed.get("should_save_to_meritchain") is None:
                 resonance_score = float(parsed["resonance_score"])
                 parsed["should_save_to_meritchain"] = resonance_score >= self.resonance_threshold
-                logger.info(f"Auto-set should_save_to_meritchain={parsed['should_save_to_meritchain']} based on score {resonance_score}")
+                self.logger.info(f"Auto-set should_save_to_meritchain={parsed['should_save_to_meritchain']} based on score {resonance_score}")
             
             # Ensure matching_traits is a list
             if "matching_traits" not in parsed or parsed["matching_traits"] is None:
@@ -157,16 +184,16 @@ class MeredithDispatcher:
             if parsed.get("should_save_to_meritchain"):
                 saved = self.memory.save(parsed)
                 if saved:
-                    logger.info(f"✅ Resonance match saved to MeritChain: {username}")
+                    self.logger.info(f"✅ Resonance match saved to MeritChain: {username}")
                 else:
-                    logger.warning(f"❌ Failed to save {username} to MeritChain - validation failed")
+                    self.logger.warning(f"❌ Failed to save {username} to MeritChain - validation failed")
             else:
-                logger.info(f"Profile {username} not saved to MeritChain (should_save_to_meritchain=False)")
+                self.logger.info(f"Profile {username} not saved to MeritChain (should_save_to_meritchain=False)")
 
             return parsed
 
         except Exception as e:
-            logger.error(f"Error processing profile {username}: {e}")
+            self.logger.error(f"Error processing profile {username}: {e}")
             return None
 
     def get_previous_matches(self, limit: int = 10) -> List[Dict[str, Any]]:
@@ -189,7 +216,7 @@ class MeredithDispatcher:
             )
             return sorted_matches[:limit]
         except Exception as e:
-            logger.error(f"Error retrieving previous matches: {e}")
+            self.logger.error(f"Error retrieving previous matches: {e}")
             return []
 
     def find_match_by_username(self, username: str) -> Optional[Dict[str, Any]]:
@@ -224,13 +251,13 @@ class MeredithDispatcher:
             start = raw_response.find("{")
             end = raw_response.rfind("}")
             if start == -1 or end == -1:
-                logger.warning("No JSON object found in response")
+                self.logger.warning("No JSON object found in response")
                 return None
 
             json_str = raw_response[start:end+1]
             return json.loads(json_str)
         except Exception as e:
-            logger.warning(f"JSON parse error: {e}")
+            self.logger.warning(f"JSON parse error: {e}")
             # Try to find and fix common JSON parsing issues
             try:
                 # Handle single quotes instead of double quotes

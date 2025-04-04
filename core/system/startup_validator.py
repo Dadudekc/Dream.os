@@ -60,7 +60,9 @@ class StartupValidator:
 
     def check_memory_files(self):
         """Validate memory files structure and content."""
+        self.logger.debug("Starting memory file check...")
         memory_path = Path(self.path_manager.get_path('memory')) / "memory_store.json"
+        self.logger.debug(f"Memory file path set to: {memory_path}")
         
         # Create default structure
         default_structure = {
@@ -110,24 +112,43 @@ class StartupValidator:
         }
 
         # Ensure memory directory exists
+        self.logger.debug(f"Ensuring memory directory exists: {memory_path.parent}")
         memory_path.parent.mkdir(parents=True, exist_ok=True)
+        self.logger.debug(f"Memory directory confirmed: {memory_path.parent}")
 
         # If file doesn't exist or is empty, create it with default structure
+        self.logger.debug(f"Checking existence and size of {memory_path}")
         if not memory_path.exists() or memory_path.stat().st_size == 0:
             self.logger.info(f"Creating new memory file at: {memory_path}")
-            with open(memory_path, "w", encoding="utf-8") as f:
-                json.dump(default_structure, f, indent=2)
+            try:
+                with open(memory_path, "w", encoding="utf-8") as f:
+                    json.dump(default_structure, f, indent=2)
+                self.logger.debug(f"Successfully wrote default structure to {memory_path}")
+            except Exception as e:
+                self.errors.append(f"Failed to create/write memory file: {e}")
+                self.logger.error(f"❌ Failed to create/write memory file {memory_path}: {e}")
             return
+        self.logger.debug(f"Memory file {memory_path} exists and is not empty.")
 
         # Validate existing file
+        self.logger.debug(f"Attempting to read existing memory file: {memory_path}")
         try:
             with open(memory_path, "r", encoding="utf-8") as f:
+                self.logger.debug(f"Reading content from {memory_path}")
                 content = f.read().strip()
+                self.logger.debug(f"Finished reading content from {memory_path}")
                 if not content:
                     self.logger.warning("Memory file is empty, initializing with default structure")
-                    with open(memory_path, "w", encoding="utf-8") as f:
-                        json.dump(default_structure, f, indent=2)
+                    self.logger.debug(f"Attempting to write default structure to empty file: {memory_path}")
+                    try:
+                        with open(memory_path, "w", encoding="utf-8") as f:
+                            json.dump(default_structure, f, indent=2)
+                        self.logger.debug(f"Successfully wrote default structure to empty file: {memory_path}")
+                    except Exception as e:
+                        self.errors.append(f"Failed to write default structure to empty memory file: {e}")
+                        self.logger.error(f"❌ Failed to write default structure to empty memory file {memory_path}: {e}")
                 else:
+                    self.logger.debug("Attempting to parse JSON content.")
                     try:
                         json.loads(content)
                         self.logger.info("✅ Memory file validated successfully")
@@ -136,14 +157,27 @@ class StartupValidator:
                         self.logger.error(f"❌ Memory file contains invalid JSON: {e}")
                         # Backup corrupted file
                         backup_path = memory_path.with_suffix('.corrupted')
-                        memory_path.rename(backup_path)
-                        self.logger.warning(f"Backed up corrupted memory file to: {backup_path}")
+                        self.logger.debug(f"Attempting to rename corrupted file to {backup_path}")
+                        try:
+                            memory_path.rename(backup_path)
+                            self.logger.warning(f"Backed up corrupted memory file to: {backup_path}")
+                        except Exception as rename_e:
+                            self.errors.append(f"Failed to backup corrupted memory file: {rename_e}")
+                            self.logger.error(f"❌ Failed to rename corrupted memory file {memory_path} to {backup_path}: {rename_e}")
+                            # Attempt to continue by writing new file anyway, but log the failure
                         # Create new file with default structure
-                        with open(memory_path, "w", encoding="utf-8") as f:
-                            json.dump(default_structure, f, indent=2)
+                        self.logger.debug(f"Attempting to write default structure after backup: {memory_path}")
+                        try:
+                            with open(memory_path, "w", encoding="utf-8") as f:
+                                json.dump(default_structure, f, indent=2)
+                            self.logger.debug(f"Successfully wrote default structure after backup: {memory_path}")
+                        except Exception as write_e:
+                            self.errors.append(f"Failed to write new memory file after backup: {write_e}")
+                            self.logger.error(f"❌ Failed to write new memory file {memory_path} after backup attempt: {write_e}")
         except Exception as e:
             self.errors.append(f"Error reading memory file: {e}")
-            self.logger.error(f"❌ Error accessing memory file: {e}")
+            self.logger.error(f"❌ Error accessing memory file {memory_path}: {e}")
+        self.logger.debug("Finished memory file check.")
 
     def check_template_dir(self):
         """Validate template directory structure and content."""

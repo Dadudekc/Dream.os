@@ -26,7 +26,7 @@ import asyncio
 import ast
 import subprocess
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any
 
 # PyQt5 imports (consolidated)
 from PyQt5.QtWidgets import (
@@ -42,6 +42,7 @@ from core.AletheiaPromptManager import AletheiaPromptManager
 from core.PromptResponseHandler import PromptResponseHandler
 from core.services.discord.DiscordQueueProcessor import DiscordQueueProcessor
 from core.config.config_manager import ConfigManager
+from ..mock_service import MockService
 
 # Example local LLM wrapper using HuggingFace Transformers
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -85,23 +86,42 @@ class PromptExecutionTab(QWidget):
     execution_finished = pyqtSignal(str)
     execution_error = pyqtSignal(str)
 
-    def __init__(self, dispatcher=None, parent=None, config=None, logger=None, prompt_manager=None):
+    def __init__(self, services: Dict[str, Any], parent=None):
         super().__init__(parent)
-        self.dispatcher = dispatcher
-        self.config = config or ConfigManager()
-        self.logger = logger or logging.getLogger("PromptExecutionTab")
-        self.prompt_manager = prompt_manager
-        self.current_file_path = None  # Track current file if needed
+        self.services = services
+        self.parent_widget = parent
+        self.current_file_path = None
 
-        # Initialize internal services
-        self.prompt_orchestrator = PromptCycleOrchestrator(
-            config_manager=self.config,
-            chat_manager=getattr(self, "chat_manager", None)  # Should be injected appropriately
-        )
-        self.template_manager = AletheiaPromptManager()
+        # Retrieve services from the dictionary
+        self.logger = services.get('logger', logging.getLogger("PromptExecutionTab"))
+        self.config = services.get('config_manager', ConfigManager())
+        self.prompt_manager = services.get('prompt_manager')
+        self.chat_manager = services.get('chat_manager')
+        self.dispatcher = services.get('dispatcher')
+        self.template_manager = services.get('template_manager')
+
+        # Initialize internal services using retrieved dependencies
+        if not self.prompt_manager or isinstance(self.prompt_manager, MockService):
+            self.logger.error("PromptManager service is missing or mocked. Cannot initialize PromptCycleOrchestrator.")
+            self.prompt_orchestrator = None
+        else:
+            try:
+                self.prompt_orchestrator = PromptCycleOrchestrator(
+                    config_manager=self.config,
+                    chat_manager=self.chat_manager,
+                    prompt_manager=self.prompt_manager
+                )
+                self.logger.info("PromptCycleOrchestrator initialized within PromptExecutionTab.")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize PromptCycleOrchestrator in PromptExecutionTab: {e}", exc_info=True)
+                self.prompt_orchestrator = None
+        
+        if not self.template_manager:
+            self.logger.warning("TemplateManager service not found, template operations might fail.")
+
         self.response_handler = PromptResponseHandler(self.config, self.logger)
         self.discord_processor = DiscordQueueProcessor(self.config, self.logger)
-        self.local_llm = None  # Lazy-loaded local LLM wrapper for offline mode
+        self.local_llm = None
         self.running_tasks = {}
 
         self._init_ui()
@@ -114,8 +134,10 @@ class PromptExecutionTab(QWidget):
         # Prompt selector
         layout.addWidget(QLabel("Select Prompt:"))
         self.prompt_selector = QComboBox()
-        prompts = self.prompt_orchestrator.list_prompts() if hasattr(self.prompt_orchestrator, 'list_prompts') else []
+        prompts = self.prompt_orchestrator.list_prompts() if self.prompt_orchestrator and hasattr(self.prompt_orchestrator, 'list_prompts') else []
         self.prompt_selector.addItems(prompts)
+        if not prompts:
+            self.logger.warning("No prompts found via orchestrator in PromptExecutionTab.")
         layout.addWidget(self.prompt_selector)
 
         # Offline mode checkbox

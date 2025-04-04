@@ -5,6 +5,8 @@ from queue import Queue, Empty
 import threading
 import time
 from core.config.config_manager import ConfigManager
+import asyncio
+import discord
 
 class DiscordBatchDispatcher:
     """
@@ -12,19 +14,25 @@ class DiscordBatchDispatcher:
     Manages rate limits and provides feedback on message delivery status.
     """
 
-    def __init__(self, config_manager: ConfigManager):
+    def __init__(self, config_manager: ConfigManager, discord_client: Any, loop: asyncio.AbstractEventLoop, logger: Optional[logging.Logger] = None):
         """
         Initialize the Discord batch dispatcher.
         
         :param config_manager: The configuration manager instance
+        :param discord_client: The initialized discord.Client instance
+        :param loop: The asyncio event loop the client is running on
+        :param logger: Optional logger instance
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger or logging.getLogger(__name__)
         self.config_manager = config_manager
+        self.discord_client = discord_client
+        self.loop = loop
         self.message_queue = Queue()
-        self.batch_size = self.config_manager.get('DISCORD_BATCH_SIZE', 10)
-        self.rate_limit_delay = self.config_manager.get('DISCORD_RATE_LIMIT_DELAY', 1)
+        self.batch_size = self.config_manager.get('discord.batch_size', 10)
+        self.rate_limit_delay = self.config_manager.get('discord.rate_limit_delay', 1)
         self.is_running = False
         self.dispatcher_thread = None
+        self.start()
 
     def start(self) -> None:
         """Start the message dispatcher thread."""
@@ -132,20 +140,70 @@ class DiscordBatchDispatcher:
 
     def _send_channel_messages(self, channel_id: int, messages: List[Dict[str, Any]]) -> None:
         """
-        Send messages to a specific channel.
+        Send messages to a specific channel using thread-safe asyncio calls.
         
         :param channel_id: The Discord channel ID
         :param messages: List of messages to send
         """
+        if not self.discord_client or not self.loop or not self.discord_client.is_ready():
+            self.logger.error(f"Discord client not ready or not available. Cannot send messages to {channel_id}.")
+            # Optionally re-queue messages or handle differently
+            return
+            
+        async def send_async(channel, content):
+            """Coroutine to send a single message."""
+            try:
+                await channel.send(content)
+                self.logger.debug(f"Successfully sent to channel {channel_id}: {content[:30]}...")
+            except discord.Forbidden:
+                self.logger.error(f"Permission error sending to channel {channel_id}. Check bot permissions.")
+            except discord.HTTPException as e:
+                self.logger.error(f"HTTP error sending to channel {channel_id}: {e.status} {e.text}")
+            except Exception as e:
+                self.logger.error(f"Unexpected error sending to channel {channel_id}: {e}", exc_info=True)
+
         try:
-            # TODO: Implement actual Discord API calls
+            # TODO: Implement actual Discord API calls - Replaced below
             # For now, just log the messages
+            # for message in messages:
+            #     self.logger.info(f"Sending to channel {channel_id}: {message['content']}")
+            #     time.sleep(self.rate_limit_delay)  # Simulate API rate limiting
+
+            channel = self.discord_client.get_channel(int(channel_id)) # Ensure channel_id is int
+            if not channel:
+                self.logger.error(f"Could not find channel with ID: {channel_id}")
+                return
+
+            if not isinstance(channel, discord.TextChannel):
+                self.logger.error(f"Channel {channel_id} is not a text channel.")
+                return
+
             for message in messages:
-                self.logger.info(f"Sending to channel {channel_id}: {message['content']}")
-                time.sleep(self.rate_limit_delay)  # Simulate API rate limiting
+                content = message.get('content', '')
+                if not content:
+                    continue # Skip empty messages
+                
+                # Ensure message length is within Discord limits (2000 chars)
+                if len(content) > 2000:
+                     self.logger.warning(f"Message for channel {channel_id} exceeds 2000 characters. Truncating.")
+                     content = content[:2000]
+                     
+                # Schedule the coroutine on the client's event loop
+                future = asyncio.run_coroutine_threadsafe(send_async(channel, content), self.loop)
+                
+                try:
+                    # Optional: Wait for the result with a timeout, though often fire-and-forget is fine for logging
+                    future.result(timeout=10) # Wait up to 10 seconds for send confirmation
+                except TimeoutError:
+                     self.logger.warning(f"Timeout waiting for Discord message send confirmation to {channel_id}.")
+                except Exception as e:
+                     self.logger.error(f"Error obtaining result from send_async future: {e}")
+                
+                # Apply rate limit delay *between* messages in the batch to be safe
+                time.sleep(self.rate_limit_delay)
 
         except Exception as e:
-            self.logger.error(f"Error sending messages to channel {channel_id}: {str(e)}")
+            self.logger.error(f"Error sending messages to channel {channel_id}: {e}", exc_info=True)
 
     def get_queue_size(self) -> int:
         """

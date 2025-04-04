@@ -518,19 +518,24 @@
     "generate_missing_tests.py": {
         "language": ".py",
         "functions": [
+            "find_module_dirs",
+            "module_to_test_filename",
             "parse_args",
+            "load_cache",
+            "save_cache",
             "find_python_modules",
             "find_existing_tests",
             "analyze_module_content",
             "generate_test_template",
             "generate_test_with_ollama",
+            "format_with_black",
             "create_test_file",
             "run_tests",
             "main"
         ],
         "classes": {},
         "routes": [],
-        "complexity": 9
+        "complexity": 14
     },
     "generate_jinja_templates.py": {
         "language": ".py",
@@ -16479,6 +16484,7 @@
             "load_config",
             "register_service",
             "get_service",
+            "has_service",
             "unregister_service",
             "initialize_cursor_ui_service",
             "initialize_service",
@@ -16502,6 +16508,7 @@
                     "load_config",
                     "register_service",
                     "get_service",
+                    "has_service",
                     "unregister_service",
                     "initialize_cursor_ui_service",
                     "initialize_service",
@@ -16514,7 +16521,7 @@
             }
         },
         "routes": [],
-        "complexity": 28
+        "complexity": 30
     },
     "core\\TaskManager.py": {
         "language": ".py",
@@ -19618,7 +19625,7 @@
                     "find_match_by_username",
                     "_extract_json"
                 ],
-                "docstring": null,
+                "docstring": "Dispatches profiles to an LLM for analysis based on a template,\nparses the response, and optionally saves matches to MeritChain.\nRelies on injected services for dependencies.",
                 "base_classes": []
             }
         },
@@ -19673,7 +19680,7 @@
                     "get_file_coverage",
                     "get_total_coverage"
                 ],
-                "docstring": "Analyzer for test coverage.",
+                "docstring": "Analyzer for test coverage using coverage.py data.",
                 "base_classes": []
             }
         },
@@ -19684,6 +19691,7 @@
         "language": ".py",
         "functions": [
             "__init__",
+            "_read_file_content",
             "generate_test",
             "generate_test_suite"
         ],
@@ -19691,6 +19699,7 @@
             "TestGeneratorService": {
                 "methods": [
                     "__init__",
+                    "_read_file_content",
                     "generate_test",
                     "generate_test_suite"
                 ],
@@ -19699,7 +19708,7 @@
             }
         },
         "routes": [],
-        "complexity": 6
+        "complexity": 8
     },
     "core\\merit\\__init__.py": {
         "language": ".py",
@@ -20354,76 +20363,82 @@
             "_demo",
             "__init__",
             "_load_or_calibrate_coords",
-            "_save_calibrated_coords",
             "_calibrate",
+            "_save_calibrated_coords",
             "queue_task",
             "cancel_task",
             "update_task_priority",
-            "_sort_task_queue",
-            "_get_queue_snapshot",
-            "start_loop",
-            "stop_loop",
             "accept_next_task",
             "toggle_auto_accept",
             "set_on_update_callback",
             "build_prompt_batch",
             "run_overnight_mode",
+            "start_loop",
+            "stop_loop",
             "_task_loop",
             "_execute_task",
+            "_record_task_failure",
+            "_capture_response_from_clipboard",
+            "_handle_test_generation",
+            "_sort_task_queue",
+            "_priority_rank",
             "_get_queue_snapshot",
-            "_format_context_for_prompt",
-            "_inject_context",
-            "_inject_automatic_context",
-            "_format_prompt_with_context",
             "_focus_cursor_window",
             "_click_coordinate",
             "_type_prompt_and_send",
             "_wait_for_response",
             "shutdown",
             "_configure_default_hooks",
-            "_custom_context_injection_hook",
-            "demo_validation_hook"
+            "_inject_automatic_context_hook_wrapper",
+            "_inject_automatic_context",
+            "_format_prompt_with_context",
+            "_demo",
+            "demo_callback",
+            "simple_approval_hook",
+            "simple_dispatch_hook"
         ],
         "classes": {
             "CursorSessionManager": {
                 "methods": [
                     "__init__",
                     "_load_or_calibrate_coords",
-                    "_save_calibrated_coords",
                     "_calibrate",
+                    "_save_calibrated_coords",
                     "queue_task",
                     "cancel_task",
                     "update_task_priority",
-                    "_sort_task_queue",
-                    "_get_queue_snapshot",
-                    "start_loop",
-                    "stop_loop",
                     "accept_next_task",
                     "toggle_auto_accept",
                     "set_on_update_callback",
                     "build_prompt_batch",
                     "run_overnight_mode",
+                    "start_loop",
+                    "stop_loop",
                     "_task_loop",
                     "_execute_task",
+                    "_record_task_failure",
+                    "_capture_response_from_clipboard",
+                    "_handle_test_generation",
+                    "_sort_task_queue",
+                    "_priority_rank",
                     "_get_queue_snapshot",
-                    "_format_context_for_prompt",
-                    "_inject_context",
-                    "_inject_automatic_context",
-                    "_format_prompt_with_context",
                     "_focus_cursor_window",
                     "_click_coordinate",
                     "_type_prompt_and_send",
                     "_wait_for_response",
                     "shutdown",
                     "_configure_default_hooks",
-                    "_custom_context_injection_hook"
+                    "_inject_automatic_context_hook_wrapper",
+                    "_inject_automatic_context",
+                    "_format_prompt_with_context",
+                    "_demo"
                 ],
-                "docstring": "Unified class that handles:\n  1) UI calibration for Cursor (prompt box + accept button)\n  2) Task queueing with auto/manual acceptance\n  3) Batch prompt building (optional)\n  4) Dynamic wait for 'Accept' detection\n  5) Execution history of tasks\n  6) Lifecycle hooks for task processing",
+                "docstring": "A unified manager for:\n  1) UI calibration for Cursor (prompt box + accept button)\n  2) Task queueing with auto/manual acceptance\n  3) Batch prompt building (optional)\n  4) Dynamic wait for 'Accept' button detection\n  5) Execution history (success/failure tracking)\n  6) Lifecycle hooks for validate/inject/approve/dispatch\n  7) Optional test generation & coverage analysis\n  8) Overnight/batch mode for direct prompt processing\n  9) Dry-run mode for safe UI testing",
                 "base_classes": []
             }
         },
         "routes": [],
-        "complexity": 62
+        "complexity": 68
     },
     "core\\refactor\\cursor_dispatcher.py": {
         "language": ".py",
@@ -21403,7 +21418,7 @@
                     "log_event",
                     "log_system_event"
                 ],
-                "docstring": "Stub implementation for Discord logging.",
+                "docstring": "Logs messages to Discord using a DiscordManager instance.",
                 "base_classes": [
                     "ILoggingAgent"
                 ]
@@ -21437,6 +21452,8 @@
             "send_event_notification",
             "update_status",
             "test_connection",
+            "get_loop",
+            "get_status",
             "__init__",
             "initUI",
             "load_prompt_types",
@@ -21469,7 +21486,9 @@
                     "send_prompt_response",
                     "send_event_notification",
                     "update_status",
-                    "test_connection"
+                    "test_connection",
+                    "get_loop",
+                    "get_status"
                 ],
                 "docstring": null,
                 "base_classes": []
@@ -21491,7 +21510,7 @@
             }
         },
         "routes": [],
-        "complexity": 58
+        "complexity": 62
     },
     "core\\services\\discord\\DiscordQueueProcessor.py": {
         "language": ".py",
@@ -24190,9 +24209,6 @@
         "language": ".py",
         "functions": [
             "__init__",
-            "__getattr__",
-            "__init__",
-            "_initialize_services",
             "_init_ui",
             "_enable_button_debugging",
             "_connect_tab_signals",
@@ -24208,22 +24224,12 @@
             "_build_action_specific_fallback",
             "_get_task_metrics",
             "_get_cursor_rules",
-            "_on_recovery_dashboard_refresh",
-            "mock_method"
+            "_on_recovery_dashboard_refresh"
         ],
         "classes": {
-            "MockService": {
-                "methods": [
-                    "__init__",
-                    "__getattr__"
-                ],
-                "docstring": "Mock service for development/testing.",
-                "base_classes": []
-            },
             "DreamOsMainWindow": {
                 "methods": [
                     "__init__",
-                    "_initialize_services",
                     "_init_ui",
                     "_enable_button_debugging",
                     "_connect_tab_signals",
@@ -24248,7 +24254,7 @@
             }
         },
         "routes": [],
-        "complexity": 41
+        "complexity": 34
     },
     "interfaces\\pyqt\\dreamscape_gui.py": {
         "language": ".py",
@@ -25428,14 +25434,18 @@
         "functions": [
             "__init__",
             "init_ui",
-            "load_graph"
+            "load_graph",
+            "_on_load_finished",
+            "generate_graph_html"
         ],
         "classes": {
             "DependencyMapTab": {
                 "methods": [
                     "__init__",
                     "init_ui",
-                    "load_graph"
+                    "load_graph",
+                    "_on_load_finished",
+                    "generate_graph_html"
                 ],
                 "docstring": null,
                 "base_classes": [
@@ -25444,7 +25454,7 @@
             }
         },
         "routes": [],
-        "complexity": 6
+        "complexity": 10
     },
     "interfaces\\pyqt\\tabs\\dream_os_tab_factory.py": {
         "language": ".py",
@@ -25679,6 +25689,10 @@
             "refresh_status",
             "restart_services",
             "clear_logs",
+            "_process_task_queue",
+            "_init_ui",
+            "_start_status_updates",
+            "_update_status_display",
             "__init__",
             "emit"
         ],
@@ -25692,7 +25706,11 @@
                     "setup_log_handler",
                     "refresh_status",
                     "restart_services",
-                    "clear_logs"
+                    "clear_logs",
+                    "_process_task_queue",
+                    "_init_ui",
+                    "_start_status_updates",
+                    "_update_status_display"
                 ],
                 "docstring": "Main tab for the Dream.OS interface.",
                 "base_classes": [
@@ -25711,7 +25729,7 @@
             }
         },
         "routes": [],
-        "complexity": 20
+        "complexity": 28
     },
     "interfaces\\pyqt\\tabs\\meredith_tab.py": {
         "language": ".py",
@@ -25785,7 +25803,7 @@
                     "_reset_ui_for_new_scan",
                     "toggle_visibility"
                 ],
-                "docstring": "A private PyQt5 tab that orchestrates:\n  - Running the Meredith scraping (in a background thread).\n  - Displaying progress logs and a progress bar.\n  - Showing the final filtered profiles in a QTableWidget.\n  - Exporting or clearing results.\n  - Providing a 'Message' button that opens each profile in your default browser.\n  - Displaying a \"Resonance Score\" computed via the ResonanceScorer.\n  - Dynamically loading available resonance models from a directory.\n  - Integrates the MeredithDispatcher to analyze profiles.\n  - Can be toggled visible/invisible if running in \"private mode.\"\n  - Provides access to view MeritChain entries.\n\nArgs:\n    parent (QWidget): Parent widget, if any.\n    private_mode (bool): If True, the tab is hidden by default.",
+                "docstring": "A private PyQt5 tab that orchestrates:\n  - Running the Meredith scraping (in a background thread).\n  - Displaying progress logs and a progress bar.\n  - Showing the final filtered profiles in a QTableWidget.\n  - Exporting or clearing results.\n  - Providing a 'Message' button that opens each profile in your default browser.\n  - Displaying a \"Resonance Score\" computed via the ResonanceScorer.\n  - Dynamically loading available resonance models from a directory.\n  - Integrates the MeredithDispatcher to analyze profiles.\n  - Can be toggled visible/invisible if running in \"private mode.\"\n  - Provides access to view MeritChain entries.\n\nArgs:\n    services (Dict[str, Any]): Dictionary of shared services.\n    parent (QWidget): Parent widget, if any.\n    private_mode (bool): If True, the tab is hidden by default.",
                 "base_classes": [
                     "QWidget"
                 ]
@@ -35254,5 +35272,191 @@
         "classes": {},
         "routes": [],
         "complexity": 0
+    },
+    "core\\discord\\__init__.py": {
+        "language": ".py",
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "core\\discord\\DiscordBot.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_setup_commands",
+            "run_bot"
+        ],
+        "classes": {
+            "DiscordBot": {
+                "methods": [
+                    "__init__",
+                    "_setup_commands",
+                    "run_bot"
+                ],
+                "docstring": "Discord bot specialized for interacting with Dreamscape episodes.",
+                "base_classes": [
+                    "commands.Bot"
+                ]
+            }
+        },
+        "routes": [],
+        "complexity": 6
+    },
+    "core\\discord\\discord_integration.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_register_events",
+            "load_config",
+            "save_config",
+            "run",
+            "stop",
+            "send_message",
+            "send_file",
+            "send_template",
+            "get_status",
+            "set_log_callback",
+            "_log",
+            "__init__",
+            "launch_bot",
+            "stop_bot",
+            "send_message",
+            "send_file",
+            "send_template",
+            "get_status",
+            "is_running",
+            "run_bot"
+        ],
+        "classes": {
+            "UnifiedDiscordService": {
+                "methods": [
+                    "__init__",
+                    "_register_events",
+                    "load_config",
+                    "save_config",
+                    "run",
+                    "stop",
+                    "send_message",
+                    "send_file",
+                    "send_template",
+                    "get_status",
+                    "set_log_callback",
+                    "_log"
+                ],
+                "docstring": "UnifiedDiscordService - Centralized Discord integration service.\nHandles all Discord-related functionality including:\n  - Bot lifecycle management\n  - Message dispatching\n  - Template rendering\n  - Channel management\n  - Status monitoring\n  - Event notifications",
+                "base_classes": []
+            },
+            "DiscordService": {
+                "methods": [
+                    "__init__",
+                    "launch_bot",
+                    "stop_bot",
+                    "send_message",
+                    "send_file",
+                    "send_template",
+                    "get_status",
+                    "is_running"
+                ],
+                "docstring": "DiscordService provides a Qt-friendly interface to the UnifiedDiscordService.\nIt exposes signals for logging and status changes and wraps the backend service methods.",
+                "base_classes": [
+                    "QObject"
+                ]
+            }
+        },
+        "routes": [],
+        "complexity": 41
+    },
+    "core\\init\\service_initializer.py": {
+        "language": ".py",
+        "functions": [
+            "initialize_all"
+        ],
+        "classes": {
+            "ServiceInitializationError": {
+                "methods": [],
+                "docstring": "Custom exception for critical service initialization failures.",
+                "base_classes": [
+                    "Exception"
+                ]
+            },
+            "ServiceInitializer": {
+                "methods": [
+                    "initialize_all"
+                ],
+                "docstring": "Handles the initialization of all core and UI services. Critical failures raise\nServiceInitializationError. Non-critical failures gracefully degrade to mock services.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 2
+    },
+    "core\\services\\elephant_builder_service.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "build_single_module",
+            "build_from_spec"
+        ],
+        "classes": {
+            "ElephantBuilderService": {
+                "methods": [
+                    "__init__",
+                    "build_single_module",
+                    "build_from_spec"
+                ],
+                "docstring": "ElephantBuilderService is responsible for automating the creation of new modules based\non a specification and a Jinja template. It reads module definitions from a spec file\nand renders prompts to generate production-ready code via the CursorDispatcher.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 6
+    },
+    "core\\services\\task_queue_service.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "load_tasks",
+            "save_tasks",
+            "add_task",
+            "process_queue",
+            "get_tasks"
+        ],
+        "classes": {
+            "TaskQueueService": {
+                "methods": [
+                    "__init__",
+                    "load_tasks",
+                    "save_tasks",
+                    "add_task",
+                    "process_queue",
+                    "get_tasks"
+                ],
+                "docstring": "TaskQueueService loads a list of tasks from a JSON file, processes each task,\nand saves the updated queue back to disk. It is designed to work with the\nElephantBuilderService to automate module generation.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 12
+    },
+    "interfaces\\pyqt\\mock_service.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "__getattr__",
+            "mock_method"
+        ],
+        "classes": {
+            "MockService": {
+                "methods": [
+                    "__init__",
+                    "__getattr__"
+                ],
+                "docstring": "Mock service for development/testing.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 5
     }
 }

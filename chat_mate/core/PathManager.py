@@ -59,6 +59,10 @@ class PathManager(metaclass=PathManagerMeta):
                 # You can adjust the subpath here if your folder structure changes
                 cls._paths["resonance_models"] = Path(cls._paths["base"]) / "core" / "meredith" / "resonance_match_models"
 
+            # REVIEW: Add the missing dreamscape_memory path
+            if "dreamscape_memory" not in cls._paths:
+                cls._paths["dreamscape_memory"] = Path(cls._paths["memory"]) / "dreamscape"
+
             cls._initialized = True
             PathManagerMeta._generate_properties(cls)
 
