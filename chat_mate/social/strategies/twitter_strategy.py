@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from utils.cookie_manager import CookieManager
 from social.social_config import social_config
-from social.log_writer import write_json_log, logger
+from social.log_writer import write_json_log, get_social_logger
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 from utils.SentimentAnalyzer import SentimentAnalyzer
@@ -32,7 +32,7 @@ class TwitterCommunityArchitect:
         self.driver = driver
         self.cookie_manager = CookieManager()
         self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
-
+        self.logger = get_social_logger()
     # ========================
     # LOGIN SYSTEM
     # ========================

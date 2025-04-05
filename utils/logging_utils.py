@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from typing import Optional
-from core.logging.utils.setup import setup_logging
+from core.logging.factories.LoggerFactory import LoggerFactory
 from datetime import datetime
 
 # -------------------------------------------------------------------
@@ -16,26 +16,20 @@ JSON_LOG_DIR = os.path.join(UTILS_LOG_DIR, "json_logs")
 os.makedirs(JSON_LOG_DIR, exist_ok=True)
 
 # -------------------------------------------------------------------
-# Python Logger Setup (Plain Text)
+# Python Logger Setup (Plain Text) - Using LoggerFactory
 # -------------------------------------------------------------------
 
-PLAIN_LOG_FILE = os.path.join(UTILS_LOG_DIR, "utils_activity.log")
+# Get logger using the factory
+# Note: Log file will be in outputs/logs/aletheiautilslogs.log
+logger = LoggerFactory.create_standard_logger(
+    name="AletheiaUtilsLogs", 
+    level=logging.DEBUG, # Keep DEBUG level
+    log_to_file=True
+)
 
-logger = logging.getLogger("AletheiaUtilsLogs")
-logger.setLevel(logging.DEBUG)  # Capture all levels for flexibility
+# Removed manual handler creation and adding
 
-# File handler for persistent logs
-file_handler = logging.FileHandler(PLAIN_LOG_FILE, encoding="utf-8")
-file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
-
-# Optional: Console handler for immediate feedback
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
-
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
-
-logger.debug(f" Logging initialized at {UTILS_LOG_DIR}")
+logger.debug(f" Logging initialized via LoggerFactory")
 
 # -------------------------------------------------------------------
 # Aletheia JSON Log Writer
@@ -86,21 +80,3 @@ def log_success(component, message, tags=None, ai_output=None):
 def log_error(component, error_msg, tags=None):
     write_json_log(component, "failed", tags or ["error"], ai_output=error_msg, event_type="error")
     logger.error(f"[{component.upper()}] ERROR: {error_msg}")
-
-def setup_basic_logging(
-    logger_name: str,
-    log_level: int = logging.INFO,
-    log_to_console: bool = True,
-    log_to_file: bool = False,
-    log_file: Optional[str] = None,
-    log_format: Optional[str] = None
-) -> logging.Logger:
-    """A simple wrapper around the advanced setup_logging function."""
-    return setup_logging(
-        logger_name=logger_name,
-        log_level=log_level,
-        log_to_console=log_to_console,
-        log_to_file=log_to_file,
-        log_file=log_file,
-        log_format=log_format
-    )

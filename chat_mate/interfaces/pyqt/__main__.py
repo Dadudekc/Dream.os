@@ -13,13 +13,16 @@ import sys
 import logging
 from PyQt5.QtWidgets import QApplication
 
-from chat_mate.core.config.ConfigManager import ConfigManager
-from chat_mate.core.logging.factories.LoggerFactory import LoggerFactory
+from core.services.AgentOrchestrator import AgentOrchestrator
+from core.config.config_manager import ConfigManager
+from core.logging.factories.LoggerFactory import LoggerFactory
 from chat_mate.core.micro_factories.chat_factory import create_chat_manager
 from chat_mate.core.micro_factories.prompt_factory import PromptFactory
 from chat_mate.interfaces.pyqt.dream_os_window.services.service_factory import ServiceFactory
-from chat_mate.interfaces.pyqt.DreamOsMainWindow import DreamOsMainWindow
+from chat_mate.interfaces.pyqt.dream_os_window.main_window import DreamOsMainWindow
 from chat_mate.utils.signal_dispatcher import SignalDispatcher
+from interfaces.pyqt.components.prompt_panel import PromptPanel
+from interfaces.pyqt.components.logs_panel import LogsPanel
 
 def main():
     """

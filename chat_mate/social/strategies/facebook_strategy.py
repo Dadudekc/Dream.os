@@ -23,7 +23,7 @@ load_dotenv()
 
 # Absolute imports from our codebase
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
@@ -83,7 +83,7 @@ class FacebookBot:
         self.email = social_config.get_env("FACEBOOK_EMAIL")
         self.password = social_config.get_env("FACEBOOK_PASSWORD")
         self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
-
+        self.logger = get_social_logger()
     def _wait(self, custom_range=None):
         wait_time = random.uniform(*(custom_range or (self.wait_min, self.wait_max)))
         logger.debug(f"⏳ Waiting for {round(wait_time, 2)} seconds...")

@@ -1,33 +1,38 @@
 import os
 import json
 import logging
-import functools  # Added
+import functools
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
+import requests
 
 # -------------------------------------------------------------------
 # Directory & Log Setup
 # -------------------------------------------------------------------
 
-BASE_DIR = os.getcwd()  # Could use PathManager if available
+BASE_DIR = os.getcwd()  # Adjust if using a different base path
 SOCIAL_LOG_DIR = os.path.join(BASE_DIR, "social", "logs")
 JSON_LOG_DIR = os.path.join(SOCIAL_LOG_DIR, "json_logs")
 
+os.makedirs(SOCIAL_LOG_DIR, exist_ok=True)
 os.makedirs(JSON_LOG_DIR, exist_ok=True)
 
-# -------------------------------------------------------------------
-# Logger Setup (Deferred)
-# -------------------------------------------------------------------
-
 PLAIN_LOG_FILE = os.path.join(SOCIAL_LOG_DIR, "platform_activity.log")
+JSON_LOG_FILE = os.path.join(JSON_LOG_DIR, "social_activity.jsonl")
+
+# -------------------------------------------------------------------
+# Plain Logger Setup with Log Rotation
+# -------------------------------------------------------------------
 
 @functools.lru_cache(maxsize=None)
 def get_social_logger() -> logging.Logger:
-    """Gets and configures the AletheiaSocialLogs logger."""
+    """Returns a logger for plain text logging with rotation."""
     logger_instance = logging.getLogger("AletheiaSocialLogs")
     if not logger_instance.handlers:
         logger_instance.setLevel(logging.DEBUG)
 
-        file_handler = logging.FileHandler(PLAIN_LOG_FILE, encoding="utf-8")
+        # RotatingFileHandler rotates at 5 MB with up to 5 backups.
+        file_handler = RotatingFileHandler(PLAIN_LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")
         file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
 
         console_handler = logging.StreamHandler()
@@ -35,13 +40,39 @@ def get_social_logger() -> logging.Logger:
 
         logger_instance.addHandler(file_handler)
         logger_instance.addHandler(console_handler)
-
-        # logger_instance.debug(f" Logging initialized at {SOCIAL_LOG_DIR}") # Keep commented
-
     return logger_instance
 
 # -------------------------------------------------------------------
-# Aletheia JSON Log Writer
+# JSON Logger Setup with Custom Formatter & Rotation
+# -------------------------------------------------------------------
+
+class JSONFormatter(logging.Formatter):
+    """Custom JSON formatter for structured log entries."""
+    def format(self, record):
+        log_entry = {
+            "timestamp": datetime.utcfromtimestamp(record.created).isoformat() + "Z",
+            "platform": record.__dict__.get("platform", "unknown").lower(),
+            "event_type": record.__dict__.get("event_type", "system").lower(),
+            "result": record.__dict__.get("result", "unknown").lower(),
+            "tags": record.__dict__.get("tags", []),
+            "ai_output": record.__dict__.get("ai_output", "")
+        }
+        return json.dumps(log_entry)
+
+@functools.lru_cache(maxsize=None)
+def get_json_logger() -> logging.Logger:
+    """Returns a logger for JSON logging with rotation."""
+    json_logger = logging.getLogger("AletheiaJSONLogs")
+    if not json_logger.handlers:
+        json_logger.setLevel(logging.DEBUG)
+        # Use rotating handler for JSON logs too.
+        json_handler = RotatingFileHandler(JSON_LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")
+        json_handler.setFormatter(JSONFormatter())
+        json_logger.addHandler(json_handler)
+    return json_logger
+
+# -------------------------------------------------------------------
+# Unified JSON Log Writer
 # -------------------------------------------------------------------
 
 def write_json_log(
@@ -49,81 +80,76 @@ def write_json_log(
     result: str,
     tags=None,
     ai_output=None,
-    event_type="system",
-    log_file="social_activity.jsonl"
+    event_type="system"
 ):
     """
-    Unified JSON logger for all platform events.
+    Writes a structured JSON log entry and also logs on the plain logger.
     """
-    logger = get_social_logger() # Use the getter
     tags = tags or []
-    log_entry = {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "platform": platform.lower(),
-        "event_type": event_type.lower(),
-        "result": result.lower(),
+    extra = {
+        "platform": platform,
+        "event_type": event_type,
+        "result": result,
         "tags": tags,
         "ai_output": ai_output or ""
     }
-
-    file_path = os.path.join(JSON_LOG_DIR, log_file)
-
-    try:
-        with open(file_path, "a", encoding="utf-8") as f:
-            json.dump(log_entry, f)
-            f.write("\n")
-        logger.debug(f" JSON log recorded: {platform.upper()} [{event_type.upper()}]")
-
-    except Exception as e:
-        logger.exception(f" Failed to write JSON log for {platform.upper()}: {e}")
-
-    logger.info(f"[{platform.upper()}] {event_type.upper()} | Result: {result.upper()} | Tags: {tags} | AI Output: {ai_output or 'N/A'}")
+    json_logger = get_json_logger()
+    # Create an empty message and pass extra attributes.
+    json_logger.info("", extra=extra)
+    
+    plain_logger = get_social_logger()
+    plain_logger.info(f"[{platform.upper()}] {event_type.upper()} | Result: {result.upper()} | Tags: {tags} | AI Output: {ai_output or 'N/A'}")
 
 # -------------------------------------------------------------------
 # Shortcuts for Common Log Events
 # -------------------------------------------------------------------
 
 def log_login(platform, result="successful", tags=None, ai_output=None):
+    """Shortcut to log a login event."""
     write_json_log(platform, result, tags or ["login"], ai_output, event_type="login")
 
 def log_post(platform, result="successful", tags=None, ai_output=None):
+    """Shortcut to log a post event."""
     write_json_log(platform, result, tags or ["post"], ai_output, event_type="post")
 
 def log_error(platform, error_msg, tags=None):
-    logger = get_social_logger() # Use the getter
+    """Shortcut to log an error event."""
     write_json_log(platform, "failed", tags or ["error"], ai_output=error_msg, event_type="error")
+    logger = get_social_logger()
     logger.error(f"[{platform.upper()}] ERROR: {error_msg}")
 
 # -------------------------------------------------------------------
-# Future Extension: Discord Webhook Alerts
+# Discord Webhook Alerts
 # -------------------------------------------------------------------
 
-# def send_discord_alert(message: str, webhook_url: str):
-#     logger = get_social_logger() # Needs getter if uncommented
-#     import requests
-#     # ... rest of function ...
-
-# -------------------------------------------------------------------
-# Future Extension: JSON Log Rotation (Optional)
-# -------------------------------------------------------------------
-
-# def rotate_json_log(base_file: str, max_lines: int = 10000):
-#     logger = get_social_logger() # Needs getter if uncommented
-#     # ... rest of function ...
+def send_discord_alert(message: str, webhook_url: str):
+    """
+    Sends a Discord alert via webhook.
+    """
+    logger = get_social_logger()
+    try:
+        data = {"content": message}
+        response = requests.post(webhook_url, json=data)
+        if response.status_code == 204:
+            logger.info("Discord alert sent successfully.")
+        else:
+            logger.error(f"Failed to send Discord alert. Status: {response.status_code} - {response.text}")
+    except Exception as e:
+        logger.exception(f"Error sending Discord alert: {e}")
 
 # -------------------------------------------------------------------
 # Example Usage (Local Testing)
 # -------------------------------------------------------------------
 
 if __name__ == "__main__":
-    logger = get_social_logger() # Use the getter
-    logger.info(" Running log writer test sequence...")
+    logger = get_social_logger()
+    logger.info("Running advanced log writer test sequence...")
 
     log_login("twitter", tags=["cookie_login", "session_restore"])
     log_post("linkedin", result="successful", tags=["ai_generated", "scheduled"])
     log_error("reddit", error_msg="❌ Post button missing after DOM update.")
 
-    # Uncomment if testing Discord alerts
+    # Test Discord alert (ensure you have a valid webhook URL)
     # send_discord_alert("VictorOS alert test!", webhook_url="YOUR_WEBHOOK_URL_HERE")
 
-    logger.info(" Log writer test complete.")
+    logger.info("Log writer test complete.")

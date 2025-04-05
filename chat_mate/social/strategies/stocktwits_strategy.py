@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from typing import Dict, Any, List, Optional
 
 from utils.cookie_manager import CookieManager
-from social.log_writer import write_json_log, logger
+from social.log_writer import write_json_log, get_social_logger
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from utils.SentimentAnalyzer import SentimentAnalyzer
@@ -38,7 +38,7 @@ class StocktwitsCommunityArchitect:
         self.cookie_manager = CookieManager()
         self.sentiment_analyzer = SentimentAnalyzer()
         self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
-
+        self.logger = get_social_logger()
     # ===================================
     # LOGIN
     # ===================================

@@ -18,7 +18,7 @@ from selenium.common.exceptions import (
 
 from social.strategies.base_platform_strategy import BasePlatformStrategy
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from utils.SentimentAnalyzer import SentimentAnalyzer
@@ -43,7 +43,7 @@ class RedditStrategy(BasePlatformStrategy):
         self.wait_range = (3, 6)
         self.feedback_data = self._load_feedback_data()
         self.subreddits = ["algotrading", "systemtrader", "automation", "investing"]
-    
+        self.logger = get_social_logger()
     def initialize(self, credentials: Dict[str, str]) -> bool:
         """Initialize Reddit strategy with credentials."""
         try:

@@ -21,7 +21,7 @@ load_dotenv()
 
 # Unified project imports
 from utils.cookie_manager import CookieManager
-from social.log_writer import logger, write_json_log
+from social.log_writer import get_social_logger, write_json_log
 from social.social_config import social_config
 from social.AIChatAgent import AIChatAgent
 from social.strategies.base_platform_strategy import BasePlatformStrategy
@@ -86,7 +86,7 @@ class InstagramBot:
         self.email = social_config.get_env("INSTAGRAM_EMAIL")
         self.password = social_config.get_env("INSTAGRAM_PASSWORD")
         self.ai_agent = AIChatAgent(model="gpt-4o", tone="Victor", provider="openai")
-
+        self.logger = get_social_logger()
     def get_driver(self, mobile=True, headless=False):
         """
         Initialize Chrome driver with mobile emulation.

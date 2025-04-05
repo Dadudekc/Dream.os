@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent # Ensure line 3 is correct
+from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
 from chat_mate.core.logging.utils.AsyncDispatcher import AsyncDispatcher
-from chat_mate.core.ConsoleLogger import ConsoleLogger
+from chat_mate.core.logging.ConsoleLogger import ConsoleLogger
+from chat_mate.core.FileLogger import FileLogger
+from chat_mate.core.services.discord.DiscordLogger import DiscordLogger
 from chat_mate.core.config.ConfigManager import ConfigManager
 import logging
 

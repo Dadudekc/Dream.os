@@ -6,13 +6,16 @@ import logging
 from typing import Dict, Any, Optional
 
 from chat_mate.core.config.ConfigManager import ConfigManager
-from chat_mate.core.logging.CompositeLogger import CompositeLogger
+from chat_mate.chat_mate.core.logging.CompositeLogger import CompositeLogger
 from chat_mate.core.ConsoleLogger import ConsoleLogger
 from chat_mate.core.FileLogger import FileLogger
 from chat_mate.core.PromptResponseHandler import PromptResponseHandler
 from chat_mate.core.CycleExecutionService import CycleExecutionService
 from chat_mate.interfaces.pyqt.dreamscape_services import DreamscapeService
 from chat_mate.interfaces.pyqt.dreamscape_ui_logic import DreamscapeUILogic
+from core.agents.AgentRegistry import AgentRegistry
+from core.interfaces.IAgent import IAgent
+from core.DiscordLogger import DiscordLogger
 
 class ServiceFactory:
     """Factory for creating and managing DreamOS services with proper dependency injection."""

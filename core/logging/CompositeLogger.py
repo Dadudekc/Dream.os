@@ -1,13 +1,21 @@
+from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from chat_mate.core.interfaces.ILoggingAgent import ILoggingAgent
-from core.logging.utils.AsyncDispatcher import AsyncDispatcher
-from core.ConsoleLogger import ConsoleLogger
+from chat_mate.core.logging.utils.AsyncDispatcher import AsyncDispatcher
+from chat_mate.core.logging.ConsoleLogger import ConsoleLogger
+from chat_mate.core.FileLogger import FileLogger
+from chat_mate.core.services.discord.DiscordLogger import DiscordLogger
+from chat_mate.core.config.ConfigManager import ConfigManager
+import logging
+
+logger = logging.getLogger(__name__)
+
 class CompositeLogger(ILoggingAgent):
     """Composite logger that manages multiple logging handlers."""
     
-    def __init__(self, loggers: List[ILoggingAgent], fallback_logger: ILoggingAgent = None):
+    def __init__(self, loggers: List[ILoggingAgent], config_manager: ConfigManager, fallback_logger: ILoggingAgent = None):
         self.loggers = loggers
-        self.fallback_logger = fallback_logger or ConsoleLogger()
+        self.fallback_logger = fallback_logger or ConsoleLogger(config_manager)
         self.dispatcher = AsyncDispatcher()
         
     def _safe_log(self, logger: ILoggingAgent, method: str, *args: Any, **kwargs: Any) -> None:

@@ -27,6 +27,8 @@ class TabValidatorService:
         """
         self.services = services
         self.validation_results = {}
+        self.error_details = {}  # Added error_details dictionary
+        self.error_messages = {}  # Added for backward compatibility
         
         # Register tab factories and their required services
         self.tab_factories = {
@@ -52,6 +54,8 @@ class TabValidatorService:
                 logger.info(f"✅ Tab '{tab_name}' validated successfully")
             except Exception as e:
                 self.validation_results[tab_name] = False
+                self.error_details[tab_name] = str(e)  # Store error details
+                self.error_messages[tab_name] = str(e)  # Store in error_messages too for backward compatibility
                 logger.error(f"❌ Tab '{tab_name}' validation failed: {str(e)}")
         
         return self.validation_results
@@ -101,4 +105,16 @@ class TabValidatorService:
         Returns:
             Optional[bool]: True if validated, False if failed, None if not validated
         """
-        return self.validation_results.get(tab_name) 
+        return self.validation_results.get(tab_name)
+        
+    def get_error_details(self, tab_name: str) -> Optional[str]:
+        """
+        Get detailed error information for a failed tab validation.
+        
+        Args:
+            tab_name: Name of the tab to get error details for
+            
+        Returns:
+            Optional[str]: Error details if available, None otherwise
+        """
+        return self.error_details.get(tab_name) 

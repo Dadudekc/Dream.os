@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List, Callable
 from unittest.mock import MagicMock
 import importlib
+import asyncio
 
 # --------------------
 # PyQt Imports
@@ -28,16 +29,30 @@ import importlib
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTabWidget,
     QGroupBox, QLabel, QSplitter, QListWidget, QListWidgetItem, QStatusBar,
-    QPushButton, QTextEdit, QMessageBox
+    QPushButton, QTextEdit, QMessageBox, QDialog, QLineEdit, QComboBox, QSystemTrayIcon,
+    QMenu, QTableWidget, QTableWidgetItem, QHeaderView, QFrame, QFileDialog,
+    QScrollArea
 )
-from PyQt5.QtCore import Qt, QTimer, QTime, pyqtSignal, QThread, QEvent
+from PyQt5.QtCore import Qt, QTimer, QTime, pyqtSignal, QThread, QEvent, QSize, QUrl
+from PyQt5.QtGui import QIcon, QPixmap, QDesktopServices, QFontMetrics, QFont
 
 # Import tab factories
 from interfaces.pyqt.tabs.unified_dashboard.UnifiedDashboardTab import UnifiedDashboardTabFactory
 from interfaces.pyqt.tabs.draggable_prompt_board_tab import DraggablePromptBoardTabFactory
-
-# Import service factories
+from interfaces.pyqt.tabs.cursor_execution_tab import CursorExecutionTab
+from interfaces.pyqt.tabs.task_management_factory import TaskManagementTabFactory
+from micro_factories.cursor_execution_tab_factory import CursorExecutionTabFactory
 from core.project_context_analyzer_factory import ProjectContextAnalyzerFactory
+
+
+# Import tab factories and services
+from interfaces.pyqt.tabs.task_management_factory import TaskManagementTabFactory
+from interfaces.pyqt.tabs.task_status_tab import TaskStatusTab
+from interfaces.pyqt.tabs.task_history_modal import TaskDetailsModal
+from interfaces.pyqt.tabs.success_dashboard_tab import SuccessDashboardTab
+from interfaces.pyqt.tabs.AIDE import AIDE
+from interfaces.pyqt.tabs.settings_tab import SettingsTab
+from interfaces.pyqt.tabs.LogsTab import LogsTab
 
 # --------------------
 # Setup Logging
@@ -1224,7 +1239,7 @@ class DreamOsMainWindow(QMainWindow):
         return services
     
     def _init_ui(self):
-        """Initialize the main UI components."""
+        """Initialize the main UI components with a streamlined tab structure."""
         self.setMinimumSize(1200, 800)
         
         # Create central widget and layout
@@ -1240,16 +1255,51 @@ class DreamOsMainWindow(QMainWindow):
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
         
-        # Add service diagnostic tab
+        # ----- STREAMLINED TAB STRUCTURE -----
+        
+        # 1. Unified Dashboard (Primary workspace)
+        self._add_tab_safely("unified_dashboard", None, None, 
+                            factory=UnifiedDashboardTabFactory.create(self.services))
+        
+        # 2. Cursor Execution Tab (Core functionality)
+        self._add_tab_safely("cursor_execution", "interfaces.pyqt.tabs.cursor_execution_tab", 
+                            "CursorExecutionTab")
+        
+        # 3. AIDE Tab (AI assistance)
+        self._add_tab_safely("aide", "interfaces.pyqt.tabs.AIDE", "AIAssistantTab")
+        
+        # 4. Task Management (Consolidated task views)
+        task_tab = TaskManagementTabFactory.create(self.services, self)
+        if task_tab:
+            self.tabs.addTab(task_tab, "Task Management")
+        
+        # 5. Service Health (Diagnostics & Logs)
+        # Create a composite tab with diagnostic and logs in subtabs
+        health_tab = QWidget()
+        health_layout = QVBoxLayout(health_tab)
+        health_subtabs = QTabWidget()
+        
+        # Add diagnostic tab
         self.diagnostic_tab = ServiceDiagnosticTab(self.services, self.tab_validator)
-        self.tabs.addTab(self.diagnostic_tab, "Service Diagnostics")
+        health_subtabs.addTab(self.diagnostic_tab, "Diagnostics")
         
-        # Add tabs
-        self._add_tab_safely("cursor_execution", "interfaces.pyqt.tabs.cursor_execution_tab", "CursorExecutionTab")
-        self._add_tab_safely("contextual_chat", None, None, factory=UnifiedDashboardTabFactory.create(self.services))
+        # Add logs tab
+        try:
+            from interfaces.pyqt.tabs.LogsTab import LogsTab
+            logs_tab = LogsTab(self.services, self)
+            health_subtabs.addTab(logs_tab, "Logs")
+        except Exception as e:
+            logger.error(f"Failed to load logs tab: {e}")
+            placeholder = QWidget()
+            placeholder_layout = QVBoxLayout(placeholder)
+            placeholder_layout.addWidget(QLabel(f"Logs unavailable: {str(e)}"))
+            health_subtabs.addTab(placeholder, "Logs (Error)")
         
-        # Add draggable prompt board tab
-        self._add_tab_safely("prompt_board", None, None, factory=DraggablePromptBoardTabFactory.create(self.services))
+        health_layout.addWidget(health_subtabs)
+        self.tabs.addTab(health_tab, "Service Health")
+        
+        # 6. Settings & Configuration (Merged settings)
+        self._add_tab_safely("settings", "interfaces.pyqt.tabs.settings_tab", "SettingsTab")
         
         # Add tabs layout to main layout
         main_layout.addWidget(self.tabs)
@@ -1258,6 +1308,9 @@ class DreamOsMainWindow(QMainWindow):
         self.status_timer = QTimer(self)
         self.status_timer.timeout.connect(self._update_status)
         self.status_timer.start(1000)  # 1 second
+        
+        # Set unified dashboard as the default tab
+        self.tabs.setCurrentIndex(0)
     
     def _add_tab_safely(self, tab_name, module_path, class_name, get_widget=False, factory=None):
         """

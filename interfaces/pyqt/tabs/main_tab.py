@@ -49,15 +49,6 @@ class MainTab(QWidget):
         # Retrieve services from the service_manager (system_loader)
         self.services = service_manager.get_all_services() if service_manager and hasattr(service_manager, 'get_all_services') else {}
         
-        # Set up UI
-        self.setup_ui()
-        
-        # Connect signals
-        self.log_updated.connect(self._append_log)
-        
-        # Set up log handler
-        self.setup_log_handler()
-        
         # Placeholder for system status data
         self.system_status = {
             "Service Status": "Initializing...",
@@ -68,7 +59,16 @@ class MainTab(QWidget):
             "Active Threads": 1
         }
         
-        self._init_ui()
+        # Set up UI
+        self.setup_ui()
+        
+        # Connect signals
+        self.log_updated.connect(self._append_log)
+        
+        # Set up log handler
+        self.log_handler = self.setup_log_handler()
+        
+        # Start status updates
         self._start_status_updates()
         
     def _append_log(self, message: str) -> None:
@@ -84,30 +84,33 @@ class MainTab(QWidget):
     def setup_ui(self) -> None:
         """Set up the user interface."""
         # Create main layout
-        layout = QVBoxLayout()
+        main_layout = QVBoxLayout(self)
         
         # Add header
         header = QLabel("Dream.OS Control Center")
         header.setStyleSheet("font-size: 24px; font-weight: bold; margin: 10px;")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(header)
+        main_layout.addWidget(header)
         
-        # Add status section
-        status_frame = QFrame()
-        status_frame.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
-        status_layout = QVBoxLayout(status_frame)
+        # --- Status Overview Group ---
+        status_group = QGroupBox("System Status Overview")
+        status_layout = QGridLayout(status_group)
+
+        self.status_labels = {}
+        row = 0
+        for key, value in self.system_status.items():
+            key_label = QLabel(f"{key}:")
+            value_label = QLabel(str(value))
+            self.status_labels[key] = value_label # Store reference to update later
+            status_layout.addWidget(key_label, row, 0)
+            status_layout.addWidget(value_label, row, 1)
+            row += 1
+
+        main_layout.addWidget(status_group)
         
-        status_header = QLabel("System Status")
-        status_header.setStyleSheet("font-size: 18px; font-weight: bold;")
-        status_layout.addWidget(status_header)
-        
-        # Add service status
-        self.service_status = QTextEdit()
-        self.service_status.setReadOnly(True)
-        self.service_status.setMaximumHeight(150)
-        status_layout.addWidget(self.service_status)
-        
-        layout.addWidget(status_frame)
+        # --- Control Panel Group ---
+        control_group = QGroupBox("Control Panel")
+        control_layout = QVBoxLayout(control_group)
         
         # Add control buttons
         button_layout = QHBoxLayout()
@@ -122,7 +125,13 @@ class MainTab(QWidget):
         restart_button.setMinimumHeight(30)
         button_layout.addWidget(restart_button)
         
-        layout.addLayout(button_layout)
+        # --- Task Queue Processing --- 
+        self.process_queue_button = QPushButton("Process Task Queue")
+        self.process_queue_button.clicked.connect(self._process_task_queue)
+        button_layout.addWidget(self.process_queue_button)
+        
+        control_layout.addLayout(button_layout)
+        main_layout.addWidget(control_group)
         
         # Add scroll area for logs
         scroll_area = QScrollArea()
@@ -150,24 +159,30 @@ class MainTab(QWidget):
         log_layout.addLayout(log_button_layout)
         
         scroll_area.setWidget(log_widget)
-        layout.addWidget(scroll_area)
-        
-        # Set the layout
-        self.setLayout(layout)
+        main_layout.addWidget(scroll_area)
         
         # Initial status update
         self.refresh_status()
         
-    def setup_log_handler(self) -> None:
+    def setup_log_handler(self):
         """Set up custom log handler to capture logs."""
         class QTextEditHandler(logging.Handler):
             def __init__(self, widget):
                 super().__init__()
                 self.widget = widget
+                self.widget_ref = widget  # Store a reference
                 
             def emit(self, record):
-                msg = self.format(record)
-                self.widget.log_updated.emit(msg)
+                if self.widget_ref:  # Check if reference is still valid
+                    try:
+                        msg = self.format(record)
+                        self.widget.log_updated.emit(msg)
+                    except RuntimeError:
+                        # Widget has been deleted, remove the handler
+                        self.widget_ref = None
+                        root_logger = logging.getLogger()
+                        if self in root_logger.handlers:
+                            root_logger.removeHandler(self)
                 
         # Create and add handler
         handler = QTextEditHandler(self)
@@ -175,41 +190,23 @@ class MainTab(QWidget):
             logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         )
         logging.getLogger().addHandler(handler)
+        return handler
+        
+    def closeEvent(self, event):
+        """Handle widget close event to clean up resources."""
+        # Remove the log handler when the widget is being destroyed
+        root_logger = logging.getLogger()
+        if self.log_handler in root_logger.handlers:
+            root_logger.removeHandler(self.log_handler)
+        # Call the parent's closeEvent
+        super().closeEvent(event)
         
     def refresh_status(self) -> None:
         """Refresh the service status display."""
         try:
-            status_text = []
-            
-            # Add service manager status if available
-            if self.service_manager:
-                # --- FIX: Guard against NoneType before calling .items() ---
-                services = self.service_manager.get_services() if hasattr(self.service_manager, 'get_services') else {}
-                services = services or {} # Ensure services is a dict
-                # --- End FIX ---
-                for name, service in services.items():
-                    # Check if service is a real service or a mock
-                    if hasattr(service, 'is_running') and callable(service.is_running):
-                        status = "Running" if service.is_running() else "Stopped"
-                    elif isinstance(service, MockService):
-                        status = "Mocked"
-                    else:
-                        status = "Unknown State"
-                    status_text.append(f"{name}: {status}")
-            else:
-                status_text.append("Service Manager: Not Available")
-                
-            # Add config manager status if available
-            if self.config_manager:
-                config_status = "Available"
-                status_text.append(f"Configuration: {config_status}")
-            else:
-                status_text.append("Configuration: Not Available")
-            
-            # Update the status display
-            self.service_status.setText("\n".join(status_text))
+            # Update system status
+            self._update_status_display()
             self.logger.info("Status refreshed successfully")
-            
         except Exception as e:
             self.logger.error(f"Failed to refresh status: {e}")
             self._show_error("Status Error", f"Failed to refresh status: {e}")
@@ -251,87 +248,14 @@ class MainTab(QWidget):
                 # Update status immediately after processing (e.g., queue length)
                 self.refresh_status()
                 
-                # Show completion message (optional)
-                # QMessageBox.information(self, "Task Queue", "Task queue processing complete.")
-                
             except Exception as e:
                 self.logger.error(f"Error during task queue processing: {e}", exc_info=True)
-                # QMessageBox.critical(self, "Error", f"Failed to process task queue: {e}")
             finally:
                 # Re-enable button
                 self.process_queue_button.setEnabled(True)
                 self.process_queue_button.setText("Process Task Queue")
         else:
             self.logger.error("TaskQueueService not found in services. Cannot process queue.")
-            # QMessageBox.warning(self, "Service Not Found", "TaskQueueService is not available.")
-
-    # Example placeholder for a control action
-    # def _reload_config(self):
-    #     self.logger.info("Reload Configuration button clicked.")
-    #     try:
-    #         # Assuming ConfigManager has a reload method
-    #         if self.config_manager and hasattr(self.config_manager, 'reload_config'):
-    #             self.config_manager.reload_config()
-    #             self.logger.info("Configuration reloaded successfully.")
-    #             QMessageBox.information(self, "Success", "Configuration reloaded.")
-    #         else:
-    #             self.logger.warning("ConfigManager does not support reload or is unavailable.")
-    #             QMessageBox.warning(self, "Not Supported", "Configuration reload not available.")
-    #     except Exception as e:
-    #         self.logger.error(f"Error reloading configuration: {e}", exc_info=True)
-    #         QMessageBox.critical(self, "Error", f"Failed to reload configuration: {e}")
-
-    # Placeholder for system status data
-    system_status = {
-        "Service Status": "Initializing...",
-        "Task Queue Length": 0,
-        "Last Event": "None",
-        "CPU Usage": "0%",
-        "Memory Usage": "0 MB",
-        "Active Threads": 1
-    }
-
-    def _init_ui(self):
-        """Initialize the UI components for the main tab."""
-        main_layout = QVBoxLayout(self)
-
-        # --- Status Overview Group ---
-        status_group = QGroupBox("System Status Overview")
-        status_layout = QGridLayout()
-
-        self.status_labels = {}
-        row = 0
-        for key, value in self.system_status.items():
-            key_label = QLabel(f"{key}:")
-            value_label = QLabel(str(value))
-            self.status_labels[key] = value_label # Store reference to update later
-            status_layout.addWidget(key_label, row, 0)
-            status_layout.addWidget(value_label, row, 1)
-            row += 1
-
-        status_group.setLayout(status_layout)
-        main_layout.addWidget(status_group)
-
-        # --- Control Panel Group ---
-        control_group = QGroupBox("Control Panel")
-        control_layout = QVBoxLayout()
-
-        # Add specific control buttons or widgets here
-        # Example:
-        # reload_config_button = QPushButton("Reload Configuration")
-        # reload_config_button.clicked.connect(self._reload_config)
-        # control_layout.addWidget(reload_config_button)
-
-        # --- NEW: Automation Trigger --- 
-        self.process_queue_button = QPushButton("Process Task Queue")
-        self.process_queue_button.clicked.connect(self._process_task_queue)
-        control_layout.addWidget(self.process_queue_button)
-        # --- END NEW ---
-        
-        control_group.setLayout(control_layout)
-        main_layout.addWidget(control_group)
-
-        main_layout.addStretch() # Pushes content to the top
 
     def _start_status_updates(self):
         """Start a timer to periodically update system status."""
@@ -346,19 +270,12 @@ class MainTab(QWidget):
         # In a real scenario, query relevant services
         try:
             # Example: Query TaskQueueService if available
-            task_queue_service = self.service_manager.get_services().get('task_queue_service')
+            task_queue_service = self.services.get('task_queue_service')
             if task_queue_service and hasattr(task_queue_service, 'get_queue_length'):
                 self.system_status["Task Queue Length"] = task_queue_service.get_queue_length()
             else:
                 self.system_status["Task Queue Length"] = "N/A"
                 
-            # Example: Query a hypothetical SystemMonitor service
-            # system_monitor = self.services.get('system_monitor')
-            # if system_monitor:
-            #     self.system_status["CPU Usage"] = f"{system_monitor.get_cpu_usage():.1f}%"
-            #     self.system_status["Memory Usage"] = f"{system_monitor.get_memory_usage()} MB"
-            #     self.system_status["Active Threads"] = system_monitor.get_active_threads()
-            # else: # Default/mock values if service not found
             self.system_status["CPU Usage"] = "N/A"
             self.system_status["Memory Usage"] = "N/A"
             self.system_status["Active Threads"] = "N/A"
@@ -366,29 +283,20 @@ class MainTab(QWidget):
             # General service status check
             # Check specifically required services for a more accurate status
             required_operational = ['system_loader', 'prompt_manager', 'chat_manager'] # Example critical set
-            operational = all(self.services.get(s) and not isinstance(self.services.get(s), MockService) for s in required_operational)
+            operational = True
+            for service_name in required_operational:
+                service = self.services.get(service_name)
+                if not service or hasattr(service, '__class__') and service.__class__.__name__.startswith('Mock'):
+                    operational = False
+                    break
             
             self.system_status["Service Status"] = "OK" if operational else "Degraded"
 
             # Update labels
             for key, value_label in self.status_labels.items():
-                value_label.setText(str(self.system_status.get(key, "Error")))
+                if key in self.system_status:
+                    value_label.setText(str(self.system_status[key]))
         except Exception as e:
-            self.logger.error(f"Error updating status display: {e}", exc_info=True)
-            self.status_labels["Service Status"].setText("Error Updating")
-            
-    # Example placeholder for a control action
-    # def _reload_config(self):
-    #     self.logger.info("Reload Configuration button clicked.")
-    #     try:
-    #         # Assuming ConfigManager has a reload method
-    #         if self.config_manager and hasattr(self.config_manager, 'reload_config'):
-    #             self.config_manager.reload_config()
-    #             self.logger.info("Configuration reloaded successfully.")
-    #             QMessageBox.information(self, "Success", "Configuration reloaded.")
-    #         else:
-    #             self.logger.warning("ConfigManager does not support reload or is unavailable.")
-    #             QMessageBox.warning(self, "Not Supported", "Configuration reload not available.")
-    #     except Exception as e:
-    #         self.logger.error(f"Error reloading configuration: {e}", exc_info=True)
-    #         QMessageBox.critical(self, "Error", f"Failed to reload configuration: {e}") 
+            self.logger.error(f"Error updating status display: {e}")
+            if "Service Status" in self.status_labels:
+                self.status_labels["Service Status"].setText("Error Updating") 

@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 from unittest import mock
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, AsyncMock
 from datetime import datetime
 
 import pytest
@@ -184,16 +184,21 @@ def qapp():
 @pytest.fixture
 def mock_services():
     """Create mock services for components."""
+    # Use MagicMock/AsyncMock for services
+    ui_logic_mock = MagicMock()
+    # Make the get_service method return an AsyncMock so its methods can be awaited
+    ui_logic_mock.get_service.return_value = AsyncMock()
+
     return {
-        'dispatcher': None,
-        'prompt_manager': None,
-        'chat_manager': None,
-        'response_handler': None,
-        'memory_manager': None,
-        'discord_manager': None,
-        'ui_logic': None,
-        'config_manager': None,
-        'logger': None
+        'dispatcher': MagicMock(),
+        'prompt_manager': MagicMock(),
+        'chat_manager': MagicMock(),
+        'response_handler': MagicMock(),
+        'memory_manager': MagicMock(),
+        'discord_manager': MagicMock(),
+        'ui_logic': ui_logic_mock, # Use the configured mock
+        'config_manager': MagicMock(),
+        'logger': MagicMock()
     }
 
 @pytest.fixture

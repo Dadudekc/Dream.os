@@ -38,8 +38,11 @@ from core.memory.utils import fix_memory_file
 # Import services
 from core.services.cursor_ui_service import CursorUIServiceFactory
 
-# Configure the logger at module level
-logger = logging.getLogger(__name__)
+# Import LoggerFactory
+from core.logging.factories.LoggerFactory import LoggerFactory
+
+# Configure the logger at module level using the factory
+logger = LoggerFactory.create_standard_logger(__name__)
 
 
 class SystemLoader:

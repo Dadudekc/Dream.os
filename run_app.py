@@ -7,26 +7,19 @@ import sys
 import logging
 import traceback
 
-def setup_logging():
-    """Set up logging configuration."""
-    # Define handlers with UTF-8 encoding
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-    stdout_handler.encoding = 'utf-8' # Specify UTF-8 for stdout
-
-    file_handler = logging.FileHandler('dream_os.log', encoding='utf-8') # Specify UTF-8 for file
-    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-
-    logging.basicConfig(
-        level=logging.DEBUG,
-        handlers=[stdout_handler, file_handler]
-    )
-    return logging.getLogger(__name__)
+# Import the LoggerFactory
+from core.logging.factories.LoggerFactory import LoggerFactory
 
 def main():
     """Run the Dream.OS PyQt interface."""
-    logger = setup_logging()
-    
+    # Get logger using the factory
+    # Note: Log file will be in outputs/logs/run_app.log
+    logger = LoggerFactory.create_standard_logger(
+        name="run_app", 
+        level=logging.DEBUG, 
+        log_to_file=True
+    )
+
     try:
         # Log Python environment info
         logger.info(f"Python version: {sys.version}")

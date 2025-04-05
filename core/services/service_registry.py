@@ -27,6 +27,7 @@ from core.interfaces.IPromptManager import IPromptManager
 from core.interfaces.IPromptOrchestrator import IPromptOrchestrator
 from core.interfaces.IDreamscapeService import IDreamscapeService
 from core.micro_factories.orchestrator_factory import OrchestratorFactory
+from core.logging.factories.LoggerFactory import LoggerFactory
 
 # Note: DreamscapeFactory and PromptFactory are imported dynamically when needed to avoid circular imports
 
@@ -109,20 +110,6 @@ def create_config_service(config_name: str = "dreamscape_config.yaml") -> Any:
             'load': lambda self, file: None,
             'save': lambda self, file=None: None
         })()
-
-
-def create_logging_service() -> Any:
-    logger = logging.getLogger()
-    if not logger.handlers:
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.StreamHandler(),
-                logging.FileHandler(os.path.join("outputs", "logs", "application.log"))
-            ]
-        )
-    return logger
 
 
 def create_prompt_service(config_service: Any = None) -> Any:
@@ -548,10 +535,16 @@ def register_all_services() -> None:
         # Create and register basic services
         config_service = create_config_service()
         ServiceRegistry.register("config_manager", config_service)
-        
-        logger = create_logging_service()
+
+        # Get logger from LoggerFactory
+        # Note: log file will be in outputs/logs/service_registry.log
+        logger = LoggerFactory.create_standard_logger(
+            name="service_registry", 
+            level=logging.INFO, # Use INFO level by default for registry
+            log_to_file=True
+        )
         ServiceRegistry.register("logger", logger)
-        
+
         # Create and register memory service
         memory_service = create_memory_service(config_service)
         ServiceRegistry.register("memory_manager", memory_service)

@@ -626,12 +626,11 @@
     "run_app.py": {
         "language": ".py",
         "functions": [
-            "setup_logging",
             "main"
         ],
         "classes": {},
         "routes": [],
-        "complexity": 2
+        "complexity": 1
     },
     "run_dreamscape_discord.py": {
         "language": ".py",
@@ -2939,7 +2938,6 @@
         "functions": [
             "__init__",
             "_load_env",
-            "_init_path_manager",
             "get_env",
             "_validate_required_keys"
         ],
@@ -2948,7 +2946,6 @@
                 "methods": [
                     "__init__",
                     "_load_env",
-                    "_init_path_manager",
                     "get_env",
                     "_validate_required_keys"
                 ],
@@ -2957,7 +2954,7 @@
             }
         },
         "routes": [],
-        "complexity": 10
+        "complexity": 8
     },
     "chat_mate\\core\\config.py": {
         "language": ".py",
@@ -7312,30 +7309,36 @@
         "language": ".py",
         "functions": [
             "__init__",
+            "_format_message",
             "log",
             "log_error",
             "log_debug",
             "log_event",
-            "log_system_event"
+            "log_system_event",
+            "enable",
+            "disable"
         ],
         "classes": {
             "DiscordLogger": {
                 "methods": [
                     "__init__",
+                    "_format_message",
                     "log",
                     "log_error",
                     "log_debug",
                     "log_event",
-                    "log_system_event"
+                    "log_system_event",
+                    "enable",
+                    "disable"
                 ],
-                "docstring": "Stub implementation for Discord logging.",
+                "docstring": "Discord-based logging implementation that sends log messages to Discord channels.",
                 "base_classes": [
                     "ILoggingAgent"
                 ]
             }
         },
         "routes": [],
-        "complexity": 12
+        "complexity": 18
     },
     "chat_mate\\core\\services\\__init__.py": {
         "language": ".py",
@@ -19188,7 +19191,8 @@
             "create_standard_logger",
             "create_module_logger",
             "create_agent_logger",
-            "get_logger"
+            "get_logger",
+            "apply_library_log_levels"
         ],
         "classes": {
             "LoggerFactory": {
@@ -19196,14 +19200,15 @@
                     "create_standard_logger",
                     "create_module_logger",
                     "create_agent_logger",
-                    "get_logger"
+                    "get_logger",
+                    "apply_library_log_levels"
                 ],
                 "docstring": "Factory class for creating standardized loggers across the application.\nProvides methods to create different types of loggers with consistent \nconfiguration.",
                 "base_classes": []
             }
         },
         "routes": [],
-        "complexity": 8
+        "complexity": 10
     },
     "core\\logging\\services\\ai_output_service.py": {
         "language": ".py",
@@ -19481,38 +19486,26 @@
     },
     "core\\memory\\__init__.py": {
         "language": ".py",
-        "functions": [
-            "to_dict",
-            "from_dict"
-        ],
-        "classes": {
-            "FeedbackEntry": {
-                "methods": [
-                    "to_dict",
-                    "from_dict"
-                ],
-                "docstring": "Data class for feedback entries.",
-                "base_classes": []
-            }
-        },
+        "functions": [],
+        "classes": {},
         "routes": [],
-        "complexity": 4
+        "complexity": 0
     },
     "core\\meredith\\resonance_scorer.py": {
         "language": ".py",
         "functions": [
             "__init__",
-            "load_model",
+            "_load_all_models",
             "score_profile"
         ],
         "classes": {
             "ResonanceScorer": {
                 "methods": [
                     "__init__",
-                    "load_model",
+                    "_load_all_models",
                     "score_profile"
                 ],
-                "docstring": "Loads a resonance model (e.g. romantic.json, side_chick.json, etc.)\nand scores a given profile dict based on alignment with:\n  - required traits\n  - bonus traits\n  - frequency keywords\n  - deal breakers\n  - location preference (ZIP or keywords)\n\nDesigned for dynamic model switching via `load_model(path)`.",
+                "docstring": "Loads multiple resonance models from a directory (e.g. romantic.json, friendship.json)\nand scores a given profile dict based on alignment with a selected model's criteria:\n  - required traits\n  - bonus traits\n  - frequency keywords\n  - deal breakers\n  - location preference (ZIP or keywords)",
                 "base_classes": []
             }
         },
@@ -21039,7 +21032,6 @@
         "language": ".py",
         "functions": [
             "create_config_service",
-            "create_logging_service",
             "create_prompt_service",
             "create_chat_service",
             "create_discord_service",
@@ -21225,7 +21217,7 @@
             }
         },
         "routes": [],
-        "complexity": 102
+        "complexity": 101
     },
     "core\\services\\TestCoverageAnalyzer.py": {
         "language": ".py",
@@ -21402,30 +21394,36 @@
         "language": ".py",
         "functions": [
             "__init__",
+            "_format_message",
             "log",
             "log_error",
             "log_debug",
             "log_event",
-            "log_system_event"
+            "log_system_event",
+            "enable",
+            "disable"
         ],
         "classes": {
             "DiscordLogger": {
                 "methods": [
                     "__init__",
+                    "_format_message",
                     "log",
                     "log_error",
                     "log_debug",
                     "log_event",
-                    "log_system_event"
+                    "log_system_event",
+                    "enable",
+                    "disable"
                 ],
-                "docstring": "Logs messages to Discord using a DiscordManager instance.",
+                "docstring": "Discord-based logging implementation that sends log messages to Discord channels.",
                 "base_classes": [
                     "ILoggingAgent"
                 ]
             }
         },
         "routes": [],
-        "complexity": 12
+        "complexity": 18
     },
     "core\\services\\discord\\DiscordManager.py": {
         "language": ".py",
@@ -25048,7 +25046,8 @@
             "__init__",
             "validate_all_tabs",
             "_validate_tab_factory",
-            "get_validation_status"
+            "get_validation_status",
+            "get_error_details"
         ],
         "classes": {
             "TabValidatorService": {
@@ -25056,14 +25055,15 @@
                     "__init__",
                     "validate_all_tabs",
                     "_validate_tab_factory",
-                    "get_validation_status"
+                    "get_validation_status",
+                    "get_error_details"
                 ],
                 "docstring": "Service for validating tab constructors and dependencies.",
                 "base_classes": []
             }
         },
         "routes": [],
-        "complexity": 8
+        "complexity": 10
     },
     "interfaces\\pyqt\\services\\TestRunner.py": {
         "language": ".py",
@@ -25512,7 +25512,9 @@
             "dropEvent",
             "get_drop_position",
             "__init__",
-            "init_ui",
+            "_init_ui",
+            "_init_subtab_ui",
+            "_create_board_ui",
             "add_new_block",
             "add_template_block",
             "clear_board",
@@ -25573,7 +25575,9 @@
             "DraggablePromptBoardTab": {
                 "methods": [
                     "__init__",
-                    "init_ui",
+                    "_init_ui",
+                    "_init_subtab_ui",
+                    "_create_board_ui",
                     "add_new_block",
                     "add_template_block",
                     "clear_board",
@@ -25586,7 +25590,7 @@
                     "execute_sequence",
                     "_simulate_block_execution"
                 ],
-                "docstring": "Tab for managing a draggable prompt board interface.",
+                "docstring": "Tab for managing and organizing prompts with drag and drop functionality.",
                 "base_classes": [
                     "QWidget"
                 ]
@@ -25600,7 +25604,7 @@
             }
         },
         "routes": [],
-        "complexity": 66
+        "complexity": 70
     },
     "interfaces\\pyqt\\tabs\\LogsTab.py": {
         "language": ".py",
@@ -25686,11 +25690,11 @@
             "_show_error",
             "setup_ui",
             "setup_log_handler",
+            "closeEvent",
             "refresh_status",
             "restart_services",
             "clear_logs",
             "_process_task_queue",
-            "_init_ui",
             "_start_status_updates",
             "_update_status_display",
             "__init__",
@@ -25704,11 +25708,11 @@
                     "_show_error",
                     "setup_ui",
                     "setup_log_handler",
+                    "closeEvent",
                     "refresh_status",
                     "restart_services",
                     "clear_logs",
                     "_process_task_queue",
-                    "_init_ui",
                     "_start_status_updates",
                     "_update_status_display"
                 ],
@@ -25741,6 +25745,7 @@
             "init_ui",
             "load_entries",
             "on_entry_selected",
+            "delete_selected_entry",
             "__init__",
             "init_ui",
             "populate_model_selector",
@@ -25776,7 +25781,8 @@
                     "__init__",
                     "init_ui",
                     "load_entries",
-                    "on_entry_selected"
+                    "on_entry_selected",
+                    "delete_selected_entry"
                 ],
                 "docstring": "Dialog for viewing MeritChain entries.\nProvides a list of saved matches and a detailed view of the selected match.",
                 "base_classes": [
@@ -25810,7 +25816,7 @@
             }
         },
         "routes": [],
-        "complexity": 48
+        "complexity": 50
     },
     "interfaces\\pyqt\\tabs\\PromptExecutionTab.py": {
         "language": ".py",
@@ -26071,18 +26077,9 @@
             "view_output_file",
             "requeue_task",
             "__init__",
-            "setup_ui",
-            "connect_to_bridge",
-            "on_task_execution_completed",
-            "on_task_requeued",
-            "on_tasks_requeued",
-            "refresh_tasks",
-            "apply_filter",
-            "set_auto_refresh",
-            "browse_memory_file",
-            "load_tasks_from_file",
-            "update_task_widgets",
-            "handle_requeue_request",
+            "_init_ui",
+            "_init_subtab_ui",
+            "_create_status_ui",
             "create"
         ],
         "classes": {
@@ -26102,20 +26099,11 @@
             "TaskStatusTab": {
                 "methods": [
                     "__init__",
-                    "setup_ui",
-                    "connect_to_bridge",
-                    "on_task_execution_completed",
-                    "on_task_requeued",
-                    "on_tasks_requeued",
-                    "refresh_tasks",
-                    "apply_filter",
-                    "set_auto_refresh",
-                    "browse_memory_file",
-                    "load_tasks_from_file",
-                    "update_task_widgets",
-                    "handle_requeue_request"
+                    "_init_ui",
+                    "_init_subtab_ui",
+                    "_create_status_ui"
                 ],
-                "docstring": "Tab for displaying task status, screenshots, and validation results.",
+                "docstring": "Tab for displaying task statuses and management.",
                 "base_classes": [
                     "QWidget"
                 ]
@@ -26129,7 +26117,7 @@
             }
         },
         "routes": [],
-        "complexity": 38
+        "complexity": 20
     },
     "interfaces\\pyqt\\tabs\\voice_mode_tab.py": {
         "language": ".py",
@@ -28788,14 +28776,27 @@
         "language": ".py",
         "functions": [
             "get_social_logger",
+            "get_json_logger",
             "write_json_log",
             "log_login",
             "log_post",
-            "log_error"
+            "log_error",
+            "send_discord_alert",
+            "format"
         ],
-        "classes": {},
+        "classes": {
+            "JSONFormatter": {
+                "methods": [
+                    "format"
+                ],
+                "docstring": "Custom JSON formatter for structured log entries.",
+                "base_classes": [
+                    "logging.Formatter"
+                ]
+            }
+        },
         "routes": [],
-        "complexity": 5
+        "complexity": 9
     },
     "social\\social_config.py": {
         "language": ".py",
@@ -32972,6 +32973,7 @@
         "language": ".py",
         "functions": [
             "__init__",
+            "_post_init_setup",
             "init_ui",
             "refresh_episode_list",
             "load_episode_content",
@@ -32980,6 +32982,7 @@
             "save_context_schedule",
             "load_context_schedule",
             "refresh_context_memory",
+            "setup_tab",
             "test_episode_interaction_workflow",
             "test_filter_context_memory"
         ],
@@ -32987,6 +32990,7 @@
             "TestDreamscapeGenerationTab": {
                 "methods": [
                     "__init__",
+                    "_post_init_setup",
                     "init_ui",
                     "refresh_episode_list",
                     "load_episode_content",
@@ -33003,6 +33007,7 @@
             },
             "TestDreamscapeGenerationTabE2E": {
                 "methods": [
+                    "setup_tab",
                     "test_episode_interaction_workflow",
                     "test_filter_context_memory"
                 ],
@@ -33011,7 +33016,7 @@
             }
         },
         "routes": [],
-        "complexity": 22
+        "complexity": 26
     },
     "tests\\gui\\run_gui_tests.py": {
         "language": ".py",
@@ -34909,12 +34914,11 @@
         "functions": [
             "write_json_log",
             "log_success",
-            "log_error",
-            "setup_basic_logging"
+            "log_error"
         ],
         "classes": {},
         "routes": [],
-        "complexity": 4
+        "complexity": 3
     },
     "utils\\prompt_tuner.py": {
         "language": ".py",
@@ -35458,5 +35462,322 @@
         },
         "routes": [],
         "complexity": 5
+    },
+    "chat_mate\\core\\prompt_cycle\\MemoryManager.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_load_memory",
+            "_save_memory",
+            "store_insights",
+            "get_insights",
+            "update",
+            "search_memory",
+            "generate_memory_report"
+        ],
+        "classes": {
+            "MemoryManager": {
+                "methods": [
+                    "__init__",
+                    "_load_memory",
+                    "_save_memory",
+                    "store_insights",
+                    "get_insights",
+                    "update",
+                    "search_memory",
+                    "generate_memory_report"
+                ],
+                "docstring": "Manages memory for the prompt cycle system.\nHandles storing, retrieving, and updating insights from interactions.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 16
+    },
+    "core\\memory\\ContextMemoryManager.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_ensure_output_dir",
+            "save_context",
+            "load_context",
+            "update_context",
+            "_deep_update",
+            "delete_context",
+            "list_contexts",
+            "clear_all"
+        ],
+        "classes": {
+            "ContextMemoryManager": {
+                "methods": [
+                    "__init__",
+                    "_ensure_output_dir",
+                    "save_context",
+                    "load_context",
+                    "update_context",
+                    "_deep_update",
+                    "delete_context",
+                    "list_contexts",
+                    "clear_all"
+                ],
+                "docstring": "Manages context-specific memory storage and retrieval, particularly for\nDreamscape episode generation and other context-dependent features.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 18
+    },
+    "core\\memory\\DatabaseManager.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_initialize_db",
+            "record_interaction",
+            "initialize_conversation",
+            "get_conversation",
+            "get_user_interactions",
+            "get_conversation_metadata",
+            "clear_user_interactions",
+            "close"
+        ],
+        "classes": {
+            "DatabaseManager": {
+                "methods": [
+                    "__init__",
+                    "_initialize_db",
+                    "record_interaction",
+                    "initialize_conversation",
+                    "get_conversation",
+                    "get_user_interactions",
+                    "get_conversation_metadata",
+                    "clear_user_interactions",
+                    "close"
+                ],
+                "docstring": "DatabaseManager stores interactions and conversation metadata for\nlong-term retention using SQLite.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 18
+    },
+    "core\\memory\\FeedbackEntry.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "to_dict",
+            "from_dict",
+            "__new__",
+            "__init__",
+            "_load_feedback",
+            "_save_feedback",
+            "add_feedback",
+            "get_feedback",
+            "mark_processed",
+            "add_tags",
+            "update_metadata",
+            "clear_all",
+            "get_stats"
+        ],
+        "classes": {
+            "FeedbackEntry": {
+                "methods": [
+                    "__init__",
+                    "to_dict",
+                    "from_dict"
+                ],
+                "docstring": "Represents a single feedback entry with metadata.",
+                "base_classes": []
+            },
+            "UnifiedFeedbackManager": {
+                "methods": [
+                    "__new__",
+                    "__init__",
+                    "_load_feedback",
+                    "_save_feedback",
+                    "add_feedback",
+                    "get_feedback",
+                    "mark_processed",
+                    "add_tags",
+                    "update_metadata",
+                    "clear_all",
+                    "get_stats"
+                ],
+                "docstring": "Manages unified feedback across different sources (Discord, UI).",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 28
+    },
+    "core\\services\\export_service.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_get_export_directory",
+            "export"
+        ],
+        "classes": {
+            "ExportService": {
+                "methods": [
+                    "__init__",
+                    "_get_export_directory",
+                    "export"
+                ],
+                "docstring": "Handles exporting data to specified formats and locations.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 6
+    },
+    "core\\utils\\todo_scanner.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_find_full_function_def",
+            "scan_and_queue_tasks"
+        ],
+        "classes": {
+            "TodoScanner": {
+                "methods": [
+                    "__init__",
+                    "_find_full_function_def",
+                    "scan_and_queue_tasks"
+                ],
+                "docstring": "Scans project files for specific comment patterns (e.g., # TODO) and \nplaceholder functions, then queues tasks via PromptExecutionService \nto address them using appropriate templates.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 6
+    },
+    "debug_imports.py": {
+        "language": ".py",
+        "functions": [],
+        "classes": {},
+        "routes": [],
+        "complexity": 0
+    },
+    "chat_mate\\chat_mate\\chat_mate\\core\\logging\\CompositeLogger_fixed.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_safe_log",
+            "log",
+            "log_error",
+            "log_debug",
+            "log_event",
+            "log_system_event",
+            "add_logger",
+            "remove_logger",
+            "shutdown"
+        ],
+        "classes": {
+            "CompositeLogger": {
+                "methods": [
+                    "__init__",
+                    "_safe_log",
+                    "log",
+                    "log_error",
+                    "log_debug",
+                    "log_event",
+                    "log_system_event",
+                    "add_logger",
+                    "remove_logger",
+                    "shutdown"
+                ],
+                "docstring": "Composite logger that manages multiple logging handlers.",
+                "base_classes": [
+                    "ILoggingAgent"
+                ]
+            }
+        },
+        "routes": [],
+        "complexity": 20
+    },
+    "chat_mate\\chat_mate\\core\\logging\\CompositeLogger.py": {
+        "language": ".py",
+        "functions": [
+            "__init__",
+            "_safe_log",
+            "log",
+            "log_error",
+            "log_debug",
+            "log_event",
+            "log_system_event",
+            "add_logger",
+            "remove_logger",
+            "shutdown"
+        ],
+        "classes": {
+            "CompositeLogger": {
+                "methods": [
+                    "__init__",
+                    "_safe_log",
+                    "log",
+                    "log_error",
+                    "log_debug",
+                    "log_event",
+                    "log_system_event",
+                    "add_logger",
+                    "remove_logger",
+                    "shutdown"
+                ],
+                "docstring": "Composite logger that manages multiple logging handlers.",
+                "base_classes": [
+                    "ILoggingAgent"
+                ]
+            }
+        },
+        "routes": [],
+        "complexity": 20
+    },
+    "core\\interfaces\\ILoggingAgent.py": {
+        "language": ".py",
+        "functions": [
+            "log",
+            "log_error",
+            "log_debug",
+            "log_event",
+            "log_system_event"
+        ],
+        "classes": {
+            "ILoggingAgent": {
+                "methods": [
+                    "log",
+                    "log_error",
+                    "log_debug",
+                    "log_event",
+                    "log_system_event"
+                ],
+                "docstring": "Base interface for logging agents.",
+                "base_classes": [
+                    "ABC"
+                ]
+            }
+        },
+        "routes": [],
+        "complexity": 10
+    },
+    "interfaces\\pyqt\\tabs\\task_management_factory.py": {
+        "language": ".py",
+        "functions": [
+            "create",
+            "_refresh_all",
+            "_retry_load"
+        ],
+        "classes": {
+            "TaskManagementTabFactory": {
+                "methods": [
+                    "create",
+                    "_refresh_all",
+                    "_retry_load"
+                ],
+                "docstring": "Factory for creating the consolidated task management tab.",
+                "base_classes": []
+            }
+        },
+        "routes": [],
+        "complexity": 6
     }
 }

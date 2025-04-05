@@ -437,17 +437,91 @@ class PromptSequenceBoard(QScrollArea):
 
 
 class DraggablePromptBoardTab(QWidget):
-    """Tab for managing a draggable prompt board interface."""
+    """Tab for managing and organizing prompts with drag and drop functionality."""
     
-    def __init__(self, prompt_service=None, context_analyzer=None, parent=None):
+    def __init__(self, services, parent=None, is_subtab=False):
+        """
+        Initialize the draggable prompt board tab.
+        
+        Args:
+            services: Dictionary of application services
+            parent: Parent widget
+            is_subtab: Whether this tab is being used as a subtab in another component
+        """
         super().__init__(parent)
-        self.prompt_service = prompt_service
-        self.context_analyzer = context_analyzer
-        self.current_sequence_file = ""
-        self.init_ui()
-    
-    def init_ui(self):
-        """Initialize the UI components."""
+        self.services = services
+        self.is_subtab = is_subtab
+        self.prompt_manager = services.get('prompt_manager')
+        self.template_manager = services.get('template_manager')
+        
+        # Initialize UI elements
+        if not self.is_subtab:
+            self._init_ui()
+        else:
+            self._init_subtab_ui()
+            
+    def _init_ui(self):
+        """Initialize the full UI for standalone tab mode."""
+        # Main layout
+        main_layout = QVBoxLayout(self)
+        
+        # Header with title and controls
+        header_layout = QHBoxLayout()
+        
+        title_label = QLabel("Draggable Prompt Board")
+        title_label.setStyleSheet("font-size: 16pt; font-weight: bold;")
+        header_layout.addWidget(title_label)
+        
+        # Add the refresh button
+        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button.clicked.connect(self.refresh_board)
+        header_layout.addWidget(self.refresh_button)
+        
+        # Add search box
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search prompts...")
+        self.search_box.textChanged.connect(self.filter_prompts)
+        header_layout.addWidget(self.search_box)
+        
+        main_layout.addLayout(header_layout)
+        
+        # Create and add the board UI
+        self.board_widget = self._create_board_ui()
+        main_layout.addWidget(self.board_widget)
+        
+        # Initialize the prompt data
+        self.initialize_data()
+        
+    def _init_subtab_ui(self):
+        """Initialize minimal UI for use as a subtab."""
+        # Simplified layout without header
+        main_layout = QVBoxLayout(self)
+        
+        # Create a toolbar with essential controls
+        toolbar_layout = QHBoxLayout()
+        
+        # Add the refresh button
+        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button.clicked.connect(self.refresh_board)
+        toolbar_layout.addWidget(self.refresh_button)
+        
+        # Add search box
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search prompts...")
+        self.search_box.textChanged.connect(self.filter_prompts)
+        toolbar_layout.addWidget(self.search_box)
+        
+        main_layout.addLayout(toolbar_layout)
+        
+        # Create and add the board UI
+        self.board_widget = self._create_board_ui()
+        main_layout.addWidget(self.board_widget)
+        
+        # Initialize the prompt data
+        self.initialize_data()
+        
+    def _create_board_ui(self):
+        """Create the board UI components common to both full tab and subtab modes."""
         # Main layout
         main_layout = QVBoxLayout(self)
         
@@ -677,6 +751,70 @@ class DraggablePromptBoardTab(QWidget):
         """Update the block count display."""
         count = len(self.prompt_board.get_sequence_data())
         self.block_count_label.setText(str(count))
+    
+    def filter_prompts(self, search_text):
+        """Filter the displayed prompts based on search text.
+        
+        Args:
+            search_text (str): Text to filter prompts by
+        """
+        # If we have no blocks to filter, just return
+        if not hasattr(self, 'prompt_board') or not self.prompt_board.blocks:
+            return
+            
+        search_text = search_text.lower()
+        
+        # Show all blocks if search text is empty
+        if not search_text:
+            for block in self.prompt_board.blocks:
+                block.setVisible(True)
+            return
+            
+        # Otherwise, filter based on title, content, or category
+        for block in self.prompt_board.blocks:
+            block_data = block.block_data
+            title = block_data.get('title', '').lower()
+            content = block_data.get('content', '').lower()
+            category = block_data.get('category', '').lower()
+            
+            # Show block if any field contains the search text
+            visible = (
+                search_text in title or 
+                search_text in content or 
+                search_text in category
+            )
+            block.setVisible(visible)
+    
+    def refresh_board(self):
+        """Refresh the board with the latest prompt data from the manager."""
+        try:
+            # Clear the search box first
+            if hasattr(self, 'search_box'):
+                self.search_box.clear()
+            
+            # If we have a prompt manager, try to fetch prompts from it
+            if hasattr(self, 'prompt_manager') and self.prompt_manager:
+                prompts = self.prompt_manager.get_all_prompts()
+                if prompts:
+                    self.prompt_board.clear_blocks()
+                    for prompt in prompts:
+                        self.prompt_board.add_block(prompt)
+                    logger.info(f"Refreshed prompt board with {len(prompts)} prompts")
+                else:
+                    logger.info("No prompts found to display")
+            else:
+                logger.warning("Cannot refresh board: No prompt manager available")
+                
+            # Update the block count display
+            self.update_block_count()
+        except Exception as e:
+            logger.error(f"Error refreshing prompt board: {e}")
+            # Could display an error message to the user here
+    
+    def initialize_data(self):
+        """Initialize the board with data from the prompt manager."""
+        # This is similar to refresh_board but used during initialization
+        self.refresh_board()
     
     def load_sequence(self):
         """Load a sequence from a JSON file."""
@@ -910,19 +1048,16 @@ class DraggablePromptBoardTabFactory:
     @staticmethod
     def create(services: Dict[str, Any]) -> Optional[DraggablePromptBoardTab]:
         """Create a tab with required services injected."""
-        # Get prompt execution service
-        prompt_service = services.get('prompt_service')
-        if not prompt_service:
-            logger.warning("PromptExecutionService not available, some features will be limited")
+        # Check if we have the required services
+        if not services:
+            logger.error("No services provided for DraggablePromptBoardTab")
+            return None
         
-        # Context analyzer is optional, can be None
-        context_analyzer = services.get('context_analyzer')
-        
-        # Create the tab
-        tab = DraggablePromptBoardTab(
-            prompt_service=prompt_service,
-            context_analyzer=context_analyzer
-        )
-        
-        logger.info("DraggablePromptBoardTab created")
-        return tab 
+        # Create the tab with the services dictionary directly
+        try:
+            tab = DraggablePromptBoardTab(services=services)
+            logger.info("DraggablePromptBoardTab created successfully")
+            return tab
+        except Exception as e:
+            logger.error(f"Failed to create DraggablePromptBoardTab: {e}")
+            return None 

@@ -188,19 +188,33 @@ class MeritChainViewDialog(QDialog):
         # Add the splitter to the main layout
         layout.addWidget(splitter)
         
+        # Button layout
+        button_layout = QHBoxLayout()
+
+        # Delete button
+        delete_button = QPushButton("Delete Entry")
+        delete_button.setIcon(QIcon.fromTheme("edit-delete")) # Optional icon
+        delete_button.clicked.connect(self.delete_selected_entry)
+        button_layout.addWidget(delete_button)
+
+        button_layout.addStretch() # Add space between buttons
+
         # Close button
         close_button = QPushButton("Close")
         close_button.clicked.connect(self.accept)
-        layout.addWidget(close_button)
+        button_layout.addWidget(close_button)
+
+        layout.addLayout(button_layout)
         
         self.setLayout(layout)
         
     def load_entries(self):
         """Load entries from the MeritChain."""
-        entries = self.dispatcher.get_previous_matches(30)  # Get up to 30 recent entries
+        # Store entries locally for easier access
+        self.current_entries = self.dispatcher.get_previous_matches(100) # Increased limit
         self.entries_list.clear()
         
-        for entry in entries:
+        for entry in self.current_entries:
             username = entry.get("username", "Unknown")
             platform = entry.get("platform", "Unknown")
             score = entry.get("resonance_score", 0)
@@ -225,7 +239,7 @@ class MeritChainViewDialog(QDialog):
                 item.setForeground(QBrush(QColor("blue")))
             
             self.entries_list.addItem(item)
-            
+
     def on_entry_selected(self, current, previous):
         """Handle selection of an entry."""
         if not current:
@@ -275,6 +289,56 @@ class MeritChainViewDialog(QDialog):
         # Set the first message
         first_message = entry.get("first_message", "")
         self.message_text.setText(first_message)
+
+    def delete_selected_entry(self):
+        """Deletes the currently selected entry from the MeritChain."""
+        current_item = self.entries_list.currentItem()
+        if not current_item:
+            QMessageBox.warning(self, "No Selection", "Please select an entry to delete.")
+            return
+
+        entry = current_item.data(Qt.UserRole)
+        if not entry:
+            QMessageBox.critical(self, "Error", "Could not retrieve entry data.")
+            return
+
+        username = entry.get("username", "Unknown")
+        platform = entry.get("platform", "Unknown")
+
+        reply = QMessageBox.question(
+            self, "Confirm Deletion",
+            f"Are you sure you want to delete the MeritChain entry for '{username}' ({platform})?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            try:
+                # Assuming dispatcher has the memory manager instance
+                # REVIEW: Ensure self.dispatcher.memory correctly points to MeritChainManager
+                if hasattr(self.dispatcher, 'memory') and hasattr(self.dispatcher.memory, 'delete_by_username'):
+                    deleted = self.dispatcher.memory.delete_by_username(username)
+                    if deleted:
+                        QMessageBox.information(self, "Success", f"Entry for '{username}' deleted successfully.")
+                        # Refresh the list
+                        self.load_entries()
+                        # Clear details view
+                        self.details_header.setText("Select an entry to view details")
+                        for i in reversed(range(self.details_grid.count())):
+                            widget = self.details_grid.itemAt(i).widget()
+                            if widget:
+                                widget.setParent(None)
+                        self.message_text.clear()
+                    else:
+                        QMessageBox.warning(self, "Deletion Failed", f"Could not find or delete entry for '{username}'.")
+                else:
+                     QMessageBox.critical(self, "Error", "Delete functionality is not available.")
+                     # TODO: Add proper logging here
+                     print("[MeritChainViewDialog] Error: dispatcher.memory or delete_by_username not found.")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"An error occurred during deletion: {e}")
+                # TODO: Add proper logging here
+                print(f"[MeritChainViewDialog] Error deleting entry: {e}")
 
 
 ###############################################################################

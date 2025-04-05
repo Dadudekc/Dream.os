@@ -1,0 +1,27 @@
+# System Configuration for StatefulCursorManager
+
+# Service registry settings
+services:
+  stateful_cursor_manager:
+    class: core.StatefulCursorManager.StatefulCursorManager
+    params:
+      state_file_path: memory/cursor_state.json
+    register_as: stateful_cursor_manager
+
+# Directory paths
+paths:
+  metrics_dir: memory/metrics
+  logs_dir: logs
+  state_dir: memory
+
+# Logging configuration
+logging:
+  level: INFO
+  file: logs/system.log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+# Default values
+defaults:
+  metrics_snapshot_frequency: 6  # hours
+  auto_save_frequency: 300  # seconds
+  max_session_lifetime: 3600  # seconds 

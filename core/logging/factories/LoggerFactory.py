@@ -100,4 +100,23 @@ class LoggerFactory:
         Returns:
             Optional[LoggingService]: The logger if it exists, None otherwise
         """
-        return cls._loggers.get(name) 
+        return cls._loggers.get(name)
+
+    @classmethod
+    def apply_library_log_levels(cls, library_levels: Dict[str, int]):
+        """
+        Applies specific logging levels to library loggers to reduce noise.
+
+        Args:
+            library_levels: Dictionary mapping library logger names to logging levels.
+        """
+        for lib_name, level in library_levels.items():
+            try:
+                logging.getLogger(lib_name).setLevel(level)
+                # Use the root logger (or a dedicated factory logger) to log this action
+                root_logger = cls._loggers.get("root") or logging.getLogger()
+                root_logger.debug(f"Set level for library logger '{lib_name}' to {logging.getLevelName(level)}")
+            except Exception as e:
+                # Avoid crashing the app if setting a level fails
+                root_logger = cls._loggers.get("root") or logging.getLogger()
+                root_logger.error(f"Failed to set level for library logger '{lib_name}': {e}")
